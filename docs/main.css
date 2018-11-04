@@ -1,0 +1,53 @@
+﻿html, body {
+	height:			100%;
+	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic", "Meiryo UI", "Meiryo", sans-serif;
+	font-weight:	500;
+}
+h2	{
+	margin-top:		0em;
+	margin-bottom:	0em;
+	padding-top:	0em;
+	padding-bottom:	0em;
+}
+div {
+	margin:			0em;
+	padding:		0em;
+	padding-top:	1em;
+	padding-bottom:	1em;
+}
+
+.dllist p {
+	margin-bottom:	1em;
+	padding:		0em;
+}
+.dllist dl {
+	font-size:		1em;
+	margin-left:	1em;
+	margin-top:		0px;
+	margin-bottom:	0px;
+	padding-top:	0.2em;
+	padding-bottom:	0.2em;
+}
+.dllist dl:nth-child(2n+1) {
+	background: #F0F0F0;
+}
+.dllist dt {
+	width:			12em;
+	float:			left;
+}
+.dllist dd {
+	margin-left:	1em;
+}
+
+/* iPhone用、あるいは横幅が480px以下用 */
+@media screen and (max-device-width : 700px), screen and (max-width : 480px)  { 
+	
+	.dllist dl {
+		margin-left:	0em;
+		padding-left:	1em;
+	}
+	.dllist dt {
+		width:			12em;
+		float:			none;
+	}
+}

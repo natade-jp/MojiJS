@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>Senko.js</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<link rel="stylesheet" type="text/css" href="./main.css">
+</head>
+<body>
+<h1>Senko.js</h1>
+<p>HTML5用ライブラリです。
+ライブラリ自体は<a href="https://opensource.org/licenses/Zlib">zlibライセンス</a>とします。</p>
+
+<div id="examples" class="dllist">
+<h2>Examples</h2>
+<p>Senko.js を使用した際のサンプルコードです。</p>
+<dl>
+	<dt>ArrayList</dt>
+	<dd>-</dd>
+	<dt>BigDecimal</dt>
+	<dd>-</dd>
+	<dt>BigInteger</dt>
+	<dd>-</dd>
+	<dt>Color</dt>
+	<dd>-</dd>
+	<dt>File</dt>
+	<dd>-</dd>
+	<dt>HashMap</dt>
+	<dd>-</dd>
+	<dt>ImageProcessing</dt>
+	<dd>-</dd>
+	<dt>Device</dt>
+	<dd>-</dd>
+	<dt>Random</dt>
+	<dd>-</dd>
+	<dt>S3</dt>
+	<dd>-</dd>
+	<dt>S3GL</dt>
+	<dd>-</dd>
+	<dt>SComponent</dt>
+	<dd>-</dd>
+	<dt>Text</dt>
+	<dd>-</dd>
+</dl>
+</div>
+
+<div id="author">
+<h2>Author</h2>
+<p>natade
+	<a href="https://natadea.wordpress.com/">blog</a>,
+	<a href="https://twitter.com/natadea">twitter</a>,
+	<a href="https://github.com/natade-jp">github</a></p>
+</div>
+
+<script type="text/javascript">
+var element = document.getElementById("examples");
+var i = 0;
+if(	element !== null) {
+	list = element.getElementsByTagName("dt");
+	for(i = 0; i < list.length; i++) {
+		var title = list[i].innerText;
+		list[i].innerHTML = "<a href=\"./examples/" + title + "/index.html\">" + title + "</a>";
+	}
+}
+</script> 
+</body>
+</html>

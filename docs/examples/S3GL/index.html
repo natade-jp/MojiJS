@@ -1,0 +1,113 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<title>HTML5 Library - SenkoLib S3DGL | Sample</title>
+<meta charset="utf-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+<script type="module" src="./main.js" charset="utf-8"></script>
+<link rel="stylesheet" type="text/css" href="../resource/style.css">
+<link rel="stylesheet" type="text/css" href="../../src/gui/SComponent.css">
+<style type="text/css">
+
+body {
+	position:			relative;
+}
+
+.SCOMPONENT_Component {
+	font-size:		0.8em;
+	color:			white;
+}
+
+.SCOMPONENT_ComboBox,
+.SCOMPONENT_Button {
+	width:				calc(100% - 0.5em);
+	background-color:	#111;
+}
+
+.SCOMPONENT_Button {
+	color:				white;
+}
+.SCOMPONENT_Button.SCOMPONENT_MouseOver {
+	background-color:	#333;
+}
+.SCOMPONENT_Button.SCOMPONENT_MouseDown {
+	background-color:	#111;
+	box-shadow:			0px 2px 0px rgba(0,0,0,0.3) inset;
+}
+
+.SCOMPONENT_Panel,
+.SCOMPONENT_SlidePanel {
+	width:				calc(100% - 0.5em);
+	border-style:		solid;
+	border-width:		1px;
+	border-radius:		0px;
+	box-shadow:			0px;
+	margin:				0.1em;
+	padding:			0em;
+	background-color:	#111;
+}
+
+.SCOMPONENT_PanelLegend,
+.SCOMPONENT_SlidePanelLegend {
+	padding:			0.1em;
+	margin:				0px;
+	display:			block;
+	background-color:	#999;
+	color:				black;
+}
+
+#mainpanel {
+	display:			inline-block;
+	left:				0px;
+	position:			absolute;
+	width:				calc(100% - 15em);
+}
+#operationpanel {
+	display:			inline-block;
+	right:				0px;
+	position:			absolute;
+	width:				calc(15em);
+}
+
+#webglpanel {
+	display:			inline-block;
+	width:				100%;
+	background-color:	#FFFFFF;
+	margin:				0px;
+	padding:			0em;
+}
+
+#webglpanel canvas{
+	width:				100%;
+}
+
+
+#senko_console {
+	width:				100%;
+	float:				none;
+	height:				240px;
+}
+
+@media screen and (max-device-width : 700px), screen and (max-width : 480px)  { 
+	
+	body, #mainpanel, #operationpanel {
+		position:			static;
+		width:				100%;
+	}
+}
+
+</style>
+</head>
+<body>
+<div id="header">
+	<p id="message_chrome">Chrome -> Ctrl + Shift + J</p>
+	<p id="message_firefox">FireFox -> Ctrl + Shift + K</p>
+	<p id="message_ie">IE -> F12</p>
+</div>
+<div id="mainpanel">
+	<div id="webglpanel"></div>
+</div>
+<div id="operationpanel"></div>
+</body>
+</html>

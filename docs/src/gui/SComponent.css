@@ -1,0 +1,208 @@
+﻿
+.SCOMPONENT_Component {
+	font-family:	"ヒラギノ角ゴ ProN W3", "Hiragino Kaku Gothic ProN", "游ゴシック", YuGothic, "メイリオ", Meiryo, sans-serif;
+	font-size:		1em;
+	font-weight:	normal;
+	/* ボタンなので選択できないようにする */
+	-moz-user-select:		none;
+	-webkit-user-select:	none;
+	-ms-user-select:		none;
+	/* タップのハイライトカラーを消す */
+	-webkit-tap-highlight-color:	rgba(0,0,0,0);
+	/* メニューを出さない */
+	-webkit-touch-callout:	none;
+	/* 変化に時間をつける */
+	transition:			0.15s;
+}
+
+.SCOMPONENT_Label {
+	margin:				0.1em;
+	padding:			0.1em;
+}
+
+.SCOMPONENT_Panel,
+.SCOMPONENT_SlidePanel {
+	border-style:		solid;
+	border-width:		1px;
+	border-color:		rgba(0,0,0,0.1);
+	border-radius:		1px;
+	box-shadow:			3px 3px 10px rgba(0,0,0,0.1);
+	margin:				0.5em;
+	padding:			0em;
+	background-color:	#ffffff;
+}
+
+.SCOMPONENT_PanelLegend,
+.SCOMPONENT_SlidePanelLegend {
+	padding:			0.2em;
+	margin:				0px;
+	display:			block;
+	background-color:	#e0e0e0;
+}
+
+.SCOMPONENT_SlidePanelLegend {
+	cursor:				pointer;
+}
+
+.SCOMPONENT_SlidePanelLegend:after {
+	float:				right;
+	font-weight:		bold;
+	margin-left:		5px;
+}
+
+.SCOMPONENT_SlidePanelLegend.SCOMPONENT_Open:after {
+	content:			"\FF0D";
+}
+
+.SCOMPONENT_SlidePanelLegend.SCOMPONENT_Close:after {
+	content:			"\FF0B";
+}
+
+.SCOMPONENT_GroupBox {
+	margin:				0.5em;
+	padding:			0em;
+	border-style:		solid;
+	border-width:		1px;
+	border-color:		rgba(0,0,0,0.1);
+	border-radius:		10px;
+}
+
+.SCOMPONENT_GroupBoxLegend {
+	margin-left:				1em;
+}
+
+.SCOMPONENT_ContentsBox {
+	margin:				0.2em;
+	padding:			0.8em;
+}
+
+.SCOMPONENT_SlidePanelSlide {
+	margin:				0px;
+	padding:			0px;
+	border:				none;
+	outline:			none;
+	max-height:			0;
+	overflow:			hidden;
+	transition:			max-height 0.2s ease-out;
+}
+
+.SCOMPONENT_ColorPicker {
+	width:				100%;
+}
+
+.SCOMPONENT_Button {
+	color:				black;
+	border-style:		solid;
+	border-width:		1px;
+	border-color:		#e0e0e0;
+	border-radius:		2px;
+	background-color:	#f0f0f0;
+	margin:				0.3em;
+	padding:			0.2em 1.5em 0.2em 1.5em;
+	cursor:				pointer;
+	/* A要素などで作ったものも中央に配置し、下線を除去する */
+	text-align:			center;
+	text-decoration:	none;
+	/* iphoneなどでもボタンの形が独自にする */
+	-webkit-appearance:	none;
+	/* 立体ボタン */
+	box-shadow:			0px  2px 0px rgba(255,255,255,0.3) inset,
+						0px -2px 0px rgba(0,0,0,0.3) inset;
+}
+
+.SCOMPONENT_Button.SCOMPONENT_MouseOver {
+	background-color:	#ffffff;
+}
+.SCOMPONENT_Button.SCOMPONENT_MouseDown {
+	background-color:	#e0e0e0;
+	/* 立体ボタン */
+	box-shadow:			0px 2px 0px rgba(0,0,0,0.3) inset;
+}
+
+.SCOMPONENT_Button.SCOMPONENT_Disabled {
+	color:				gray;
+	background-color:	#e0e0e0;
+	cursor:				default;
+	/* リンクであれば無効化 */
+	pointer-events:		none;
+}
+
+.SCOMPONENT_CheckBox, .SCOMPONENT_CheckBoxImage {
+	color:					black;
+	cursor:					pointer;
+	-moz-user-select:		none;
+	-webkit-user-select:	none;
+	-ms-user-select:		none;
+	/* メニューを出さない */
+	-webkit-touch-callout:	none;
+}
+
+.SCOMPONENT_Disabled {
+	color:					gray;
+	cursor:					default;
+	/* 無効とした場合は、必ず選択できないようにする */
+	-moz-user-select:		none;
+	-webkit-user-select:	none;
+	-ms-user-select:		none;
+	/* タップしたときに色が表示されないようにする */
+	-webkit-tap-highlight-color:	rgba(0,0,0,0);
+	/* ドラッグ&ドロップやクリックイベントの無効化 */
+	pointer-events:		none;
+}
+
+/* disabled が対応していないボタン以外の物は、半透明化 */
+.SCOMPONENT_Canvas.SCOMPONENT_Disabled,
+.SCOMPONENT_ImagePanel.SCOMPONENT_Disabled,
+.SCOMPONENT_Label.SCOMPONENT_Disabled {
+	opacity:			0.5;
+}
+
+/* iPhone用、あるいは横幅が480px以下用 */
+@media screen and (max-device-width : 700px), screen and (max-width : 480px)  { 
+
+	/* 次の行を出す場合は、間に線を引く */
+	.SCOMPONENT_Newline {
+		height:				0px;
+		margin:				0.5em 0px 0.5em 0px;
+		padding:			1px 0px 1px 0px;
+		background-color:	rgba(0%, 0%, 0%, 0.08);
+		display:			block !important;
+	}
+	
+	/* 右に表示させる場合だったものも、次の行へ表示させる */
+	.SCOMPONENT_Space {
+		height:				0.1em;
+		display:			block !important;
+	}
+	
+	.SCOMPONENT_FileLoad {
+		padding:			0em;
+	}
+	
+	/* スマホに見せるように横いっぱいに引き延ばす */
+	.SCOMPONENT_Canvas,
+	.SCOMPONENT_ImagePanel,
+	.SCOMPONENT_ImagePanel img {
+		width:				100% !important;
+		height:				initial !important;
+	}
+	
+	/* ボタンは横にひきのばす */
+	.SCOMPONENT_Button,
+	.SCOMPONENT_ComboBox,
+	.SCOMPONENT_Label,
+	.SCOMPONENT_ProgressBar,
+	.SCOMPONENT_Slider {
+		margin:				0.1em 0px 0.1em 0px;
+		padding:			0.1em 0px 0.1em 0px;
+		width:				100% !important;
+	}
+	
+	/* 横に引き延ばす */
+	.SCOMPONENT_Panel,
+	.SCOMPONENT_SlidePanel,
+	.SCOMPONENT_GroupBox {
+		width:				calc(100% - 20px) !important;
+	}
+	
+}
