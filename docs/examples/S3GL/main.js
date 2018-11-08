@@ -1,7 +1,8 @@
-﻿import Senko from "../../src/Senko.js";
-import SComponent from "../../src/gui/SComponent.js";
-import Device from "../../src/device/Device.js";
-import S3 from "../../src/renderer/S3.js";
+﻿import Senko from "../../build/Senko.js";
+
+const SComponent = Senko.SComponent;
+const Device = Senko.Device;
+const S3 = Senko.S3;
 
 class S3DGLTest {
 

@@ -1,5 +1,6 @@
-﻿import Senko from "../../src/Senko.js";
-import Text from "../../src/basic/Text.js";
+﻿import Senko from "../../build/Senko.js";
+
+const Text = Senko.Text;
 
 const main = function() {
 	

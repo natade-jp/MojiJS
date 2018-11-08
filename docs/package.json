@@ -1,14 +1,22 @@
 {
-  "name": "senko.js",
-  "version": "0.1.0",
-  "description": "javascript library",
-  "main": "index.js",
-  "directories": {
-    "example": "examples"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "natade",
-  "license": "Zlib"
+	"name": "senko.js",
+	"version": "0.1.0",
+	"description": "javascript library",
+	"main": "./Senko.js",
+	"bin": "./index.html",
+	"directories": {
+		"src": "src",
+		"build": "build",
+		"example": "examples"
+	},
+	"scripts": {
+		"build": "rollup -c rollup.config.js"
+	},
+	"author": "natade",
+	"license": "Zlib",
+	"devDependencies": {
+		"rollup": "^0.67.0",
+		"rollup-plugin-buble": "^0.19.4",
+		"rollup-plugin-uglify": "^6.0.0"
+	}
 }

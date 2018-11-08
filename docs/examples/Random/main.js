@@ -1,5 +1,6 @@
-import Senko from "../../src/Senko.js";
-import Random from "../../src/math/Random.js";
+import Senko from "../../build/Senko.js";
+
+const Random = Senko.Random;
 
 const main = function() {
 

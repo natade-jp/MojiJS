@@ -1,5 +1,6 @@
-import Senko from "../../src/Senko.js";
-import SComponent from "../../src/gui/SComponent.js";
+import Senko from "../../build/Senko.js";
+
+const SComponent = Senko.SComponent;
 
 const main = function() {
 	

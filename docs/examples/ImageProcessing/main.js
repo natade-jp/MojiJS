@@ -1,6 +1,7 @@
-import Senko from "../../src/Senko.js";
-import SComponent from "../../src/gui/SComponent.js";
-import ImageProcessing from "../../src/graphics/ImageProcessing.js";
+import Senko from "../../build/Senko.js";
+
+const SComponent = Senko.SComponent;
+const ImageProcessing = Senko.ImageProcessing;
 
 const testFileLoad = function(panel) {
 	

@@ -1,8 +1,8 @@
+import Senko from "../../build/Senko.js";
 
-import Senko from "../../src/Senko.js";
-import Color from "../../src/basic/Color.js";
-import SComponent from "../../src/gui/SComponent.js";
-import Device from "../../src/device/Device.js";
+const Color = Senko.Color;
+const SComponent = Senko.SComponent;
+const Device = Senko.Device;
 
 const main = function() {
 	

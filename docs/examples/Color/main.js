@@ -1,5 +1,6 @@
-﻿import Senko from "../../src/Senko.js";
-import Color from "../../src/basic/Color.js";
+﻿import Senko from "../../build/Senko.js";
+
+const Color = Senko.Color;
 
 const main = function() {
 	

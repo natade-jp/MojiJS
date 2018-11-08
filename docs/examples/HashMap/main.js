@@ -1,5 +1,6 @@
-﻿import Senko from "../../src/Senko.js";
-import HashMap from "../../src/basic/HashMap.js";
+﻿import Senko from "../../build/Senko.js";
+
+const HashMap = Senko.HashMap;
 
 const main = function() {
 	

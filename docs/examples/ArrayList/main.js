@@ -1,5 +1,6 @@
-﻿import Senko from "../../src/Senko.js";
-import ArrayList from "../../src/basic/ArrayList.js";
+﻿import Senko from "../../build/Senko.js";
+
+const ArrayList = Senko.ArrayList;
 
 const main = function() {
 	

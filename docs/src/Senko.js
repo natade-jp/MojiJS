@@ -8,7 +8,19 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
+import ArrayList from "./basic/ArrayList.js";
+import Color from "./basic/Color.js";
+import File from "./basic/File.js";
+import HashMap from "./basic/HashMap.js";
 import Text from "./basic/Text.js";
+
+import Device from "./device/Device.js";
+import ImageProcessing from "./graphics/ImageProcessing.js";
+import SComponent from "./gui/SComponent.js";
+import BigDecimal from "./math/BigDecimal.js";
+import BigInteger from "./math/BigInteger.js";
+import Random from "./math/Random.js";
+import S3 from "./renderer/S3.js";
 
 const Senko = {
 
@@ -56,5 +68,17 @@ const Senko = {
 };
 
 Senko._printbuffer = "";
+Senko.ArrayList = ArrayList;
+Senko.Color = Color;
+Senko.File = File;
+Senko.HashMap = HashMap;
+Senko.Text = Text;
+Senko.Device = Device;
+Senko.ImageProcessing = ImageProcessing;
+Senko.SComponent = SComponent;
+Senko.BigDecimal = BigDecimal;
+Senko.BigInteger = BigInteger;
+Senko.Random = Random;
+Senko.S3 = S3;
 
 export default Senko;

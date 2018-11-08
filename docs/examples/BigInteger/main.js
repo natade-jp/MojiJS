@@ -1,6 +1,7 @@
-﻿import Senko from "../../src/Senko.js";
-import BigInteger from "../../src/math/BigInteger.js";
-import Random from "../../src/math/Random.js";
+﻿import Senko from "../../build/Senko.js";
+
+const BigInteger = Senko.BigInteger;
+const Random = Senko.Random;
 
 const main = function() {
 	
