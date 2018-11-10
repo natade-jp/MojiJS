@@ -1,5 +1,5 @@
 【ライブラリ名】
-Senko.js
+SenkoJS
 
 
 【Github Pages】
@@ -22,7 +22,7 @@ https://github.com/natade-jp/SenkoWSH
 
 
 【ライセンスについて】
-SenkoLib のライセンスは、ソースコードの上部に書かれています。
+SenkoJS のライセンスは、ソースコードの上部に書かれています。
 書かれていない場合は、zlibライセンスとします
 
 The zlib/libpng License
