@@ -21,8 +21,8 @@ class S3DGLTest {
 		this.controller.setCanvas(canvas);
 		this.camera	= s3.createCamera();
 		const program = s3.createProgram();
-		program.setFragmentShader("../../../src/renderer/gl/S3GL.fs");
-		program.setVertexShader("../../../src/renderer/gl/S3GL.vs");
+		program.setFragmentShader("../../../build/S3GL.fs");
+		program.setVertexShader("../../../build/S3GL.vs");
 		s3.setProgram(program);
 		s3.setSystemMode(S3.SYSTEM_MODE.OPEN_GL);
 		s3.setFrontMode(S3.FRONT_FACE.CLOCKWISE);
