@@ -1,4 +1,4 @@
-﻿import Senko from "../../../build/Senko.js";
+﻿import Senko from "../../libs/Senko.js";
 
 const BigInteger = Senko.BigInteger;
 const Random = Senko.Random;

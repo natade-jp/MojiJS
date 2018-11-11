@@ -27,7 +27,8 @@
 	},
 	"scripts": {
 		"dev": "node ./package.dev.js",
-		"build": "rollup -c rollup.config.js"
+		"build": "node ./package.build.js",
+		"rollup": "rollup -c rollup.config.js"
 	},
 	"devDependencies": {
 		"rollup": "^0.67.0",
