@@ -4,7 +4,7 @@
 <title>SenkoJS</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
-<link rel="stylesheet" type="text/css" href="./main.css">
+<link rel="stylesheet" type="text/css" href="./examples/css/main.css">
 </head>
 <body>
 <h1>SenkoJS</h1>
@@ -59,7 +59,7 @@ if(	element !== null) {
 	list = element.getElementsByTagName("dt");
 	for(i = 0; i < list.length; i++) {
 		var title = list[i].innerText;
-		list[i].innerHTML = "<a href=\"./examples/" + title + "/index.html\">" + title + "</a>";
+		list[i].innerHTML = "<a href=\"./examples/demos/" + title + "/index.html\">" + title + "</a>";
 	}
 }
 </script> 

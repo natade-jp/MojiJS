@@ -1,4 +1,4 @@
-﻿import Senko from "../../build/Senko.js";
+﻿import Senko from "../../../build/Senko.js";
 
 const BigDecimal = Senko.BigDecimal;
 
