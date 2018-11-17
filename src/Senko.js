@@ -63,7 +63,7 @@ const Senko = {
 		for(let i = 0 ; i < arguments.length ; i++) {
 			x[i] = arguments[i];
 		}
-		Senko.println(Text.format.apply(this, x));
+		Senko.print(Text.format.apply(this, x));
 	}
 };
 

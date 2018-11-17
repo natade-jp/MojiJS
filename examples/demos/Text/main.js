@@ -41,22 +41,46 @@ const main = function() {
 	Senko.println("前から 1");
 	let len = x.length;
 	for(let i = 0; i < len; i = Text.offsetByCodePoints(x, i, 1)) {
-		Senko.print(i + " " + Text.fromCodePoint(Text.codePointAt(x, i)));
+		Senko.print(i + "[" + Text.fromCodePoint(Text.codePointAt(x, i)) + "] ");
 	}
 	Senko.println("");
 
 	Senko.println("前から 2");
 	len = Text.codePointCount(x);
 	for(let i = 0; i < len; i++) {
-		Senko.print(i + " " + Text.fromCodePoint(Text.codePointAt(x, Text.offsetByCodePoints(x, 0, i))));
+		Senko.print(i + "[" + Text.fromCodePoint(Text.codePointAt(x, Text.offsetByCodePoints(x, 0, i))) + "] ");
 	}
 	Senko.println("");
 
 	Senko.println("後ろから");
 	len = x.length;
 	for(let i = len; i > 0; i = Text.offsetByCodePoints(x, i, -1)) {
-		Senko.print(i + " " + Text.fromCodePoint(Text.codePointBefore(x, i)));
+		Senko.print(i + "[" + Text.fromCodePoint(Text.codePointBefore(x, i)) + "] ");
 	}
+	Senko.println("");
+
+	Senko.println("UTF8の配列");
+	const utf8array = Text.toUTF8Array(x);
+	for(let i = 0; i < utf8array.length; i++) {
+		Senko.printf("%02X ", utf8array[i]);
+	}
+	Senko.println(Text.fromUTF8Array(utf8array));
+	Senko.println("");
+
+	Senko.println("UTF16の配列");
+	const utf16array = Text.toUTF16Array(x);
+	for(let i = 0; i < utf16array.length; i++) {
+		Senko.printf("%04X ", utf16array[i]);
+	}
+	Senko.println(Text.fromUTF16Array(utf16array));
+	Senko.println("");
+
+	Senko.println("UTF32の配列");
+	const utf32array = Text.toUTF32Array(x);
+	for(let i = 0; i < utf32array.length; i++) {
+		Senko.printf("%08X ", utf32array[i]);
+	}
+	Senko.println(Text.fromUTF32Array(utf32array));
 	Senko.println("");
 
 };

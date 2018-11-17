@@ -188,7 +188,7 @@ const main = function() {
 	
 	Senko.println("new BigInteger(numBits, rnd)");
 	for(let i = 0; i < 3; i++) {
-		Senko.printf("% 50s", (new BigInteger(50, random)).toString(2) );
+		Senko.printf("% 50s\n", (new BigInteger(50, random)).toString(2) );
 	}
 	
 	Senko.println("nextProbablePrime");

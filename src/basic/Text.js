@@ -8,7 +8,7 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-const Text = {
+class Text {
 
 	/**
 	 * サロゲートペアの上位
@@ -16,10 +16,10 @@ const Text = {
 	 * @param {Number} index インデックス
 	 * @returns {Boolean} 確認結果
 	 */
-	isHighSurrogateAt : function(text, index) {
+	static isHighSurrogateAt(text, index) {
 		const ch = text.charCodeAt(index);
 		return ((0xD800 <= ch) && (ch <= 0xDBFF));
-	},
+	}
 
 	/**
 	 * サロゲートペアの下位
@@ -27,10 +27,10 @@ const Text = {
 	 * @param {Number} index インデックス
 	 * @returns {Boolean} 確認結果
 	 */
-	isLowSurrogateAt : function(text, index) {
+	static isLowSurrogateAt(text, index) {
 		const ch = text.charCodeAt(index);
 		return ((0xDC00 <= ch) && (ch <= 0xDFFF));
-	},
+	}
 	
 	/**
 	 * サロゲートペアか
@@ -38,10 +38,10 @@ const Text = {
 	 * @param {Number} index インデックス
 	 * @returns {Boolean} 確認結果
 	 */
-	isSurrogatePairAt : function(text, index) {
+	static isSurrogatePairAt(text, index) {
 		const ch = text.charCodeAt(index);
 		return ((0xD800 <= ch) && (ch <= 0xDFFF));
-	},
+	}
 	
 	/**
 	 * サロゲートペア対応のコードポイント取得
@@ -49,8 +49,8 @@ const Text = {
 	 * @param {Number} index インデックス
 	 * @returns {Number} コードポイント
 	 */
-	codePointAt : function(text, index) {
-		if(this.isHighSurrogateAt(text, index)) {
+	static codePointAt(text, index) {
+		if(Text.isHighSurrogateAt(text, index)) {
 			const high = text.charCodeAt(index);
 			const low  = text.charCodeAt(index + 1);
 			return ((((high - 0xD800) << 10) | (low - 0xDC00)) + 0x10000);
@@ -58,22 +58,22 @@ const Text = {
 		else {
 			return (text.charCodeAt(index));
 		}
-	},
-	
+	}
+
 	/**
 	 * インデックスの前にあるコードポイント
 	 * @param {String} text 対象テキスト
 	 * @param {Number} index インデックス
 	 * @returns {Number} コードポイント
 	 */
-	codePointBefore : function(text, index) {
-		if(!this.isLowSurrogateAt(text, index - 1)) {
+	static codePointBefore(text, index) {
+		if(!Text.isLowSurrogateAt(text, index - 1)) {
 			return (text.charCodeAt(index - 1));
 		}
 		else {
 			return (text.codePointAt(index - 2));
 		}
-	},
+	}
 
 	/**
 	 * コードポイント換算で文字列数を調査する
@@ -82,7 +82,7 @@ const Text = {
 	 * @param {Number} endIndex 最後のインデックス（ここは含めない）（省略可）
 	 * @returns {Number} 文字数
 	 */
-	codePointCount : function(text, beginIndex, endIndex) {
+	static codePointCount(text, beginIndex, endIndex) {
 		if(arguments.length < 2) {
 			beginIndex = 0;
 		}
@@ -92,12 +92,12 @@ const Text = {
 		let count = 0;
 		for(;beginIndex < endIndex;beginIndex++) {
 			count++;
-			if(this.isSurrogatePairAt(text, beginIndex)) {
+			if(Text.isSurrogatePairAt(text, beginIndex)) {
 				beginIndex++;
 			}
 		}
 		return count;
-	},
+	}
 
 	/**
 	 * コードポイント換算で文字列配列の位置を計算
@@ -106,7 +106,7 @@ const Text = {
 	 * @param {Number} codePointOffset ずらすコードポイント数
 	 * @returns {Number} ずらしたインデックス
 	 */
-	offsetByCodePoints : function(text, index, codePointOffset) {
+	static offsetByCodePoints(text, index, codePointOffset) {
 		let count = 0;
 		if(codePointOffset === 0) {
 			return (index);
@@ -114,7 +114,7 @@ const Text = {
 		if(codePointOffset > 0) {
 			for(;index < text.length;index++) {
 				count++;
-				if(this.isHighSurrogateAt(text, index)) {
+				if(Text.isHighSurrogateAt(text, index)) {
 					index++;
 				}
 				if(count === codePointOffset) {
@@ -127,7 +127,7 @@ const Text = {
 			codePointOffset = -codePointOffset;
 			for(;index >= 0;index--) {
 				count++;
-				if(this.isLowSurrogateAt(text, index - 1)) {
+				if(Text.isLowSurrogateAt(text, index - 1)) {
 					index--;
 				}
 				if(count === codePointOffset) {
@@ -136,17 +136,24 @@ const Text = {
 			}
 		}
 		return false;
-	},
+	}
 
 	/**
 	 * コードポイントの数値データを文字列へ変換します
 	 * @param {Array} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	fromCodePoint : function() {
+	static fromCodePoint() {
+		let codepoint_array = [];
+		if(arguments[0].length) {
+			codepoint_array = arguments[0];
+		}
+		else {
+			codepoint_array = arguments;
+		}
 		const text = [];
-		for(let i = 0;i < arguments.length;i++) {
-			const codepoint = arguments[i];
+		for(let i = 0;i < codepoint_array.length;i++) {
+			const codepoint = codepoint_array[i];
 			if(0x10000 <= codepoint) {
 				const high = (( codepoint - 0x10000 ) >> 10) + 0xD800;
 				const low  = (codepoint & 0x3FF) + 0xDC00;
@@ -158,56 +165,197 @@ const Text = {
 			}
 		}
 		return(text.join(""));
-	},
+	}
 
+	/**
+	 * 文字列をUTF32(コードポイント)の配列へ変換します。
+	 * @param {String} 変換したいテキスト
+	 * @returns {Array} UTF32(コードポイント)のデータが入った配列
+	 */
+	static toUTF32Array(text) {
+		const utf32 = [];
+		for(let i = 0; i < text.length; i = Text.offsetByCodePoints(text, i, 1)) {
+			utf32.push(Text.codePointAt(text, i));
+		}
+		return utf32;
+	}
+
+	/**
+	 * UTF32の配列から文字列へ戻します。
+	 * @param {Array} utf32 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF32Array(utf32) {
+		return Text.fromCodePoint(utf32);
+	}
+
+	/**
+	 * 文字列をUTF16の配列へ変換します。
+	 * @param {String} 変換したいテキスト
+	 * @returns {Array} UTF16のデータが入った配列
+	 */
+	static toUTF16Array(text) {
+		const utf16 = [];
+		for(let i = 0; i < text.length; i++) {
+			utf16[i] = text.charCodeAt(i);
+		}
+		return utf16;
+	}
+
+	/**
+	 * UTF16の配列から文字列へ戻します。
+	 * @param {Array} utf16 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF16Array(utf16) {
+		const text = [];
+		for(let i = 0; i < utf16.length; i++) {
+			text[i] = String.fromCharCode(utf16[i]);
+		}
+		return text.join("");
+	}
+
+	/**
+	 * 文字列をUTF8の配列へ変換します。
+	 * @param {String} 変換したいテキスト
+	 * @returns {Array} UTF8のデータが入った配列
+	 */
+	static toUTF8Array(text) {
+		const utf32 = Text.toUTF32Array(text);
+		const utf8 = [];
+		for(let i = 0; i < utf32.length; i++) {
+			let codepoint = utf32[i];
+			// 1バイト文字
+			if(codepoint <= 0x7F) {
+				utf8.push(codepoint);
+				continue;
+			}
+			const buffer = [];
+			let size = 0;
+			// 2バイト以上
+			if(codepoint < 0x800) {
+				size = 2;
+			}
+			else if(codepoint < 0x10000) {
+				size = 3;
+			}
+			else {
+				size = 4;
+			}
+			for(let j = 0; j < size; j++) {
+				let write = codepoint & ((1 << 6) - 1);
+				if(j === size - 1) {
+					if(size === 2) {
+						write |= 0xC0; // 1100 0000
+					}
+					else if(size === 3) {
+						write |= 0xE0; // 1110 0000
+					}
+					else {
+						write |= 0xF0; // 1111 0000
+					}
+					buffer.push(write);
+					break;
+				}
+				buffer.push(write | 0x80); // 1000 0000
+				codepoint = codepoint >> 6;
+			}
+			// 反転
+			for(let j = buffer.length - 1; j >= 0; j--) {
+				utf8.push(buffer[j]);
+			}
+		}
+		return utf8;
+	}
+
+	/**
+	 * UTF8の配列から文字列へ戻します。
+	 * @param {Array} utf8 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF8Array(utf8) {
+		const utf32 = [];
+		let size = 0;
+		let write = 0;
+		for(let i = 0; i < utf8.length; i++) {
+			const bin = utf8[i];
+			if(bin < 0x80) {
+				utf32.push(bin);
+			}
+			if(size === 0) {
+				if(bin < 0xE0) {
+					size = 1;
+					write = bin & 0x1F; // 0001 1111
+				}
+				else if(bin < 0xF0) {
+					size = 2;
+					write = bin & 0xF; // 0000 1111
+				}
+				else {
+					size = 3;
+					write = bin & 0x7; // 0000 0111
+				}
+			}
+			else {
+				write <<= 6;
+				write |= bin & 0x3F; // 0011 1111
+				size--;
+				if(size === 0) {
+					utf32.push(write);
+				}
+			}
+		}
+		return Text.fromCodePoint(utf32);
+	}
+	
 	/**
 	 * カタカナをひらがなにします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toHiragana : function(text) {
+	static toHiragana(text) {
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) - 0x0060));
 		};
 		return (text.replace(/[\u30A1-\u30F6]/g, func));
-	},
+	}
 
 	/**
 	 * ひらがなをカタカナにします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toKatakana : function(text) {
+	static toKatakana(text) {
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) + 0x0060));
 		};
 		return (text.replace(/[\u3041-\u3096]/g, func));
-	},
+	}
 	
 	/**
 	 * スペースを半角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toHalfWidthSpace : function(text) {
+	static toHalfWidthSpace(text) {
 		return (text.replace(/\u3000/g, String.fromCharCode(0x0020)));
-	},
+	}
 	
 	/**
 	 * スペースを全角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toFullWidthSpace : function(text) {
+	static toFullWidthSpace(text) {
 		return (text.replace(/\u0020/g, String.fromCharCode(0x3000)));
-	},
+	}
 	
 	/**
 	 * 英数記号を半角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toHalfWidthAsciiCode : function(text) {
+	static toHalfWidthAsciiCode(text) {
 		let out = text;
 		out = out.replace(/\u3000/g, "\u0020");				//全角スペース
 		out = out.replace(/[\u2018-\u201B]/g, "\u0027");	//シングルクォーテーション
@@ -217,14 +365,14 @@ const Text = {
 			return (String.fromCharCode(ch - 0xFEE0));
 		};
 		return (out.replace(/[\uFF01-\uFF5E]/g, func));
-	},
+	}
 	
 	/**
 	 * 英数記号を全角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toFullWidthAsciiCode : function(text) {
+	static toFullWidthAsciiCode(text) {
 		let out = text;
 		out = out.replace(/\u0020/g, "\u3000");	//全角スペース
 		out = out.replace(/\u0022/g, "\u201D");	//ダブルクォーテーション
@@ -234,62 +382,62 @@ const Text = {
 			return (String.fromCharCode(ch + 0xFEE0));
 		};
 		return (out.replace(/[\u0020-\u007E]/g, func));
-	},
+	}
 	
 	/**
 	 * 英語を半角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toHalfWidthAlphabet : function(text) {
+	static toHalfWidthAlphabet(text) {
 		const func = function(ch) {
 			return (String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
 		};
 		return (text.replace(/[\uFF21-\uFF3A\uFF41-\uFF5A]/g, func));
-	},
+	}
 	
 	/**
 	 * 英語を全角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toFullWidthAlphabet : function(text) {
+	static toFullWidthAlphabet(text) {
 		const func = function(ch) {
 			return (String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
 		};
 		return (text.replace(/[A-Za-z]/g, func));
-	},
+	}
 	
 	/**
 	 * 数値を半角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toHalfWidthNumber : function(text) {
+	static toHalfWidthNumber(text) {
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
 		};
 		return (text.replace(/[\uFF10-\uFF19]/g, func));
-	},
+	}
 	
 	/**
 	 * 数値を全角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toFullWidthNumber : function(text) {
+	static toFullWidthNumber(text) {
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
 		};
 		return (text.replace(/[0-9]/g, func));
-	},
+	}
 	
 	/**
 	 * カタカナを半角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toHalfWidthKana : function(text) {
+	static toHalfWidthKana(text) {
 		const map = {
 			0x3001	:	"\uFF64"	,	//	､
 			0x3002	:	"\uFF61"	,	//	。	｡
@@ -399,14 +547,14 @@ const Text = {
 			}
 		};
 		return (text.replace(/[\u3001\u3002\u300C\u300D\u309B\u309C\u30A1-\u30FC][\u309B\u309C]?/g, func));
-	},
+	}
 
 	/**
 	 * カタカナを全角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toFullWidthKana : function(text) {
+	static toFullWidthKana(text) {
 		const map = {
 			0xFF61	:	0x3002	,	//	。	｡
 			0xFF62	:	0x300C	,	//	「	｢
@@ -503,32 +651,32 @@ const Text = {
 			}
 		};
 		return (text.replace(/[\uFF61-\uFF9F][\uFF9E\uFF9F]?/g, func));
-	},
+	}
 	
 	/**
 	 * 半角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toHalfWidth : function(text) {
-		return this.toHalfWidthKana(this.toHalfWidthAsciiCode(text));
-	},
+	static toHalfWidth(text) {
+		return Text.toHalfWidthKana(Text.toHalfWidthAsciiCode(text));
+	}
 	
 	/**
 	 * 全角にします。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	toFullWidth : function(text) {
-		return this.toFullWidthKana(this.toFullWidthAsciiCode(text));
-	},
+	static toFullWidth(text) {
+		return Text.toFullWidthKana(Text.toFullWidthAsciiCode(text));
+	}
 
 	/**
 	 * コメントを除去します。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	removeComment : function(text) {
+	static removeComment(text) {
 		let istextA  = false;
 		let isescape = false;
 		let commentA1 = false;
@@ -613,7 +761,7 @@ const Text = {
 			output[output.length] = character;
 		}
 		return (output.join(""));
-	},
+	}
 	
 	/**
 	 * C言語のprintfを再現
@@ -623,7 +771,7 @@ const Text = {
 	 * @param {String} parm パラメータは可変引数
 	 * @returns {String}
 	 */
-	format : function() {
+	static format() {
 		let parm_number = 1;
 		const parm = arguments;
 		const toUnsign  = function(x) {
@@ -963,6 +1111,6 @@ const Text = {
 		return (parm[0].replace(/%[^diubBoxXeEfFgGaAcspn%]*[diubBoxXeEfFgGaAcspn%]/g, func));
 	}
 
-};
+}
 
 export default Text;
