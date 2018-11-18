@@ -169,7 +169,7 @@ const Unicode = {
 
 	/**
 	 * 文字列をUTF32(コードポイント)の配列へ変換します。
-	 * @param {String} 変換したいテキスト
+	 * @param {String} text 変換したいテキスト
 	 * @returns {Array} UTF32(コードポイント)のデータが入った配列
 	 */
 	toUTF32Array: function(text) {
@@ -191,7 +191,7 @@ const Unicode = {
 
 	/**
 	 * 文字列をUTF16の配列へ変換します。
-	 * @param {String} 変換したいテキスト
+	 * @param {String} text 変換したいテキスト
 	 * @returns {Array} UTF16のデータが入った配列
 	 */
 	toUTF16Array: function(text) {
@@ -217,7 +217,7 @@ const Unicode = {
 
 	/**
 	 * 文字列をUTF8の配列へ変換します。
-	 * @param {String} 変換したいテキスト
+	 * @param {String} text 変換したいテキスト
 	 * @returns {Array} UTF8のデータが入った配列
 	 */
 	toUTF8Array: function(text) {
@@ -306,7 +306,25 @@ const Unicode = {
 			}
 		}
 		return Unicode.fromCodePoint(utf32);
+	},
+
+	/**
+	 * 指定したテキストを切り出します。
+	 * 単位は文字数となります。
+	 * @param {String} text 切り出したいテキスト
+	 * @param {Number} offset 切り出し位置
+	 * @param {Number} size 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 */
+	cutTextForCodePoint: function(text, offset, size) {
+		const utf32 = Unicode.toUTF32Array(text);
+		const cut = [];
+		for(let i = 0, point = offset; ((i < size) && (point < utf32.length)); i++, point++) {
+			cut.push(utf32[point]);
+		}
+		return Unicode.fromUTF32Array(cut);
 	}
+
 };
 
 export default Unicode;

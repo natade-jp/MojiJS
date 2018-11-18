@@ -10,6 +10,7 @@
 
 import Unicode from "./Unicode.js";
 
+// WideCharToMultiByte の動作を参考に作成したマップ
 const map = {
 	0x01: 0x01,
 	0x02: 0x02,
@@ -10272,6 +10273,11 @@ const CP932 = {
 		return cp932bin;
 	},
 
+	/**
+	 * CP932の配列から文字列へ戻します。
+	 * @param {Array} cp932 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
 	fromCP932Array: function(cp932) {
 		const utf16 = [];
 		const ng = "・".charCodeAt(0);
@@ -10302,6 +10308,64 @@ const CP932 = {
 			}
 		}
 		return Unicode.fromUTF16Array(utf16);
+	},
+
+	/**
+	 * 指定したテキストの横幅をCP932の換算で計算します。
+	 * つまり半角を1、全角を2としてカウントします。
+	 * なお、CP932の範囲にない文字は2としてカウントします。
+	 * @param {String} text カウントしたいテキスト
+	 * @returns {Number} 文字の横幅
+	 */
+	getWidthForCP932: function(text) {
+		return CP932.toCP932ArrayBinary(text).length;
+	},
+
+	/**
+	 * 指定したテキストの横幅をCP932の換算した場合に、
+	 * 単位は見た目の位置となります。
+	 * @param {String} text 切り出したいテキスト
+	 * @param {Number} offset 切り出し位置
+	 * @param {Number} size 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 */
+	cutTextForCP932: function(text, offset, size) {
+		const cp932bin = CP932.toCP932ArrayBinary(text);
+		const cut = [];
+		const SPACE = 0x20 ; // ' '
+
+		if(offset > 0) {
+			// offset が1文字以降の場合、
+			// その位置が、2バイト文字の途中かどうか判定が必要である。
+			// そのため、1つ前の文字をしらべる。
+			// もし2バイト文字であれば、1バイト飛ばす。
+			const x = cp932bin[offset - 1];
+			if( ((0x81 <= x) && (x <= 0x9F)) || ((0xE0 <= x) && (x <= 0xFC)) ) {
+				cut.push(SPACE);
+				offset++;
+				size--;
+			}
+		}
+		
+		let is_2byte = false;
+
+		for(let i = 0, point = offset; ((i < size) && (point < cp932bin.length)); i++, point++) {
+			const x = cp932bin[point];
+			if(!is_2byte && (((0x81 <= x) && (x <= 0x9F)) || ((0xE0 <= x) && (x <= 0xFC)))) {
+				is_2byte = true;
+			}
+			else {
+				is_2byte = false;
+			}
+			// 最後の文字が2バイト文字の1バイト目かどうかの判定
+			if((i === size - 1) && is_2byte) {
+				cut.push(SPACE);
+			}
+			else {
+				cut.push(x);
+			}
+		}
+		return CP932.fromCP932Array(cut);
 	}
 
 };

@@ -833,10 +833,13 @@ Text.toUTF16Array = Unicode.toUTF16Array;
 Text.fromUTF16Array = Unicode.fromUTF16Array;
 Text.toUTF8Array = Unicode.toUTF8Array;
 Text.fromUTF8Array = Unicode.fromUTF8Array;
+Text.cutTextForCodePoint = Unicode.cutTextForCodePoint;
 
 Text.CP932 = CP932;
 Text.toCP932Array = CP932.toCP932Array;
 Text.toCP932ArrayBinary = CP932.toCP932ArrayBinary;
 Text.fromCP932Array = CP932.fromCP932Array;
+Text.getWidthForCP932 = CP932.getWidthForCP932;
+Text.cutTextForCP932 = CP932.cutTextForCP932;
 
 export default Text;

@@ -12,21 +12,25 @@ const testUnicode = function() {
 	const x = Unicode.fromCodePoint(134071, 37326, 23478 );
 	Senko.println("サロゲートペア対応 " + x);
 
-	Senko.println("前から 1");
+	Senko.println("「" + x + "」");
+	Senko.println("lengthは " + x.length);
+	Senko.println("文字数は " + Unicode.codePointCount(x));
+
+	Senko.println("前からカットする 方法1");
 	let len = x.length;
 	for(let i = 0; i < len; i = Unicode.offsetByCodePoints(x, i, 1)) {
 		Senko.print(i + "[" + Unicode.fromCodePoint(Unicode.codePointAt(x, i)) + "] ");
 	}
 	Senko.println("");
 
-	Senko.println("前から 2");
+	Senko.println("前からカットする 方法2");
 	len = Unicode.codePointCount(x);
 	for(let i = 0; i < len; i++) {
 		Senko.print(i + "[" + Unicode.fromCodePoint(Unicode.codePointAt(x, Unicode.offsetByCodePoints(x, 0, i))) + "] ");
 	}
 	Senko.println("");
 
-	Senko.println("後ろから");
+	Senko.println("後ろからカットする");
 	len = x.length;
 	for(let i = len; i > 0; i = Unicode.offsetByCodePoints(x, i, -1)) {
 		Senko.print(i + "[" + Unicode.fromCodePoint(Unicode.codePointBefore(x, i)) + "] ");
@@ -54,6 +58,10 @@ const testUnicode = function() {
 	}
 	Senko.println(Unicode.fromUTF32Array(utf32array));
 
+	const text = "1圡土2圡土3圡土";
+	Senko.println("サロゲートペアを一部含んだ文字列をカットします。");
+	Senko.println(Unicode.cutTextForCodePoint(text, 3, 3));
+
 };
 
 
@@ -63,6 +71,10 @@ const testCP932 = function() {
 	Senko.println("CP932 クラスのサンプル");
 
 	const x = "ABCあいう髙";
+
+	Senko.println("「" + x + "」");
+	Senko.println("lengthは " + x.length);
+	Senko.println("文字の横幅は " + CP932.getWidthForCP932(x));
 
 	const cp932array = CP932.toCP932Array(x);
 	for(let i = 0; i < cp932array.length; i++) {
@@ -75,6 +87,16 @@ const testCP932 = function() {
 		Senko.printf("%02X ", cp932arraybin[i]);
 	}
 	Senko.println(CP932.fromCP932Array(cp932arraybin));
+
+	Senko.println("文字の横幅換算で文字列をカットします。");
+	Senko.println("\"" + CP932.cutTextForCP932(x, 0, 5) + "\"");
+	Senko.println("\"" + CP932.cutTextForCP932(x, 1, 5) + "\"");
+	Senko.println("\"" + CP932.cutTextForCP932(x, 2, 5) + "\"");
+	Senko.println("\"" + CP932.cutTextForCP932(x, 3, 5) + "\"");
+	Senko.println("\"" + CP932.cutTextForCP932(x, 4, 5) + "\"");
+	Senko.println("\"" + CP932.cutTextForCP932(x, 5, 5) + "\"");
+	Senko.println("\"" + CP932.cutTextForCP932(x, 6, 5) + "\"");
+
 
 };
 
