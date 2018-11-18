@@ -12,7 +12,7 @@ import ArrayList from "./basic/ArrayList.js";
 import Color from "./basic/Color.js";
 import File from "./basic/File.js";
 import HashMap from "./basic/HashMap.js";
-import Text from "./basic/Text.js";
+import Text from "./text/Text.js";
 
 import Device from "./device/Device.js";
 import ImageProcessing from "./graphics/ImageProcessing.js";
