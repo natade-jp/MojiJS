@@ -28,7 +28,7 @@ export default class S3Camera {
 		this.sys		= null;
 		this.fovY		= 0;
 		this.eye		= null;
-		this.center		= null;
+		this.at			= null;
 		this.near		= 0;
 		this.far		= 0;
 	}
@@ -36,7 +36,7 @@ export default class S3Camera {
 	init() {
 		this.fovY		= 45;
 		this.eye		= new S3Vector(0, 0, 0);
-		this.center		= new S3Vector(0, 0, 1);
+		this.at			= new S3Vector(0, 0, 1);
 		this.near		= 1;
 		this.far		= 1000;
 	}
@@ -45,7 +45,7 @@ export default class S3Camera {
 		const camera = new S3Camera(this.sys);
 		camera.fovY		= this.fovY;
 		camera.eye		= this.eye;
-		camera.center	= this.center;
+		camera.at		= this.at;
 		camera.near		= this.near;
 		camera.far		= this.far;
 		return camera;
@@ -54,7 +54,7 @@ export default class S3Camera {
 	getVPSMatrix(canvas) {
 		const x = S3System.calcAspect(canvas.width, canvas.height);
 		// ビューイング変換行列を作成する
-		const V = this.sys.getMatrixLookAt(this.eye, this.center);
+		const V = this.sys.getMatrixLookAt(this.eye, this.at);
 		// 射影トランスフォーム行列
 		const P = this.sys.getMatrixPerspectiveFov(this.fovY, x, this.near, this.far );
 		// ビューポート行列
@@ -75,38 +75,38 @@ export default class S3Camera {
 		this.eye = eye.clone();
 	}
 	
-	setCenter(center) {
-		this.center = center.clone();
+	setCenter(at) {
+		this.at = at.clone();
 	}
 	
 	getDirection() {
-		return this.eye.getDirectionNormalized(this.center);
+		return this.eye.getDirectionNormalized(this.at);
 	}
 	
 	getDistance() {
-		return this.center.getDistance(this.eye);
+		return this.at.getDistance(this.eye);
 	}
 	
 	setDistance(distance) {
-		const direction = this.center.getDirectionNormalized(this.eye);
-		this.eye = this.center.add(direction.mul(distance));
+		const direction = this.at.getDirectionNormalized(this.eye);
+		this.eye = this.at.add(direction.mul(distance));
 	}
 	
 	getRotateY() {
-		const ray = this.center.getDirection(this.eye);
+		const ray = this.at.getDirection(this.eye);
 		return S3Math.degrees(Math.atan2(ray.x, ray.z));
 	}
 	
 	setRotateY(deg) {
 		const rad = S3Math.radius(deg);
-		const ray = this.center.getDirection(this.eye);
+		const ray = this.at.getDirection(this.eye);
 		const length = ray.setY(0).norm();
 		const cos = Math.cos(rad);
 		const sin = Math.sin(rad);
 		this.eye = new S3Vector(
-			this.center.x + length * sin,
+			this.at.x + length * sin,
 			this.eye.y,
-			this.center.z + length * cos
+			this.at.z + length * cos
 		);
 	}
 	
@@ -115,20 +115,20 @@ export default class S3Camera {
 	}
 	
 	getRotateX() {
-		const ray = this.center.getDirection(this.eye);
+		const ray = this.at.getDirection(this.eye);
 		return S3Math.degrees(Math.atan2( ray.z, ray.y ));
 	}
 	
 	setRotateX(deg) {
 		const rad = S3Math.radius(deg);
-		const ray = this.center.getDirection(this.eye);
+		const ray = this.at.getDirection(this.eye);
 		const length = ray.setX(0).norm();
 		const cos = Math.cos(rad);
 		const sin = Math.sin(rad);
 		this.eye = new S3Vector(
 			this.eye.x,
-			this.center.y + length * cos,
-			this.center.z + length * sin
+			this.at.y + length * cos,
+			this.at.z + length * sin
 		);
 	}
 	
@@ -138,14 +138,14 @@ export default class S3Camera {
 	
 	translateAbsolute(v) {
 		this.eye	= this.eye.add(v);
-		this.center	= this.center.add(v);
+		this.at	= this.at.add(v);
 	}
 	
 	translateRelative(v) {
 		let X, Y, Z;
 		const up = new S3Vector(0.0, 1.0, 0.0);
 		// Z ベクトルの作成
-		Z = this.eye.getDirectionNormalized(this.center);
+		Z = this.eye.getDirectionNormalized(this.at);
 		
 		// 座標系に合わせて計算
 		if(this.sys.dimensionmode === S3System.DIMENSION_MODE.RIGHT_HAND) {
@@ -164,9 +164,9 @@ export default class S3Camera {
 	
 	toString() {
 		return "camera[\n" +
-				"eye   :" + this.eye    + ",\n" +
-				"center:" + this.center + ",\n" +
-				"fovY  :" + this.fovY + "]";
+				"eye  :" + this.eye		+ ",\n" +
+				"at   :" + this.at		+ ",\n" +
+				"fovY :" + this.fovY 	+ "]";
 	}
 
 }

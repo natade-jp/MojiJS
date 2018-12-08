@@ -16,6 +16,7 @@ import S3Math from "./math/S3Math.js";
 import S3Angles from "./math/S3Angles.js";
 import S3Vector from "./math/S3Vector.js";
 import S3Matrix from "./math/S3Matrix.js";
+import S3Plane from "./math/S3Plane.js";
 import CameraController from "./tools/CameraController.js";
 
 const S3 = {
@@ -26,6 +27,7 @@ const S3 = {
 	Angles : S3Angles,
 	Vector : S3Vector,
 	Matrix : S3Matrix,
+	Plane : S3Plane,
 
 	SYSTEM_MODE : S3System.SYSTEM_MODE,
 	DEPTH_MODE : S3System.DEPTH_MODE,
