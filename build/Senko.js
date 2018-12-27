@@ -12188,7 +12188,7 @@ const CP932 = {
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-class Text$1 {
+class Japanese {
 
 	/**
 	 * カタカナをひらがなにします。
@@ -12541,7 +12541,7 @@ class Text$1 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHalfWidth(text) {
-		return Text$1.toHalfWidthKana(Text$1.toHalfWidthAsciiCode(text));
+		return Japanese.toHalfWidthKana(Japanese.toHalfWidthAsciiCode(text));
 	}
 	
 	/**
@@ -12550,8 +12550,22 @@ class Text$1 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toFullWidth(text) {
-		return Text$1.toFullWidthKana(Text$1.toFullWidthAsciiCode(text));
+		return Japanese.toFullWidthKana(Japanese.toFullWidthAsciiCode(text));
 	}
+
+}
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+class Programming {
 
 	/**
 	 * コメントを除去します。
@@ -12645,6 +12659,20 @@ class Text$1 {
 		return (output.join(""));
 	}
 	
+}
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+class Format {
+
 	/**
 	 * C言語のprintfを再現
 	 * ロケール、日付時刻等はサポートしていません。
@@ -12989,29 +13017,65 @@ class Text$1 {
 
 }
 
-Text$1.Unicode = Unicode;
-Text$1.isHighSurrogateAt = Unicode.isHighSurrogateAt;
-Text$1.isLowSurrogateAt = Unicode.isLowSurrogateAt;
-Text$1.isSurrogatePairAt = Unicode.isSurrogatePairAt;
-Text$1.codePointAt = Unicode.codePointAt;
-Text$1.codePointBefore = Unicode.codePointBefore;
-Text$1.codePointCount = Unicode.codePointCount;
-Text$1.offsetByCodePoints = Unicode.offsetByCodePoints;
-Text$1.fromCodePoint = Unicode.fromCodePoint;
-Text$1.toUTF32Array = Unicode.toUTF32Array;
-Text$1.fromUTF32Array = Unicode.fromUTF32Array;
-Text$1.toUTF16Array = Unicode.toUTF16Array;
-Text$1.fromUTF16Array = Unicode.fromUTF16Array;
-Text$1.toUTF8Array = Unicode.toUTF8Array;
-Text$1.fromUTF8Array = Unicode.fromUTF8Array;
-Text$1.cutTextForCodePoint = Unicode.cutTextForCodePoint;
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
 
-Text$1.CP932 = CP932;
-Text$1.toCP932Array = CP932.toCP932Array;
-Text$1.toCP932ArrayBinary = CP932.toCP932ArrayBinary;
-Text$1.fromCP932Array = CP932.fromCP932Array;
-Text$1.getWidthForCP932 = CP932.getWidthForCP932;
-Text$1.cutTextForCP932 = CP932.cutTextForCP932;
+const Text$1 = {
+	
+	Unicode : Unicode,
+	isHighSurrogateAt : Unicode.isHighSurrogateAt,
+	isLowSurrogateAt : Unicode.isLowSurrogateAt,
+	isSurrogatePairAt : Unicode.isSurrogatePairAt,
+	codePointAt : Unicode.codePointAt,
+	codePointBefore : Unicode.codePointBefore,
+	codePointCount : Unicode.codePointCount,
+	offsetByCodePoints : Unicode.offsetByCodePoints,
+	fromCodePoint : Unicode.fromCodePoint,
+	toUTF32Array : Unicode.toUTF32Array,
+	fromUTF32Array : Unicode.fromUTF32Array,
+	toUTF16Array : Unicode.toUTF16Array,
+	fromUTF16Array : Unicode.fromUTF16Array,
+	toUTF8Array : Unicode.toUTF8Array,
+	fromUTF8Array : Unicode.fromUTF8Array,
+	cutTextForCodePoint : Unicode.cutTextForCodePoint,
+	
+	CP932 : CP932,
+	toCP932Array : CP932.toCP932Array,
+	toCP932ArrayBinary : CP932.toCP932ArrayBinary,
+	fromCP932Array : CP932.fromCP932Array,
+	getWidthForCP932 : CP932.getWidthForCP932,
+	cutTextForCP932 : CP932.cutTextForCP932,
+
+	Japanese : Japanese,
+	toHiragana : Japanese.toHiragana,
+	toKatakana : Japanese.toKatakana,
+	toHalfWidthSpace : Japanese.toHalfWidthSpace,
+	toFullWidthSpace : Japanese.toFullWidthSpace,
+	toHalfWidthAsciiCode : Japanese.toHalfWidthAsciiCode,
+	toFullWidthAsciiCode : Japanese.toFullWidthAsciiCode,
+	toHalfWidthAlphabet : Japanese.toHalfWidthAlphabet,
+	toFullWidthAlphabet : Japanese.toFullWidthAlphabet,
+	toHalfWidthNumber : Japanese.toHalfWidthNumber,
+	toFullWidthNumber : Japanese.toFullWidthNumber,
+	toHalfWidthKana : Japanese.toHalfWidthKana,
+	toFullWidthKana : Japanese.toFullWidthKana,
+	toHalfWidth : Japanese.toHalfWidth,
+	toFullWidth : Japanese.toFullWidth,
+
+	Programming : Programming,
+	removeComment : Programming.removeComment,
+	
+	Format : Format,
+	format : Format.format
+	
+};
 
 /**
  * The script is part of SenkoJS.
