@@ -373,4 +373,177 @@ export default class Japanese {
 		return Japanese.toFullWidthKana(Japanese.toFullWidthAsciiCode(text));
 	}
 
+	/**
+	 * ローマ字からひらがなに変換します。
+	 * @param {String} text 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHiraganaFromRomaji(text) {
+		const map = {
+			"a" : "あ" ,
+			"i" : "い" ,
+			"u" : "う" ,
+			"e" : "え" ,
+			"o" : "お" ,
+			"ka" : "か" ,
+			"ki" : "き" ,
+			"ku" : "く" ,
+			"ke" : "け" ,
+			"ko" : "こ" ,
+			"ga" : "が" ,
+			"gi" : "ぎ" ,
+			"gu" : "ぐ" ,
+			"ge" : "げ" ,
+			"go" : "ご" ,
+			"sa" : "さ" ,
+			"si" : "し" ,
+			"su" : "す" ,
+			"se" : "せ" ,
+			"so" : "そ" ,
+			"za" : "ざ" ,
+			"zi" : "じ" ,
+			"zu" : "ず" ,
+			"ze" : "ぜ" ,
+			"zo" : "ぞ" ,
+			"ta" : "た" ,
+			"ti" : "ち" ,
+			"tu" : "つ" ,
+			"te" : "て" ,
+			"to" : "と" ,
+			"da" : "だ" ,
+			"di" : "ぢ" ,
+			"du" : "づ" ,
+			"de" : "で" ,
+			"do" : "ど" ,
+			"na" : "な" ,
+			"ni" : "に" ,
+			"nu" : "ぬ" ,
+			"ne" : "ね" ,
+			"no" : "の" ,
+			"ha" : "は" ,
+			"hi" : "ひ" ,
+			"hu" : "ふ" ,
+			"he" : "へ" ,
+			"ho" : "ほ" ,
+			"ba" : "ば" ,
+			"bi" : "び" ,
+			"bu" : "ぶ" ,
+			"be" : "べ" ,
+			"bo" : "ぼ" ,
+			"pa" : "ぱ" ,
+			"pi" : "ぴ" ,
+			"pu" : "ぷ" ,
+			"pe" : "ぺ" ,
+			"po" : "ぽ" ,
+			"ma" : "ま" ,
+			"mi" : "み" ,
+			"mu" : "む" ,
+			"me" : "め" ,
+			"mo" : "も" ,
+			"ya" : "や" ,
+			"yi" : "い" ,
+			"yu" : "ゆ" ,
+			"ye" : "いぇ" ,
+			"yo" : "よ" ,
+			"ra" : "ら" ,
+			"ri" : "り" ,
+			"ru" : "る" ,
+			"re" : "れ" ,
+			"ro" : "ろ" ,
+			"wa" : "わ" ,
+			"wi" : "うぃ" ,
+			"wu" : "う" ,
+			"we" : "うぇ" ,
+			"wo" : "を" ,
+			"la" : "ぁ" ,
+			"li" : "ぃ" ,
+			"lu" : "ぅ" ,
+			"le" : "ぇ" ,
+			"lo" : "ぉ" ,
+			"xa" : "ぁ" ,
+			"xi" : "ぃ" ,
+			"xu" : "ぅ" ,
+			"xe" : "ぇ" ,
+			"xo" : "ぉ" ,
+			"va" : "ヴぁ" ,
+			"vi" : "ヴぃ" ,
+			"vu" : "ヴ" ,
+			"ve" : "ヴぇ" ,
+			"vo" : "ヴぉ" ,
+			"qa" : "くぁ" ,
+			"qi" : "くぃ" ,
+			"qu" : "く" ,
+			"qe" : "くぇ" ,
+			"qo" : "くぉ" ,
+			"fa" : "ふぁ" ,
+			"fi" : "ふぃ" ,
+			"fu" : "ふ" ,
+			"fe" : "ふぇ" ,
+			"fo" : "ふぉ" ,
+			"ja" : "じゃ" ,
+			"ji" : "じ" ,
+			"ju" : "じゅ" ,
+			"je" : "じぇ" ,
+			"jo" : "じょ" ,
+			"cha" : "ちゃ" ,
+			"chi" : "ち" ,
+			"chu" : "ちゅ" ,
+			"che" : "ちぇ" ,
+			"cho" : "ちょ" ,
+			"sha" : "しゃ" ,
+			"shi" : "し" ,
+			"shu" : "しゅ" ,
+			"she" : "しぇ" ,
+			"sho" : "しょ" ,
+			"n" : "ん",
+			"nn" : "ん",
+			"-" : "ー",
+			"?" : "？",
+			"!" : "！"
+		};
+		const y_komoji_map = {
+			"a" : "ゃ",
+			"i" : "ぃ",
+			"u" : "ゅ",
+			"e" : "ぇ",
+			"o" : "ょ"
+		};
+		const func = function(str) {
+			const output = [];
+			let y_komoji = null;
+			let romaji = str.toLowerCase();
+			if(romaji.length > 2) {
+				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
+					output.push("っ");
+					romaji = romaji.substr(1);
+				}
+			}
+			if(romaji.length === 3) {
+				if(romaji.substr(1, 1) === "y") {
+					y_komoji = y_komoji_map[romaji.substr(2)];
+					romaji = romaji.substr(0, 1) + romaji.substr(2);
+				}
+			}
+			const data = map[romaji];
+			if(!data) {
+				return str;
+			}
+			output.push(data);
+			if(y_komoji) {
+				output.push(y_komoji);
+			}
+			return output.join("");
+		};
+		return (text.replace(/([kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|(ch|cch|sh|ssh)?[aiuoe]|nn?|[?\\!-]/gi, func));
+	}
+
+	/**
+	 * ローマ字からカタカナに変換します。
+	 * @param {String} text 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toKatakanaFromRomaji(text) {
+		return Japanese.toKatakana(Japanese.toHiraganaFromRomaji(text));
+	}
+
 }

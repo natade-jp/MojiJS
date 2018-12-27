@@ -55,6 +55,8 @@ const Text = {
 	toFullWidthKana : Japanese.toFullWidthKana,
 	toHalfWidth : Japanese.toHalfWidth,
 	toFullWidth : Japanese.toFullWidth,
+	toHiraganaFromRomaji : Japanese.toHiraganaFromRomaji,
+	toKatakanaFromRomaji : Japanese.toKatakanaFromRomaji,
 
 	Programming : Programming,
 	removeComment : Programming.removeComment,
