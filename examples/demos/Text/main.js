@@ -41,6 +41,10 @@ const testJapanese = function() {
 	Senko.println(Japanese.toHiraganaFromRomaji(x));
 	Senko.println(Japanese.toKatakanaFromRomaji(x));
 
+	x = "kyapi-nn!shi!chi!tsu!tha!xtsu!ltu!xxa!";
+	Senko.println(x);
+	Senko.println(Japanese.toHiraganaFromRomaji(x));
+	Senko.println(Japanese.toKatakanaFromRomaji(x));
 };
 
 const testUnicode = function() {

@@ -12640,11 +12640,25 @@ class Japanese {
 			"lu" : "ぅ" ,
 			"le" : "ぇ" ,
 			"lo" : "ぉ" ,
+			"lya" : "ゃ" ,
+			"lyi" : "ぃ" ,
+			"lyu" : "ゅ" ,
+			"lye" : "ぇ" ,
+			"lyo" : "ょ" ,
+			"ltu" : "っ" ,
+			"ltsu" : "っ" ,
 			"xa" : "ぁ" ,
 			"xi" : "ぃ" ,
 			"xu" : "ぅ" ,
 			"xe" : "ぇ" ,
 			"xo" : "ぉ" ,
+			"xya" : "ゃ" ,
+			"xyi" : "ぃ" ,
+			"xyu" : "ゅ" ,
+			"xye" : "ぇ" ,
+			"xyo" : "ょ" ,
+			"xtu" : "っ" ,
+			"xtsu" : "っ" ,
 			"va" : "ヴぁ" ,
 			"vi" : "ヴぃ" ,
 			"vu" : "ヴ" ,
@@ -12675,10 +12689,20 @@ class Japanese {
 			"shu" : "しゅ" ,
 			"she" : "しぇ" ,
 			"sho" : "しょ" ,
-			"n" : "ん",
-			"nn" : "ん",
-			"-" : "ー",
-			"?" : "？",
+			"tha" : "ちゃ" ,
+			"thi" : "ち" ,
+			"thu" : "てゅ" ,
+			"the" : "てぇ" ,
+			"tho" : "てょ" ,
+			"tsa" : "つぁ" ,
+			"tsi" : "つぃ" ,
+			"tsu" : "つ" ,
+			"tse" : "つぇ" ,
+			"tso" : "つぉ" ,
+			"n" : "ん" ,
+			"nn" : "ん" ,
+			"-" : "ー" ,
+			"?" : "？" ,
 			"!" : "！"
 		};
 		const y_komoji_map = {
@@ -12699,9 +12723,11 @@ class Japanese {
 				}
 			}
 			if(romaji.length === 3) {
-				if(romaji.substr(1, 1) === "y") {
+				const char_1 = romaji.substr(0, 1);
+				const char_2 = romaji.substr(1, 1);
+				if((char_2 === "y") && (char_1 !== "l") && (char_1 !== "x")) {
 					y_komoji = y_komoji_map[romaji.substr(2)];
-					romaji = romaji.substr(0, 1) + romaji.substr(2);
+					romaji = romaji.substr(0, 1) + "i";
 				}
 			}
 			const data = map[romaji];
@@ -12714,7 +12740,7 @@ class Japanese {
 			}
 			return output.join("");
 		};
-		return (text.replace(/([kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|(ch|cch|sh|ssh)?[aiuoe]|nn?|[?\\!-]/gi, func));
+		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?\\!-]/gi, func));
 	}
 
 	/**
