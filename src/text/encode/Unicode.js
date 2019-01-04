@@ -8,7 +8,7 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-const Unicode = {
+export default class Unicode {
 
 	/**
 	 * サロゲートペアの上位
@@ -16,10 +16,10 @@ const Unicode = {
 	 * @param {Number} index インデックス
 	 * @returns {Boolean} 確認結果
 	 */
-	isHighSurrogateAt: function(text, index) {
+	static isHighSurrogateAt(text, index) {
 		const ch = text.charCodeAt(index);
 		return ((0xD800 <= ch) && (ch <= 0xDBFF));
-	},
+	}
 
 	/**
 	 * サロゲートペアの下位
@@ -27,10 +27,10 @@ const Unicode = {
 	 * @param {Number} index インデックス
 	 * @returns {Boolean} 確認結果
 	 */
-	isLowSurrogateAt: function(text, index) {
+	static isLowSurrogateAt(text, index) {
 		const ch = text.charCodeAt(index);
 		return ((0xDC00 <= ch) && (ch <= 0xDFFF));
-	},
+	}
 	
 	/**
 	 * サロゲートペアか
@@ -38,10 +38,10 @@ const Unicode = {
 	 * @param {Number} index インデックス
 	 * @returns {Boolean} 確認結果
 	 */
-	isSurrogatePairAt: function(text, index) {
+	static isSurrogatePairAt(text, index) {
 		const ch = text.charCodeAt(index);
 		return ((0xD800 <= ch) && (ch <= 0xDFFF));
-	},
+	}
 	
 	/**
 	 * サロゲートペア対応のコードポイント取得
@@ -49,7 +49,7 @@ const Unicode = {
 	 * @param {Number} index インデックス
 	 * @returns {Number} コードポイント
 	 */
-	codePointAt: function(text, index) {
+	static codePointAt(text, index) {
 		if(Unicode.isHighSurrogateAt(text, index)) {
 			const high = text.charCodeAt(index);
 			const low  = text.charCodeAt(index + 1);
@@ -58,7 +58,7 @@ const Unicode = {
 		else {
 			return (text.charCodeAt(index));
 		}
-	},
+	}
 
 	/**
 	 * インデックスの前にあるコードポイント
@@ -66,14 +66,14 @@ const Unicode = {
 	 * @param {Number} index インデックス
 	 * @returns {Number} コードポイント
 	 */
-	codePointBefore: function(text, index) {
+	static codePointBefore(text, index) {
 		if(!Unicode.isLowSurrogateAt(text, index - 1)) {
 			return (text.charCodeAt(index - 1));
 		}
 		else {
 			return (text.codePointAt(index - 2));
 		}
-	},
+	}
 
 	/**
 	 * コードポイント換算で文字列数を調査する
@@ -82,7 +82,7 @@ const Unicode = {
 	 * @param {Number} endIndex 最後のインデックス（ここは含めない）（省略可）
 	 * @returns {Number} 文字数
 	 */
-	codePointCount: function(text, beginIndex, endIndex) {
+	static codePointCount(text, beginIndex, endIndex) {
 		if(arguments.length < 2) {
 			beginIndex = 0;
 		}
@@ -97,7 +97,7 @@ const Unicode = {
 			}
 		}
 		return count;
-	},
+	}
 
 	/**
 	 * コードポイント換算で文字列配列の位置を計算
@@ -106,7 +106,7 @@ const Unicode = {
 	 * @param {Number} codePointOffset ずらすコードポイント数
 	 * @returns {Number} ずらしたインデックス
 	 */
-	offsetByCodePoints: function(text, index, codePointOffset) {
+	static offsetByCodePoints(text, index, codePointOffset) {
 		let count = 0;
 		if(codePointOffset === 0) {
 			return (index);
@@ -136,14 +136,14 @@ const Unicode = {
 			}
 		}
 		return false;
-	},
+	}
 
 	/**
 	 * コードポイントの数値データを文字列へ変換します
 	 * @param {Array} text 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	fromCodePoint: function() {
+	static fromCodePoint() {
 		let codepoint_array = [];
 		if(arguments[0].length) {
 			codepoint_array = arguments[0];
@@ -165,62 +165,62 @@ const Unicode = {
 			}
 		}
 		return(text.join(""));
-	},
+	}
 
 	/**
 	 * 文字列をUTF32(コードポイント)の配列へ変換します。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {Array} UTF32(コードポイント)のデータが入った配列
 	 */
-	toUTF32Array: function(text) {
+	static toUTF32Array(text) {
 		const utf32 = [];
 		for(let i = 0; i < text.length; i = Unicode.offsetByCodePoints(text, i, 1)) {
 			utf32.push(Unicode.codePointAt(text, i));
 		}
 		return utf32;
-	},
+	}
 
 	/**
 	 * UTF32の配列から文字列へ戻します。
 	 * @param {Array} utf32 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	fromUTF32Array: function(utf32) {
+	static fromUTF32Array(utf32) {
 		return Unicode.fromCodePoint(utf32);
-	},
+	}
 
 	/**
 	 * 文字列をUTF16の配列へ変換します。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {Array} UTF16のデータが入った配列
 	 */
-	toUTF16Array: function(text) {
+	static toUTF16Array(text) {
 		const utf16 = [];
 		for(let i = 0; i < text.length; i++) {
 			utf16[i] = text.charCodeAt(i);
 		}
 		return utf16;
-	},
+	}
 
 	/**
 	 * UTF16の配列から文字列へ戻します。
 	 * @param {Array} utf16 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	fromUTF16Array: function(utf16) {
+	static fromUTF16Array(utf16) {
 		const text = [];
 		for(let i = 0; i < utf16.length; i++) {
 			text[i] = String.fromCharCode(utf16[i]);
 		}
 		return text.join("");
-	},
+	}
 
 	/**
 	 * 文字列をUTF8の配列へ変換します。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {Array} UTF8のデータが入った配列
 	 */
-	toUTF8Array: function(text) {
+	static toUTF8Array(text) {
 		const utf32 = Unicode.toUTF32Array(text);
 		const utf8 = [];
 		for(let i = 0; i < utf32.length; i++) {
@@ -266,14 +266,14 @@ const Unicode = {
 			}
 		}
 		return utf8;
-	},
+	}
 
 	/**
 	 * UTF8の配列から文字列へ戻します。
 	 * @param {Array} utf8 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
-	fromUTF8Array: function(utf8) {
+	static fromUTF8Array(utf8) {
 		const utf32 = [];
 		let size = 0;
 		let write = 0;
@@ -306,7 +306,7 @@ const Unicode = {
 			}
 		}
 		return Unicode.fromCodePoint(utf32);
-	},
+	}
 
 	/**
 	 * 指定したテキストを切り出します。
@@ -316,7 +316,7 @@ const Unicode = {
 	 * @param {Number} size 切り出す長さ
 	 * @returns {String} 切り出したテキスト
 	 */
-	cutTextForCodePoint: function(text, offset, size) {
+	static cutTextForCodePoint(text, offset, size) {
 		const utf32 = Unicode.toUTF32Array(text);
 		const cut = [];
 		for(let i = 0, point = offset; ((i < size) && (point < utf32.length)); i++, point++) {
@@ -324,7 +324,4 @@ const Unicode = {
 		}
 		return Unicode.fromUTF32Array(cut);
 	}
-
-};
-
-export default Unicode;
+}

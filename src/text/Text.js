@@ -11,6 +11,7 @@
 import Unicode from "./encode/Unicode.js";
 import CP932 from "./encode/CP932.js";
 import Japanese from "./language/Japanese.js";
+import JapaneseKanji from "./language/JapaneseKanji.js";
 import Programming from "./language/Programming.js";
 import Format from "./tools/Format.js";
 
@@ -39,6 +40,10 @@ const Text = {
 	fromCP932Array : CP932.fromCP932Array,
 	getWidthForCP932 : CP932.getWidthForCP932,
 	cutTextForCP932 : CP932.cutTextForCP932,
+	isCP932Gaiji : CP932.isCP932Gaiji,
+	isCP932IBMExtendedCharacter : CP932.isCP932IBMExtendedCharacter,
+	isCP932NECSelectionIBMExtendedCharacter : CP932.isCP932NECSelectionIBMExtendedCharacter,
+	isCP932NECSpecialCharacter : CP932.isCP932NECSpecialCharacter,
 
 	Japanese : Japanese,
 	toHiragana : Japanese.toHiragana,
@@ -57,6 +62,16 @@ const Text = {
 	toFullWidth : Japanese.toFullWidth,
 	toHiraganaFromRomaji : Japanese.toHiraganaFromRomaji,
 	toKatakanaFromRomaji : Japanese.toKatakanaFromRomaji,
+
+	JapaneseKanji : JapaneseKanji,
+	isJoyoKanjiBefore1981 : JapaneseKanji.isJoyoKanjiBefore1981,
+	isJoyoKanji1981 : JapaneseKanji.isJoyoKanji1981,
+	isJoyoKanji2010 : JapaneseKanji.isJoyoKanji2010,
+	isOnlyJinmeiyoKanji2017 : JapaneseKanji.isOnlyJinmeiyoKanji2017,
+	isJinmeiyoKanji2017 : JapaneseKanji.isJinmeiyoKanji2017,
+	isJoyoKanji : JapaneseKanji.isJoyoKanji,
+	isOnlyJinmeiyoKanji : JapaneseKanji.isOnlyJinmeiyoKanji,
+	isJinmeiyoKanji : JapaneseKanji.isJinmeiyoKanji,
 
 	Programming : Programming,
 	removeComment : Programming.removeComment,

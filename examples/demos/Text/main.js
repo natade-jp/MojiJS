@@ -2,6 +2,7 @@
 
 const Text = Senko.Text;
 const Japanese = Text.Japanese;
+const JapaneseKanji = Text.JapaneseKanji;
 const Unicode = Text.Unicode;
 const CP932 = Text.CP932;
 
@@ -45,6 +46,18 @@ const testJapanese = function() {
 	Senko.println(x);
 	Senko.println(Japanese.toHiraganaFromRomaji(x));
 	Senko.println(Japanese.toKatakanaFromRomaji(x));
+};
+
+const testJapaneseKanji = function() {
+
+	Senko.println("");
+	Senko.println("◆◆JapaneseKanji クラスのサンプル");
+
+	Senko.println("◆漢字のチェック");
+	Senko.println("高は常用漢字か？" + JapaneseKanji.isJoyoKanji(Unicode.toUTF32Array("高")[0]));
+	Senko.println("髙は常用漢字か？" + JapaneseKanji.isJoyoKanji(Unicode.toUTF32Array("髙")[0]));
+	Senko.println("渾は人名用漢字か？" + JapaneseKanji.isJinmeiyoKanji(Unicode.toUTF32Array("渾")[0]));
+
 };
 
 const testUnicode = function() {
@@ -141,6 +154,11 @@ const testCP932 = function() {
 	Senko.println("\"" + CP932.cutTextForCP932(x, 5, 5) + "\"");
 	Senko.println("\"" + CP932.cutTextForCP932(x, 6, 5) + "\"");
 
+	Senko.println("◆漢字のチェック");
+	Senko.println("高はIBM拡張漢字か？" + CP932.isCP932IBMExtendedCharacter(Unicode.toUTF32Array("高")[0]));
+	Senko.println("髙はIBM拡張漢字か？" + CP932.isCP932IBMExtendedCharacter(Unicode.toUTF32Array("髙")[0]));
+	Senko.println("①はNEC特殊文字か？" + CP932.isCP932NECSpecialCharacter(Unicode.toUTF32Array("①")[0]));
+
 };
 
 const main = function() {
@@ -158,6 +176,7 @@ const main = function() {
 	Senko.println(Text.removeComment(x));
 
 	testJapanese();
+	testJapaneseKanji();
 	testUnicode();
 	testCP932();
 
