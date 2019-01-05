@@ -10,6 +10,7 @@
 
 import Unicode from "./encode/Unicode.js";
 import CP932 from "./encode/CP932.js";
+import SJIS2004 from "./encode/SJIS2004.js";
 import Japanese from "./language/Japanese.js";
 import JapaneseKanji from "./language/JapaneseKanji.js";
 import Programming from "./language/Programming.js";
@@ -40,10 +41,20 @@ const Text = {
 	fromCP932Array : CP932.fromCP932Array,
 	getWidthForCP932 : CP932.getWidthForCP932,
 	cutTextForCP932 : CP932.cutTextForCP932,
+	toMenKuTenForCP932 : CP932.toMenKuTenForCP932,
 	isCP932Gaiji : CP932.isCP932Gaiji,
 	isCP932IBMExtendedCharacter : CP932.isCP932IBMExtendedCharacter,
 	isCP932NECSelectionIBMExtendedCharacter : CP932.isCP932NECSelectionIBMExtendedCharacter,
 	isCP932NECSpecialCharacter : CP932.isCP932NECSpecialCharacter,
+
+	SJIS2004 : SJIS2004,
+	toSJIS2004Array : SJIS2004.toSJIS2004Array,
+	toSJIS2004ArrayBinary : SJIS2004.toSJIS2004ArrayBinary,
+	fromSJIS2004Array : SJIS2004.fromSJIS2004Array,
+	getWidthForSJIS2004 : SJIS2004.getWidthForSJIS2004,
+	cutTextForSJIS2004 : SJIS2004.cutTextForSJIS2004,
+	toMenKuTenForSJIS2004 : SJIS2004.toMenKuTenForSJIS2004,
+	toJISKanjiSuijun : SJIS2004.toJISKanjiSuijun,
 
 	Japanese : Japanese,
 	toHiragana : Japanese.toHiragana,

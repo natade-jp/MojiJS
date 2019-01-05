@@ -8,7 +8,6 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-import Unicode from "./Unicode.js";
 import SJIS from "./SJIS.js";
 
 class CP932MAP {
@@ -1317,25 +1316,25 @@ CP932MAP.unicode_to_cp932_map = null;
 export default class CP932 {
 	
 	/**
-	 * 文字列をCP932の配列へ変換します。
+	 * 文字列を CP932 の配列へ変換します。
 	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} CP932のデータが入った配列
+	 * @returns {Array} CP932 のデータが入った配列
 	 */
 	static toCP932Array(text) {
 		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
 	}
 
 	/**
-	 * 文字列をCP932のバイナリ配列へ変換します。
+	 * 文字列を CP932 のバイナリ配列へ変換します。
 	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} CP932のデータが入ったバイナリ配列
+	 * @returns {Array} CP932 のデータが入ったバイナリ配列
 	 */
 	static toCP932ArrayBinary(text) {
 		return SJIS.toSJISArrayBinary(text, CP932MAP.UNICODE_TO_CP932);
 	}
 
 	/**
-	 * CP932の配列から文字列へ戻します。
+	 * CP932 の配列から文字列へ戻します。
 	 * @param {Array} cp932 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -1344,9 +1343,9 @@ export default class CP932 {
 	}
 
 	/**
-	 * 指定したテキストの横幅をCP932の換算で計算します。
+	 * 指定したテキストの横幅を CP932 の換算で計算します。
 	 * つまり半角を1、全角を2としてカウントします。
-	 * なお、CP932の範囲にない文字は2としてカウントします。
+	 * なお、 CP932 の範囲にない文字は2としてカウントします。
 	 * @param {String} text カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -1355,7 +1354,7 @@ export default class CP932 {
 	}
 
 	/**
-	 * 指定したテキストの横幅をCP932の換算した場合に、
+	 * 指定したテキストの横幅を CP932 の換算した場合に、
 	 * 単位は見た目の位置となります。
 	 * @param {String} text 切り出したいテキスト
 	 * @param {Number} offset 切り出し位置
@@ -1377,43 +1376,43 @@ export default class CP932 {
 	}
 
 	/**
-	 * 指定したコードポイントの文字はCP932上の外字かを判定する
+	 * 指定したコードポイントの文字は CP932 上の外字かを判定する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932Gaiji(unicode_codepoint) {
 		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		if((0xf040 <= x) && (x <= 0xf9fc));
+		return x && ((0xf040 <= x) && (x <= 0xf9fc));
 	}
 
 	/**
-	 * 指定したコードポイントの文字はCP932上のIBM拡張文字かを判定する
+	 * 指定したコードポイントの文字は CP932 上のIBM拡張文字かを判定する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932IBMExtendedCharacter(unicode_codepoint) {
 		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return (0xfa40 <= x) && (x <= 0xfc4b);
+		return x && (0xfa40 <= x) && (x <= 0xfc4b);
 	}
 
 	/**
-	 * 指定したコードポイントの文字はCP932上のNEC選定IBM拡張文字かを判定する
+	 * 指定したコードポイントの文字は CP932 上のNEC選定IBM拡張文字かを判定する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSelectionIBMExtendedCharacter(unicode_codepoint) {
 		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return (0xed40 <= x) && (x <= 0xeefc);
+		return x && (0xed40 <= x) && (x <= 0xeefc);
 	}
 
 	/**
-	 * 指定したコードポイントの文字はCP932上のNEC特殊文字かを判定する
+	 * 指定したコードポイントの文字は CP932 上のNEC特殊文字かを判定する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSpecialCharacter(unicode_codepoint) {
 		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return (0x8740 <= x) && (x <= 0x879C);
+		return x && (0x8740 <= x) && (x <= 0x879C);
 	}
 	
 }

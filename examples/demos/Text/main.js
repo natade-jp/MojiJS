@@ -5,6 +5,7 @@ const Japanese = Text.Japanese;
 const JapaneseKanji = Text.JapaneseKanji;
 const Unicode = Text.Unicode;
 const CP932 = Text.CP932;
+const SJIS2004 = Text.SJIS2004;
 
 const testJapanese = function() {
 
@@ -160,7 +161,7 @@ const testCP932 = function() {
 			Senko.printf("「%s」の変換に失敗しました\n", text);
 			return;
 		}
-		Senko.printf("「%s」は、%s\n", text, menkuten.text);
+		Senko.printf("「%s」の面区点番号は %s\n", text, menkuten.text);
 	};
 
 	Senko.println("◆面区点番号のチェック");
@@ -183,6 +184,51 @@ const testCP932 = function() {
 
 };
 
+const testSJIS2004 = function() {
+
+	Senko.println("");
+	Senko.println("◆◆Shift_JIS-2004 クラスのサンプル");
+	
+	const checkkanji = function(text) {
+		const menkuten = SJIS2004.toMenKuTenForSJIS2004(Unicode.toUTF32Array(text)[0]);
+		const suijun = SJIS2004.toJISKanjiSuijun(Unicode.toUTF32Array(text)[0]);
+		if(!menkuten) {
+			Senko.printf("「%s」の変換に失敗しました\n", text);
+			return;
+		}
+		if(suijun) {
+			Senko.printf("「%s」の面区点番号は %s で、第%d水準漢字\n", text, menkuten.text, suijun);
+		}
+		else {
+			Senko.printf("「%s」の面区点番号は %s\n", text, menkuten.text);
+		}
+	};
+
+	Senko.println("◆面区点番号のチェック");
+	checkkanji("A");
+	checkkanji("あ");
+	checkkanji("鉱");
+	checkkanji("砿");
+	checkkanji("鋼");
+	checkkanji("閤");
+	checkkanji("降");
+	checkkanji("項");
+	checkkanji("①");
+	checkkanji("㈱");
+	checkkanji("髙");
+	checkkanji("圡");
+	checkkanji("唁");
+	checkkanji("㖨");
+	checkkanji("埦");
+	checkkanji("宖");
+	checkkanji("殁");
+	checkkanji("殛");
+	checkkanji("蜅");
+	checkkanji("𪚲");
+	Senko.println("");
+
+};
+
 const main = function() {
 	
 	let x;
@@ -201,6 +247,7 @@ const main = function() {
 	testJapaneseKanji();
 	testUnicode();
 	testCP932();
+	testSJIS2004();
 
 };
 

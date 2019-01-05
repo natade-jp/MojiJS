@@ -171,9 +171,12 @@ export default class SJIS {
 	 * 指定したコードポイントの文字から Shift_JIS 上の符号化数値に変換する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
-	 * @returns {Array} 面区点情報
+	 * @returns {Number} 符号化数値(変換できない場合はnullとなる)
 	 */
 	static toEncodingNumber(unicode_codepoint, unicode_to_sjis) {
+		if(!unicode_to_sjis[unicode_codepoint]) {
+			return null;
+		}
 		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
 		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis);
 		return sjis_array[0];
@@ -186,6 +189,9 @@ export default class SJIS {
 	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toMenKuTen(unicode_codepoint, unicode_to_sjis) {
+		if(!unicode_to_sjis[unicode_codepoint]) {
+			return null;
+		}
 		const x = SJIS.toEncodingNumber(unicode_codepoint, unicode_to_sjis);
 		if(x < 0x100) {
 			return null;
@@ -196,7 +202,7 @@ export default class SJIS {
 		let ku = 0;
 		let ten = 0;
 
-		// 面情報の位置判定 
+		// 面情報の位置判定
 		if(s1 < 0xF0) {
 			men = 1;
 			// 区の計算方法の切り替え
@@ -211,7 +217,18 @@ export default class SJIS {
 		else {
 			// ※2面は第4水準のみ
 			men = 2;
-			s1 = s1 - 0xF0;
+			// 2面1区 ～ 2面8区
+			if((((s1 === 0xF0) || (s1 === 0xF2)) && (s2 < 0x9F)) || (s1 === 0xF1)) {
+				s1 = s1 - 0xF0;
+			}
+			// 2面12区 ～ 2面15区
+			else if(((s1 === 0xF4) && (s2 < 0x9F)) || (s1 < 0xF4)) {
+				s1 = s1 - 0xED;
+			}
+			// 2面78区 ～ 2面94区
+			else {
+				s1 = s1 - 0xCE;
+			}
 		}
 
 		// 区情報の位置判定
@@ -249,7 +266,7 @@ export default class SJIS {
 	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
 	 */
 	static toJISKanjiSuijun(unicode_codepoint, unicode_to_sjis) {
-		if(unicode_to_sjis[unicode_codepoint]) {
+		if(!unicode_to_sjis[unicode_codepoint]) {
 			return -1;
 		}
 		const menkuten = SJIS.toMenKuTen(unicode_codepoint, unicode_to_sjis);

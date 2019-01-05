@@ -9,6 +9,7 @@
  */
 
 import Unicode from "./Unicode.js";
+import SJIS from "./SJIS.js";
 
 class SJIS2004MAP {
     
@@ -1467,12 +1468,12 @@ class SJIS2004MAP {
 		SJIS2004MAP.unicode_to_sjis2004_map = unicode_to_sjis2004_map;
 	}
 	
-	static get SJIS_TO_UNICODE() {
+	static get SJIS2004_TO_UNICODE() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.sjis2004_to_unicode_map;
 	}
 	
-	static get UNICODE_TO_SJIS() {
+	static get UNICODE_TO_SJIS2004() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.unicode_to_sjis2004_map;
 	}
@@ -1481,3 +1482,76 @@ class SJIS2004MAP {
 SJIS2004MAP.is_initmap = false;
 SJIS2004MAP.sjis2004_to_unicode_map = null;
 SJIS2004MAP.unicode_to_sjis2004_map = null;
+
+export default class SJIS2004 {
+	
+	/**
+	 * 文字列を Shift_JIS-2004 の配列へ変換します。
+	 * @param {String} text 変換したいテキスト
+	 * @returns {Array} Shift_JIS-2004 のデータが入った配列
+	 */
+	static toSJIS2004Array(text) {
+		return SJIS.toSJISArray(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+	}
+
+	/**
+	 * 文字列を Shift_JIS-2004 のバイナリ配列へ変換します。
+	 * @param {String} text 変換したいテキスト
+	 * @returns {Array} Shift_JIS-2004 のデータが入ったバイナリ配列
+	 */
+	static toSJIS2004ArrayBinary(text) {
+		return SJIS.toSJISArrayBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+	}
+
+	/**
+	 * Shift_JIS-2004 の配列から文字列へ戻します。
+	 * @param {Array} sjis2004 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromSJIS2004Array(sjis2004) {
+		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
+	}
+
+	/**
+	 * 指定したテキストの横幅を Shift_JIS-2004 の換算で計算します。
+	 * つまり半角を1、全角を2としてカウントします。
+	 * なお、 Shift_JIS-2004 の範囲にない文字は2としてカウントします。
+	 * @param {String} text カウントしたいテキスト
+	 * @returns {Number} 文字の横幅
+	 */
+	static getWidthForSJIS2004(text) {
+		return SJIS.getWidthForSJIS(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+	}
+
+	/**
+	 * 指定したテキストの横幅を Shift_JIS-2004 の換算した場合に、
+	 * 単位は見た目の位置となります。
+	 * @param {String} text 切り出したいテキスト
+	 * @param {Number} offset 切り出し位置
+	 * @param {Number} size 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 */
+	static cutTextForSJIS2004(text, offset, size) {
+		return SJIS.cutTextForSJIS(text, offset, size, SJIS2004MAP.UNICODE_TO_SJIS2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
+	}
+
+	/**
+	 * 指定したコードポイントの文字の面区点番号を取得する
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTenForSJIS2004(unicode_codepoint) {
+		const x = SJIS.toMenKuTen(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		return x;
+	}
+
+	/**
+	 * JIS漢字水準（JIS Chinese character standard）を調べる
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
+	 */
+	static toJISKanjiSuijun(unicode_codepoint) {
+		return SJIS.toJISKanjiSuijun(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
+	}
+
+}
