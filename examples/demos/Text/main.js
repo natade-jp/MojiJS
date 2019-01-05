@@ -125,7 +125,7 @@ const testCP932 = function() {
 	Senko.println("");
 	Senko.println("◆◆CP932(Windows-31J) クラスのサンプル");
 
-	const x = "ABCあいう髙";
+	const x = "ABCあいう高髙①";
 
 	Senko.println("「" + x + "」");
 	Senko.println("lengthは " + x.length);
@@ -153,6 +153,28 @@ const testCP932 = function() {
 	Senko.println("\"" + CP932.cutTextForCP932(x, 4, 5) + "\"");
 	Senko.println("\"" + CP932.cutTextForCP932(x, 5, 5) + "\"");
 	Senko.println("\"" + CP932.cutTextForCP932(x, 6, 5) + "\"");
+
+	const menkuten = function(text) {
+		const menkuten = CP932.toMenKuTenForCP932(Unicode.toUTF32Array(text)[0]);
+		if(!menkuten) {
+			Senko.printf("「%s」の変換に失敗しました\n", text);
+			return;
+		}
+		Senko.printf("「%s」は、%s\n", text, menkuten.text);
+	};
+
+	Senko.println("◆面区点番号のチェック");
+	menkuten("A");
+	menkuten("あ");
+	menkuten("鉱");
+	menkuten("砿");
+	menkuten("鋼");
+	menkuten("閤");
+	menkuten("降");
+	menkuten("項");
+	menkuten("①");
+	menkuten("㈱");
+	menkuten("髙");
 
 	Senko.println("◆漢字のチェック");
 	Senko.println("高はIBM拡張漢字か？" + CP932.isCP932IBMExtendedCharacter(Unicode.toUTF32Array("高")[0]));

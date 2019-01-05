@@ -1974,6 +1974,138 @@ class SJIS {
 		return SJIS.fromSJISArray(cut, sjis_to_unicode);
 	}
 
+	/**
+	 * 指定したコードポイントの文字から Shift_JIS 上の符号化数値に変換する
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * @returns {Array} 面区点情報
+	 */
+	static toEncodingNumber(unicode_codepoint, unicode_to_sjis) {
+		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
+		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis);
+		return sjis_array[0];
+	}
+
+	/**
+	 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号を取得する
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTen(unicode_codepoint, unicode_to_sjis) {
+		const x = SJIS.toEncodingNumber(unicode_codepoint, unicode_to_sjis);
+		if(x < 0x100) {
+			return null;
+		}
+		let s1 = x >> 8;
+		let s2 = x & 0xFF;
+		let men = 0;
+		let ku = 0;
+		let ten = 0;
+
+		// 面情報の位置判定 
+		if(s1 < 0xF0) {
+			men = 1;
+			// 区の計算方法の切り替え
+			// 63区から、0x9F→0xE0に飛ぶ
+			if(s1 < 0xE0) {
+				s1 = s1 - 0x81;
+			}
+			else {
+				s1 = s1 - 0xC1;
+			}
+		}
+		else {
+			// ※2面は第4水準のみ
+			men = 2;
+			s1 = s1 - 0xF0;
+		}
+
+		// 区情報の位置判定
+		if(s2 < 0x9f) {
+			ku = s1 * 2 + 1;
+			// 点情報の計算方法の切り替え
+			// 0x7Fが欠番のため「+1」を除去
+			if(s2 < 0x80) {
+				s2 = s2 - 0x40 + 1;
+			}
+			else {
+				s2 = s2 - 0x40;
+			}
+		}
+		else {
+			ku = s1 * 2 + 2;
+			s2 = s2 - 0x9f + 1;
+		}
+
+		// 点情報の位置判定
+		ten = s2;
+
+		return {
+			text : "" + men + "-" + ku + "-" + ten,
+			men : men,
+			ku : ku,
+			ten : ten
+		};
+	}
+
+	/**
+	 * JIS漢字水準（JIS Chinese character standard）を調べる
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
+	 */
+	static toJISKanjiSuijun(unicode_codepoint, unicode_to_sjis) {
+		if(unicode_to_sjis[unicode_codepoint]) {
+			return -1;
+		}
+		const menkuten = SJIS.toMenKuTen(unicode_codepoint, unicode_to_sjis);
+		if(!menkuten) {
+			return 0;
+		}
+		// 2面は第4水準
+		if(menkuten.men > 1) {
+			return 4;
+		}
+		// 1面は第1～3水準
+		if(menkuten.ku < 14) {
+			// 14区より小さいと非漢字
+			return 0;
+		}
+		if(menkuten.ku < 16) {
+			// 14区と15区は第3水準
+			return 3;
+		}
+		if(menkuten.ku < 47) {
+			return 1;
+		}
+		// 47区には、第1水準と第3水準が混じる
+		if(menkuten.ku === 47) {
+			if(menkuten.ten < 52) {
+				return 1;
+			}
+			else {
+				return 3;
+			}
+		}
+		if(menkuten.ku < 84) {
+			return 2;
+		}
+		// 84区には、第2水準と第3水準が混じる
+		if(menkuten.ku === 84) {
+			if(menkuten.ten < 7) {
+				return 2;
+			}
+			else {
+				return 3;
+			}
+		}
+		// 残り94区まで第3水準
+		if(menkuten.ku < 95) {
+			return 3;
+		}
+		return 0;
+	}
 }
 
 /**
@@ -3342,14 +3474,22 @@ class CP932 {
 	}
 
 	/**
+	 * 指定したコードポイントの文字の面区点番号を取得する
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTenForCP932(unicode_codepoint) {
+		const x = SJIS.toMenKuTen(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		return x;
+	}
+
+	/**
 	 * 指定したコードポイントの文字はCP932上の外字かを判定する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932Gaiji(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 	}
 
 	/**
@@ -3358,9 +3498,7 @@ class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932IBMExtendedCharacter(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return (0xfa40 <= x) && (x <= 0xfc4b);
 	}
 
@@ -3370,9 +3508,7 @@ class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSelectionIBMExtendedCharacter(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return (0xed40 <= x) && (x <= 0xeefc);
 	}
 
@@ -3382,12 +3518,10 @@ class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSpecialCharacter(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return (0x8740 <= x) && (x <= 0x879C);
 	}
-
+	
 }
 
 /**

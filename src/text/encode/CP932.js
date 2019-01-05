@@ -1367,14 +1367,22 @@ export default class CP932 {
 	}
 
 	/**
+	 * 指定したコードポイントの文字の面区点番号を取得する
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTenForCP932(unicode_codepoint) {
+		const x = SJIS.toMenKuTen(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		return x;
+	}
+
+	/**
 	 * 指定したコードポイントの文字はCP932上の外字かを判定する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932Gaiji(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		if((0xf040 <= x) && (x <= 0xf9fc));
 	}
 
@@ -1384,9 +1392,7 @@ export default class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932IBMExtendedCharacter(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return (0xfa40 <= x) && (x <= 0xfc4b);
 	}
 
@@ -1396,9 +1402,7 @@ export default class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSelectionIBMExtendedCharacter(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return (0xed40 <= x) && (x <= 0xeefc);
 	}
 
@@ -1408,10 +1412,8 @@ export default class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSpecialCharacter(unicode_codepoint) {
-		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = CP932.toCP932Array(utf16_text);
-		const x = sjis_array[0];
+		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return (0x8740 <= x) && (x <= 0x879C);
 	}
-
+	
 }
