@@ -1541,7 +1541,7 @@ export default class SJIS2004 {
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toMenKuTenForSJIS2004(unicode_codepoint) {
-		const x = SJIS.toMenKuTen(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
 		return x;
 	}
 
@@ -1551,7 +1551,7 @@ export default class SJIS2004 {
 	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
 	 */
 	static toJISKanjiSuijun(unicode_codepoint) {
-		return SJIS.toJISKanjiSuijun(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		return SJIS.toJISKanjiSuijunFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
 	}
 
 }

@@ -9,6 +9,7 @@
  */
 
 import Unicode from "./encode/Unicode.js";
+import SJIS from "./encode/SJIS.js";
 import CP932 from "./encode/CP932.js";
 import SJIS2004 from "./encode/SJIS2004.js";
 import Japanese from "./language/Japanese.js";
@@ -35,6 +36,20 @@ const Text = {
 	fromUTF8Array : Unicode.fromUTF8Array,
 	cutTextForCodePoint : Unicode.cutTextForCodePoint,
 	
+	SJIS : SJIS,
+	toSJISArray : SJIS.toSJISArray,
+	toSJISArrayBinary : SJIS.toSJISArrayBinary,
+	fromSJISArray : SJIS.fromSJISArray,
+	getWidthForSJIS : SJIS.getWidthForSJIS,
+	cutTextForSJIS : SJIS.cutTextForSJIS,
+	toSJISCodeFromUnicode : SJIS.toSJISCodeFromUnicode,
+	toMenKuTenFromSJISCode : SJIS.toMenKuTenFromSJISCode,
+	toMenKuTenFromUnicode : SJIS.toMenKuTenFromUnicode,
+	toSJISCodeFromMenKuTen : SJIS.toSJISCodeFromMenKuTen,
+	toUnicodeCodeFromMenKuTen : SJIS.toUnicodeCodeFromMenKuTen,
+	toJISKanjiSuijunFromSJISCode : SJIS.toJISKanjiSuijunFromSJISCode,
+	toJISKanjiSuijunFromUnicode : SJIS.toJISKanjiSuijunFromUnicode,
+
 	CP932 : CP932,
 	toCP932Array : CP932.toCP932Array,
 	toCP932ArrayBinary : CP932.toCP932ArrayBinary,

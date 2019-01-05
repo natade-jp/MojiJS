@@ -1980,7 +1980,7 @@ class SJIS {
 	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
 	 * @returns {Number} 符号化数値(変換できない場合はnullとなる)
 	 */
-	static toEncodingNumber(unicode_codepoint, unicode_to_sjis) {
+	static toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
 			return null;
 		}
@@ -1990,19 +1990,17 @@ class SJIS {
 	}
 
 	/**
-	 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号を取得する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * 指定した Shift_JIS のコードから面区点番号を取得する
+	 * @param {Number} sjis_code Shift_JIS のコードポイント
 	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
-	static toMenKuTen(unicode_codepoint, unicode_to_sjis) {
-		if(!unicode_to_sjis[unicode_codepoint]) {
-			return null;
-		}
-		const x = SJIS.toEncodingNumber(unicode_codepoint, unicode_to_sjis);
+	static toMenKuTenFromSJISCode(sjis_code) {
+		const x = sjis_code;
 		if(x < 0x100) {
 			return null;
 		}
+		// アルゴリズムは面区点番号表からリバースエンジニアリング
+
 		let s1 = x >> 8;
 		let s2 = x & 0xFF;
 		let men = 0;
@@ -2067,16 +2065,118 @@ class SJIS {
 	}
 
 	/**
-	 * JIS漢字水準（JIS Chinese character standard）を調べる
+	 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号を取得する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
+		if(!unicode_to_sjis[unicode_codepoint]) {
+			return null;
+		}
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
+		return SJIS.toMenKuTenFromSJISCode(x);
+	}
+	
+	/**
+	 * 指定した面区点番号から Shift_JIS コードを取得する
+	 * @param {Object} menkuten 面区点番号
+	 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
+	 */
+	static toSJISCodeFromMenKuTen(menkuten) {
+		let m, k, t;
+		if(menkuten instanceof Object) {
+			m = menkuten.men;
+			k = menkuten.ku;
+			t = menkuten.ten;
+		}
+		else if((typeof menkuten === "string")||(menkuten instanceof String)) {
+			const strmkt = menkuten.split("-");
+			if(strmkt.length !== 3) {
+				throw "IllegalArgumentException";
+			}
+			m = parseInt(strmkt[0], 10);
+			k = parseInt(strmkt[1], 10);
+			t = parseInt(strmkt[2], 10);
+		}
+		else {		
+			throw "IllegalArgumentException";
+		}
+
+		let s1 = -1;
+		let s2 = -1;
+		const kmap = {1:1,3:1,4:1,5:1,8:1,12:1,13:1,14:1,15:1};
+
+		// 参考
+		// 2019/1/1 Shift JIS - Wikipedia
+		// https://en.wikipedia.org/wiki/Shift_JIS
+
+		if(m === 1) {
+			if((1 <= k) && (k <= 62)) {
+				s1 = Math.floor((k + 257) / 2);
+			}
+			else if((63 <= k) && (k <= 94)) {
+				s1 = Math.floor((k + 385) / 2);
+			}
+		}
+		else if(m === 2) {
+			if(kmap[k]) {
+				s1 = Math.floor((k + 479) / 2) - (Math.floor(k / 8) * 3);
+			}
+			else if((78 <= k) && (k <= 94)) {
+				s1 = Math.floor((k + 411) / 2);
+			}
+		}
+
+		if((k % 2) === 1) {
+			if((1 <= t) && (t <= 63)) {
+				s2 = t + 63;
+			}
+			else if((64 <= t) && (t <= 94)) {
+				s2 = t + 64;
+			}
+		}
+		else {
+			s2 = t + 158;
+		}
+
+		if((s1 === -1) || (s2 === -1)) {
+			return null;
+		}
+		return (s1 << 8) | s2;
+	}
+	
+	/**
+	 * 指定した面区点番号から Unicode コードポイントを取得する
+	 * @param {Object} menkuten 面区点番号
+	 * @param {Array} sjis_to_unicode Shift_JIS から Unicode への変換マップ
+	 * @returns {Array} UTF-32の配列(存在しない場合はnullを返す)
+	 */
+	static toUnicodeCodeFromMenKuTen(menkuten, sjis_to_unicode) {
+		const sjis_code = SJIS.toSJISCodeFromMenKuTen(menkuten);
+		if(!sjis_code) {
+			return null;
+		}
+		const unicode = sjis_to_unicode[sjis_code];
+		if(!unicode) {
+			return null;
+		}
+		if(unicode instanceof Array) {
+			return unicode;
+		}
+		else {
+			return [unicode];
+		}
+	}
+
+	/**
+	 * JIS漢字水準（JIS Chinese character standard）を調べる
+	 * @param {Number} sjis_code Shift_JIS のコードポイント
 	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
 	 */
-	static toJISKanjiSuijun(unicode_codepoint, unicode_to_sjis) {
-		if(!unicode_to_sjis[unicode_codepoint]) {
-			return -1;
-		}
-		const menkuten = SJIS.toMenKuTen(unicode_codepoint, unicode_to_sjis);
+	static toJISKanjiSuijunFromSJISCode(sjis_code) {
+		const menkuten = SJIS.toMenKuTenFromSJISCode(sjis_code);
+		// アルゴリズムはJIS漢字一覧表からリバースエンジニアリング
 		if(!menkuten) {
 			return 0;
 		}
@@ -2122,6 +2222,20 @@ class SJIS {
 			return 3;
 		}
 		return 0;
+	}
+
+	/**
+	 * JIS漢字水準（JIS Chinese character standard）を調べる
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
+	 */
+	static toJISKanjiSuijunFromUnicode(unicode_codepoint, unicode_to_sjis) {
+		if(!unicode_to_sjis[unicode_codepoint]) {
+			return -1;
+		}
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
+		return SJIS.toJISKanjiSuijunFromSJISCode(x);
 	}
 }
 
@@ -3496,7 +3610,7 @@ class CP932 {
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toMenKuTenForCP932(unicode_codepoint) {
-		const x = SJIS.toMenKuTen(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x;
 	}
 
@@ -3506,7 +3620,7 @@ class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932Gaiji(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && ((0xf040 <= x) && (x <= 0xf9fc));
 	}
 
@@ -3516,7 +3630,7 @@ class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932IBMExtendedCharacter(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && (0xfa40 <= x) && (x <= 0xfc4b);
 	}
 
@@ -3526,7 +3640,7 @@ class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSelectionIBMExtendedCharacter(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && (0xed40 <= x) && (x <= 0xeefc);
 	}
 
@@ -3536,7 +3650,7 @@ class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSpecialCharacter(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && (0x8740 <= x) && (x <= 0x879C);
 	}
 	
@@ -5082,7 +5196,7 @@ class SJIS2004 {
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toMenKuTenForSJIS2004(unicode_codepoint) {
-		const x = SJIS.toMenKuTen(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
 		return x;
 	}
 
@@ -5092,7 +5206,7 @@ class SJIS2004 {
 	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
 	 */
 	static toJISKanjiSuijun(unicode_codepoint) {
-		return SJIS.toJISKanjiSuijun(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		return SJIS.toJISKanjiSuijunFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
 	}
 
 }
@@ -6458,6 +6572,20 @@ const Text$1 = {
 	fromUTF8Array : Unicode.fromUTF8Array,
 	cutTextForCodePoint : Unicode.cutTextForCodePoint,
 	
+	SJIS : SJIS,
+	toSJISArray : SJIS.toSJISArray,
+	toSJISArrayBinary : SJIS.toSJISArrayBinary,
+	fromSJISArray : SJIS.fromSJISArray,
+	getWidthForSJIS : SJIS.getWidthForSJIS,
+	cutTextForSJIS : SJIS.cutTextForSJIS,
+	toSJISCodeFromUnicode : SJIS.toSJISCodeFromUnicode,
+	toMenKuTenFromSJISCode : SJIS.toMenKuTenFromSJISCode,
+	toMenKuTenFromUnicode : SJIS.toMenKuTenFromUnicode,
+	toSJISCodeFromMenKuTen : SJIS.toSJISCodeFromMenKuTen,
+	toUnicodeCodeFromMenKuTen : SJIS.toUnicodeCodeFromMenKuTen,
+	toJISKanjiSuijunFromSJISCode : SJIS.toJISKanjiSuijunFromSJISCode,
+	toJISKanjiSuijunFromUnicode : SJIS.toJISKanjiSuijunFromUnicode,
+
 	CP932 : CP932,
 	toCP932Array : CP932.toCP932Array,
 	toCP932ArrayBinary : CP932.toCP932ArrayBinary,

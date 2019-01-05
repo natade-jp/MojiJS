@@ -1371,7 +1371,7 @@ export default class CP932 {
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toMenKuTenForCP932(unicode_codepoint) {
-		const x = SJIS.toMenKuTen(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x;
 	}
 
@@ -1381,7 +1381,7 @@ export default class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932Gaiji(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && ((0xf040 <= x) && (x <= 0xf9fc));
 	}
 
@@ -1391,7 +1391,7 @@ export default class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932IBMExtendedCharacter(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && (0xfa40 <= x) && (x <= 0xfc4b);
 	}
 
@@ -1401,7 +1401,7 @@ export default class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSelectionIBMExtendedCharacter(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && (0xed40 <= x) && (x <= 0xeefc);
 	}
 
@@ -1411,7 +1411,7 @@ export default class CP932 {
 	 * @param {boolean} 判定結果 
 	 */
 	static isCP932NECSpecialCharacter(unicode_codepoint) {
-		const x = SJIS.toEncodingNumber(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x && (0x8740 <= x) && (x <= 0x879C);
 	}
 	
