@@ -62,6 +62,16 @@ const main = function() {
 	Senko.println("色名の指定");
 	Senko.println(Color.RED);
 	
+	Senko.println("加法混色");
+	Senko.println(Color.RED);
+	Senko.println(Color.BLUE.setAlpha(0.5));
+	Senko.println(Color.RED.addColorMixture(Color.BLUE.setAlpha(0.5)));
+
+	Senko.println("減法混色");
+	Senko.println(Color.CYAN);
+	Senko.println(Color.MAGENTA.setAlpha(0.5));
+	Senko.println(Color.CYAN.subColorMixture(Color.MAGENTA.setAlpha(0.5)));
+
 };
 
 main();

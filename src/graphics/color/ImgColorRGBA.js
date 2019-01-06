@@ -19,6 +19,22 @@ export default class ImgColorRGBA extends ImgColor {
 		this.rgba = [color[0], color[1], color[2], color[3]];
 	}
 
+	get r() {
+		return this.rgba[0];
+	}
+
+	get g() {
+		return this.rgba[1];
+	}
+
+	get b() {
+		return this.rgba[2];
+	}
+
+	get a() {
+		return this.rgba[3];
+	}
+
 	getColor() {
 		return this.rgba;
 	}
@@ -37,57 +53,57 @@ export default class ImgColorRGBA extends ImgColor {
 	
 	add(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] + x,	this.rgba[1] + x,
-			this.rgba[2] + x,	this.rgba[3] + x ]);
+			this.r + x,	this.g + x,
+			this.b + x,	this.a + x ]);
 	}
 	
 	sub(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] - x,	this.rgba[1] - x,
-			this.rgba[2] - x,	this.rgba[3] - x ]);
+			this.r - x,	this.g - x,
+			this.b - x,	this.a - x ]);
 	}
 	
 	mul(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] * x,	this.rgba[1] * x,
-			this.rgba[2] * x,	this.rgba[3] * x ]);
+			this.r * x,	this.g * x,
+			this.b * x,	this.a * x ]);
 	}
 	
 	div(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] / x,	this.rgba[1] / x,
-			this.rgba[2] / x,	this.rgba[3] / x ]);
+			this.r / x,	this.g / x,
+			this.b / x,	this.a / x ]);
 	}
 	
 	exp() {
 		return new ImgColorRGBA([
-			Math.exp(this.rgba[0]),	Math.exp(this.rgba[1]),
-			Math.exp(this.rgba[2]),	Math.exp(this.rgba[3]) ]);
+			Math.exp(this.r),	Math.exp(this.g),
+			Math.exp(this.b),	Math.exp(this.a) ]);
 	}
 	
 	log() {
 		return new ImgColorRGBA([
-			Math.log(this.rgba[0]),	Math.log(this.rgba[1]),
-			Math.log(this.rgba[2]),	Math.log(this.rgba[3]) ]);
+			Math.log(this.r),	Math.log(this.g),
+			Math.log(this.b),	Math.log(this.a) ]);
 	}
 	
 	pow(base) {
 		return new ImgColorRGBA([
-			Math.pow(base, this.rgba[0]),	Math.pow(base, this.rgba[1]),
-			Math.pow(base, this.rgba[2]),	Math.pow(base, this.rgba[3]) ]);
+			Math.pow(base, this.r),	Math.pow(base, this.g),
+			Math.pow(base, this.b),	Math.pow(base, this.a) ]);
 	}
 	
 	baselog(base) {
 		const x = 1.0 / Math.log(base);
 		return new ImgColorRGBA([
-			Math.log(this.rgba[0]) * x,	Math.log(this.rgba[1]) * x,
-			Math.log(this.rgba[2]) * x,	Math.log(this.rgba[3]) * x ]);
+			Math.log(this.r) * x,	Math.log(this.g) * x,
+			Math.log(this.b) * x,	Math.log(this.a) * x ]);
 	}
 	
 	table(table) {
 		return new ImgColorRGBA([
-			table[Math.round(this.rgba[0])], table[Math.round(this.rgba[1])],
-			table[Math.round(this.rgba[2])], table[Math.round(this.rgba[3])] ]);
+			table[Math.round(this.r)], table[Math.round(this.g)],
+			table[Math.round(this.b)], table[Math.round(this.a)] ]);
 	}
 	
 	random() {
@@ -97,65 +113,65 @@ export default class ImgColorRGBA extends ImgColor {
 	}
 	
 	luminance() {
-		return 0.2126 * this.rgba[0] + 0.7152 * this.rgba[1] + 0.0722 * this.rgba[2];
+		return 0.2126 * this.r + 0.7152 * this.g + 0.0722 * this.b;
 	}
 	
 	addColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] + c.rgba[0],	this.rgba[1] + c.rgba[1],
-			this.rgba[2] + c.rgba[2],	this.rgba[3] + c.rgba[3] ]);
+			this.r + c.r,	this.g + c.g,
+			this.b + c.b,	this.a + c.a ]);
 	}
 	
 	subColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] - c.rgba[0],	this.rgba[1] - c.rgba[1],
-			this.rgba[2] - c.rgba[2],	this.rgba[3] - c.rgba[3] ]);
+			this.r - c.r,	this.g - c.g,
+			this.b - c.b,	this.a - c.a ]);
 	}
 	
 	mulColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] * c.rgba[0],	this.rgba[1] * c.rgba[1],
-			this.rgba[2] * c.rgba[2],	this.rgba[3] * c.rgba[3] ]);
+			this.r * c.r,	this.g * c.g,
+			this.b * c.b,	this.a * c.a ]);
 	}
 	
 	divColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] / c.rgba[0],	this.rgba[1] / c.rgba[1],
-			this.rgba[2] / c.rgba[2],	this.rgba[3] / c.rgba[3] ]);
+			this.r / c.r,	this.g / c.g,
+			this.b / c.b,	this.a / c.a ]);
 	}
 	
 	maxColor(c) {
 		return new ImgColorRGBA([
-			Math.max(c.rgba[0], this.rgba[0]),Math.max(c.rgba[1], this.rgba[1]),
-			Math.max(c.rgba[2], this.rgba[2]),Math.max(c.rgba[3], this.rgba[3])]);
+			Math.max(c.r, this.r),Math.max(c.g, this.g),
+			Math.max(c.b, this.b),Math.max(c.a, this.a)]);
 	}
 	
 	minColor(c) {
 		return new ImgColorRGBA([
-			Math.min(c.rgba[0], this.rgba[0]),Math.min(c.rgba[1], this.rgba[1]),
-			Math.min(c.rgba[2], this.rgba[2]),Math.min(c.rgba[3], this.rgba[3])]);
+			Math.min(c.r, this.r),Math.min(c.g, this.g),
+			Math.min(c.b, this.b),Math.min(c.a, this.a)]);
 	}
 	
 	norm(normType) {
 		if(normType === ImgColor.NORM_MODE.MANHATTEN) {
-			return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
+			return (Math.abs(this.r) + Math.abs(this.g) + Math.abs(this.b)) / 3;
 		}
 		else if(normType === ImgColor.NORM_MODE.EUGRID) {
-			return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
+			return Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b) / 3;
 		}
 	}
 	
 	normFast(normType) {
 		if(normType === ImgColor.NORM_MODE.MANHATTEN) {
-			return Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2]);
+			return Math.abs(this.r) + Math.abs(this.g) + Math.abs(this.b);
 		}
 		else if(normType === ImgColor.NORM_MODE.EUGRID) {
-			return this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2];
+			return this.r * this.r + this.g * this.g + this.b * this.b;
 		}
 	}
 	
 	getBlendAlpha() {
-		return this.rgba[3] / 255.0;
+		return this.a / 255.0;
 	}
 	
 	setBlendAlpha(x) {
@@ -165,54 +181,54 @@ export default class ImgColorRGBA extends ImgColor {
 	}
 	
 	exchangeColorAlpha(color) {
-		return new ImgColorRGBA( [ this.rgba[0], this.rgba[1], this.rgba[2], color.rgba[3] ]);
+		return new ImgColorRGBA( [ this.r, this.g, this.b, color.a ]);
 	}
 	
 	getRRGGBB() {
-		return (this.rgba[0] << 16) | (this.rgba[1] << 8) | (this.rgba[2] & 0xff);
+		return (this.r << 16) | (this.g << 8) | (this.b & 0xff);
 	}
 	
 	getRed() {
-		return (this.rgba[0]);
+		return (this.r);
 	}
 	
 	getGreen() {
-		return (this.rgba[1]);
+		return (this.g);
 	}
 	
 	getBlue() {
-		return (this.rgba[2]);
+		return (this.b);
 	}
 	
 	equals(c) {
-		return	(this.rgba[0] === c.rgba[0]) &&
-				(this.rgba[1] === c.rgba[1]) &&
-				(this.rgba[2] === c.rgba[2]) &&
-				(this.rgba[3] === c.rgba[3]) ;
+		return	(this.r === c.r) &&
+				(this.g === c.g) &&
+				(this.b === c.b) &&
+				(this.a === c.a) ;
 	}
 	
 	toString() {
-		return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
+		return "color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
 	}
 	
 	mulMatrix(m) {
 		const color = new ImgColorRGBA();
-		color.rgba[0] =	this.rgba[0] * m[0][0] +
-						this.rgba[1] * m[0][1] +
-						this.rgba[2] * m[0][2] +
-						this.rgba[3] * m[0][3];
-		color.rgba[1] =	this.rgba[0] * m[1][0] +
-						this.rgba[1] * m[1][1] +
-						this.rgba[2] * m[1][2] +
-						this.rgba[3] * m[1][3];
-		color.rgba[2] =	this.rgba[0] * m[2][0] +
-						this.rgba[1] * m[2][1] +
-						this.rgba[2] * m[2][2] +
-						this.rgba[3] * m[2][3];
-		color.rgba[3] =	this.rgba[0] * m[3][0] +
-						this.rgba[1] * m[3][1] +
-						this.rgba[2] * m[3][2] +
-						this.rgba[3] * m[3][3];
+		color.rgba[0] =	this.r * m[0][0] +
+						this.g * m[0][1] +
+						this.b * m[0][2] +
+						this.a * m[0][3];
+		color.rgba[1] =	this.r * m[1][0] +
+						this.g * m[1][1] +
+						this.b * m[1][2] +
+						this.a * m[1][3];
+		color.rgba[2] =	this.r * m[2][0] +
+						this.g * m[2][1] +
+						this.b * m[2][2] +
+						this.a * m[2][3];
+		color.rgba[3] =	this.r * m[3][0] +
+						this.g * m[3][1] +
+						this.b * m[3][2] +
+						this.a * m[3][3];
 		return color;
 	}
 	
@@ -223,9 +239,9 @@ export default class ImgColorRGBA extends ImgColor {
 	 */
 	getNormalVector() {
 		return new ImgVector(
-			(this.rgba[0] / 128.0) - 1.0,
-			- (this.rgba[1] / 128.0) + 1.0,
-			(this.rgba[2] / 128.0) - 1.0
+			(this.r / 128.0) - 1.0,
+			- (this.g / 128.0) + 1.0,
+			(this.b / 128.0) - 1.0
 		);
 	}
 	

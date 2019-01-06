@@ -216,6 +216,62 @@ class Color {
 		this.a = 1.0;
 	}
 	
+	limit() {
+		const color = new Color();
+		color.r = Color._limit(this.r);
+		color.g = Color._limit(this.g);
+		color.b = Color._limit(this.b);
+		color.a = Color._limit(this.a);
+		return color;
+	}
+
+	addColorMixture(x) {
+		// 加法混色
+		if(!(x instanceof Color)) {
+			throw "IllegalArgumentException";
+		}
+		return Color.newColorNormalizedRGB(
+			this.r + x.r * x.a,
+			this.g + x.g * x.a,
+			this.b + x.b * x.a,
+			this.a);
+	}
+	
+	subColorMixture(x) {
+		// 減法混色
+		if(!(x instanceof Color)) {
+			throw "IllegalArgumentException";
+		}
+		const r = Math.min(this.r, x.r);
+		const g = Math.min(this.g, x.g);
+		const b = Math.min(this.b, x.b);
+		return Color.newColorNormalizedRGB(
+			Color._mix(this.r, r, x.a),
+			Color._mix(this.g, g, x.a),
+			Color._mix(this.b, b, x.a),
+			this.a);
+	}
+
+	mul(x) {
+		if(x instanceof Color) {
+			return Color.newColorNormalizedRGB(
+				this.r * x.r,
+				this.g * x.g,
+				this.b * x.b,
+				this.a * x.a);
+		}
+		else if((typeof x === "number")||(x instanceof Number)) {
+			return Color.newColorNormalizedRGB(
+				this.r * x,
+				this.g * x,
+				this.b * x,
+				this.a);
+		}
+		else {
+			throw "IllegalArgumentException";
+		}
+	}
+
 	clone() {
 		const color = new Color();
 		color.r = this.r;
@@ -232,6 +288,14 @@ class Color {
 				this.getCSSPercent() + "]";
 	}
 	
+	static _mix(v0, v1, x) {
+		return v0 + (v1 - v0) * x;
+	}
+	
+	static _limit(x) {
+		return Math.max(Math.min( x, 1.0), 0.0);
+	}
+
 	static _flact(x) {
 		return(x - Math.floor(x));
 	}
@@ -457,17 +521,17 @@ class Color {
 		};
 	}
 
-	getRGB24() {
-		return(	(Math.round(255.0 * this.r) << 16) |
-				(Math.round(255.0 * this.g) << 8 ) |
-				(Math.round(255.0 * this.b)      ));
+	getRRGGBB() {
+		return(	(Math.round(255.0 * Color._limit(this.r)) << 16) |
+				(Math.round(255.0 * Color._limit(this.g)) << 8 ) |
+				(Math.round(255.0 * Color._limit(this.b))      ));
 	}
 
-	getRGB32() {
-		return( (Math.round(255.0 * this.a) << 24) |
-				(Math.round(255.0 * this.r) << 16) |
-				(Math.round(255.0 * this.g) << 8 ) |
-				(Math.round(255.0 * this.b)      ));
+	getAARRGGBB() {
+		return( (Math.round(255.0 * Color._limit(this.a)) << 24) |
+				(Math.round(255.0 * Color._limit(this.r)) << 16) |
+				(Math.round(255.0 * Color._limit(this.g)) << 8 ) |
+				(Math.round(255.0 * Color._limit(this.b))      ));
 	}
 
 	getNormalizedHSV() {
@@ -514,52 +578,42 @@ class Color {
 
 	brighter() {
 		const FACTOR = 1.0 / 0.7;
-		const color = new Color();
-		color.r = Math.min( this.r * FACTOR, 1.0);
-		color.g = Math.min( this.g * FACTOR, 1.0);
-		color.b = Math.min( this.b * FACTOR, 1.0);
-		color.a = this.a;
-		return color;
+		return this.mul(FACTOR).limit();
 	}
 
 	darker() {
 		const FACTOR = 0.7;
-		const color = new Color();
-		color.r = Math.max( this.r * FACTOR, 0.0);
-		color.g = Math.max( this.g * FACTOR, 0.0);
-		color.b = Math.max( this.b * FACTOR, 0.0);
-		color.a = this.a;
-		return color;
+		return this.mul(FACTOR).limit();
 	}
 
 	getCSSHex() {
 		if(this.a === 1.0) {
 			return "#" +
-				Color._hex(this.r) + 
-				Color._hex(this.g) +
-				Color._hex(this.b);
+				Color._hex(Color._limit(this.r)) + 
+				Color._hex(Color._limit(this.g)) +
+				Color._hex(Color._limit(this.b));
 		}
 		else {
 			return "#" +
-				Color._hex(this.a) + 
-				Color._hex(this.r) + 
-				Color._hex(this.g) +
-				Color._hex(this.b);
+				Color._hex(Color._limit(this.a)) + 
+				Color._hex(Color._limit(this.r)) + 
+				Color._hex(Color._limit(this.g)) +
+				Color._hex(Color._limit(this.b));
 		}
 	}
 
 	getCSS255() {
 		if(this.a === 1.0) {
 			return "rgb(" +
-			Math.round(this.r * 255) + "," +
-			Math.round(this.g * 255) + "," +
-			Math.round(this.b * 255) + ")";
+			Math.round(Color._limit(this.r) * 255) + "," +
+			Math.round(Color._limit(this.g) * 255) + "," +
+			Math.round(Color._limit(this.b) * 255) + ")";
 		}
 		else {
 			return "rgba(" +
-			Math.round(this.r * 255) + "," +
-			Math.round(this.g * 255) + "," +
-			Math.round(this.b * 255) + "," +
+			Math.round(Color._limit(this.r) * 255) + "," +
+			Math.round(Color._limit(this.g) * 255) + "," +
+			Math.round(Color._limit(this.b) * 255) + "," +
 			this.a + ")";
 		}
 	}
@@ -567,17 +621,23 @@ class Color {
 	getCSSPercent() {
 		if(this.a === 1.0) {
 			return "rgb(" +
-			Math.round(this.r * 100) + "%," +
-			Math.round(this.g * 100) + "%," +
-			Math.round(this.b * 100) + "%)";
+			Math.round(Color._limit(this.r) * 100) + "%," +
+			Math.round(Color._limit(this.g) * 100) + "%," +
+			Math.round(Color._limit(this.b) * 100) + "%)";
 		}
 		else {
 			return "rgba(" +
-			Math.round(this.r * 100) + "%," +
-			Math.round(this.g * 100) + "%," +
-			Math.round(this.b * 100) + "%," +
-			Math.round(this.a * 100) + "%)";
+			Math.round(Color._limit(this.r) * 100) + "%," +
+			Math.round(Color._limit(this.g) * 100) + "%," +
+			Math.round(Color._limit(this.b) * 100) + "%," +
+			Math.round(Color._limit(this.a) * 100) + "%)";
 		}
+	}
+	
+	setAlpha(a) {
+		const color = this.clone();
+		color.a = a;
+		return color;
 	}
 
 	static newColorNormalizedRGB() {
@@ -609,11 +669,9 @@ class Color {
 				a = arguments[3];
 			}
 		}
+		// 出力時にLimitする。入力時にはLimitしない。
 		const color = new Color();
-		color.r = Math.min(Math.max(r, 0.0), 1.0);
-		color.g = Math.min(Math.max(g, 0.0), 1.0);
-		color.b = Math.min(Math.max(b, 0.0), 1.0);
-		color.a = Math.min(Math.max(a, 0.0), 1.0);
+		color._setRGB(r, g, b, a);
 		return color;
 	}
 	
@@ -654,11 +712,9 @@ class Color {
 				}
 			}
 		}
+		// 出力時にLimitする。入力時にはLimitしない。
 		const color = new Color();
-		color.r = Math.min(Math.max(r / 255.0, 0.0), 1.0);
-		color.g = Math.min(Math.max(g / 255.0, 0.0), 1.0);
-		color.b = Math.min(Math.max(b / 255.0, 0.0), 1.0);
-		color.a = Math.min(Math.max(a / 255.0, 0.0), 1.0);
+		color._setRGB(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 		return color;
 	}
 
@@ -691,9 +747,9 @@ class Color {
 				a = arguments[3];
 			}
 		}
-		s = Math.min(Math.max(s, 0.0), 1.0);
-		v = Math.min(Math.max(v, 0.0), 1.0);
-		a = Math.min(Math.max(a, 0.0), 1.0);
+		// HSVの計算上この時点でLimitさせる
+		s = Color._limit(s);
+		v = Color._limit(v);
 		const color = new Color();
 		color._setHSV( Color._flact(h), s, v, a );
 		return color;
@@ -765,9 +821,9 @@ class Color {
 				a = arguments[3];
 			}
 		}
-		s = Math.min(Math.max(s, 0.0), 1.0);
-		l = Math.min(Math.max(l, 0.0), 1.0);
-		a = Math.min(Math.max(a, 0.0), 1.0);
+		// HLSの計算上この時点でLimitさせる
+		s = Color._limit(s);
+		l = Color._limit(l);
 		const color = new Color();
 		color._setHSL( Color._flact(h), s, l, a );
 		return color;
@@ -8826,6 +8882,22 @@ class ImgColorRGBA extends ImgColor {
 		this.rgba = [color[0], color[1], color[2], color[3]];
 	}
 
+	get r() {
+		return this.rgba[0];
+	}
+
+	get g() {
+		return this.rgba[1];
+	}
+
+	get b() {
+		return this.rgba[2];
+	}
+
+	get a() {
+		return this.rgba[3];
+	}
+
 	getColor() {
 		return this.rgba;
 	}
@@ -8844,57 +8916,57 @@ class ImgColorRGBA extends ImgColor {
 	
 	add(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] + x,	this.rgba[1] + x,
-			this.rgba[2] + x,	this.rgba[3] + x ]);
+			this.r + x,	this.g + x,
+			this.b + x,	this.a + x ]);
 	}
 	
 	sub(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] - x,	this.rgba[1] - x,
-			this.rgba[2] - x,	this.rgba[3] - x ]);
+			this.r - x,	this.g - x,
+			this.b - x,	this.a - x ]);
 	}
 	
 	mul(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] * x,	this.rgba[1] * x,
-			this.rgba[2] * x,	this.rgba[3] * x ]);
+			this.r * x,	this.g * x,
+			this.b * x,	this.a * x ]);
 	}
 	
 	div(x) {
 		return new ImgColorRGBA([
-			this.rgba[0] / x,	this.rgba[1] / x,
-			this.rgba[2] / x,	this.rgba[3] / x ]);
+			this.r / x,	this.g / x,
+			this.b / x,	this.a / x ]);
 	}
 	
 	exp() {
 		return new ImgColorRGBA([
-			Math.exp(this.rgba[0]),	Math.exp(this.rgba[1]),
-			Math.exp(this.rgba[2]),	Math.exp(this.rgba[3]) ]);
+			Math.exp(this.r),	Math.exp(this.g),
+			Math.exp(this.b),	Math.exp(this.a) ]);
 	}
 	
 	log() {
 		return new ImgColorRGBA([
-			Math.log(this.rgba[0]),	Math.log(this.rgba[1]),
-			Math.log(this.rgba[2]),	Math.log(this.rgba[3]) ]);
+			Math.log(this.r),	Math.log(this.g),
+			Math.log(this.b),	Math.log(this.a) ]);
 	}
 	
 	pow(base) {
 		return new ImgColorRGBA([
-			Math.pow(base, this.rgba[0]),	Math.pow(base, this.rgba[1]),
-			Math.pow(base, this.rgba[2]),	Math.pow(base, this.rgba[3]) ]);
+			Math.pow(base, this.r),	Math.pow(base, this.g),
+			Math.pow(base, this.b),	Math.pow(base, this.a) ]);
 	}
 	
 	baselog(base) {
 		const x = 1.0 / Math.log(base);
 		return new ImgColorRGBA([
-			Math.log(this.rgba[0]) * x,	Math.log(this.rgba[1]) * x,
-			Math.log(this.rgba[2]) * x,	Math.log(this.rgba[3]) * x ]);
+			Math.log(this.r) * x,	Math.log(this.g) * x,
+			Math.log(this.b) * x,	Math.log(this.a) * x ]);
 	}
 	
 	table(table) {
 		return new ImgColorRGBA([
-			table[Math.round(this.rgba[0])], table[Math.round(this.rgba[1])],
-			table[Math.round(this.rgba[2])], table[Math.round(this.rgba[3])] ]);
+			table[Math.round(this.r)], table[Math.round(this.g)],
+			table[Math.round(this.b)], table[Math.round(this.a)] ]);
 	}
 	
 	random() {
@@ -8904,65 +8976,65 @@ class ImgColorRGBA extends ImgColor {
 	}
 	
 	luminance() {
-		return 0.2126 * this.rgba[0] + 0.7152 * this.rgba[1] + 0.0722 * this.rgba[2];
+		return 0.2126 * this.r + 0.7152 * this.g + 0.0722 * this.b;
 	}
 	
 	addColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] + c.rgba[0],	this.rgba[1] + c.rgba[1],
-			this.rgba[2] + c.rgba[2],	this.rgba[3] + c.rgba[3] ]);
+			this.r + c.r,	this.g + c.g,
+			this.b + c.b,	this.a + c.a ]);
 	}
 	
 	subColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] - c.rgba[0],	this.rgba[1] - c.rgba[1],
-			this.rgba[2] - c.rgba[2],	this.rgba[3] - c.rgba[3] ]);
+			this.r - c.r,	this.g - c.g,
+			this.b - c.b,	this.a - c.a ]);
 	}
 	
 	mulColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] * c.rgba[0],	this.rgba[1] * c.rgba[1],
-			this.rgba[2] * c.rgba[2],	this.rgba[3] * c.rgba[3] ]);
+			this.r * c.r,	this.g * c.g,
+			this.b * c.b,	this.a * c.a ]);
 	}
 	
 	divColor(c) {
 		return new ImgColorRGBA([
-			this.rgba[0] / c.rgba[0],	this.rgba[1] / c.rgba[1],
-			this.rgba[2] / c.rgba[2],	this.rgba[3] / c.rgba[3] ]);
+			this.r / c.r,	this.g / c.g,
+			this.b / c.b,	this.a / c.a ]);
 	}
 	
 	maxColor(c) {
 		return new ImgColorRGBA([
-			Math.max(c.rgba[0], this.rgba[0]),Math.max(c.rgba[1], this.rgba[1]),
-			Math.max(c.rgba[2], this.rgba[2]),Math.max(c.rgba[3], this.rgba[3])]);
+			Math.max(c.r, this.r),Math.max(c.g, this.g),
+			Math.max(c.b, this.b),Math.max(c.a, this.a)]);
 	}
 	
 	minColor(c) {
 		return new ImgColorRGBA([
-			Math.min(c.rgba[0], this.rgba[0]),Math.min(c.rgba[1], this.rgba[1]),
-			Math.min(c.rgba[2], this.rgba[2]),Math.min(c.rgba[3], this.rgba[3])]);
+			Math.min(c.r, this.r),Math.min(c.g, this.g),
+			Math.min(c.b, this.b),Math.min(c.a, this.a)]);
 	}
 	
 	norm(normType) {
 		if(normType === ImgColor.NORM_MODE.MANHATTEN) {
-			return (Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2])) / 3;
+			return (Math.abs(this.r) + Math.abs(this.g) + Math.abs(this.b)) / 3;
 		}
 		else if(normType === ImgColor.NORM_MODE.EUGRID) {
-			return Math.sqrt(this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2]) / 3;
+			return Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b) / 3;
 		}
 	}
 	
 	normFast(normType) {
 		if(normType === ImgColor.NORM_MODE.MANHATTEN) {
-			return Math.abs(this.rgba[0]) + Math.abs(this.rgba[1]) + Math.abs(this.rgba[2]);
+			return Math.abs(this.r) + Math.abs(this.g) + Math.abs(this.b);
 		}
 		else if(normType === ImgColor.NORM_MODE.EUGRID) {
-			return this.rgba[0] * this.rgba[0] + this.rgba[1] * this.rgba[1] + this.rgba[2] * this.rgba[2];
+			return this.r * this.r + this.g * this.g + this.b * this.b;
 		}
 	}
 	
 	getBlendAlpha() {
-		return this.rgba[3] / 255.0;
+		return this.a / 255.0;
 	}
 	
 	setBlendAlpha(x) {
@@ -8972,54 +9044,54 @@ class ImgColorRGBA extends ImgColor {
 	}
 	
 	exchangeColorAlpha(color) {
-		return new ImgColorRGBA( [ this.rgba[0], this.rgba[1], this.rgba[2], color.rgba[3] ]);
+		return new ImgColorRGBA( [ this.r, this.g, this.b, color.a ]);
 	}
 	
 	getRRGGBB() {
-		return (this.rgba[0] << 16) | (this.rgba[1] << 8) | (this.rgba[2] & 0xff);
+		return (this.r << 16) | (this.g << 8) | (this.b & 0xff);
 	}
 	
 	getRed() {
-		return (this.rgba[0]);
+		return (this.r);
 	}
 	
 	getGreen() {
-		return (this.rgba[1]);
+		return (this.g);
 	}
 	
 	getBlue() {
-		return (this.rgba[2]);
+		return (this.b);
 	}
 	
 	equals(c) {
-		return	(this.rgba[0] === c.rgba[0]) &&
-				(this.rgba[1] === c.rgba[1]) &&
-				(this.rgba[2] === c.rgba[2]) &&
-				(this.rgba[3] === c.rgba[3]) ;
+		return	(this.r === c.r) &&
+				(this.g === c.g) &&
+				(this.b === c.b) &&
+				(this.a === c.a) ;
 	}
 	
 	toString() {
-		return "color(" + this.rgba[0] + "," + this.rgba[1] + "," + this.rgba[2] + "," + this.rgba[3] + ")";
+		return "color(" + this.r + "," + this.g + "," + this.b + "," + this.a + ")";
 	}
 	
 	mulMatrix(m) {
 		const color = new ImgColorRGBA();
-		color.rgba[0] =	this.rgba[0] * m[0][0] +
-						this.rgba[1] * m[0][1] +
-						this.rgba[2] * m[0][2] +
-						this.rgba[3] * m[0][3];
-		color.rgba[1] =	this.rgba[0] * m[1][0] +
-						this.rgba[1] * m[1][1] +
-						this.rgba[2] * m[1][2] +
-						this.rgba[3] * m[1][3];
-		color.rgba[2] =	this.rgba[0] * m[2][0] +
-						this.rgba[1] * m[2][1] +
-						this.rgba[2] * m[2][2] +
-						this.rgba[3] * m[2][3];
-		color.rgba[3] =	this.rgba[0] * m[3][0] +
-						this.rgba[1] * m[3][1] +
-						this.rgba[2] * m[3][2] +
-						this.rgba[3] * m[3][3];
+		color.rgba[0] =	this.r * m[0][0] +
+						this.g * m[0][1] +
+						this.b * m[0][2] +
+						this.a * m[0][3];
+		color.rgba[1] =	this.r * m[1][0] +
+						this.g * m[1][1] +
+						this.b * m[1][2] +
+						this.a * m[1][3];
+		color.rgba[2] =	this.r * m[2][0] +
+						this.g * m[2][1] +
+						this.b * m[2][2] +
+						this.a * m[2][3];
+		color.rgba[3] =	this.r * m[3][0] +
+						this.g * m[3][1] +
+						this.b * m[3][2] +
+						this.a * m[3][3];
 		return color;
 	}
 	
@@ -9030,9 +9102,9 @@ class ImgColorRGBA extends ImgColor {
 	 */
 	getNormalVector() {
 		return new ImgVector(
-			(this.rgba[0] / 128.0) - 1.0,
-			- (this.rgba[1] / 128.0) + 1.0,
-			(this.rgba[2] / 128.0) - 1.0
+			(this.r / 128.0) - 1.0,
+			- (this.g / 128.0) + 1.0,
+			(this.b / 128.0) - 1.0
 		);
 	}
 	
