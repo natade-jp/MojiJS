@@ -1885,7 +1885,7 @@ class SJIS {
 		const map = unicode_to_sjis;
 		const utf32 = Unicode.toUTF32Array(text);
 		const sjis = [];
-		const ng = "・".charCodeAt(0);
+		const ng = "?".charCodeAt(0);
 		for(let i = 0; i < utf32.length; i++) {
 			const map_bin = map[utf32[i]];
 			if(map_bin) {
@@ -1929,7 +1929,7 @@ class SJIS {
 	static fromSJISArray(sjis, sjis_to_unicode) {
 		const map = sjis_to_unicode;
 		const utf16 = [];
-		const ng = "・".charCodeAt(0);
+		const ng = "?".charCodeAt(0);
 		for(let i = 0; i < sjis.length; i++) {
 			let x = sjis[i];
 			let y = -1;
