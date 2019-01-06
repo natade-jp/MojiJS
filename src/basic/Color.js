@@ -34,6 +34,15 @@ export default class Color {
 		return color;
 	}
 
+	bake() {
+		const color = new Color();
+		color.r = this.r * this.a;
+		color.g = this.g * this.a;
+		color.b = this.b * this.a;
+		color.a = 1.0;
+		return color.limit();
+	}
+
 	addColorMixture(x) {
 		// 加法混色
 		if(!(x instanceof Color)) {
