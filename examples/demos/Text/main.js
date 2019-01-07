@@ -155,27 +155,27 @@ const testCP932 = function() {
 	Senko.println("\"" + CP932.cutTextForCP932(x, 5, 5) + "\"");
 	Senko.println("\"" + CP932.cutTextForCP932(x, 6, 5) + "\"");
 
-	const menkuten = function(text) {
-		const menkuten = CP932.toMenKuTenForCP932(Unicode.toUTF32Array(text)[0]);
+	const kuten = function(text) {
+		const menkuten = CP932.toKuTen(Unicode.toUTF32Array(text)[0]);
 		if(!menkuten) {
 			Senko.printf("「%s」の変換に失敗しました\n", text);
 			return;
 		}
-		Senko.printf("「%s」の面区点番号は %s\n", text, menkuten.text);
+		Senko.printf("「%s」の区点番号は %s\n", text, menkuten.text);
 	};
 
 	Senko.println("◆面区点番号のチェック");
-	menkuten("A");
-	menkuten("あ");
-	menkuten("鉱");
-	menkuten("砿");
-	menkuten("鋼");
-	menkuten("閤");
-	menkuten("降");
-	menkuten("項");
-	menkuten("①");
-	menkuten("㈱");
-	menkuten("髙");
+	kuten("A");
+	kuten("あ");
+	kuten("鉱");
+	kuten("砿");
+	kuten("鋼");
+	kuten("閤");
+	kuten("降");
+	kuten("項");
+	kuten("①");
+	kuten("㈱");
+	kuten("髙");
 
 	Senko.println("◆漢字のチェック");
 	Senko.println("高はIBM拡張漢字か？" + CP932.isCP932IBMExtendedCharacter(Unicode.toUTF32Array("高")[0]));
@@ -190,7 +190,7 @@ const testSJIS2004 = function() {
 	Senko.println("◆◆Shift_JIS-2004 クラスのサンプル");
 	
 	const checkkanji = function(text) {
-		const menkuten = SJIS2004.toMenKuTenForSJIS2004(Unicode.toUTF32Array(text)[0]);
+		const menkuten = SJIS2004.toMenKuTen(Unicode.toUTF32Array(text)[0]);
 		const suijun = SJIS2004.toJISKanjiSuijun(Unicode.toUTF32Array(text)[0]);
 		if(!menkuten) {
 			Senko.printf("「%s」の変換に失敗しました\n", text);

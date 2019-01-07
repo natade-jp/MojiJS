@@ -1368,12 +1368,12 @@ export default class CP932 {
 	}
 
 	/**
-	 * 指定したコードポイントの文字の面区点番号を取得する
+	 * 指定したコードポイントの文字の区点番号を取得する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
-	static toMenKuTenForCP932(unicode_codepoint) {
-		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+	static toKuTen(unicode_codepoint) {
+		const x = SJIS.toKuTenFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x;
 	}
 

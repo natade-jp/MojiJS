@@ -2055,11 +2055,11 @@ class SJIS {
 	}
 
 	/**
-	 * 指定した Shift_JIS のコードから面区点番号を取得する
-	 * @param {Number} sjis_code Shift_JIS のコードポイント
+	 * 指定した Shift_JIS-2004 のコードから面区点番号を取得する
+	 * @param {Number} sjis_code Shift_JIS-2004 のコードポイント
 	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
-	static toMenKuTenFromSJISCode(sjis_code) {
+	static toMenKuTenFromSJIS2004Code(sjis_code) {
 		const x = sjis_code;
 		if(x < 0x100) {
 			return null;
@@ -2130,9 +2130,9 @@ class SJIS {
 	}
 
 	/**
-	 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号を取得する
+	 * 指定したコードポイントの文字から Shift_JIS-2004 上の面区点番号を取得する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS-2004 への変換マップ
 	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toMenKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
@@ -2140,15 +2140,15 @@ class SJIS {
 			return null;
 		}
 		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
-		return SJIS.toMenKuTenFromSJISCode(x);
+		return SJIS.toMenKuTenFromSJIS2004Code(x);
 	}
 	
 	/**
-	 * 指定した面区点番号から Shift_JIS コードを取得する
+	 * 指定した面区点番号から Shift_JIS-2004 コードを取得する
 	 * @param {Object} menkuten 面区点番号
-	 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
+	 * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
 	 */
-	static toSJISCodeFromMenKuTen(menkuten) {
+	static toSJIS2004CodeFromMenKuTen(menkuten) {
 		let m, k, t;
 		if(menkuten instanceof Object) {
 			m = menkuten.men;
@@ -2175,12 +2175,15 @@ class SJIS {
 		// 参考
 		// 2019/1/1 Shift JIS - Wikipedia
 		// https://en.wikipedia.org/wiki/Shift_JIS
+		//
+		// 区や点の判定部分は、通常94までであるため、正確にはkやtは <=94 とするべき。
+		// しかし、Shift_JIS範囲外（IBM拡張漢字）でも利用されるため制限を取り払っている。
 
 		if(m === 1) {
 			if((1 <= k) && (k <= 62)) {
 				s1 = Math.floor((k + 257) / 2);
 			}
-			else if((63 <= k) && (k <= 94)) {
+			else if(63 <= k) {
 				s1 = Math.floor((k + 385) / 2);
 			}
 		}
@@ -2188,7 +2191,7 @@ class SJIS {
 			if(kmap[k]) {
 				s1 = Math.floor((k + 479) / 2) - (Math.floor(k / 8) * 3);
 			}
-			else if((78 <= k) && (k <= 94)) {
+			else if(78 <= k) {
 				s1 = Math.floor((k + 411) / 2);
 			}
 		}
@@ -2197,7 +2200,7 @@ class SJIS {
 			if((1 <= t) && (t <= 63)) {
 				s2 = t + 63;
 			}
-			else if((64 <= t) && (t <= 94)) {
+			else if(64 <= t) {
 				s2 = t + 64;
 			}
 		}
@@ -2214,11 +2217,135 @@ class SJIS {
 	/**
 	 * 指定した面区点番号から Unicode コードポイントを取得する
 	 * @param {Object} menkuten 面区点番号
-	 * @param {Array} sjis_to_unicode Shift_JIS から Unicode への変換マップ
+	 * @param {Array} sjis_to_unicode Shift_JIS-2004 から Unicode への変換マップ
 	 * @returns {Array} UTF-32の配列(存在しない場合はnullを返す)
 	 */
 	static toUnicodeCodeFromMenKuTen(menkuten, sjis_to_unicode) {
-		const sjis_code = SJIS.toSJISCodeFromMenKuTen(menkuten);
+		const sjis_code = SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
+		if(!sjis_code) {
+			return null;
+		}
+		const unicode = sjis_to_unicode[sjis_code];
+		if(!unicode) {
+			return null;
+		}
+		if(unicode instanceof Array) {
+			return unicode;
+		}
+		else {
+			return [unicode];
+		}
+	}
+
+	/**
+	 * 指定した Shift_JIS のコードから区点番号を取得する
+	 * @param {Number} sjis_code Shift_JIS のコードポイント
+	 * @returns {Object} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toKuTenFromSJISCode(sjis_code) {
+		const x = sjis_code;
+		if(x < 0x100) {
+			return null;
+		}
+		// アルゴリズムは区点番号表からリバースエンジニアリング
+
+		let s1 = x >> 8;
+		let s2 = x & 0xFF;
+		let ku = 0;
+		let ten = 0;
+
+		// 区の計算方法の切り替え
+		// 63区から、0x9F→0xE0に飛ぶ
+		if(s1 < 0xE0) {
+			s1 = s1 - 0x81;
+		}
+		else {
+			s1 = s1 - 0xC1;
+		}
+
+		// 区情報の位置判定
+		if(s2 < 0x9f) {
+			ku = s1 * 2 + 1;
+			// 点情報の計算方法の切り替え
+			// 0x7Fが欠番のため「+1」を除去
+			if(s2 < 0x80) {
+				s2 = s2 - 0x40 + 1;
+			}
+			else {
+				s2 = s2 - 0x40;
+			}
+		}
+		else {
+			ku = s1 * 2 + 2;
+			s2 = s2 - 0x9f + 1;
+		}
+
+		// 点情報の位置判定
+		ten = s2;
+
+		return {
+			text : ku + "-" + ten,
+			ku : ku,
+			ten : ten
+		};
+	}
+	
+	/**
+	 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号を取得する
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @param {Array} unicode_to_sjis Unicode から Shift_JIS への変換マップ
+	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
+		if(!unicode_to_sjis[unicode_codepoint]) {
+			return null;
+		}
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
+		return SJIS.toKuTenFromSJISCode(x);
+	}
+
+	/**
+	 * 指定した区点番号から Shift_JIS コードを取得する
+	 * @param {Object} kuten 面区点番号
+	 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
+	 */
+	static toSJISCodeFromKuTen(kuten) {
+		let k, t;
+		if(kuten instanceof Object) {
+			k = kuten.ku;
+			t = kuten.ten;
+		}
+		else if((typeof kuten === "string")||(kuten instanceof String)) {
+			const strmkt = kuten.split("-");
+			if(strmkt.length !== 2) {
+				throw "IllegalArgumentException";
+			}
+			k = parseInt(strmkt[1], 10);
+			t = parseInt(strmkt[2], 10);
+		}
+		else {		
+			throw "IllegalArgumentException";
+		}
+		// 一般的には「区」は、1～94区まで存在しているため流用できるが、
+		// 実際は、範囲外の区、115区〜119区にIBM拡張文字が存在している。
+		const m = 1;
+		return SJIS.toSJIS2004CodeFromMenKuTen(
+			{
+				men : m,
+				ku : k,
+				ten : t
+			}
+		);
+	}
+	
+	/**
+	 * 指定した区点番号から Unicode コードポイントを取得する
+	 * @param {Object} kuten 区点番号
+	 * @param {Array} sjis_to_unicode Shift_JIS-2004 から Unicode への変換マップ
+	 * @returns {Array} UTF-32の配列(存在しない場合はnullを返す)
+	 */
+	static toUnicodeCodeFromKuTen(menkuten, sjis_to_unicode) {
+		const sjis_code = SJIS.toSJISCodeFromKuTen(menkuten);
 		if(!sjis_code) {
 			return null;
 		}
@@ -2236,11 +2363,11 @@ class SJIS {
 
 	/**
 	 * JIS漢字水準（JIS Chinese character standard）を調べる
-	 * @param {Number} sjis_code Shift_JIS のコードポイント
+	 * @param {Number} sjis_code Shift_JIS-2004 のコードポイント
 	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
 	 */
 	static toJISKanjiSuijunFromSJISCode(sjis_code) {
-		const menkuten = SJIS.toMenKuTenFromSJISCode(sjis_code);
+		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis_code);
 		// アルゴリズムはJIS漢字一覧表からリバースエンジニアリング
 		if(!menkuten) {
 			return 0;
@@ -3672,12 +3799,12 @@ class CP932 {
 	}
 
 	/**
-	 * 指定したコードポイントの文字の面区点番号を取得する
+	 * 指定したコードポイントの文字の区点番号を取得する
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
-	static toMenKuTenForCP932(unicode_codepoint) {
-		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
+	static toKuTen(unicode_codepoint) {
+		const x = SJIS.toKuTenFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
 		return x;
 	}
 
@@ -5306,7 +5433,7 @@ class SJIS2004 {
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
-	static toMenKuTenForSJIS2004(unicode_codepoint) {
+	static toMenKuTen(unicode_codepoint) {
 		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
 		return x;
 	}
@@ -6690,10 +6817,14 @@ const Text$1 = {
 	getWidthForSJIS : SJIS.getWidthForSJIS,
 	cutTextForSJIS : SJIS.cutTextForSJIS,
 	toSJISCodeFromUnicode : SJIS.toSJISCodeFromUnicode,
-	toMenKuTenFromSJISCode : SJIS.toMenKuTenFromSJISCode,
+	toMenKuTenFromSJIS2004Code : SJIS.toMenKuTenFromSJIS2004Code,
 	toMenKuTenFromUnicode : SJIS.toMenKuTenFromUnicode,
-	toSJISCodeFromMenKuTen : SJIS.toSJISCodeFromMenKuTen,
+	toSJIS2004CodeFromMenKuTen : SJIS.toSJIS2004CodeFromMenKuTen,
 	toUnicodeCodeFromMenKuTen : SJIS.toUnicodeCodeFromMenKuTen,
+	toKuTenFromSJISCode : SJIS.toKuTenFromSJISCode,
+	toKuTenFromUnicode : SJIS.toKuTenFromUnicode,
+	toSJISCodeFromKuTen : SJIS.toSJISCodeFromKuTen,
+	toUnicodeCodeFromKuTen : SJIS.toUnicodeCodeFromKuTen,
 	toJISKanjiSuijunFromSJISCode : SJIS.toJISKanjiSuijunFromSJISCode,
 	toJISKanjiSuijunFromUnicode : SJIS.toJISKanjiSuijunFromUnicode,
 
@@ -6703,7 +6834,7 @@ const Text$1 = {
 	fromCP932Array : CP932.fromCP932Array,
 	getWidthForCP932 : CP932.getWidthForCP932,
 	cutTextForCP932 : CP932.cutTextForCP932,
-	toMenKuTenForCP932 : CP932.toMenKuTenForCP932,
+	toKuTen : CP932.toKuTen,
 	isCP932Gaiji : CP932.isCP932Gaiji,
 	isCP932IBMExtendedCharacter : CP932.isCP932IBMExtendedCharacter,
 	isCP932NECSelectionIBMExtendedCharacter : CP932.isCP932NECSelectionIBMExtendedCharacter,
@@ -6715,7 +6846,7 @@ const Text$1 = {
 	fromSJIS2004Array : SJIS2004.fromSJIS2004Array,
 	getWidthForSJIS2004 : SJIS2004.getWidthForSJIS2004,
 	cutTextForSJIS2004 : SJIS2004.cutTextForSJIS2004,
-	toMenKuTenForSJIS2004 : SJIS2004.toMenKuTenForSJIS2004,
+	toMenKuTen : SJIS2004.toMenKuTen,
 	toJISKanjiSuijun : SJIS2004.toJISKanjiSuijun,
 
 	Japanese : Japanese,

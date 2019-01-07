@@ -1584,7 +1584,7 @@ export default class SJIS2004 {
 	 * @param {Number} unicode_codepoint Unicodeのコードポイント
 	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
-	static toMenKuTenForSJIS2004(unicode_codepoint) {
+	static toMenKuTen(unicode_codepoint) {
 		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
 		return x;
 	}
