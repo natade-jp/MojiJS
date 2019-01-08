@@ -2,10 +2,9 @@
 
 const Text = Senko.Text;
 const Japanese = Text.Japanese;
-const JapaneseKanji = Text.JapaneseKanji;
 const Unicode = Text.Unicode;
 const CP932 = Text.CP932;
-const SJIS2004 = Text.SJIS2004;
+const CharacterAnalyser = Text.CharacterAnalyser;
 
 const testJapanese = function() {
 
@@ -47,18 +46,6 @@ const testJapanese = function() {
 	Senko.println(x);
 	Senko.println(Japanese.toHiraganaFromRomaji(x));
 	Senko.println(Japanese.toKatakanaFromRomaji(x));
-};
-
-const testJapaneseKanji = function() {
-
-	Senko.println("");
-	Senko.println("◆◆JapaneseKanji クラスのサンプル");
-
-	Senko.println("◆漢字のチェック");
-	Senko.println("高は常用漢字か？" + JapaneseKanji.isJoyoKanji(Unicode.toUTF32Array("高")[0]));
-	Senko.println("髙は常用漢字か？" + JapaneseKanji.isJoyoKanji(Unicode.toUTF32Array("髙")[0]));
-	Senko.println("渾は人名用漢字か？" + JapaneseKanji.isJinmeiyoKanji(Unicode.toUTF32Array("渾")[0]));
-
 };
 
 const testUnicode = function() {
@@ -155,16 +142,31 @@ const testCP932 = function() {
 	Senko.println("\"" + CP932.cutTextForCP932(x, 5, 5) + "\"");
 	Senko.println("\"" + CP932.cutTextForCP932(x, 6, 5) + "\"");
 
+};
+
+const testCharacterAnalyser = function() {
+
+	Senko.println("");
+	Senko.println("◆◆CharacterAnalyser クラスのサンプル");
+
+	const analysis = function(moji) {
+		return CharacterAnalyser.getCharacterAnalysisData(Unicode.toUTF32Array(moji)[0]);
+	};
+
+	Senko.println("◆漢字のチェック1");
+	Senko.println("高は常用漢字か？" + analysis("高").isJoyoKanji );
+	Senko.println("髙は常用漢字か？" + analysis("髙").isJoyoKanji );
+	Senko.println("渾は人名用漢字か？" + analysis("渾").isJinmeiyoKanji );
+
+	Senko.println("◆区点番号のチェック");
 	const kuten = function(text) {
-		const menkuten = CP932.toKuTen(Unicode.toUTF32Array(text)[0]);
-		if(!menkuten) {
+		const kuten = analysis(text).kuten;
+		if(!kuten) {
 			Senko.printf("「%s」の変換に失敗しました\n", text);
 			return;
 		}
-		Senko.printf("「%s」の区点番号は %s\n", text, menkuten.text);
+		Senko.printf("「%s」の区点番号は %s\n", text, kuten.text);
 	};
-
-	Senko.println("◆面区点番号のチェック");
 	kuten("A");
 	kuten("あ");
 	kuten("鉱");
@@ -176,22 +178,17 @@ const testCP932 = function() {
 	kuten("①");
 	kuten("㈱");
 	kuten("髙");
-
-	Senko.println("◆漢字のチェック");
-	Senko.println("高はIBM拡張漢字か？" + CP932.isCP932IBMExtendedCharacter(Unicode.toUTF32Array("高")[0]));
-	Senko.println("髙はIBM拡張漢字か？" + CP932.isCP932IBMExtendedCharacter(Unicode.toUTF32Array("髙")[0]));
-	Senko.println("①はNEC特殊文字か？" + CP932.isCP932NECSpecialCharacter(Unicode.toUTF32Array("①")[0]));
-
-};
-
-const testSJIS2004 = function() {
-
 	Senko.println("");
-	Senko.println("◆◆Shift_JIS-2004 クラスのサンプル");
-	
-	const checkkanji = function(text) {
-		const menkuten = SJIS2004.toMenKuTen(Unicode.toUTF32Array(text)[0]);
-		const suijun = SJIS2004.toJISKanjiSuijun(Unicode.toUTF32Array(text)[0]);
+
+	Senko.println("◆漢字のチェック2");
+	Senko.println("高はIBM拡張漢字か？" + analysis("高").isCP932IBMExtendedCharacter);
+	Senko.println("髙はIBM拡張漢字か？" + analysis("髙").isCP932IBMExtendedCharacter);
+	Senko.println("①はNEC特殊文字か？" + analysis("①").isCP932NECSpecialCharacter);
+
+	Senko.println("◆面区点番号のチェック");
+	const menkuten = function(text) {
+		const menkuten = analysis(text).menkuten;
+		const suijun = analysis(text).suijun;
 		if(!menkuten) {
 			Senko.printf("「%s」の変換に失敗しました\n", text);
 			return;
@@ -203,30 +200,28 @@ const testSJIS2004 = function() {
 			Senko.printf("「%s」の面区点番号は %s\n", text, menkuten.text);
 		}
 	};
+	menkuten("A");
+	menkuten("あ");
+	menkuten("鉱");
+	menkuten("砿");
+	menkuten("鋼");
+	menkuten("閤");
+	menkuten("降");
+	menkuten("項");
+	menkuten("①");
+	menkuten("㈱");
+	menkuten("髙");
+	menkuten("圡");
+	menkuten("唁");
+	menkuten("㖨");
+	menkuten("埦");
+	menkuten("宖");
+	menkuten("殁");
+	menkuten("殛");
+	menkuten("蜅");
+	menkuten("𪚲");
 
-	Senko.println("◆面区点番号のチェック");
-	checkkanji("A");
-	checkkanji("あ");
-	checkkanji("鉱");
-	checkkanji("砿");
-	checkkanji("鋼");
-	checkkanji("閤");
-	checkkanji("降");
-	checkkanji("項");
-	checkkanji("①");
-	checkkanji("㈱");
-	checkkanji("髙");
-	checkkanji("圡");
-	checkkanji("唁");
-	checkkanji("㖨");
-	checkkanji("埦");
-	checkkanji("宖");
-	checkkanji("殁");
-	checkkanji("殛");
-	checkkanji("蜅");
-	checkkanji("𪚲");
 	Senko.println("");
-
 };
 
 const main = function() {
@@ -244,10 +239,9 @@ const main = function() {
 	Senko.println(Text.removeComment(x));
 
 	testJapanese();
-	testJapaneseKanji();
 	testUnicode();
 	testCP932();
-	testSJIS2004();
+	testCharacterAnalyser();
 
 };
 

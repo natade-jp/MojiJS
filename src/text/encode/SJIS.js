@@ -188,6 +188,9 @@ export default class SJIS {
 	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toMenKuTenFromSJIS2004Code(sjis_code) {
+		if(!sjis_code) {
+			return null;
+		}
 		const x = sjis_code;
 		if(x < 0x100) {
 			return null;
@@ -371,6 +374,9 @@ export default class SJIS {
 	 * @returns {Object} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 */
 	static toKuTenFromSJISCode(sjis_code) {
+		if(!sjis_code) {
+			return null;
+		}
 		const x = sjis_code;
 		if(x < 0x100) {
 			return null;
@@ -495,6 +501,9 @@ export default class SJIS {
 	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
 	 */
 	static toJISKanjiSuijunFromSJISCode(sjis_code) {
+		if(!sjis_code) {
+			return 0;
+		}
 		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis_code);
 		// アルゴリズムはJIS漢字一覧表からリバースエンジニアリング
 		if(!menkuten) {

@@ -1530,6 +1530,24 @@ SJIS2004MAP.unicode_to_sjis2004_map = null;
 export default class SJIS2004 {
 	
 	/**
+	 * Unicode のコードから Shift_JIS-2004 のコードへ変換します。
+	 * @param {Number} unicode_codepoint Unicode のコードポイント
+	 * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
+	 */
+	static toSJIS2004FromUnicode(unicode_codepoint) {
+		return SJIS2004MAP.UNICODE_TO_SJIS2004[unicode_codepoint];
+	}
+
+	/**
+	 * Shift_JIS-2004 のコードから Unicode のコードへ変換します。
+	 * @param {Number} sjis2004_codepoint Shift_JIS-2004 のコードポイント
+	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
+	 */
+	static toUnicodeFromSJIS2004(sjis2004_codepoint) {
+		return SJIS2004MAP.SJIS2004_TO_UNICODE[sjis2004_codepoint];
+	}
+	
+	/**
 	 * 文字列を Shift_JIS-2004 の配列へ変換します。
 	 * @param {String} text 変換したいテキスト
 	 * @returns {Array} Shift_JIS-2004 のデータが入った配列
@@ -1577,25 +1595,6 @@ export default class SJIS2004 {
 	 */
 	static cutTextForSJIS2004(text, offset, size) {
 		return SJIS.cutTextForSJIS(text, offset, size, SJIS2004MAP.UNICODE_TO_SJIS2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
-	}
-
-	/**
-	 * 指定したコードポイントの文字の面区点番号を取得する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
-	 */
-	static toMenKuTen(unicode_codepoint) {
-		const x = SJIS.toMenKuTenFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
-		return x;
-	}
-
-	/**
-	 * JIS漢字水準（JIS Chinese character standard）を調べる
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
-	 */
-	static toJISKanjiSuijun(unicode_codepoint) {
-		return SJIS.toJISKanjiSuijunFromUnicode(unicode_codepoint, SJIS2004MAP.UNICODE_TO_SJIS2004);
 	}
 
 }

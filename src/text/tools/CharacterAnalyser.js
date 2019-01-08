@@ -9,6 +9,9 @@
  */
 
 import Unicode from "../encode/Unicode.js";
+import SJIS from "../encode/SJIS.js";
+import CP932 from "../encode/CP932.js";
+import SJIS2004 from "../encode/SJIS2004.js";
 
 class KANJIMAP {
     
@@ -201,7 +204,7 @@ KANJIMAP.jinmeiyokanji_joyokanji_isetai_2017_map = null;
 KANJIMAP.jinmeiyokanji_notjoyokanji_2017_map = null;
 KANJIMAP.jinmeiyokanji_notjoyokanji_isetai_2017_map = null;
 
-export default class JapaneseKanji {
+class JapaneseKanji {
 	
 	/**
 	 * 指定したコードポイントの漢字は1981年より前に常用漢字とされているか判定する
@@ -290,6 +293,75 @@ export default class JapaneseKanji {
 	 */
 	static isJinmeiyoKanji(unicode_codepoint) {
 		return JapaneseKanji.isJinmeiyoKanji2017(unicode_codepoint);
+	}
+
+}
+
+export default class CharacterAnalyser {
+
+	/**
+	 * 指定した1つの文字に関して、解析を行い情報を返します
+	 * @param {Number} unicode_codepoint UTF-32 のコードポイント
+	 * @param {Object} 文字の情報がつまったオブジェクト 
+	 */
+	static getCharacterAnalysisData(unicode_codepoint) {
+
+		const output = {};
+		const cp932code = CP932.toCP932FromUnicode(unicode_codepoint);
+		const sjis2004code = SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
+		const kuten = SJIS.toKuTenFromSJISCode(cp932code);
+		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis2004code);
+
+		// 句点と面区点情報(ない場合はnullになる)
+		output.kuten = kuten;
+		output.menkuten = menkuten;
+
+		// 漢字が常用漢字か、人名用漢字かなど
+		output.isJoyoKanjiBefore1981 = JapaneseKanji.isJoyoKanjiBefore1981(unicode_codepoint);
+		output.isJoyoKanji1981 = JapaneseKanji.isJoyoKanji1981(unicode_codepoint);
+		output.isJoyoKanji2010 = JapaneseKanji.isJoyoKanji2010(unicode_codepoint);
+		output.isOnlyJinmeiyoKanji2017 = JapaneseKanji.isOnlyJinmeiyoKanji2017(unicode_codepoint);
+		output.isJinmeiyoKanji2017 = JapaneseKanji.isJinmeiyoKanji2017(unicode_codepoint);
+		output.isJoyoKanji = JapaneseKanji.isJoyoKanji(unicode_codepoint);
+		output.isOnlyJinmeiyoKanji = JapaneseKanji.isOnlyJinmeiyoKanji(unicode_codepoint);
+		output.isJinmeiyoKanji = JapaneseKanji.isJinmeiyoKanji(unicode_codepoint);
+
+		// Windows-31J(CP932) に関しての調査 
+		output.isCP932Gaiji = false;
+		output.isCP932IBMExtendedCharacter = false;
+		output.isCP932NECSelectionIBMExtendedCharacter = false;
+		output.isCP932NECSpecialCharacter = false;
+		if(cp932code) {
+			// 外字
+			output.isCP932Gaiji = (0xf040 <= cp932code) && (cp932code <= 0xf9fc);
+			// IBM拡張文字
+			output.isCP932IBMExtendedCharacter = (0xfa40 <= cp932code) && (cp932code <= 0xfc4b);
+			// NEC選定IBM拡張文字
+			output.isCP932NECSelectionIBMExtendedCharacter = (0xed40 <= cp932code) && (cp932code <= 0xeefc);
+			// NEC特殊文字
+			output.isCP932NECSpecialCharacter = (0x8740 <= cp932code) && (cp932code <= 0x879C);
+		}
+
+		// Shift_JIS-2004 を使用して漢字の水準調査(ない場合はnullになる)
+		output.suijun = SJIS.toJISKanjiSuijunFromSJISCode(sjis2004code);
+
+		// コードの代入
+		output.cp932code = cp932code ? cp932code : -1;
+		output.sjis2004code = sjis2004code ? sjis2004code : -1;
+
+		// Unicodeの配列
+		output.moji = Unicode.fromCodePoint(unicode_codepoint);
+		output.codepoint = unicode_codepoint;
+		output.utf8_array = Unicode.toUTF8Array(output.moji);
+		output.utf16_array = Unicode.toUTF16Array(output.moji);
+		output.utf32_array = [unicode_codepoint];
+		output.isSurrogatePairAt = output.utf16_array.length > 1;
+
+		// SJIS系の配列
+		output.cp932_array = cp932code ? ((cp932code >= 0x100) ? [cp932code >> 8, cp932code & 0xff] : [cp932code]) : [];
+		output.sjis2004_array = sjis2004code ? ((sjis2004code >= 0x100) ? [sjis2004code >> 8, sjis2004code & 0xff] : [sjis2004code]) : [];
+
+		return output;
 	}
 
 }

@@ -1316,6 +1316,24 @@ CP932MAP.cp932_to_unicode_map = null;
 CP932MAP.unicode_to_cp932_map = null;
 
 export default class CP932 {
+
+	/**
+	 * Unicode のコードから CP932 のコードへ変換します。
+	 * @param {Number} unicode_codepoint Unicode のコードポイント
+	 * @returns {Number} CP932 のコードポイント (存在しない場合は undefined)
+	 */
+	static toCP932FromUnicode(unicode_codepoint) {
+		return CP932MAP.UNICODE_TO_CP932[unicode_codepoint];
+	}
+
+	/**
+	 * CP932 のコードから Unicode のコードへ変換します。
+	 * @param {Number} cp932_codepoint CP932 のコードポイント
+	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
+	 */
+	static toUnicodeFromCP932(cp932_codepoint) {
+		return CP932MAP.CP932_TO_UNICODE[cp932_codepoint];
+	}
 	
 	/**
 	 * 文字列を CP932 の配列へ変換します。
@@ -1367,54 +1385,4 @@ export default class CP932 {
 		return SJIS.cutTextForSJIS(text, offset, size, CP932MAP.UNICODE_TO_CP932, CP932MAP.CP932_TO_UNICODE);
 	}
 
-	/**
-	 * 指定したコードポイントの文字の区点番号を取得する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @returns {Object} 面区点情報(存在しない場合（1バイトのJISコードなど）はnullを返す)
-	 */
-	static toKuTen(unicode_codepoint) {
-		const x = SJIS.toKuTenFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return x;
-	}
-
-	/**
-	 * 指定したコードポイントの文字は CP932 上の外字かを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
-	 */
-	static isCP932Gaiji(unicode_codepoint) {
-		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return x && ((0xf040 <= x) && (x <= 0xf9fc));
-	}
-
-	/**
-	 * 指定したコードポイントの文字は CP932 上のIBM拡張文字かを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
-	 */
-	static isCP932IBMExtendedCharacter(unicode_codepoint) {
-		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return x && (0xfa40 <= x) && (x <= 0xfc4b);
-	}
-
-	/**
-	 * 指定したコードポイントの文字は CP932 上のNEC選定IBM拡張文字かを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
-	 */
-	static isCP932NECSelectionIBMExtendedCharacter(unicode_codepoint) {
-		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return x && (0xed40 <= x) && (x <= 0xeefc);
-	}
-
-	/**
-	 * 指定したコードポイントの文字は CP932 上のNEC特殊文字かを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
-	 */
-	static isCP932NECSpecialCharacter(unicode_codepoint) {
-		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, CP932MAP.UNICODE_TO_CP932);
-		return x && (0x8740 <= x) && (x <= 0x879C);
-	}
-	
 }
