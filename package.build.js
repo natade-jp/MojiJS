@@ -41,9 +41,10 @@ const build_date = new Date();
 
 let header = [];
 header.push("/*!");
-header.push(" * SenkoJS ( " + build_date.toLocaleDateString().replace(/-/g, "/") + " ) (https://github.com/natade-jp/SenkoJS)");
-header.push(" * Copyright 2013-" + build_date.getFullYear() + " SenkoJS");
-header.push(" * MIT License (https://raw.githubusercontent.com/Dogfalo/materialize/master/LICENSE)");
+header.push(" * SenkoJS ( " + build_date.toLocaleDateString().replace(/-/g, "/") + " )");
+header.push(" * https://github.com/natade-jp/SenkoJS");
+header.push(" * Copyright 2013-" + build_date.getFullYear() + " natade");
+header.push(" * The zlib/libpng License https://opensource.org/licenses/Zlib");
 header.push(" */");
 header.push("");
 header = header.join("\n");
