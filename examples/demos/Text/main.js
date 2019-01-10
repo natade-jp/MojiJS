@@ -154,13 +154,13 @@ const testCharacterAnalyser = function() {
 	};
 
 	Senko.println("◆漢字のチェック1");
-	Senko.println("高は常用漢字か？" + analysis("高").isJoyoKanji );
-	Senko.println("髙は常用漢字か？" + analysis("髙").isJoyoKanji );
-	Senko.println("渾は人名用漢字か？" + analysis("渾").isJinmeiyoKanji );
+	Senko.println("高は常用漢字か？" + analysis("高").info.is_JoyoKanji );
+	Senko.println("髙は常用漢字か？" + analysis("髙").info.is_JoyoKanji );
+	Senko.println("渾は人名用漢字か？" + analysis("渾").info.is_JinmeiyoKanji );
 
 	Senko.println("◆区点番号のチェック");
 	const kuten = function(text) {
-		const kuten = analysis(text).kuten;
+		const kuten = analysis(text).encode.kuten;
 		if(!kuten) {
 			Senko.printf("「%s」の変換に失敗しました\n", text);
 			return;
@@ -181,14 +181,14 @@ const testCharacterAnalyser = function() {
 	Senko.println("");
 
 	Senko.println("◆漢字のチェック2");
-	Senko.println("高はIBM拡張漢字か？" + analysis("高").isCP932IBMExtendedCharacter);
-	Senko.println("髙はIBM拡張漢字か？" + analysis("髙").isCP932IBMExtendedCharacter);
-	Senko.println("①はNEC特殊文字か？" + analysis("①").isCP932NECSpecialCharacter);
+	Senko.println("高はIBM拡張漢字か？" + analysis("高").info.is_IBMExtendedCharacter);
+	Senko.println("髙はIBM拡張漢字か？" + analysis("髙").info.is_IBMExtendedCharacter);
+	Senko.println("①はNEC特殊文字か？" + analysis("①").info.is_NECSpecialCharacter);
 
 	Senko.println("◆面区点番号のチェック");
 	const menkuten = function(text) {
-		const menkuten = analysis(text).menkuten;
-		const suijun = analysis(text).suijun;
+		const menkuten = analysis(text).encode.menkuten;
+		const suijun = analysis(text).info.kanji_suijun;
 		if(!menkuten) {
 			Senko.printf("「%s」の変換に失敗しました\n", text);
 			return;
