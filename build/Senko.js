@@ -6473,13 +6473,13 @@ class Format {
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-class KANJIMAP {
+class CHAR_MAP {
     
 	static init() {
-		if(KANJIMAP.is_initmap) {
+		if(CHAR_MAP.is_initmap) {
 			return;
 		}
-		KANJIMAP.is_initmap = true;
+		CHAR_MAP.is_initmap = true;
 
 		const createMap = function(string_data) {
 			const utf32_array = Unicode.toUTF32Array(string_data);
@@ -6543,7 +6543,7 @@ class KANJIMAP {
 			map += "欄吏利里理痢裏履離陸立律略柳流留粒隆硫旅虜慮了両良料涼猟陵量僚領寮療糧力緑林厘倫";
 			map += "輪隣臨涙累塁類令礼冷励例鈴零霊隷齢麗暦歴列劣烈裂恋連廉練錬炉路露老労郎朗浪廊楼漏";
 			map += "六録論和話賄惑湾腕";
-			KANJIMAP.joyokanji_before_1981_map = createMap(map);
+			CHAR_MAP.joyokanji_before_1981_map = createMap(map);
 		}
 
 		{
@@ -6551,7 +6551,7 @@ class KANJIMAP {
 			map += "猿凹渦靴稼拐涯垣殻潟喝褐缶頑挟矯襟隅渓蛍嫌洪溝昆崎皿桟傘肢遮蛇酌汁塾尚宵縄壌唇甚";
 			map += "据杉斉逝仙栓挿曹槽藻駄濯棚挑眺釣塚漬亭偵泥搭棟洞凸屯把覇漠肌鉢披扉猫頻瓶雰塀泡俸";
 			map += "褒朴僕堀磨抹岬妄厄癒悠羅竜戻枠";
-			KANJIMAP.joyokanji_add_1981_map = createMap(map);
+			CHAR_MAP.joyokanji_add_1981_map = createMap(map);
 		}
 
 		{
@@ -6561,13 +6561,13 @@ class KANJIMAP {
 			map += "斬恣摯餌鹿嫉腫呪袖羞蹴憧拭尻芯腎須裾凄醒脊戚煎羨腺詮箋膳狙遡曽爽痩踪捉遜汰唾堆戴";
 			map += "誰旦綻緻酎貼嘲捗椎爪鶴諦溺塡妬賭藤瞳栃頓貪丼那奈梨謎鍋匂虹捻罵剝箸氾汎阪斑眉膝肘";
 			map += "阜訃蔽餅璧蔑哺蜂貌頰睦勃昧枕蜜冥麺冶弥闇喩湧妖瘍沃拉辣藍璃慄侶瞭瑠呂賂弄籠麓脇";
-			KANJIMAP.joyokanji_add_2010_map = createMap(map);
+			CHAR_MAP.joyokanji_add_2010_map = createMap(map);
 		}
 
 		{
 			let map = "";
 			map += "勺錘銑脹匁";
-			KANJIMAP.joyokanji_delete_2010_map = createMap(map);
+			CHAR_MAP.joyokanji_delete_2010_map = createMap(map);
 		}
 		
 		// 参考
@@ -6587,7 +6587,7 @@ class KANJIMAP {
 			map += "盃杯賣売梅梅髮髪拔抜繁繁晚晩卑卑祕秘碑碑賓賓敏敏冨富侮侮福福拂払佛仏勉勉步歩峯峰";
 			map += "墨墨飜翻每毎萬万默黙埜野彌弥藥薬與与搖揺樣様謠謡來来賴頼覽覧欄欄龍竜虜虜凉涼綠緑";
 			map += "淚涙壘塁類類禮礼曆暦歷歴練練鍊錬郞郎朗朗廊廊錄録";
-			KANJIMAP.jinmeiyokanji_joyokanji_isetai_2017_map = createMap(map);
+			CHAR_MAP.jinmeiyokanji_joyokanji_isetai_2017_map = createMap(map);
 		}
 
 		{
@@ -6608,63 +6608,79 @@ class KANJIMAP {
 			map += "蹄蹟輔輯輿轟辰辻迂迄辿迪迦這逞逗逢遁遼邑祁郁鄭酉醇醐醍醬釉釘釧銑鋒鋸錘錐錆錫鍬鎧";
 			map += "閃閏閤阿陀隈隼雀雁雛雫霞靖鞄鞍鞘鞠鞭頁頌頗顚颯饗馨馴馳駕駿驍魁魯鮎鯉鯛鰯鱒鱗鳩鳶";
 			map += "鳳鴨鴻鵜鵬鷗鷲鷺鷹麒麟麿黎黛鼎";
-			KANJIMAP.jinmeiyokanji_notjoyokanji_2017_map = createMap(map);
+			CHAR_MAP.jinmeiyokanji_notjoyokanji_2017_map = createMap(map);
 		}
 
 		{
 			let map = "";
 			map += "亙亘凛凜堯尭巖巌晄晃檜桧槇槙渚渚猪猪琢琢禰祢祐祐禱祷祿禄禎禎穰穣萠萌遙遥";
-			KANJIMAP.jinmeiyokanji_notjoyokanji_isetai_2017_map = createMap(map);
+			CHAR_MAP.jinmeiyokanji_notjoyokanji_isetai_2017_map = createMap(map);
 		}
+
+		CHAR_MAP.control_charcter_map = {
+			0: "NUL", 1: "SOH", 2: "STX", 3: "ETX", 4: "EOT", 5: "ENQ", 6: "ACK", 7: "BEL",
+			8: "BS", 9: "HT", 10: "LF", 11: "VT", 12: "FF", 13: "CR", 14: "SO", 15: "SI",
+			16: "DLE", 17: "DC1", 18: "DC2", 19: "DC3", 20: "DC4", 21: "NAK", 22: "SYN", 23: "ETB",
+			24: "CAN", 25: "EM", 26: "SUB", 27: "ESC", 28: "FS", 29: "GS", 30: "RS", 31: "US", 127: "DEL",
+		};
+	}
+
+	static get CONTROL_CHARCTER() {
+		CHAR_MAP.init();
+		return CHAR_MAP.control_charcter_map;
 	}
 
 	static get JOYOJANJI_BEFORE_1981() {
-		KANJIMAP.init();
-		return KANJIMAP.joyokanji_before_1981_map;
+		CHAR_MAP.init();
+		return CHAR_MAP.joyokanji_before_1981_map;
 	}
 	
 	static get JOYOKANJI_ADD_1981() {
-		KANJIMAP.init();
-		return KANJIMAP.joyokanji_add_1981_map;
+		CHAR_MAP.init();
+		return CHAR_MAP.joyokanji_add_1981_map;
 	}
 	
 	static get JOYOKANJI_ADD_2010() {
-		KANJIMAP.init();
-		return KANJIMAP.joyokanji_add_2010_map;
+		CHAR_MAP.init();
+		return CHAR_MAP.joyokanji_add_2010_map;
 	}
 	
 	static get JOYOKANJI_DELETE_2010() {
-		KANJIMAP.init();
-		return KANJIMAP.joyokanji_delete_2010_map;
+		CHAR_MAP.init();
+		return CHAR_MAP.joyokanji_delete_2010_map;
 	}
 	
 	static get JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
-		KANJIMAP.init();
-		return KANJIMAP.jinmeiyokanji_joyokanji_isetai_2017_map;
+		CHAR_MAP.init();
+		return CHAR_MAP.jinmeiyokanji_joyokanji_isetai_2017_map;
 	}
 	
 	static get JINMEIYOKANJI_NOTJOYOKANJI_2017() {
-		KANJIMAP.init();
-		return KANJIMAP.jinmeiyokanji_notjoyokanji_2017_map;
+		CHAR_MAP.init();
+		return CHAR_MAP.jinmeiyokanji_notjoyokanji_2017_map;
 	}
 	
 	static get JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
-		KANJIMAP.init();
-		return KANJIMAP.jinmeiyokanji_notjoyokanji_isetai_2017_map;
+		CHAR_MAP.init();
+		return CHAR_MAP.jinmeiyokanji_notjoyokanji_isetai_2017_map;
 	}
 	
 }
 
-KANJIMAP.is_initmap = false;
-KANJIMAP.joyokanji_before_1981_map = null;
-KANJIMAP.joyokanji_add_1981_map = null;
-KANJIMAP.joyokanji_add_2010_map = null;
-KANJIMAP.joyokanji_delete_2010_map = null;
-KANJIMAP.jinmeiyokanji_joyokanji_isetai_2017_map = null;
-KANJIMAP.jinmeiyokanji_notjoyokanji_2017_map = null;
-KANJIMAP.jinmeiyokanji_notjoyokanji_isetai_2017_map = null;
+CHAR_MAP.is_initmap = false;
 
-class JapaneseKanji {
+class Character {
+	
+	/**
+	 * 指定したコードポイントが制御文字であれば、制御文字の名前を返す
+	 * @param {Number} unicode_codepoint Unicodeのコードポイント
+	 * @param {String} 制御文字名、違う場合は null 
+	 */
+	static getControlCharcterName(unicode_codepoint) {
+		const control_charcter_map = CHAR_MAP.CONTROL_CHARCTER;
+		const name = control_charcter_map[unicode_codepoint];
+		return name ? name : null;
+	}
 	
 	/**
 	 * 指定したコードポイントの漢字は1981年より前に常用漢字とされているか判定する
@@ -6672,7 +6688,7 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isJoyoKanjiBefore1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = KANJIMAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
 		return !!joyokanji_before_1981_map[unicode_codepoint];
 	}
 
@@ -6682,8 +6698,8 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isJoyoKanji1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = KANJIMAP.JOYOJANJI_BEFORE_1981;
-		const joyokanji_add_1981_map = KANJIMAP.JOYOKANJI_ADD_1981;
+		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_add_1981_map = CHAR_MAP.JOYOKANJI_ADD_1981;
 		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
 	}
 
@@ -6693,12 +6709,12 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isJoyoKanji2010(unicode_codepoint) {
-		const joyokanji_add_2010_map = KANJIMAP.JOYOKANJI_ADD_2010;
-		const joyokanji_delete_2010_map = KANJIMAP.JOYOKANJI_DELETE_2010;
+		const joyokanji_add_2010_map = CHAR_MAP.JOYOKANJI_ADD_2010;
+		const joyokanji_delete_2010_map = CHAR_MAP.JOYOKANJI_DELETE_2010;
 		if(joyokanji_delete_2010_map[unicode_codepoint]) {
 			return false;
 		}
-		const x = JapaneseKanji.isJoyoKanji1981(unicode_codepoint);
+		const x = Character.isJoyoKanji1981(unicode_codepoint);
 		return x || (!!joyokanji_add_2010_map[unicode_codepoint]);
 	}
 
@@ -6708,12 +6724,12 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isOnlyJinmeiyoKanji2017(unicode_codepoint) {
-		if(JapaneseKanji.isJoyoKanji2010(unicode_codepoint)) {
+		if(Character.isJoyoKanji2010(unicode_codepoint)) {
 			return false;
 		}
-		const jinmeiyokanji_joyokanji_isetai_map = KANJIMAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
-		const jinmeiyokanji_notjoyokanji_map = KANJIMAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
-		const jinmeiyokanji_notjoyokanji_isetai_map = KANJIMAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_joyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_notjoyokanji_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
+		const jinmeiyokanji_notjoyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
 		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);
@@ -6725,7 +6741,7 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isJinmeiyoKanji2017(unicode_codepoint) {
-		return JapaneseKanji.isJoyoKanji2010(unicode_codepoint) || JapaneseKanji.isOnlyJinmeiyoKanji2017(unicode_codepoint);
+		return Character.isJoyoKanji2010(unicode_codepoint) || Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
 	}
 
 	/**
@@ -6734,7 +6750,7 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isJoyoKanji(unicode_codepoint) {
-		return JapaneseKanji.isJoyoKanji2010(unicode_codepoint);
+		return Character.isJoyoKanji2010(unicode_codepoint);
 	}
 	
 	/**
@@ -6743,7 +6759,7 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isOnlyJinmeiyoKanji(unicode_codepoint) {
-		return JapaneseKanji.isOnlyJinmeiyoKanji2017(unicode_codepoint);
+		return Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
 	}
 
 	/**
@@ -6752,7 +6768,7 @@ class JapaneseKanji {
 	 * @param {boolean} 判定結果 
 	 */
 	static isJinmeiyoKanji(unicode_codepoint) {
-		return JapaneseKanji.isJinmeiyoKanji2017(unicode_codepoint);
+		return Character.isJinmeiyoKanji2017(unicode_codepoint);
 	}
 
 }
@@ -6766,62 +6782,66 @@ class CharacterAnalyser {
 	 */
 	static getCharacterAnalysisData(unicode_codepoint) {
 
-		const output = {};
+		// 基本情報取得
 		const cp932code = CP932.toCP932FromUnicode(unicode_codepoint);
 		const sjis2004code = SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
 		const kuten = SJIS.toKuTenFromSJISCode(cp932code);
 		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis2004code);
 
+		// 出力データの箱を用意
+		const data = {};
+		const encode = {};
+		const info = {};
+		data.encode = encode;
+		data.info = info;
+		data.character = Unicode.fromCodePoint(unicode_codepoint);
+		data.codepoint = unicode_codepoint;
+
 		// 句点と面区点情報(ない場合はnullになる)
-		output.kuten = kuten;
-		output.menkuten = menkuten;
+		encode.kuten			= kuten;
+		encode.menkuten			= menkuten;
+		// コードの代入
+		encode.cp932_code		= cp932code ? cp932code : -1;
+		encode.sjis2004_code	= sjis2004code ? sjis2004code : -1;
 
 		// 漢字が常用漢字か、人名用漢字かなど
-		output.isJoyoKanjiBefore1981 = JapaneseKanji.isJoyoKanjiBefore1981(unicode_codepoint);
-		output.isJoyoKanji1981 = JapaneseKanji.isJoyoKanji1981(unicode_codepoint);
-		output.isJoyoKanji2010 = JapaneseKanji.isJoyoKanji2010(unicode_codepoint);
-		output.isOnlyJinmeiyoKanji2017 = JapaneseKanji.isOnlyJinmeiyoKanji2017(unicode_codepoint);
-		output.isJinmeiyoKanji2017 = JapaneseKanji.isJinmeiyoKanji2017(unicode_codepoint);
-		output.isJoyoKanji = JapaneseKanji.isJoyoKanji(unicode_codepoint);
-		output.isOnlyJinmeiyoKanji = JapaneseKanji.isOnlyJinmeiyoKanji(unicode_codepoint);
-		output.isJinmeiyoKanji = JapaneseKanji.isJinmeiyoKanji(unicode_codepoint);
+		info.is_JoyoKanji		= Character.isJoyoKanji(unicode_codepoint);
+		info.is_JinmeiyoKanji	= Character.isJinmeiyoKanji(unicode_codepoint);
 
 		// Windows-31J(CP932) に関しての調査 
-		output.isCP932Gaiji = false;
-		output.isCP932IBMExtendedCharacter = false;
-		output.isCP932NECSelectionIBMExtendedCharacter = false;
-		output.isCP932NECSpecialCharacter = false;
+		info.is_Gaiji								= false;
+		info.is_IBMExtendedCharacter				= false;
+		info.is_NECSelectionIBMExtendedCharacter	= false;
+		info.is_NECSpecialCharacter				= false;
 		if(cp932code) {
 			// 外字
-			output.isCP932Gaiji = (0xf040 <= cp932code) && (cp932code <= 0xf9fc);
+			info.is_Gaiji					= (0xf040 <= cp932code) && (cp932code <= 0xf9fc);
 			// IBM拡張文字
-			output.isCP932IBMExtendedCharacter = (0xfa40 <= cp932code) && (cp932code <= 0xfc4b);
+			info.is_IBMExtendedCharacter	= (0xfa40 <= cp932code) && (cp932code <= 0xfc4b);
 			// NEC選定IBM拡張文字
-			output.isCP932NECSelectionIBMExtendedCharacter = (0xed40 <= cp932code) && (cp932code <= 0xeefc);
+			info.is_NECSelectionIBMExtendedCharacter= (0xed40 <= cp932code) && (cp932code <= 0xeefc);
 			// NEC特殊文字
-			output.isCP932NECSpecialCharacter = (0x8740 <= cp932code) && (cp932code <= 0x879C);
+			info.is_NECSpecialCharacter		= (0x8740 <= cp932code) && (cp932code <= 0x879C);
 		}
 
 		// Shift_JIS-2004 を使用して漢字の水準調査(ない場合はnullになる)
-		output.suijun = SJIS.toJISKanjiSuijunFromSJISCode(sjis2004code);
-
-		// コードの代入
-		output.cp932code = cp932code ? cp932code : -1;
-		output.sjis2004code = sjis2004code ? sjis2004code : -1;
+		info.kanji_suijun = SJIS.toJISKanjiSuijunFromSJISCode(sjis2004code);
 
 		// Unicodeの配列
-		output.moji = Unicode.fromCodePoint(unicode_codepoint);
-		output.codepoint = unicode_codepoint;
-		output.utf8_array = Unicode.toUTF8Array(output.moji);
-		output.utf16_array = Unicode.toUTF16Array(output.moji);
-		output.utf32_array = [unicode_codepoint];
-		output.isSurrogatePairAt = output.utf16_array.length > 1;
+		encode.utf8_array = Unicode.toUTF8Array(data.character);
+		encode.utf16_array = Unicode.toUTF16Array(data.character);
+		encode.utf32_array = [unicode_codepoint];
+		info.is_SurrogatePair = encode.utf16_array.length > 1;
 
 		// SJIS系の配列
-		output.cp932_array = cp932code ? ((cp932code >= 0x100) ? [cp932code >> 8, cp932code & 0xff] : [cp932code]) : [];
-		output.sjis2004_array = sjis2004code ? ((sjis2004code >= 0x100) ? [sjis2004code >> 8, sjis2004code & 0xff] : [sjis2004code]) : [];
+		encode.cp932_array = cp932code ? ((cp932code >= 0x100) ? [cp932code >> 8, cp932code & 0xff] : [cp932code]) : [];
+		encode.sjis2004_array = sjis2004code ? ((sjis2004code >= 0x100) ? [sjis2004code >> 8, sjis2004code & 0xff] : [sjis2004code]) : [];
 
-		return output;
+		// 制御文字かどうか
+		info.control_name = Character.getControlCharcterName(unicode_codepoint);
+		info.is_ControlCharcter = info.control_name ? true : false;
+
+		return data;
 	}
 
 }
