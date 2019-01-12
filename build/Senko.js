@@ -6990,7 +6990,7 @@ class CharacterAnalyser {
 		info.is_hiragana = /Hiragana/.test(info.blockname);
 		info.is_katakana = /Katakana/.test(info.blockname);
 		info.is_fullwidth_ascii = /[\u3000\uFF01-\uFF5E]/.test(data.character);
-		info.is_halfwidth_katakana = /[\u3001\u3002\u300C\u300D\u309B\u309C\u30A1-\u30FC]/.test(data.character);
+		info.is_halfwidth_katakana = /[\uFF61-\uFF9F]/.test(data.character);
 		// 絵文字
 		info.is_emoji = /Pictographs/.test(info.blockname);
 		// 顔文字
