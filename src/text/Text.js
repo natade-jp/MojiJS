@@ -53,6 +53,7 @@ const Text = {
 	toUnicodeCodeFromKuTen : SJIS.toUnicodeCodeFromKuTen,
 	toJISKanjiSuijunFromSJISCode : SJIS.toJISKanjiSuijunFromSJISCode,
 	toJISKanjiSuijunFromUnicode : SJIS.toJISKanjiSuijunFromUnicode,
+	isRegularMenKuten : SJIS.isRegularMenKuten,
 
 	CP932 : CP932,
 	toCP932FromUnicode : CP932.toCP932FromUnicode,

@@ -276,24 +276,31 @@ export default class SJIS {
 	
 	/**
 	 * 指定した面区点番号から Shift_JIS-2004 コードを取得する
-	 * @param {Object} menkuten 面区点番号
+	 * @param {Object} menkuten 面区点番号（面が省略された場合は、1とみなす）
 	 * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
 	 */
 	static toSJIS2004CodeFromMenKuTen(menkuten) {
 		let m, k, t;
 		if(menkuten instanceof Object) {
-			m = menkuten.men;
+			m = menkuten.men ? menkuten.men : 1;
 			k = menkuten.ku;
 			t = menkuten.ten;
 		}
 		else if((typeof menkuten === "string")||(menkuten instanceof String)) {
 			const strmkt = menkuten.split("-");
-			if(strmkt.length !== 3) {
+			if(strmkt.length === 3) {
+				m = parseInt(strmkt[0], 10);
+				k = parseInt(strmkt[1], 10);
+				t = parseInt(strmkt[2], 10);
+			}
+			else if(strmkt.length === 2) {
+				m = 1;
+				k = parseInt(strmkt[0], 10);
+				t = parseInt(strmkt[1], 10);
+			}
+			else {
 				throw "IllegalArgumentException";
 			}
-			m = parseInt(strmkt[0], 10);
-			k = parseInt(strmkt[1], 10);
-			t = parseInt(strmkt[2], 10);
 		}
 		else {		
 			throw "IllegalArgumentException";
@@ -444,32 +451,10 @@ export default class SJIS {
 	 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
 	 */
 	static toSJISCodeFromKuTen(kuten) {
-		let k, t;
-		if(kuten instanceof Object) {
-			k = kuten.ku;
-			t = kuten.ten;
-		}
-		else if((typeof kuten === "string")||(kuten instanceof String)) {
-			const strmkt = kuten.split("-");
-			if(strmkt.length !== 2) {
-				throw "IllegalArgumentException";
-			}
-			k = parseInt(strmkt[1], 10);
-			t = parseInt(strmkt[2], 10);
-		}
-		else {		
-			throw "IllegalArgumentException";
-		}
-		// 一般的には「区」は、1～94区まで存在しているため流用できるが、
-		// 実際は、範囲外の区、115区〜119区にIBM拡張文字が存在している。
-		const m = 1;
-		return SJIS.toSJIS2004CodeFromMenKuTen(
-			{
-				men : m,
-				ku : k,
-				ten : t
-			}
-		);
+		// 1～94区まで存在しているため面句点変換用で流用可能。
+		// ただ、CP932の場合、範囲外の区、115区〜119区にIBM拡張文字が存在している。
+		// 今回、toSJIS2004CodeFromMenKuTenでは区の範囲チェックをしないため問題なし。
+		return SJIS.toSJIS2004CodeFromMenKuTen(kuten);
 	}
 	
 	/**
@@ -566,4 +551,56 @@ export default class SJIS {
 		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
 		return SJIS.toJISKanjiSuijunFromSJISCode(x);
 	}
+
+	/**
+	 * 指定した面区点番号から Shift_JIS の仕様上、正規な物かチェックする
+	 * @param {Object} menkuten 面区点番号（面が省略された場合は、1とみなす）
+	 * @returns {Boolean} 正規なデータは true, 不正なデータは false
+	 */
+	static isRegularMenKuten(menkuten) {
+		let m, k, t;
+		if(menkuten instanceof Object) {
+			m = menkuten.men ? menkuten.men : 1;
+			k = menkuten.ku;
+			t = menkuten.ten;
+		}
+		else if((typeof menkuten === "string")||(menkuten instanceof String)) {
+			const strmkt = menkuten.split("-");
+			if(strmkt.length === 3) {
+				m = parseInt(strmkt[0], 10);
+				k = parseInt(strmkt[1], 10);
+				t = parseInt(strmkt[2], 10);
+			}
+			else if(strmkt.length === 2) {
+				m = 1;
+				k = parseInt(strmkt[0], 10);
+				t = parseInt(strmkt[1], 10);
+			}
+			else {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+		const kmap = {1:1,3:1,4:1,5:1,8:1,12:1,13:1,14:1,15:1};
+		if(m === 1) {
+			if(!((1 <= k) && (k <= 94))) {
+				return false;
+			}
+		}
+		else if(m === 2) {
+			if(!((kmap[k]) || ((78 <= k) && (k <= 94)))) {
+				return false;
+			}
+		}
+		else {
+			return false;
+		}
+		if(!((1 <= t) && (t <= 94))) {
+			return false;
+		}
+		return true;
+	}
+
 }
