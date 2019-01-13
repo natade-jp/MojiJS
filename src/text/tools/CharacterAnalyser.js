@@ -456,7 +456,7 @@ export default class CharacterAnalyser {
 		encode.sjis2004_array = sjis2004code ? ((sjis2004code >= 0x100) ? [sjis2004code >> 8, sjis2004code & 0xff] : [sjis2004code]) : [];
 
 		// ISO-2022-JP , EUC-JP
-		if(kuten) {
+		if(cp932code < 0xE0 || kuten) {
 			if(cp932code < 0x80) {
 				encode.shift_jis_array = [cp932code];
 				encode.iso2022jp_array = [];
