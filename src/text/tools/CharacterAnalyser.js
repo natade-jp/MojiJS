@@ -411,7 +411,7 @@ export default class CharacterAnalyser {
 		const kuten = SJIS.toKuTenFromSJISCode(cp932code);
 		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis2004code);
 		const is_regular_sjis = cp932code < 0x100 || SJIS.isRegularMenKuten(kuten);
-		const is_regular_sjis2004 = cp932code < 0x100 || SJIS.isRegularMenKuten(menkuten);
+		const is_regular_sjis2004 = sjis2004code < 0x100 || SJIS.isRegularMenKuten(menkuten);
 
 		// 出力データの箱を用意
 		const data = {};
