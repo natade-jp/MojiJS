@@ -6931,7 +6931,8 @@ class CharacterAnalyser {
 		const sjis2004code = SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
 		const kuten = SJIS.toKuTenFromSJISCode(cp932code);
 		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis2004code);
-		const is_regular_sjis = cp932code < 0x100 || SJIS.isRegularMenKuten(menkuten);
+		const is_regular_sjis = cp932code < 0x100 || SJIS.isRegularMenKuten(kuten);
+		const is_regular_sjis2004 = cp932code < 0x100 || SJIS.isRegularMenKuten(menkuten);
 
 		// 出力データの箱を用意
 		const data = {};
@@ -6951,6 +6952,7 @@ class CharacterAnalyser {
 
 		// Shift_JIS として許容されるか
 		info.is_regular_sjis	= is_regular_sjis;
+		info.is_regular_sjis2004 = is_regular_sjis2004;
 
 		// 漢字が常用漢字か、人名用漢字かなど
 		info.is_joyo_kanji		= Character.isJoyoKanji(unicode_codepoint);
