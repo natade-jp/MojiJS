@@ -3773,6 +3773,27 @@ class CP932MAP {
 			unicode_to_cp932_map[x] = key;
 		}
 
+		// 逆引きの注意点
+
+		// 半角￥マーク問題
+		// 半角￥マークは、Shift_JISの「5c 0xReverse Solidus 逆斜線」にする
+		// Unicode '¥' 0x00a5 Yen Sign 半角円マーク
+		unicode_to_cp932_map[0xa5] = 0x5c;
+
+		// 波線問題
+		// SJIS2004上は 0x8160 と 0x81B0 とで区別されている。
+		// Shift_JISは 0x301c を 0x8160 に統一
+		// Unicode '〜' 0x301c Shift_JIS-2004 0x8160 Wave Dash 波ダッシュ
+		// Unicode '～' 0xff5e Shift_JIS-2004 0x81B0 Fullwidth Tilde 全角チルダ
+		unicode_to_cp932_map[0x301c] = 0x8160;
+
+		// マイナス問題
+		// SJIS2004上は 0x817c と 0x81af とで区別されている。
+		// Shift_JISは、0x2212 を全角負記号 0x817c へ変更
+		// Unicode `−` 0x2212 Shift_JIS-2004 0x817c 負符号/減算記号
+		// Unicode `－` 0xff0d Shift_JIS-2004 0x81af ハイフンマイナス
+		unicode_to_cp932_map[0x2212] = 0x817c;
+
 		CP932MAP.cp932_to_unicode_map = cp932_to_unicode_map;
 		CP932MAP.unicode_to_cp932_map = unicode_to_cp932_map;
 	}
@@ -5370,6 +5391,9 @@ class SJIS2004MAP {
 				}
 			}
 		}
+
+		// 逆引きの注意点についてはCP932のソースコードのコメントに記載
+		unicode_to_sjis2004_map[0xa5] = 0x5c;
 
 		SJIS2004MAP.sjis2004_to_unicode_map = sjis2004_to_unicode_map;
 		SJIS2004MAP.unicode_to_sjis2004_map = unicode_to_sjis2004_map;

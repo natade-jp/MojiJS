@@ -1508,6 +1508,9 @@ class SJIS2004MAP {
 			}
 		}
 
+		// 逆引きの注意点についてはCP932のソースコードのコメントに記載
+		unicode_to_sjis2004_map[0xa5] = 0x5c;
+
 		SJIS2004MAP.sjis2004_to_unicode_map = sjis2004_to_unicode_map;
 		SJIS2004MAP.unicode_to_sjis2004_map = unicode_to_sjis2004_map;
 	}
