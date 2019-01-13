@@ -6931,7 +6931,7 @@ class CharacterAnalyser {
 		const sjis2004code = SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
 		const kuten = SJIS.toKuTenFromSJISCode(cp932code);
 		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis2004code);
-		const is_regular_sjis = SJIS.isRegularMenKuten(menkuten);
+		const is_regular_sjis = cp932code < 0x100 || SJIS.isRegularMenKuten(menkuten);
 
 		// 出力データの箱を用意
 		const data = {};
@@ -6979,28 +6979,34 @@ class CharacterAnalyser {
 		// ISO-2022-JP , EUC-JP
 		if(kuten) {
 			if(cp932code < 0x80) {
+				encode.shift_jis = [cp932code];
 				encode.iso2022jp_array = [];
 				encode.eucjp_array = [cp932code];
 			}
 			else {
 				// 半角カタカナの扱い
 				if(cp932code < 0xE0) {
+					encode.shift_jis = [cp932code];
 					encode.iso2022jp_array = [];
 					encode.eucjp_array = [0x80, cp932code];
 				}
 				else {
+					encode.shift_jis = [encode.cp932_array[0], encode.cp932_array[1]];
 					encode.iso2022jp_array = [kuten.ku + 0x20, kuten.ten + 0x20];
 					encode.eucjp_array = [kuten.ku + 0xA0, kuten.ten + 0xA0];
 				}
 			}
 		}
 		else {
+			encode.shift_jis = [];
 			encode.iso2022jp_array = [];
 			encode.eucjp_array = [];
 		}
 		// SJISとして正規でなければ強制エンコード失敗
 		if(!is_regular_sjis) {
+			encode.shift_jis = [];
 			encode.iso2022jp_array = [];
+			encode.eucjp_array = [];
 		}
 
 		// 制御文字かどうか
