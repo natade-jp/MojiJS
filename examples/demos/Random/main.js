@@ -1,6 +1,6 @@
 import Senko from "../../libs/Senko.js";
 
-const Random = Senko.Random;
+const Random = Senko.Number.Random;
 
 const main = function() {
 

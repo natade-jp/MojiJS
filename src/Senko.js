@@ -13,14 +13,11 @@ import Color from "./basic/Color.js";
 import File from "./basic/File.js";
 import HashMap from "./basic/HashMap.js";
 import Text from "./text/Text.js";
+import SNumber from "./math/SNumber.js";
 
 import Device from "./device/Device.js";
 import ImageProcessing from "./graphics/ImageProcessing.js";
 import SComponent from "./gui/SComponent.js";
-import Complex from "./math/Complex.js";
-import BigDecimal from "./math/BigDecimal.js";
-import BigInteger from "./math/BigInteger.js";
-import Random from "./math/Random.js";
 import S3 from "./renderer/S3.js";
 
 const Senko = {
@@ -74,13 +71,10 @@ Senko.Color = Color;
 Senko.File = File;
 Senko.HashMap = HashMap;
 Senko.Text = Text;
+Senko.Number = SNumber;
 Senko.Device = Device;
 Senko.ImageProcessing = ImageProcessing;
 Senko.SComponent = SComponent;
-Senko.Complex = Complex;
-Senko.BigDecimal = BigDecimal;
-Senko.BigInteger = BigInteger;
-Senko.Random = Random;
 Senko.S3 = S3;
 
 export default Senko;

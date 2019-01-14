@@ -1,6 +1,6 @@
 ﻿import Senko from "../../libs/Senko.js";
 
-const BigDecimal = Senko.BigDecimal;
+const BigDecimal = Senko.Number.BigDecimal;
 
 const testPlainStringAndEngineeringString = function(x) {
 	const decimal = new BigDecimal(x);

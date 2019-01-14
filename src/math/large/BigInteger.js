@@ -8,7 +8,7 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-import Random from "./Random.js";
+import Random from "../basic/Random.js";
 
 // 内部では1変数内の中の16ビットごとに管理
 // 2変数で16ビット*16ビットで32ビットを表す

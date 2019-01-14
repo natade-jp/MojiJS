@@ -7143,6 +7143,2689 @@ const Text$1 = {
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
+class Complex {
+
+	constructor() {
+		if(arguments.length === 1) {
+			const obj = arguments[0];
+			if((obj instanceof Complex) || ((obj instanceof Object) && (obj.r && obj.i))) {
+				this.re = obj.r;
+				this.im = obj.i;
+			}
+			else if(typeof obj === "number" || obj instanceof Number) {
+				this.re = obj;
+				this.im = 0.0;
+			}
+			else if(obj instanceof Array && obj.length === 2) {
+				this.re = obj[0];
+				this.im = obj[1];
+			}
+			else if(typeof obj === "string" || obj instanceof String) {
+				const str = obj.replace(/\s/g, "").toLowerCase();
+				if(!(/[ij]/.test(str))) {
+					this.re = parseFloat(str);
+					this.im = 0.0;
+				}
+				// +i , -j のみ
+				else if((/^[-+]?[ij]/.test(str))) {
+					this.re = 0;
+					if(/^\+/.test(str)) {
+						this.im = 1;
+					}
+					else {
+						this.im = -1;
+					}
+				}
+				else {
+					const buff = str.match(/^([+-]?)([0-9]+)(\.[0-9]+)?(e[+-]?[0-9]+)?/);
+					if(buff) {
+						const a = buff[0];
+						const b = str.substr(a.length);
+						// bの1文字目がiかjであれば、実数部なしの宣言
+						if(/^[ij]/.test(b.charAt(0))) {
+							this.re = 0;
+							this.im = parseFloat(a);
+						}
+						else {
+							this.re = parseFloat(a);
+							this.im = parseFloat(b);
+						}
+					}
+					else {
+						this.re = 0.0;
+						this.im = parseFloat(buff[0]);
+					}
+				}
+			}
+			else {
+				throw "IllegalArgumentException";
+			}
+		}
+		else if(arguments.length === 2) {
+			const obj_0 = arguments[0];
+			const obj_1 = arguments[1];
+			if(((typeof obj_0 === "number")||(obj_0 instanceof Number)) && ((typeof obj_1 === "number")||(obj_1 instanceof Number))) {
+				this.re = obj_0;
+				this.im = obj_1;
+			}
+			else {
+				throw "IllegalArgumentException";
+			}
+		}
+		else {
+			throw "IllegalArgumentException";
+		}
+	}
+
+	toString() {
+		const formatG = function(x) {
+			let numstr = x.toPrecision(6);
+			if(numstr.indexOf(".") !== -1) {
+				numstr = numstr.replace(/\.?0+$/, "");  // 1.00 , 1.10
+				numstr = numstr.replace(/\.?0+e/, "e"); // 1.0e , 1.10e
+			}
+			return numstr;
+		};
+		if(this.im !== 0) {
+			if(this.re === 0) {
+				return formatG(this.im) + "j";
+			}
+			else if(this.im >= 0) {
+				return formatG(this.re) + " + " + formatG(this.im) + "j";
+			}
+			else {
+				return formatG(this.re) + " - " + formatG(-this.im) + "j";
+			}
+		}
+		else {
+			return formatG(this.re);
+		}
+	}
+	
+	clone() {
+		new Complex(this.re, this.im);
+	}
+
+	add() {
+		const x = new Complex(...arguments);
+		x.re = this.re + x.re;
+		x.im = this.im + x.im;
+		return x;
+	}
+
+	sub() {
+		const x = new Complex(...arguments);
+		x.re = this.re - x.re;
+		x.im = this.im - x.im;
+		return x;
+	}
+
+	mul() {
+		const x = new Complex(...arguments);
+		if((this.im === 0) && (x.im === 0)) {
+			x.re = this.re * x.re;
+			return x;
+		}
+		else if((this.re === 0) && (x.re === 0)) {
+			x.im = this.im * x.im;
+			return x;
+		}
+		else {
+			const re = this.re * x.re - this.im * x.im;
+			const im = this.im * x.re + this.re * x.im;
+			x.re = re;
+			x.im = im;
+			return x;
+		}
+	}
+	
+	div() {
+		const x = new Complex(...arguments);
+		if((this.im === 0) && (x.im === 0)) {
+			x.re = this.re / x.re;
+			return x;
+		}
+		else if((this.re === 0) && (x.re === 0)) {
+			x.im = this.im / x.im;
+			return x;
+		}
+		else {
+			const re = this.re * x.re + this.im * x.im;
+			const im = this.im * x.re - this.re * x.im;
+			const denominator = 1.0 / (x.re * x.re + x.im * x.im);
+			x.re = re * denominator;
+			x.im = im * denominator;
+			return x;
+		}
+	}
+
+	get norm() {
+		if(this.im === 0) {
+			return new Complex(this.re);
+		}
+		else if(this.re === 0) {
+			return new Complex(this.im);
+		}
+		else {
+			return new Complex(Math.sqrt(this.re * this.re + this.im * this.im));
+		}
+	}
+
+	get angle() {
+		if(this.im === 0) {
+			return new Complex(0);
+		}
+		else if(this.re === 0) {
+			return new Complex(Math.PI * (this.im >= 0.0 ? 0.5 : -0.5));
+		}
+		else {
+			return new Complex(Math.atan2(this.im, this.re));
+		}
+	}
+
+	max() {
+		const x = new Complex(...arguments);
+		const y1 = this.norm;
+		const y2 = x.norm;
+		if(y1 >= y2) {
+			return this;
+		}
+		else {
+			return x;
+		}
+	}
+
+	min() {
+		const x = new Complex(...arguments);
+		const y1 = this.norm;
+		const y2 = x.norm;
+		if(y1 <= y2) {
+			return this;
+		}
+		else {
+			return x;
+		}
+	}
+
+	pow() {
+		const x = new Complex(...arguments);
+		if((this.im === 0) && (x.im === 0)) {
+			x.re = Math.pow(this.re, x.re);
+			return x;
+		}
+		else if(x.im === 0) {
+			const r = Math.pow(this.norm.re, x.re);
+			const s = this.angle.re * x.re;
+			x.re = r * Math.cos(s);
+			x.im = r * Math.sin(s);
+			return x;
+		}
+		else {
+			throw "IllegalArgumentException";
+		}
+	}
+
+}
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+// 「M系列乱数」
+// 比較的長い 2^521 - 1通りを出力します。
+// 詳細は、奥村晴彦 著『C言語によるアルゴリズム辞典』を参照
+// 乱数はCでの動作と同じ値が出ることを確認。(seed = 1として1000番目の値が等しいことを確認)
+//
+// Javaの仕様に基づく48ビット線形合同法を実装仕様と思いましたが
+// 「キャリー付き乗算」、「XorShift」、「線形合同法」などは
+// 2つを組にしてプロットするといった使い方をすると、模様が見える可能性があるようで止めました。
+// 有名で超高性能な「メルセンヌツイスタ」は、MITライセンスのため組み込みませんでした。
+
+class Random {
+		
+	constructor() {
+		this.x = [];
+		for(let i = 0;i < 521;i++) {
+			this.x[i] = 0;
+		}
+		if(arguments.length >= 1) {
+			this.setSeed(arguments[0]);
+		}
+		else {
+			// 線形合同法で適当に乱数を作成する
+			const seed = ((new Date()).getTime() + Random.seedUniquifier) & 0xFFFFFFFF;
+			Random.seedUniquifier = (Random.seedUniquifier + 1) & 0xFFFFFFFF;
+			this.setSeed(seed);
+		}
+	}
+
+	static _unsigned32(x) {
+		return ((x < 0) ? ((x & 0x7FFFFFFF) + 0x80000000) : x);
+	}
+	
+	_multiplication32(x1, x2) {
+		let b = (x1 & 0xFFFF) * (x2 & 0xFFFF);
+		let y = Random._unsigned32(b);
+		b = (x1 & 0xFFFF) * (x2 >>> 16);
+		y = Random._unsigned32(y + ((b & 0xFFFF) << 16));
+		b = (x1 >>> 16) * (x2 & 0xFFFF);
+		y = Random._unsigned32(y + ((b & 0xFFFF) << 16));
+		return (y & 0xFFFFFFFF);
+	}
+
+	_rnd521() {
+		const x = this.x;
+		for(let i = 0; i < 32; i++) {
+			x[i] ^= x[i + 489];
+		}
+		for(let i = 32; i < 521; i++) {
+			x[i] ^= x[i - 32];
+		}
+	}
+
+	setSeed(seed) {
+		// 伏見「乱数」東京大学出版会,1989 の方法により初期値を設定
+		let u = 0;
+		const x = this.x;
+		// seedを使用して線形合同法でx[0-16]まで初期値を設定
+		for(let i = 0; i <= 16; i++) {
+			for(let j = 0; j < 32; j++) {
+				seed = this._multiplication32(seed, 0x5D588B65) + 1;
+				u = (u >>> 1) + ((seed < 0) ? 0x80000000 : 0);
+			}
+			x[i] = u;
+		}
+		// 残りのビットはx[i] = x[i-32] ^ x[i-521]で生成
+		for(let i = 16; i < 521; i++) {
+			u = (i === 16) ? i : (i - 17);
+			x[i] = ((x[u] << 23) & 0xFFFFFFFF) ^ (x[i - 16] >>> 9) ^ x[i - 1];
+		}
+		// ビットをシャッフル
+		for(let i = 0; i < 4; i++) {
+			this._rnd521();
+		}
+		this.xi = 0;
+		this.haveNextNextGaussian = false;
+		this.nextNextGaussian = 0;
+	}
+
+	genrand_int32() {
+		// 全て使用したら、再び混ぜる
+		if(this.xi === 521) {
+			this._rnd521();
+			this.xi = 0;
+		}
+		const y = Random._unsigned32(this.x[this.xi]);
+		this.xi = this.xi + 1;
+		return y;
+	}
+
+	next(bits) {
+		if(bits === 0) {
+			return 0;
+		}
+		else if(bits === 32) {
+			return this.genrand_int32();
+		}
+		else if(bits < 32) {
+			// 線形合同法ではないため
+
+			// 上位のビットを使用しなくてもいいがJavaっぽく。
+			return (this.genrand_int32() >>> (32 - bits));
+		}
+		// double型のため、52ビットまでは、整数として出力可能
+		else if(bits === 63) {
+			// 正の値を出力するように調節
+			return (this.next(32) * 0x80000000 + this.next(32));
+		}
+		else if(bits === 64) {
+			return (this.next(32) * 0x100000000 + this.next(32));
+		}
+		else if(bits < 64) {
+			return (this.genrand_int32() * (1 << (bits - 32)) + (this.genrand_int32()  >>> (64 - bits)));
+		}
+	}
+
+	nextBytes(y) {
+		// 配列yに乱数を入れる
+		// 8ビットのために、32ビット乱数を1回回すのはもったいない
+		for(let i = 0;i < y.length; i++) {
+			y[i] = this.next(8);
+		}
+		return;
+	}
+
+	nextInt() {
+		if(arguments.length === 1) {
+			let r, y;
+			const a = arguments[0];
+			do {
+				r = Random._unsigned32(this.genrand_int32());
+				y = r % a;
+			} while((r - y + a) > 0x100000000 );
+			return y;
+		}
+		return (this.next(32) & 0xFFFFFFFF);
+	}
+
+	nextLong() {
+		return this.next(64);
+	}
+
+	nextBoolean() {
+		// 1ビットのために、32ビット乱数を1回回すのはもったいない
+		return (this.next(1) !== 0);
+	}
+
+	nextFloat() {
+		return (this.next(24) / 0x1000000);
+	}
+
+	nextDouble() {
+		const a1 = this.next(26) * 0x8000000 + this.next(27);
+		const a2 = 0x8000000 * 0x4000000;
+		return (a1 / a2);
+	}
+
+	nextGaussian() {
+		if(this.haveNextNextGaussian) {
+			this.haveNextNextGaussian = false;
+			return this.nextNextGaussian;
+		}
+		const a = Math.sqrt( -2 * Math.log( this.nextDouble() ) );
+		const b = 2 * Math.PI * this.nextDouble();
+		const y = a * Math.sin(b);
+		this.nextNextGaussian = a * Math.cos(b);
+		this.haveNextNextGaussian = true;
+		return y;
+	}
+}
+
+Random.seedUniquifier = 0x87654321;
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+// 内部では1変数内の中の16ビットごとに管理
+// 2変数で16ビット*16ビットで32ビットを表す
+
+class BigInteger {
+
+	constructor() {
+		this.element     = [];
+		this.sign        = 0;
+		if((arguments.length === 2) && (typeof Random !== "undefined") && (arguments[1] instanceof Random)) {
+			this.sign = 1;
+			const len = arguments[0];
+			const random = arguments[1];
+			const size = ((len - 1) >> 4) + 1;
+			let r;
+			if(len === 0) {
+				return;
+			}
+			for(let i = 0, j = 0; i < size; i++) {
+				if(j === 0) {
+					r = random.nextInt(); // 32ビットずつ作成する
+					this.element[i] = r & 0xFFFF;
+					j = 1;
+				}
+				else {
+					this.element[i] = (r >>> 16) & 0xFFFF;
+					j = 0;
+				}
+			}
+			// 1～15ビット余る場合は、16ビットずつ作成しているので削る
+			if((len % 16) !== 0) {
+				this.element[this.element.length - 1] &= (1 << (len % 16)) - 1;
+			}
+			// 最後のビットに 0 をたくさん作成していると、
+			// 0のみのデータになる可能性があるためメモリを修正
+			this._memory_reduction();
+		}
+		else if(arguments.length === 3) {
+			if(typeof Random === "undefined") {
+				return;
+			}
+			while(true) {
+				const x = new BigInteger(arguments[0], arguments[2]);
+				if(x.isProbablePrime(arguments[1])) {
+					this.element = x.element;
+					this.sign = x.sign;
+					break;
+				}
+			}
+		}
+		else if(arguments.length >= 1) {
+			this.sign = 1;
+			const obj = arguments[0];
+			if(obj instanceof BigInteger) {
+				for(let i = 0; i < arguments[0].element.length; i++) {
+					this.element[i] = arguments[0].element[i];
+				}
+				this.sign = arguments[0].sign;
+			}
+			else if((typeof obj === "number")||(obj instanceof Number)) {
+				let x = arguments[0];
+				if(x < 0) {
+					this.sign = -1;
+					x = -x;
+				}
+				this.element = this._number_to_binary_number(x);
+			}
+			else if((typeof obj === "string")||(obj instanceof String)) {
+				let x = arguments[0].replace(/\s/g, "").toLowerCase();
+				let buff = x.match(/^[-+]+/);
+				if(buff !==  null) {
+					buff = buff[0];
+					x = x.substring(buff.length, x.length);
+					if(buff.indexOf("-") !==  -1) {
+						this.sign = -1;
+					}
+				}
+				if(arguments.length === 2) {
+					this.element = this._string_to_binary_number(x, arguments[1]);
+				}
+				else if(/^0x/.test(x)) {
+					this.element = this._string_to_binary_number(x.substring(2, x.length), 16);
+				}
+				else if(/^0b/.test(x)) {
+					this.element = this._string_to_binary_number(x.substring(2, x.length), 2);
+				}
+				else if(/^0/.test(x)) {
+					this.element = this._string_to_binary_number(x.substring(1, x.length), 8);
+				}
+				else {
+					this.element = this._string_to_binary_number(x, 10);
+				}
+				// "0"の場合がある為
+				if((this.element.length === 1)&&(this.element[0] === 0)) {
+					this.element = [];
+				}
+			}
+		}
+	}
+
+	equals(x) {
+		if(!(x instanceof BigInteger)) {
+			x = new BigInteger(x);
+		}
+		if(this.signum() !==  x.signum()) {
+			return false;
+		}
+		if(this.element.length !==  x.element.length) {
+			return false;
+		}
+		for(let i = 0;i < x.element.length; i++) {
+			if(this.element[i] !==  x.element[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	toString(radix) {
+		if(arguments.length === 0) {
+			radix = 10;
+		}
+		// int型で扱える数値で toString が可能なので、
+		// せっかくだからより大きな進数で計算していけば、あとでtoStringする回数が減るテクニック
+		// 2進数であれば、2^n乗で計算しても問題がない 4進数や8進数で計算して、2進数に戻せば巡回少数なし
+		// v0.03 出来る限りまとめてn進数変換する
+		const max_num = 0x3FFFFFFF;
+		//                        max_num > radix^x
+		// floor(log max_num / log radix) = x
+		const keta = Math.floor( Math.log(max_num) / Math.log(radix) );
+		const calcradix = Math.round(Math.pow(radix, keta));
+		// zeros = "00000000...."
+		let zeros = [];
+		let i;
+		for(i = 0; i < keta; i++) {
+			zeros[i] = "0";
+		}
+		zeros = zeros.join("");
+		// v0.03ここまで
+		const x = this._binary_number_to_string(this.element, calcradix);
+		const y = [];
+		let z = "";
+		if(this.signum() < 0) {
+			y[y.length] = "-";
+		}
+		for(i = x.length - 1;i >= 0; i--) {
+			z = x[i].toString(radix);
+			if(i < (x.length - 1)) {
+				y[y.length] = zeros.substring(0, keta - z.length);
+			}
+			y[y.length] = z;
+		}
+		return y.join("");
+	}
+
+	// 内部計算用
+	getShort(n) {
+		if((n < 0) || (this.element.length <= n)) {
+			return 0;
+		}
+		return this.element[n];
+	}
+
+	byteValue() {
+		let x = this.getShort(0);
+		x &= 0xFF;
+		if((x > 0)&&(this.sign < 0)) {
+			x = -x;
+		}
+		return x;
+	}
+
+	shortValue() {
+		let x = this.getShort(0);
+		x &= 0xFFFF;
+		if((x > 0)&&(this.sign < 0)) {
+			x = -x;
+		}
+		return x;
+	}
+
+	intValue() {
+		let x = this.getShort(0) + (this.getShort(1) << 16);
+		x &= 0xFFFFFFFF;
+		if((x > 0)&&(this.sign < 0)) {
+			x = -x;
+		}
+		return x;
+	}
+
+	longValue() {
+		let x = 0;
+		for(let i = 3; i >= 0; i--) {
+			x *= 65536;
+			x += this.getShort(i);
+		}
+		if(this.sign < 0) {
+			x = -x;
+		}
+		return x;
+	}
+
+	floatValue() {
+		return parseFloat(this.toString());
+	}
+
+	doubleValue() {
+		return parseFloat(this.toString());
+	}
+
+	clone() {
+		const y = new BigInteger();
+		y.element = this.element.slice(0);
+		y.sign    = this.sign;
+		return y;
+	}
+
+	getLowestSetBit() {
+		for(let i = 0;i < this.element.length;i++) {
+			if(this.element[i] !==  0) {
+				const x = this.element[i];
+				for(let j = 0; j < 16; j++) {
+					if(((x >>> j) & 1) !==  0) {
+						return i * 16 + j;
+					}
+				}
+			}
+		}
+		return -1;
+	}
+
+	bitLength() {
+		for(let i = this.element.length - 1;i >= 0;i--) {
+			if(this.element[i] !==  0) {
+				const x = this.element[i];
+				for(let j = 15; j >= 0; j--) {
+					if(((x >>> j) & 1) !==  0) {
+						return i * 16 + j + 1;
+					}
+				}
+			}
+		}
+		return 0;
+	}
+
+	bitCount() {
+		let target;
+		if(this.sign >= 0) {
+			target = this;
+		}
+		else {
+			target = this.add(new BigInteger(1));
+		}
+		const len = target.bitLength();
+		let bit = 0;
+		let count = 0;
+		for(let i = 0;bit < len;i++) {
+			const x = target.element[i];
+			for(let j = 0;((j < 16) && (bit < len));j++, bit++) {
+				if(((x >>> j) & 1) !==  0) {
+					count = count + 1;
+				}
+			}
+		}
+		return count;
+	}
+
+	// 内部計算用
+	// 負の場合は、2の補数表現を作成します
+	getTwosComplement(len) {
+		const y = this.clone();
+		if(y.sign >= 0) {
+			return y;
+		}
+		else {
+			// 正にする
+			y.sign = 1;
+			// ビットの数が存在しない場合は数える
+			if(arguments.length === 0) {
+				len = y.bitLength();
+			}
+			const e = y.element;
+			// ビット反転後
+			for(let i = 0; i < e.length; i++) {
+				e[i] ^= 0xFFFF;
+			}
+			// 1～15ビット余る場合は、16ビットずつ作成しているので削る
+			// nビットのマスク（なお負の値を表す最上位ビットは削除する）
+			if((len % 16) !== 0) {
+				e[e.length - 1] &= (1 << (len % 16)) - 1;
+			}
+			// 1を加算
+			y._add(new BigInteger(1));
+			return y;
+		}
+	}
+
+	_and(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		let e1  = this, e2 = val;
+		const s1  = e1.signum(), s2 = e2.signum();
+		const len = Math.max(e1.bitLength(), e2.bitLength());
+		// 引数が負の場合は、2の補数
+		e1 = e1.getTwosComplement(len).element;
+		e2 = e2.getTwosComplement(len).element;
+		const size = Math.max(e1.length, e2.length);
+		this.element = [];
+		for(let i = 0;i < size;i++) {
+			const x1 = (i >= e1.length) ? 0 : e1[i];
+			const x2 = (i >= e2.length) ? 0 : e2[i];
+			this.element[i] = x1 & x2;
+		}
+		if(this.bitLength() === 0) {
+			this.element = [];
+			this.sign = 0;
+		}
+		if((s1 === 1)||(s2 === 1)) {
+			this.sign = 1;
+		}
+		// 出力が負の場合は、2の補数
+		else if(this.sign === -1) {
+			this.element = this.getTwosComplement(len).element;
+		}
+		return this;
+	}
+
+	and(val) {
+		return this.clone()._and(val);
+	}
+
+	_or(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		let e1  = this, e2 = val;
+		const s1  = e1.signum(), s2 = e2.signum();
+		const len = Math.max(e1.bitLength(), e2.bitLength());
+		// 引数が負の場合は、2の補数
+		e1 = e1.getTwosComplement(len).element;
+		e2 = e2.getTwosComplement(len).element;
+		const size = Math.max(e1.length, e2.length);
+		this.element = [];
+		for(let i = 0;i < size;i++) {
+			const x1 = (i >= e1.length) ? 0 : e1[i];
+			const x2 = (i >= e2.length) ? 0 : e2[i];
+			this.element[i] = x1 | x2;
+		}
+		this.sign = ((s1 === -1)||(s2 === -1)) ? -1 : Math.max(s1, s2);
+		// 出力が負の場合は、2の補数
+		if(this.sign === -1) {
+			this.element = this.getTwosComplement(len).element;
+		}
+		return this;
+	}
+
+	or(val) {
+		return this.clone()._or(val);
+	}
+
+	_xor(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		let e1  = this, e2 = val;
+		const s1  = e1.signum(), s2 = e2.signum();
+		const len = Math.max(e1.bitLength(), e2.bitLength());
+		// 引数が負の場合は、2の補数
+		e1 = e1.getTwosComplement(len).element;
+		e2 = e2.getTwosComplement(len).element;
+		const size = Math.max(e1.length, e2.length);
+		this.element = [];
+		for(let i = 0;i < size;i++) {
+			const x1 = (i >= e1.length) ? 0 : e1[i];
+			const x2 = (i >= e2.length) ? 0 : e2[i];
+			this.element[i] = x1 ^ x2;
+		}
+		this.sign = ((s1 !== 0)&&(s1 !== s2)) ? -1 : 1;
+		// 出力が負の場合は、2の補数
+		if(this.sign === -1) {
+			this.element = this.getTwosComplement(len).element;
+		}
+		return this;
+	}
+
+	xor(val) {
+		return(this.clone()._xor(val));
+	}
+
+	_not() {
+		return(this._add(new BigInteger(1))._negate());
+	}
+
+	not() {
+		return(this.clone()._not());
+	}
+
+	_andNot(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		return(this._and(val.not()));
+	}
+
+	andNot(val) {
+		return(this.clone()._andNot(val));
+	}
+
+	_number_to_binary_number(x) {
+		if(x > 0xFFFFFFFF) {
+			return(this._string_to_binary_number(x.toFixed(), 10));
+		}
+		const y = [];
+		while(x !==  0) {
+			y[y.length] = x & 1;
+			x >>>= 1;
+		}
+		x = [];
+		for(let i = 0; i < y.length; i++) {
+			x[i >>> 4] |= y[i] << (i & 0xF);
+		}
+		return x;
+	}
+
+	_string_to_binary_number(text, radix) {
+		// 下の変換をすることで、2進数での変換時に内部のforの繰り返す回数が減る
+		// v0.03 出来る限りまとめてn進数変換する
+		const max_num = 0x3FFFFFFF;
+		const keta = Math.floor( Math.log(max_num) / Math.log(radix) );
+		const calcradix = Math.round(Math.pow(radix, keta));
+		let x = [];
+		const y = [];
+		const len = Math.ceil(text.length / keta);
+		let offset = text.length;
+		for(let i = 0; i < len; i++ ) {
+			offset -= keta;
+			if(offset >= 0) {
+				x[i] = parseInt(text.substring(offset, offset + keta), radix);
+			}
+			else {
+				x[i] = parseInt(text.substring(0, offset + keta), radix);
+			}
+		}
+		radix = calcradix;
+		// v0.03ここまで
+		// 2で割っていくアルゴリズムで2進数に変換する
+		while(x.length !==  0) {
+			// 2で割っていく
+			// 隣の桁でたcarryはradix進数をかけて桁上げしてる
+			let carry = 0;
+			for(let i = x.length - 1; i >= 0; i--) {
+				const a = x[i] + carry * radix;
+				x[i]  = a >>> 1;
+				carry = a & 1;
+			}
+			// 1余るかどうかをテストする
+			y[y.length] = carry;
+			// xが0になっている部分は削除していく
+			if(x[x.length - 1] === 0) {
+				x.pop();
+			}
+		}
+		// メモリ節約のため1つの変数（16ビット）に収めるだけ収めていく
+		x = [];
+		for(let i = 0; i < y.length; i++) {
+			x[i >>> 4] |= y[i] << (i & 0xF);
+		}
+		return x;
+	}
+
+	_binary_number_to_string(binary, radix) {
+		const add = function(x1, x2, y) {
+			const size = x1.length;
+			let carry = 0;
+			for(let i = 0; i < size; i++) {
+				y[i] = x1[i] + ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
+				if(y[i] >= radix) {
+					carry = 1;
+					y[i] -= radix;
+				}
+				else {
+					carry = 0;
+				}
+			}
+			if(carry === 1) {
+				y[size] = 1;
+			}
+		};
+		const y = [0];
+		const t = [1];
+		for(let i = 0;i < binary.length;i++) {
+			for(let j = 0; j < 16; j++) {
+				if((binary[i] >>> j) & 1) {
+					add(t, y, y);
+				}
+				add(t, t, t);
+			}
+		}
+		return y;
+	}
+
+	_memory_allocation(n) {
+		const elementsize = this.element.length << 4;
+		if(elementsize < n) {
+			const addsize = (((n - elementsize - 1) & 0xFFFFFFF0) >>> 4) + 1;
+			for(let i = 0;i < addsize;i++) {
+				this.element[this.element.length] = 0;
+			}
+		}
+	}
+
+	_memory_reduction() {
+		for(let i = this.element.length - 1;i >= 0;i--) {
+			if(this.element[i] !==  0) {
+				if(i < this.element.length - 1) {
+					this.element.splice(i + 1, this.element.length - i - 1);
+				}
+				return;
+			}
+		}
+		this.sign = 0;
+		this.element = [];
+	}
+
+	// ユークリッド互除法（非再帰）
+	// x = this, y = val としたとき gcd(x,y)を返す
+	gcd(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		let x = this, y = val, z;
+		while(y.signum() !== 0) {
+			z = x.remainder(y);
+			x = y;
+			y = z;
+		}
+		return x;
+	}
+
+	// 拡張ユークリッド互除法（非再帰）
+	// x = this, y = valとしたとき、 a*x + b*y = c = gcd(x, y) の[a, b, c]を返す
+	extgcd(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		const ONE  = new BigInteger(1);
+		const ZERO = new BigInteger(0);
+		let r0 = this, r1 = val, r2, q1;
+		let a0 = ONE,  a1 = ZERO, a2;
+		let b0 = ZERO, b1 = ONE,  b2;
+		while(r1.signum() !== 0) {
+			const y = r0.divideAndRemainder(r1);
+			q1 = y[0];
+			r2 = y[1];
+			a2 = a0.subtract(q1.multiply(a1));
+			b2 = b0.subtract(q1.multiply(b1));
+			a0 = a1;
+			a1 = a2;
+			b0 = b1;
+			b1 = b2;
+			r0 = r1;
+			r1 = r2;
+		}
+		return [a0, b0, r0];
+	}
+
+	_abs() {
+		// -1 -> 1, 0 -> 0, 1 -> 1
+		this.sign *= this.sign;
+		return this;
+	}
+
+	abs() {
+		return this.clone()._abs();
+	}
+
+
+	_negate() {
+		this.sign *= -1;
+		return this;
+	}
+
+	negate() {
+		return this.clone()._negate();
+	}
+
+	signum() {
+		if(this.element.length === 0) {
+			return 0;
+		}
+		return this.sign;
+	}
+
+	compareToAbs(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		if(this.element.length < val.element.length) {
+			return -1;
+		}
+		else if(this.element.length > val.element.length) {
+			return 1;
+		}
+		for(let i = this.element.length - 1;i >= 0;i--) {
+			if(this.element[i] !== val.element[i]) {
+				const x = this.element[i] - val.element[i];
+				return ( (x === 0) ? 0 : ((x > 0) ? 1 : -1) );
+			}
+		}
+		return 0;
+	}
+
+	compareTo(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		if(this.signum() !== val.signum()) {
+			if(this.sign > val.sign) {
+				return 1;
+			}
+			else {
+				return -1;
+			}
+		}
+		else if(this.signum() === 0) {
+			return 0;
+		}
+		return this.compareToAbs(val) * this.sign;
+	}
+
+	max(val) {
+		if(this.compareTo(val) >= 0) {
+			return this.clone();
+		}
+		else {
+			return val.clone();
+		}
+	}
+
+	min(val) {
+		if(this.compareTo(val) >= 0) {
+			return val.clone();
+		}
+		else {
+			return this.clone();
+		}
+	}
+
+	_shift(n) {
+		if(n === 0) {
+			return this;
+		}
+		const x = this.element;
+		// 1ビットなら専用コードで高速計算
+		if(n === 1) {
+			let i = x.length - 1;
+			if((x[i] & 0x8000) !==  0) {
+				x[x.length] = 1;
+			}
+			for(;i >= 0;i--) {
+				x[i] <<= 1;
+				x[i]  &= 0xFFFF;
+				if((i > 0) && ((x[i - 1] & 0x8000) !==  0)) {
+					x[i] += 1;
+				}
+			}
+		}
+		else if(n === -1) {
+			for(let i = 0;i < x.length;i++) {
+				x[i] >>>= 1;
+				if((i < x.length - 1) && ((x[i + 1] & 1) !==  0)) {
+					x[i] |= 0x8000;
+				}
+			}
+			if(x[x.length - 1] === 0) {
+				x.pop();
+			}
+		}
+		else {
+			// 16ビット単位なら配列を追加削除する高速計算
+			if(n >= 16) {
+				const m = n >>> 4;
+				for(let i = x.length - 1; i >= 0; i--) {
+					x[i + m] = x[i];
+				}
+				for(let i = m - 1; i >= 0; i--) {
+					x[i] = 0;
+				}
+				n &= 0xF;
+			}
+			else if(n <= -16){
+				const m = (-n) >>> 4;
+				x.splice(0, m);
+				n += m << 4;
+			}
+			if(n !== 0) {
+				// 15ビット以内ならビット演算でまとめて操作
+				if(0 < n) {
+					let carry = 0;
+					for(let i = 0; i < x.length; i++) {
+						x[i] = (x[i] << n) + carry;
+						if(x[i] > 0xFFFF) {
+							carry = x[i] >>> 16;
+							x[i] &= 0xFFFF;
+						}
+						else {
+							carry = 0;
+						}
+					}
+					if(carry !== 0) {
+						x[x.length] = carry;
+					}
+				}
+				else {
+					n = -n;
+					for(let i = 0; i < x.length; i++) {
+						if(i !== x.length - 1) {
+							x[i] += x[i + 1] << 16;
+							x[i] >>>= n;
+							x[i] &= 0xFFFF;
+						}
+						else {
+							x[i] >>>= n;
+						}
+					}
+					if(x[x.length - 1] === 0) {
+						x.pop();
+					}
+				}
+			}
+		}
+		return this;
+	}
+
+	shift(n) {
+		return this.clone()._shift(n);
+	}
+
+	shiftLeft(n) {
+		return this.shift(n);
+	}
+
+	shiftRight(n) {
+		return this.shift(-n);
+	}
+
+	_add(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		const o1 = this;
+		const o2 = val;
+		let x1 = o1.element;
+		let x2 = o2.element;
+		if(o1.sign === o2.sign) {
+			//足し算
+			this._memory_allocation(x2.length << 4);
+			let carry = 0;
+			for(let i = 0; i < x1.length; i++) {
+				x1[i] += ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
+				if(x1[i] > 0xFFFF) {
+					carry = 1;
+					x1[i] &= 0xFFFF;
+				}
+				else {
+					carry = 0;
+				}
+			}
+			if(carry !== 0) {
+				x1[x1.length] = carry;
+			}
+		}
+		else {
+			// 引き算
+			const compare = o1.compareToAbs(o2);
+			if(compare === 0) {
+				this.element = [];
+				this.sign = 1;
+				return this;
+			}
+			else if(compare === -1) {
+				this.sign = o2.sign;
+				const swap = x1;
+				x1 = x2.slice(0);
+				x2 = swap;
+			}
+			let carry = 0;
+			for(let i = 0; i < x1.length; i++) {
+				x1[i] -= ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
+				if(x1[i] < 0) {
+					x1[i] += 0x10000;
+					carry  = 1;
+				}
+				else {
+					carry  = 0;
+				}
+			}
+			this.element = x1;
+			this._memory_reduction();
+		}
+		return this;
+	}
+
+	add(val) {
+		return this.clone()._add(val);
+	}
+
+	_subtract(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		const sign = val.sign;
+		const out  = this._add(val._negate());
+		val.sign = sign;
+		return out;
+	}
+
+	subtract(val) {
+		return this.clone()._subtract(val);
+	}
+
+	_multiply(val) {
+		const x = this.multiply(val);
+		this.element = x.element;
+		this.sign    = x.sign;
+		return this;
+	}
+
+	multiply(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		const out  = new BigInteger();
+		const buff = new BigInteger();
+		const o1 = this;
+		const o2 = val;
+		const x1 = o1.element;
+		const x2 = o2.element;
+		const y  = out.element;
+		for(let i = 0; i < x1.length; i++) {
+			buff.element = [];
+			// x3 = x1[i] * x2
+			const x3 = buff.element;
+			let carry = 0;
+			for(let j = 0; j < x2.length; j++) {
+				x3[j] = x1[i] * x2[j] + carry;
+				if(x3[j] > 0xFFFF) {
+					carry = x3[j] >>> 16;
+					x3[j] &= 0xFFFF;
+				}
+				else {
+					carry = 0;
+				}
+			}
+			if(carry !== 0) {
+				x3[x3.length] = carry;
+			}
+			// x3 = x3 << (i * 16)
+			//buff._shift(i << 4);
+			for(let j = x3.length - 1; j >= 0; j--) {
+				x3[j + i] = x3[j];
+			}
+			for(let j = i - 1; j >= 0; j--) {
+				x3[j] = 0;
+			}
+			// y = y + x3 (out._add(buff))
+			//out._add(buff);
+			carry = 0;
+			out._memory_allocation(x3.length << 4);
+			for(let j = i; j < y.length; j++) {
+				y[j] += ((x3.length >= (j + 1)) ? x3[j] : 0) + carry;
+				if(y[j] > 0xFFFF) {
+					carry = 1;
+					y[j] &= 0xFFFF;
+				}
+				else {
+					carry = 0;
+				}
+			}
+			if(carry !== 0) {
+				y[y.length] = carry;
+			}
+		}
+		out.sign = this.sign * val.sign;
+		return out;
+	}
+
+	_divideAndRemainder(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		const out = [];
+		if(val.signum() === 0) {
+			out[0] = 1 / 0;
+			out[1] = 0 / 0;
+			return out;
+		}
+		const compare = this.compareToAbs(val);
+		if(compare < 0) {
+			out[0] = new BigInteger(0);
+			out[1] = this.clone();
+			return out;
+		}
+		else if(compare === 0) {
+			out[0] = new BigInteger(1);
+			out[0].sign = this.sign * val.sign;
+			out[1] = new BigInteger(0);
+			return out;
+		}
+		const ONE = new BigInteger(1);
+		const size = this.bitLength() - val.bitLength();
+		const x1 = this.clone()._abs();
+		const x2 = val.shift(size)._abs();
+		const y  = new BigInteger();
+		for(let i = 0; i <= size; i++) {
+			if(x1.compareToAbs(x2) >= 0) {
+				x1._subtract(x2);
+				y._add(ONE);
+			}
+			if(i === size) {
+				break;
+			}
+			x2._shift(-1);
+			y._shift(1);
+		}
+		out[0] = y;
+		out[0].sign = this.sign * val.sign;
+		out[1] = x1;
+		out[1].sign = this.sign;
+		return out;
+	}
+
+	divideAndRemainder(val) {
+		return this.clone()._divideAndRemainder(val);
+	}
+
+	_divide(val) {
+		return this._divideAndRemainder(val)[0];
+	}
+
+	divide(val) {
+		return this.clone()._divide(val);
+	}
+
+	_remainder(val) {
+		return this._divideAndRemainder(val)[1];
+	}
+
+	remainder(val) {
+		return this.clone()._remainder(val);
+	}
+
+	_mod(val) {
+		if(!(val instanceof BigInteger)) {
+			val = new BigInteger(val);
+		}
+		if(val.signum() < 0) {
+			return null;
+		}
+		const y = this._divideAndRemainder(val);
+		if(y[1] instanceof BigInteger) {
+			if(y[1].signum() >= 0) {
+				return y[1];
+			}
+			else {
+				return y[1]._add(val);
+			}
+		}
+		return null;
+	}
+
+	mod(val) {
+		return this.clone()._mod(val);
+	}
+
+	_setBit(n) {
+		this._memory_allocation(n + 1);
+		this.element[n >>> 4] |= 1 << (n & 0xF);
+		return this;
+	}
+
+	setBit(n) {
+		return this.clone()._setBit(n);
+	}
+
+	_flipBit(n) {
+		this._memory_allocation(n + 1);
+		this.element[n >>> 4] ^= 1 << (n & 0xF);
+		return this;
+	}
+
+	flipBit(n) {
+		return this.clone()._flipBit(n);
+	}
+
+	clearBit(n) {
+		const y = this.clone();
+		y.element[n >>> 4] &= ~(1 << (n & 0xF));
+		y._memory_reduction();
+		return y;
+	}
+
+	testBit(n) {
+		return ((this.element[n >>> 4] >>> (n & 0xF)) & 1);
+	}
+
+	pow(n) {
+		let x, y;
+		x = new BigInteger(this);
+		y = new BigInteger(1);
+		while(n !== 0) {
+			if((n & 1) !== 0) {
+				y = y.multiply(x);
+			}
+			x = x.multiply(x);
+			n >>>= 1;
+		}
+		return y;
+	}
+
+	modPow(exponent, m) {
+		m = new BigInteger(m);
+		let x = new BigInteger(this);
+		let y = new BigInteger(1);
+		const e = new BigInteger(exponent);
+		while(e.element.length !== 0) {
+			if((e.element[0] & 1) !== 0) {
+				y = y.multiply(x).mod(m);
+			}
+			x = x.multiply(x).mod(m);
+			e._shift(-1);
+		}
+		return y;
+	}
+
+	modInverse(m) {
+		m = new BigInteger(m);
+		const y = this.extgcd(m);
+		const ONE  = new BigInteger(1);
+		if(y[2].compareTo(ONE) !== 0) {
+			return null;
+		}
+		// 正にするため remainder ではなく mod を使用する
+		return y[0]._add(m)._mod(m);
+	}
+
+	isProbablePrime(certainty) {
+		const e = this.element;
+		//0, 1, 2 -> true
+		if( (e.length === 0) || ((e.length === 1)&&(e[0] <= 2)) ) {
+			return true;
+		}
+		//even number -> false
+		else if( ((e[0] & 1) === 0) || (certainty <= 0) ) {
+			return false;
+		}
+		if(typeof Random === "undefined") {
+			return false;
+		}
+		// ミラーラビン素数判定法
+		// かなり処理が重たいです。まあお遊び程度に使用という感じで。
+		certainty	= certainty >> 1;
+		const ZERO	= new BigInteger(0);
+		const ONE	= new BigInteger(1);
+		const n		= this;
+		const LEN	= n.bitLength();
+		const n_1	= n.subtract(ONE);
+		const s 	= n_1.getLowestSetBit();
+		const d 	= n_1.shift(-s);
+		const random = new Random();
+		let a;
+		let isComposite;
+		for(let i = 0; i < certainty; i++ ) {
+			//[ 1, n - 1] の範囲から a を選択
+			do {
+				a = new BigInteger( LEN, random );
+			} while(( a.compareTo(ZERO) === 0 )||( a.compareTo(n) !== -1 ));
+			// a^d != 1 mod n
+			a = a.modPow(d, n);
+			if( a.compareTo(ONE) === 0 ) {
+				continue;
+			}
+			// x ^ 4 % 2 = ((x ^ 2 % 2) ^ 2 % 2) のように分解しておく
+			isComposite = true;
+			for(let j = 0; j <= s; j++) {
+				if(a.compareTo(n_1) === 0) {
+					isComposite = false;
+					break;
+				}
+				if(j < s) {
+					a = a.multiply(a)._mod(n);
+				}
+			}
+			if(isComposite) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	nextProbablePrime() {
+		if(typeof Random === "undefined") {
+			return(new BigInteger(0));
+		}
+		const x = this.clone();
+		const ONE	= new BigInteger(1);
+		while(true) {
+			x._add(ONE);
+			if(x.isProbablePrime(100)) {
+				break;
+			}
+		}
+		return x;
+	}
+	
+	static valueOf(x) {
+		return new BigInteger(x);
+	}
+	
+	static probablePrime(bitLength, rnd) {
+		return new BigInteger(bitLength ,100 ,rnd);
+	}
+	
+}
+
+BigInteger.ONE = new BigInteger(1);
+BigInteger.TEN = new BigInteger(10);
+BigInteger.ZERO = new BigInteger(0);
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+class BigDecimal {
+
+	constructor() {
+		this.integer = 0;
+		this._scale = 0;
+		let p1 = 0;
+		let p2 = 0;
+		let p3 = null;
+		if(arguments.length >= 1) {
+			p1 = arguments[0];
+		}
+		if(arguments.length >= 2) {
+			p2 = arguments[1];
+		}
+		if(arguments.length >= 3) {
+			p3 = arguments[2];
+		}
+		// BigDecimal(BigInteger val, MathContext mc)
+		if(p2 instanceof MathContext) {
+			p3 = p2;
+		}
+		if(p1 instanceof BigDecimal) {
+			// Senko.println(p1.integer);
+			this.integer	= p1.integer.clone();
+			this._scale		= p1._scale;
+			this.int_string	= p1.int_string;
+		}
+		else if(p1 instanceof BigInteger) {
+			this.integer = p1.clone();
+			this._scale   = p2;
+		}
+		else if(typeof p1 === "number") {
+			// 整数か
+			if(p1 === Math.floor(p1)) {
+				this.integer = new BigInteger(p1);
+				this._scale   = 0;
+			}
+			// 実数か
+			else {
+				this._scale = 0;
+				while(true) {
+					p1 = p1 * 10;
+					this._scale = this._scale + 1;
+					if(p1 === Math.floor(p1)) {
+						break;
+					}
+				}
+				this.integer = new BigInteger(p1);
+			}
+		}
+		else if(typeof p1 === "string") {
+			this._scale = 0;
+			let buff;
+			// 正規化
+			let text = p1.replace(/\s/g, "").toLowerCase();
+			// +-の符号があるか
+			let number_text = "";
+			buff = text.match(/^[+-]+/);
+			if(buff !== null) {
+				buff = buff[0];
+				text = text.substr(buff.length);
+				if(buff.indexOf("-") !== -1) {
+					number_text += "-";
+				}
+			}
+			// 整数部があるか
+			buff = text.match(/^[0-9]+/);
+			if(buff !== null) {
+				buff = buff[0];
+				text = text.substr(buff.length);
+				number_text += buff;
+			}
+			// 小数部があるか
+			buff = text.match(/^\.[0-9]+/);
+			if(buff !== null) {
+				buff = buff[0];
+				text = text.substr(buff.length);
+				buff = buff.substr(1);
+				this._scale   = this._scale + buff.length;
+				number_text += buff;
+			}
+			// 指数表記があるか
+			buff = text.match(/^e[+-]?[0-9]+/);
+			if(buff !== null) {
+				buff = buff[0].substr(1);
+				this._scale   = this._scale - parseInt(buff, 10);
+			}
+			this.integer = new BigInteger(number_text, 10);
+		}
+		if(p3 instanceof MathContext) {
+			const newbigdecimal = this.round(p3);
+			this.integer	= newbigdecimal.integer;
+			this._scale		= newbigdecimal._scale;
+		}
+		//	Senko.println(p1 + "\t\n->\t[" + this.integer + "," + this._scale +"]\n\t"+ this.toEngineeringString() );
+	}
+
+	_getUnsignedIntegerString() {
+		// キャッシュする
+		if(typeof this.int_string === "undefined") {
+			this.int_string = this.integer.toString(10).replace(/^-/, "");
+		}
+		return this.int_string;
+	}
+
+	clone() {
+		return new BigDecimal(this);
+	}
+
+	scale() {
+		return this._scale;
+	}
+
+	signum() {
+		return this.integer.signum();
+	}
+
+	precision() {
+		return this._getUnsignedIntegerString().length;
+	}
+
+	unscaledValue() {
+		return new BigInteger(this.integer);
+	}
+
+	toScientificNotation(e) {
+		const text	= this._getUnsignedIntegerString();
+		let s		= this.scale();
+		const x		= [];
+		let i, k;
+		// -
+		if(this.signum() === -1) {
+			x[x.length] = "-";
+		}
+		// 表示上の桁数
+		s = - e - s;
+		// 小数点が付かない
+		if(s >= 0) {
+			x[x.length] = text;
+			for(i = 0; i < s; i++) {
+				x[x.length] = "0";
+			}
+		}
+		// 小数点が付く
+		else {
+			k = this.precision() + s;
+			if(0 < k) {
+				x[x.length] = text.substring(0, k);
+				x[x.length] = ".";
+				x[x.length] = text.substring(k, text.length);
+			}
+			else {
+				k = - k;
+				x[x.length] = "0.";
+				for(i = 0; i < k; i++) {
+					x[x.length] = "0";
+				}
+				x[x.length] = text;
+			}
+		}
+		x[x.length] = "E";
+		if(e >= 0) {
+			x[x.length] = "+";
+		}
+		x[x.length] = e;
+		return x.join("");
+	}
+
+	toString() {
+		// 「調整された指数」
+		const x = - this.scale() + (this.precision() - 1);
+		// スケールが 0 以上で、「調整された指数」が -6 以上
+		if((this.scale() >= 0) && (x >= -6)) {
+			return this.toPlainString();
+		}
+		else {
+			return this.toScientificNotation(x);
+		}
+	}
+
+	toEngineeringString() {
+		// 「調整された指数」
+		const x = - this.scale() + (this.precision() - 1);
+		// スケールが 0 以上で、「調整された指数」が -6 以上
+		if((this.scale() >= 0) && (x >= -6)) {
+			return this.toPlainString();
+		}
+		else {
+			// 0 でない値の整数部が 1 〜 999 の範囲に収まるように調整
+			return this.toScientificNotation(Math.floor(x / 3) * 3);
+		}
+	}
+
+	toPlainString() {
+		// スケールの変換なし
+		if(this.scale() === 0) {
+			if(this.signum() < 0) {
+				return "-" + this._getUnsignedIntegerString();
+			}
+			else {
+				return this._getUnsignedIntegerString();
+			}
+		}
+		// 指数0で文字列を作成後、Eの後ろの部分をとっぱらう
+		const text = this.toScientificNotation(0);
+		return text.match(/^[^E]*/)[0];
+	}
+
+	ulp() {
+		return new BigDecimal(BigInteger.ONE, this.scale());
+	}
+
+	setScale(newScale, roundingMode) {
+		if(this.scale() === newScale) {
+			// scaleが同一なので処理の必要なし
+			return(this.clone());
+		}
+		if(arguments.length === 1) {
+			roundingMode = RoundingMode.UNNECESSARY;
+		}
+		else {
+			roundingMode = RoundingMode.getRoundingMode(roundingMode);
+		}
+		// 文字列を扱ううえで、符号があるとやりにくいので外しておく
+		let text		= this._getUnsignedIntegerString();
+		const sign		= this.signum();
+		const sign_text	= sign >= 0 ? "" : "-";
+		// scale の誤差
+		// 0 以上なら 0 を加えればいい。0未満なら0を削るか、四捨五入など丸めを行う
+		const delta		= newScale - this.scale();	// この桁分増やすといい
+		if(0 <= delta) {
+			// 0を加える
+			let i;
+			for(i = 0; i < delta; i++) {
+				text = text + "0";
+			}
+			return new BigDecimal(new BigInteger(sign_text + text), newScale);
+		}
+		const keta			= text.length + delta;		// 最終的な桁数
+		const keta_marume		= keta + 1;
+		if(keta <= 0) {
+			// 指定した scale では設定できない場合
+			// 例えば "0.1".setScale(-2), "10".setScale(-3) としても表すことは不可能であるため、
+			// sign（-1, 0, +1）のどれかの数値を使用して丸める
+			const outdata = (sign + roundingMode.getAddNumber(sign)) / 10;
+			// 上記の式は、CEILINGなら必ず1、正でCEILINGなら1、負でFLOORなら1、それ以外は0となり、
+			// さらに元々の数値が 0 なら 0、切り捨て不能なら例外が返る計算式である。
+			// これは Java の動作をまねています。
+			return new BigDecimal(new BigInteger(outdata), newScale);
+		}
+		{
+			// 0を削るだけで解決する場合
+			// 単純な切捨て(0を削るのみ)
+			const zeros			= text.match(/0+$/);
+			const zero_length		= (zeros !== null) ? zeros[0].length : 0;
+			if(( (zero_length + delta) >= 0 ) || (roundingMode === RoundingMode.DOWN)) {
+				return new BigDecimal(new BigInteger(sign_text + text.substring(0, keta)), newScale);
+			}
+		}
+		{
+			// 丸め計算で解決する場合
+			// 12345 -> '123'45
+			text = text.substring(0, keta_marume);
+			// 丸め計算に必要な切り取る桁数(後ろの1～2桁を取得)
+			const cutsize = text.length > 1 ? 2 : 1;
+			// '123'45 -> 1'23'4
+			const number = parseInt(text.substring(text.length - cutsize, text.length)) * sign;
+			// 「元の数」と「丸めに必要な数」を足す
+			const x1 = new BigInteger(sign_text + text);
+			const x2 = new BigInteger(roundingMode.getAddNumber(number));
+			text = x1.add(x2).toString();
+			// 丸め後の桁数に戻して
+			return new BigDecimal(new BigInteger(text.substring(0, text.length - 1)), newScale);
+		}
+	}
+
+	round(mc) {
+		if(!(mc instanceof MathContext)) {
+			throw "not MathContext";
+		}
+		const newPrecision	= mc.getPrecision();
+		const delta			= newPrecision - this.precision();
+		if((delta === 0)||(newPrecision === 0)) {
+			return this.clone();
+		}
+		const newBigDecimal = this.setScale( this.scale() + delta, mc.getRoundingMode());
+		/* 精度を上げる必要があるため、0を加えた場合 */
+		if(delta > 0) {
+			return newBigDecimal;
+		}
+		/* 精度を下げる必要があるため、丸めた場合は、桁の数が正しいか調べる */
+		if(newBigDecimal.precision() === mc.getPrecision()) {
+			return newBigDecimal;
+		}
+		/* 切り上げなどで桁数が１つ増えた場合 */
+		const sign_text	= newBigDecimal.integer.signum() >= 0 ? "" : "-";
+		const abs_text	= newBigDecimal._getUnsignedIntegerString();
+		const inte_text	= sign_text + abs_text.substring(0, abs_text.length - 1);
+		return new BigDecimal(new BigInteger(inte_text), newBigDecimal.scale() - 1);
+	}
+
+	abs(mc) {
+		const output = this.clone();
+		output.integer = output.integer.abs();
+		if(arguments.length === 1) {
+			return output;
+		}
+		else {
+			if(!(mc instanceof MathContext)) {
+				throw "not MathContext";
+			}
+			return output.round(mc);
+		}
+	}
+
+	plus(mc) {
+		const output = this.clone();
+		if(arguments.length === 1) {
+			return output;
+		}
+		else {
+			if(!(mc instanceof MathContext)) {
+				throw "not MathContext";
+			}
+			return output.round(mc);
+		}
+	}
+
+	negate(mc) {
+		const output = this.clone();
+		output.integer = output.integer.negate();
+		if(arguments.length === 1) {
+			return output;
+		}
+		else {
+			if(!(mc instanceof MathContext)) {
+				throw "not MathContext";
+			}
+			return output.round(mc);
+		}
+	}
+
+	compareTo(val) {
+		if(!(val instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		const src			= this;
+		const tgt			= val;
+		// 簡易計算
+		{
+			const src_sign	= src.signum();
+			const tgt_sign	= tgt.signum();
+			if((src_sign === 0) && (src_sign === tgt_sign)) {
+				return 0;
+			}
+			else if(src_sign === 0) {
+				return - tgt_sign;
+			}
+			else if(tgt_sign === 0) {
+				return src_sign;
+			}
+		}
+		// 実際に計算する
+		if(src._scale === tgt._scale) {
+			return src.integer.compareTo(tgt.integer);
+		}
+		else if(src._scale > tgt._scale) {
+			const newdst = tgt.setScale(src._scale);
+			return src.integer.compareTo(newdst.integer);
+		}
+		else {
+			const newsrc = src.setScale(tgt._scale);
+			return newsrc.integer.compareTo(tgt.integer);
+		}
+	}
+
+	equals(x) {
+		if(!(x instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		return ((this._scale === x._scale) && (this.integer.equals(x.integer)));
+	}
+
+	min(val) {
+		if(!(val instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		if(this.compareTo(val) <= 0) {
+			return this.clone();
+		}
+		else {
+			return val.clone();
+		}
+	}
+
+	max(val) {
+		if(!(val instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		if(this.compareTo(val) >= 0) {
+			return this.clone();
+		}
+		else {
+			return val.clone();
+		}
+	}
+
+	movePointLeft(n) {
+		let output = this.scaleByPowerOfTen( -n );
+		output = output.setScale(Math.max(this.scale() + n, 0));
+		return output;
+	}
+
+	movePointRight(n) {
+		let output = this.scaleByPowerOfTen( n );
+		output = output.setScale(Math.max(this.scale() - n, 0));
+		return output;
+	}
+
+	scaleByPowerOfTen(n) {
+		const output = this.clone();
+		output._scale = this.scale() - n;
+		return output;
+	}
+
+	stripTrailingZeros() {
+		// 0をできる限り取り除く
+		const sign		= this.signum();
+		const sign_text	= sign >= 0 ? "" : "-";
+		const text		= this.integer.toString(10).replace(/^-/, "");
+		const zeros		= text.match(/0+$/);
+		let zero_length	= (zeros !== null) ? zeros[0].length : 0;
+		if(zero_length === text.length) {
+			// 全て 0 なら 1 ケタ残す
+			zero_length = text.length - 1;
+		}
+		const newScale	= this.scale() - zero_length;
+		return new BigDecimal(new BigInteger(sign_text + text.substring(0, text.length - zero_length)), newScale);
+	}
+
+	add(augend, mc) {
+		if(arguments.length === 1) {
+			mc = MathContext.UNLIMITED;
+		}
+		if(!(augend instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		if(!(mc instanceof MathContext)) {
+			throw "not MathContext";
+		}
+		const src			= this;
+		const tgt			= augend;
+		const newscale	= Math.max(src._scale, tgt._scale);
+		if(src._scale === tgt._scale) {
+			// 1 e1 + 1 e1 = 1
+			return new BigDecimal(src.integer.add(tgt.integer), newscale, mc);
+		}
+		else if(src._scale > tgt._scale) {
+			// 1 e-2 + 1 e-1
+			const newdst = tgt.setScale(src._scale);
+			// 0.01 + 0.10 = 0.11 = 11 e-2
+			return new BigDecimal(src.integer.add(newdst.integer), newscale, mc);
+		}
+		else {
+			// 1 e-1 + 1 e-2
+			const newsrc = src.setScale(tgt._scale);
+			// 0.1 + 0.01 = 0.11 = 11 e-2
+			return new BigDecimal(newsrc.integer.add(tgt.integer), newscale, mc);
+		}
+	}
+
+	subtract(subtrahend, mc) {
+		if(arguments.length === 1) {
+			mc = MathContext.UNLIMITED;
+		}
+		if(!(subtrahend instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		if(!(mc instanceof MathContext)) {
+			throw "not MathContext";
+		}
+		const src			= this;
+		const tgt			= subtrahend;
+		const newscale	= Math.max(src._scale, tgt._scale);
+		if(src._scale === tgt._scale) {
+			return new BigDecimal(src.integer.subtract(tgt.integer), newscale, mc);
+		}
+		else if(src._scale > tgt._scale) {
+			const newdst = tgt.setScale(src._scale);
+			return new BigDecimal(src.integer.subtract(newdst.integer), newscale, mc);
+		}
+		else {
+			const newsrc = src.setScale(tgt._scale);
+			return new BigDecimal(newsrc.integer.subtract(tgt.integer), newscale, mc);
+		}
+	}
+
+	multiply(multiplicand, mc) {
+		if(arguments.length === 1) {
+			mc = MathContext.UNLIMITED;
+		}
+		if(!(multiplicand instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		if(!(mc instanceof MathContext)) {
+			throw "not MathContext";
+		}
+		const src			= this;
+		const tgt			= multiplicand;
+		const newinteger	= src.integer.multiply(tgt.integer);
+		// 0.1 * 0.01 = 0.001
+		const newscale	= src._scale + tgt._scale;
+		return new BigDecimal(newinteger, newscale, mc);
+	}
+
+	divideToIntegralValue(divisor, mc) {
+		if(arguments.length === 1) {
+			mc = MathContext.UNLIMITED;
+		}
+		if(!(divisor instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		if(!(mc instanceof MathContext)) {
+			throw "not MathContext";
+		}
+		const getDigit  = function( num ) {
+			let i;
+			let text = "1";
+			for(i = 0; i < num; i++) {
+				text = text + "0";
+			}
+			return new BigInteger(text);
+		};
+		if(divisor.compareTo(BigDecimal.ZERO) === 0) {
+			throw "ArithmeticException";
+		}
+
+		// 1000e0		/	1e2				=	1000e-2
+		// 1000e0		/	10e1			=	100e-1
+		// 1000e0		/	100e0			=	10e0
+		// 1000e0		/	1000e-1			=	1e1
+		// 1000e0		/	10000e-2		=	1e1
+		// 1000e0		/	100000e-3		=	1e1
+
+		// 10e2			/	100e0			=	1e1
+		// 100e1		/	100e0			=	1e1
+		// 1000e0		/	100e0			=	10e0
+		// 10000e-1		/	100e0			=	100e-1	
+		// 100000e-2	/	100e0			=	1000e-2
+
+		const src		= this;
+		const tgt		= divisor;
+		let src_integer	= src.integer;
+		let tgt_integer	= tgt.integer;
+		const newScale	= src._scale - tgt._scale;
+
+		// 100e-2 / 3e-1 = 1 / 0.3 -> 100 / 30
+		if(src._scale > tgt._scale) {
+			// src._scale に合わせる
+			tgt_integer = tgt_integer.multiply(getDigit(  newScale ));
+		}
+		// 1e-1 / 3e-2 = 0.1 / 0.03 -> 10 / 3
+		else if(src._scale < tgt._scale) {
+			// tgt._scale に合わせる
+			src_integer = src_integer.multiply(getDigit( -newScale ));
+		}
+
+		// とりあえず計算結果だけ作ってしまう
+		const new_integer	= src_integer.divide(tgt_integer);
+		const sign			= new_integer.signum();
+		if(sign !== 0) {
+			const text	= new_integer.toString(10).replace(/^-/, "");
+			// 指定した桁では表すことができない
+			if((mc.getPrecision() !== 0) && (text.length > mc.getPrecision())) {
+				throw "ArithmeticException";
+			}
+			// 結果の優先スケール に合わせる (this.scale() - divisor.scale())
+			if(text.length <= (-newScale)) {
+				// 合わせることができないので、0をできる限り削る = stripTrailingZerosメソッド
+				const zeros			= text.match(/0+$/);
+				const zero_length	= (zeros !== null) ? zeros[0].length : 0;
+				const sign_text		= sign >= 0 ? "" : "-";
+				return(new BigDecimal(new BigInteger(sign_text + text.substring(0, text.length - zero_length)), -zero_length));
+			}
+		}
+
+		let output = new BigDecimal(new_integer);
+		output = output.setScale(newScale, RoundingMode.UP);
+		output = output.round(mc);
+		return output;
+	}
+
+	divideAndRemainder(divisor, mc) {
+		if(arguments.length === 1) {
+			mc = MathContext.UNLIMITED;
+		}
+		if(!(divisor instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		if(!(mc instanceof MathContext)) {
+			throw "not MathContext";
+		}
+
+		// 1000e0		/	1e2				=	1000e-2	... 0e0
+		// 1000e0		/	10e1			=	100e-1	... 0e0
+		// 1000e0		/	100e0			=	10e0	... 0e0
+		// 1000e0		/	1000e-1			=	1e1		... 0e0
+		// 1000e0		/	10000e-2		=	1e1		... 0e-1
+		// 1000e0		/	100000e-3		=	1e1		... 0e-2
+
+		// 10e2			/	100e0			=	1e1		... 0e1
+		// 100e1		/	100e0			=	1e1		... 0e1
+		// 1000e0		/	100e0			=	10e0	... 0e0
+		// 10000e-1		/	100e0			=	100e-1	... 0e-1
+		// 100000e-2	/	100e0			=	1000e-2	... 0e-2
+
+		const result_divide	= this.divideToIntegralValue(divisor, mc);
+		const result_remaind	= this.subtract(result_divide.multiply(divisor, mc), mc);
+
+		const output = [result_divide, result_remaind];
+		return output;
+	}
+
+	divide(divisor, p1, p2) {
+		if(!(divisor instanceof BigDecimal)) {
+			throw "not BigDecimal";
+		}
+		const src			= this;
+		const tgt			= divisor;
+		let roundingMode	= null;
+		let mc				= MathContext.UNLIMITED;
+		let newScale		= 0;
+		let isPriorityScale	= false;
+		let parm;
+		if(arguments.length === 1) {
+			newScale		 = src.scale() - tgt.scale();
+			isPriorityScale	= true;
+		}
+		else if(arguments.length === 2) {
+			parm = p1;
+			newScale		= src.scale();
+			isPriorityScale	= true;
+			if(parm instanceof MathContext) {
+				mc = parm;
+				roundingMode = mc.getRoundingMode();
+			}
+			else {
+				roundingMode = RoundingMode.getRoundingMode(arguments[0]);
+			}
+		}
+		else if(arguments.length === 3) {
+			if((typeof p1 === "number")||(p1 instanceof Number)) {
+				newScale = p1;
+			}
+			else {
+				throw "scale is not Integer";
+			}
+			parm = p2;
+			if(parm instanceof MathContext) {
+				mc = parm;
+				roundingMode = mc.getRoundingMode();
+			}
+			else {
+				roundingMode = RoundingMode.getRoundingMode(arguments[0]);
+			}
+		}
+		else {
+			throw "The argument is over.";
+		}
+		if(tgt.compareTo(BigDecimal.ZERO) === 0) {
+			throw "ArithmeticException";
+		}
+		let i;
+		let newsrc = src;
+		const result_map = [];
+		let result, result_divide, result_remaind, all_result;
+		all_result = BigDecimal.ZERO;
+		const precision = mc.getPrecision();
+		const check_max = precision !== 0 ? (precision + 8) : 0x3FFFF;
+		for(i = 0; i < check_max; i++) {
+			result = newsrc.divideAndRemainder(tgt, MathContext.UNLIMITED);
+			result_divide	= result[0];
+			result_remaind	= result[1];
+			all_result = all_result.add(result_divide.scaleByPowerOfTen(-i), MathContext.UNLIMITED);
+			if(result_remaind.compareTo(BigDecimal.ZERO) !== 0) {
+				if(precision === 0) {	// 精度無限大の場合は、循環小数のチェックが必要
+					if(result_map[result_remaind._getUnsignedIntegerString()]) {
+						throw "ArithmeticException " + all_result + "[" + result_remaind._getUnsignedIntegerString() + "]";
+					}
+					else {
+						result_map[result_remaind._getUnsignedIntegerString()] = true;
+					}
+				}
+				newsrc = result_remaind.scaleByPowerOfTen(1);
+			}
+			else {
+				break;
+			}
+		}
+		if(isPriorityScale) {
+			// 優先スケールの場合は、スケールの変更に失敗する可能性あり
+			try {
+				all_result = all_result.setScale(newScale, roundingMode);
+			}
+			catch(e) {
+				// falls through
+			}
+		}
+		else {
+			all_result = all_result.setScale(newScale, roundingMode);
+		}
+		all_result = all_result.round(mc);
+		return all_result;
+	}
+
+	toBigInteger() {
+		const x = this.toPlainString().replace(/\.\d*$/, "");
+		return new BigInteger(x.toPlainString());
+	}
+
+	toBigIntegerExact() {
+		const x = this.setScale(0, RoundingMode.UNNECESSARY);
+		return new BigInteger(x.toPlainString());
+	}
+
+	longValue() {
+		let x = this.toBigInteger();
+		x = x.longValue();
+		return x;
+	}
+
+	longValueExact() {
+		let x = this.toBigIntegerExact();
+		x = x.longValue();
+		return x;
+	}
+
+	intValue() {
+		let x = this.toBigInteger();
+		x = x.intValue();
+		return x & 0xFFFFFFFF;
+	}
+
+	intValueExact() {
+		let x = this.toBigIntegerExact();
+		x = x.longValue();
+		if((x < -2147483648) || (2147483647 < x)) {
+			throw "ArithmeticException";
+		}
+		return x;
+	}
+
+	floatValue() {
+		const p = this.precision();
+		if(MathContext.DECIMAL32.getPrecision() < p) {
+			return(this.signum() >= 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY);
+		}
+		return parseFloat(p.toEngineeringString());
+	}
+
+	doubleValue() {
+		const p = this.precision();
+		if(MathContext.DECIMAL64.getPrecision() < p) {
+			return(this.signum() >= 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY);
+		}
+		return parseFloat(p.toEngineeringString());
+	}
+
+	pow(n, mc) {
+		if(Math.abs(n) > 999999999) {
+			throw "ArithmeticException";
+		}
+		if(arguments.length === 1) {
+			mc = MathContext.UNLIMITED;
+		}
+		if(!(mc instanceof MathContext)) {
+			throw "not MathContext";
+		}
+		if((mc.getPrecision() === 0) && (n < 0)) {
+			throw "ArithmeticException";
+		}
+		if((mc.getPrecision() > 0) && (n > mc.getPrecision())) {
+			throw "ArithmeticException";
+		}
+		let x, y;
+		x = this.clone();
+		y = BigDecimal.ONE;
+		while(n !== 0) {
+			if((n & 1) !== 0) {
+				y = y.multiply(x, MathContext.UNLIMITED);
+			}
+			x = x.multiply(x, MathContext.UNLIMITED);
+			n >>>= 1;
+		}
+		return y.round(mc);
+	}
+	
+	static valueOf(val, scale) {
+		if(arguments.length === 1) {
+			return new BigDecimal(val);
+		}
+		else if(arguments.length === 2) {
+			if((typeof val === "number") && (val === Math.floor(val))) {
+				return new BigDecimal(new BigInteger(val), scale);
+			}
+			else {
+				throw "IllegalArgumentException";
+			}
+		}
+		throw "IllegalArgumentException";
+	}
+	
+}
+
+const RoundingMode = {
+	
+	// 0 から離れる
+	UP: {
+		toString : function() {
+			return "UP";
+		},
+		getAddNumber : function(x) {
+			x = x % 10;
+			if(x === 0) {
+				return 0;
+			}
+			else if(x > 0) {
+				return 10 - x;
+			}
+			else {
+				return (-(10 + x));
+			}
+		}
+	},
+	
+	// 0 に近づく
+	DOWN: {
+		toString : function() {
+			return "DOWN";
+		},
+		getAddNumber : function(x) {
+			x = x % 10;
+			return -x;
+		}
+	},
+	
+	// 正の無限大に近づく
+	CEILING: {
+		toString : function() {
+			return "CEILING";
+		},
+		getAddNumber : function(x) {
+			x = x % 10;
+			if(x === 0) {
+				return 0;
+			}
+			else if(x > 0) {
+				return 10 - x;
+			}
+			else {
+				return -x;
+			}
+		}
+	},
+	
+	// 負の無限大に近づく
+	FLOOR: {
+		toString : function() {
+			return "FLOOR";
+		},
+		getAddNumber : function(x) {
+			x = x % 10;
+			if(x === 0) {
+				return 0;
+			}
+			else if(x > 0) {
+				return -x;
+			}
+			else {
+				return(-(10 + x));
+			}
+		}
+	},
+	
+	// 四捨五入
+	HALF_UP: {
+		toString : function() {
+			return "HALF_UP";
+		},
+		getAddNumber : function(x) {
+			x = x % 10;
+			const sign = x >= 0 ? 1 : -1;
+			if(Math.abs(x) < 5) {
+				return (x * -1);
+			}
+			else {
+				return (sign * (10 - Math.abs(x)));
+			}
+		}
+	},
+	
+	// 五捨六入
+	HALF_DOWN: {
+		toString : function() {
+			return "HALF_DOWN";
+		},
+		getAddNumber : function(x) {
+			x = x % 10;
+			const sign = x >= 0 ? 1 : -1;
+			if(Math.abs(x) < 6) {
+				return (x * -1);
+			}
+			else {
+				return (sign * (10 - Math.abs(x)));
+			}
+		}
+	},
+	
+	// 等間隔なら偶数側へ丸める
+	HALF_EVEN: {
+		toString : function() {
+			return "HALF_EVEN";
+		},
+		getAddNumber : function(x) {
+			x = x % 100;
+			let sign, even;
+			if(x < 0) {
+				sign = -1;
+				even = Math.ceil(x / 10) & 1;
+			}
+			else {
+				sign = 1;
+				even = Math.floor(x / 10) & 1;
+			}
+			let center;
+			if(even === 1) {
+				center = 5;
+			}
+			else {
+				center = 6;
+			}
+			x = x % 10;
+			if(Math.abs(x) < center) {
+				return (x * -1);
+			}
+			else {
+				return (sign * (10 - Math.abs(x)));
+			}
+		}
+	},
+	
+	// 丸めない（丸める必要が出る場合はエラー）
+	UNNECESSARY: {
+		toString : function() {
+			return "UNNECESSARY";
+		},
+		getAddNumber : function(x) {
+			x = x % 10;
+			if(x === 0) {
+				return 0;
+			}
+			else {
+				throw "ArithmeticException";
+			}
+		}
+	},
+	
+	valueOf: function(name) {
+		if(name === null) {
+			throw "NullPointerException";
+		}
+		const values = RoundingMode.values;
+		for(let i = 0; i < values.length; i++) {
+			if(values[i].toString() === name) {
+				return values[i];
+			}
+		}
+		throw "IllegalArgumentException";
+	},
+	
+	getRoundingMode: function(roundingMode) {
+		let mode;
+		switch(roundingMode) {
+			case RoundingMode.CEILING:
+			case RoundingMode.DOWN:
+			case RoundingMode.FLOOR:
+			case RoundingMode.HALF_DOWN:
+			case RoundingMode.HALF_EVEN:
+			case RoundingMode.HALF_UP:
+			case RoundingMode.UNNECESSARY:
+			case RoundingMode.UP:
+				mode = roundingMode;
+				break;
+			default:
+				if((typeof roundingMode === "number")||(roundingMode instanceof Number)) {
+					mode = RoundingMode.values[roundingMode];
+				}
+				else if((typeof roundingMode === "string")||(roundingMode instanceof String)) {
+					mode = RoundingMode.valueOf(roundingMode);
+				}
+		}
+		if(!mode) {
+			throw "Not RoundingMode";
+		}
+		return mode;
+	}
+};
+
+RoundingMode.values = {
+	0	:	RoundingMode.CEILING,
+	1	:	RoundingMode.DOWN,
+	2	:	RoundingMode.FLOOR,
+	3	:	RoundingMode.HALF_DOWN,
+	4	:	RoundingMode.HALF_EVEN,
+	5	:	RoundingMode.HALF_UP,
+	6	:	RoundingMode.UNNECESSARY,
+	7	:	RoundingMode.UP
+};
+
+class MathContext {
+
+	constructor() {
+		this.precision = 0;
+		this.roundingMode = RoundingMode.HALF_UP;
+		let p1 = 0;
+		let p2 = 0;
+		let buff;
+		if(arguments.length >= 1) {
+			p1 = arguments[0];
+		}
+		if(arguments.length >= 2) {
+			p2 = arguments[1];
+		}
+		if((typeof p1 === "string")||(p1 instanceof String)) {
+			buff = p1.match(/precision=\d+/);
+			if(buff !== null) {
+				buff = buff[0].substring("precision=".length, buff[0].length);
+				this.precision = parseInt(buff, 10);
+			}
+			buff = p1.match(/roundingMode=\w+/);
+			if(buff !== null) {
+				buff = buff[0].substring("roundingMode=".length, buff[0].length);
+				this.roundingMode = RoundingMode.valueOf(buff);
+			}	
+		}
+		else if(arguments.length === 1) {
+			this.precision = p1;
+		}
+		else if(arguments.length === 2) {
+			this.precision = p1;
+			this.roundingMode = p2;
+		}
+		if(this.precision < 0) {
+			throw "IllegalArgumentException";
+		}
+	}
+
+	getPrecision() {
+		return this.precision;
+	}
+
+	getRoundingMode() {
+		return this.roundingMode;
+	}
+
+	equals(x) {
+		if(x instanceof MathContext) {
+			if(x.toString() === this.toString()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	toString() {
+		return ("precision=" + this.precision + " roundingMode=" + this.roundingMode.toString());
+	}
+}
+
+MathContext.UNLIMITED	= new MathContext(0,	RoundingMode.HALF_UP);
+MathContext.DECIMAL32	= new MathContext(7,	RoundingMode.HALF_EVEN);
+MathContext.DECIMAL64	= new MathContext(16,	RoundingMode.HALF_EVEN);
+MathContext.DECIMAL128	= new MathContext(34,	RoundingMode.HALF_EVEN);
+
+BigDecimal.RoundingMode			= RoundingMode;
+BigDecimal.MathContext			= MathContext;
+
+BigDecimal.ZERO					= new BigDecimal(0);
+BigDecimal.ONE					= new BigDecimal(1);
+BigDecimal.TEN					= new BigDecimal(10);
+BigDecimal.ROUND_CEILING		= RoundingMode.CEILING;
+BigDecimal.ROUND_DOWN			= RoundingMode.DOWN;
+BigDecimal.ROUND_FLOOR			= RoundingMode.FLOOR;
+BigDecimal.ROUND_HALF_DOWN		= RoundingMode.HALF_DOWN;
+BigDecimal.ROUND_HALF_EVEN		= RoundingMode.HALF_EVEN;
+BigDecimal.ROUND_HALF_UP		= RoundingMode.HALF_UP;
+BigDecimal.ROUND_UNNECESSARY	= RoundingMode.UNNECESSARY;
+BigDecimal.ROUND_UP				= RoundingMode.UP;
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+const SNumber = {
+	
+	Complex : Complex,
+	BigDecimal : BigDecimal,
+	BigInteger : BigInteger,
+	Random : Random
+
+};
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
 class IDSwitch {
 	
 	/**
@@ -12345,2670 +15028,6 @@ const SComponent = {
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-class Complex {
-
-	constructor() {
-		if(arguments.length === 1) {
-			const obj = arguments[0];
-			if((obj instanceof Complex) || ((obj instanceof Object) && (obj.r && obj.i))) {
-				this.re = obj.r;
-				this.im = obj.i;
-			}
-			else if(typeof obj === "number" || obj instanceof Number) {
-				this.re = obj;
-				this.im = 0.0;
-			}
-			else if(obj instanceof Array && obj.length === 2) {
-				this.re = obj[0];
-				this.im = obj[1];
-			}
-			else if(typeof obj === "string" || obj instanceof String) {
-				const str = obj.replace(/\s/g, "").toLowerCase();
-				if(!(/[ij]/.test(str))) {
-					this.re = parseFloat(str);
-					this.im = 0.0;
-				}
-				// +i , -j のみ
-				else if((/^[-+]?[ij]/.test(str))) {
-					this.re = 0;
-					if(/^\+/.test(str)) {
-						this.im = 1;
-					}
-					else {
-						this.im = -1;
-					}
-				}
-				else {
-					const buff = str.match(/^([+-]?)([0-9]+)(\.[0-9]+)?(e[+-]?[0-9]+)?/);
-					if(buff) {
-						const a = buff[0];
-						const b = str.substr(a.length);
-						// bの1文字目がiかjであれば、実数部なしの宣言
-						if(/^[ij]/.test(b.charAt(0))) {
-							this.re = 0;
-							this.im = parseFloat(a);
-						}
-						else {
-							this.re = parseFloat(a);
-							this.im = parseFloat(b);
-						}
-					}
-					else {
-						this.re = 0.0;
-						this.im = parseFloat(buff[0]);
-					}
-				}
-			}
-			else {
-				throw "IllegalArgumentException";
-			}
-		}
-		else if(arguments.length === 2) {
-			const obj_0 = arguments[0];
-			const obj_1 = arguments[1];
-			if(((typeof obj_0 === "number")||(obj_0 instanceof Number)) && ((typeof obj_1 === "number")||(obj_1 instanceof Number))) {
-				this.re = obj_0;
-				this.im = obj_1;
-			}
-			else {
-				throw "IllegalArgumentException";
-			}
-		}
-		else {
-			throw "IllegalArgumentException";
-		}
-	}
-
-	toString() {
-		const formatG = function(x) {
-			let numstr = x.toPrecision(6);
-			if(numstr.indexOf(".") !== -1) {
-				numstr = numstr.replace(/\.?0+$/, "");  // 1.00 , 1.10
-				numstr = numstr.replace(/\.?0+e/, "e"); // 1.0e , 1.10e
-			}
-			return numstr;
-		};
-		if(this.im !== 0) {
-			if(this.re === 0) {
-				return formatG(this.im) + "j";
-			}
-			else if(this.im >= 0) {
-				return formatG(this.re) + " + " + formatG(this.im) + "j";
-			}
-			else {
-				return formatG(this.re) + " - " + formatG(-this.im) + "j";
-			}
-		}
-		else {
-			return formatG(this.re);
-		}
-	}
-	
-	clone() {
-		new Complex(this.re, this.im);
-	}
-
-	add() {
-		const x = new Complex(...arguments);
-		x.re = this.re + x.re;
-		x.im = this.im + x.im;
-		return x;
-	}
-
-	sub() {
-		const x = new Complex(...arguments);
-		x.re = this.re - x.re;
-		x.im = this.im - x.im;
-		return x;
-	}
-
-	mul() {
-		const x = new Complex(...arguments);
-		if((this.im === 0) && (x.im === 0)) {
-			x.re = this.re * x.re;
-			return x;
-		}
-		else if((this.re === 0) && (x.re === 0)) {
-			x.im = this.im * x.im;
-			return x;
-		}
-		else {
-			const re = this.re * x.re - this.im * x.im;
-			const im = this.im * x.re + this.re * x.im;
-			x.re = re;
-			x.im = im;
-			return x;
-		}
-	}
-	
-	div() {
-		const x = new Complex(...arguments);
-		if((this.im === 0) && (x.im === 0)) {
-			x.re = this.re / x.re;
-			return x;
-		}
-		else if((this.re === 0) && (x.re === 0)) {
-			x.im = this.im / x.im;
-			return x;
-		}
-		else {
-			const re = this.re * x.re + this.im * x.im;
-			const im = this.im * x.re - this.re * x.im;
-			const denominator = 1.0 / (x.re * x.re + x.im * x.im);
-			x.re = re * denominator;
-			x.im = im * denominator;
-			return x;
-		}
-	}
-
-	get norm() {
-		if(this.im === 0) {
-			return new Complex(this.re);
-		}
-		else if(this.re === 0) {
-			return new Complex(this.im);
-		}
-		else {
-			return new Complex(Math.sqrt(this.re * this.re + this.im * this.im));
-		}
-	}
-
-	get angle() {
-		if(this.im === 0) {
-			return new Complex(0);
-		}
-		else if(this.re === 0) {
-			return new Complex(Math.PI * (this.im >= 0.0 ? 0.5 : -0.5));
-		}
-		else {
-			return new Complex(Math.atan2(this.im, this.re));
-		}
-	}
-
-	max() {
-		const x = new Complex(...arguments);
-		const y1 = this.norm;
-		const y2 = x.norm;
-		if(y1 >= y2) {
-			return this;
-		}
-		else {
-			return x;
-		}
-	}
-
-	min() {
-		const x = new Complex(...arguments);
-		const y1 = this.norm;
-		const y2 = x.norm;
-		if(y1 <= y2) {
-			return this;
-		}
-		else {
-			return x;
-		}
-	}
-
-	pow() {
-		const x = new Complex(...arguments);
-		if((this.im === 0) && (x.im === 0)) {
-			x.re = Math.pow(this.re, x.re);
-			return x;
-		}
-		else if(x.im === 0) {
-			const r = Math.pow(this.norm.re, x.re);
-			const s = this.angle.re * x.re;
-			x.re = r * Math.cos(s);
-			x.im = r * Math.sin(s);
-			return x;
-		}
-		else {
-			throw "IllegalArgumentException";
-		}
-	}
-
-}
-
-/**
- * The script is part of SenkoJS.
- * 
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- * 
- * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
- */
-
-// 「M系列乱数」
-// 比較的長い 2^521 - 1通りを出力します。
-// 詳細は、奥村晴彦 著『C言語によるアルゴリズム辞典』を参照
-// 乱数はCでの動作と同じ値が出ることを確認。(seed = 1として1000番目の値が等しいことを確認)
-//
-// Javaの仕様に基づく48ビット線形合同法を実装仕様と思いましたが
-// 「キャリー付き乗算」、「XorShift」、「線形合同法」などは
-// 2つを組にしてプロットするといった使い方をすると、模様が見える可能性があるようで止めました。
-// 有名で超高性能な「メルセンヌツイスタ」は、MITライセンスのため組み込みませんでした。
-
-class Random {
-		
-	constructor() {
-		this.x = [];
-		for(let i = 0;i < 521;i++) {
-			this.x[i] = 0;
-		}
-		if(arguments.length >= 1) {
-			this.setSeed(arguments[0]);
-		}
-		else {
-			// 線形合同法で適当に乱数を作成する
-			const seed = ((new Date()).getTime() + Random.seedUniquifier) & 0xFFFFFFFF;
-			Random.seedUniquifier = (Random.seedUniquifier + 1) & 0xFFFFFFFF;
-			this.setSeed(seed);
-		}
-	}
-
-	static _unsigned32(x) {
-		return ((x < 0) ? ((x & 0x7FFFFFFF) + 0x80000000) : x);
-	}
-	
-	_multiplication32(x1, x2) {
-		let b = (x1 & 0xFFFF) * (x2 & 0xFFFF);
-		let y = Random._unsigned32(b);
-		b = (x1 & 0xFFFF) * (x2 >>> 16);
-		y = Random._unsigned32(y + ((b & 0xFFFF) << 16));
-		b = (x1 >>> 16) * (x2 & 0xFFFF);
-		y = Random._unsigned32(y + ((b & 0xFFFF) << 16));
-		return (y & 0xFFFFFFFF);
-	}
-
-	_rnd521() {
-		const x = this.x;
-		for(let i = 0; i < 32; i++) {
-			x[i] ^= x[i + 489];
-		}
-		for(let i = 32; i < 521; i++) {
-			x[i] ^= x[i - 32];
-		}
-	}
-
-	setSeed(seed) {
-		// 伏見「乱数」東京大学出版会,1989 の方法により初期値を設定
-		let u = 0;
-		const x = this.x;
-		// seedを使用して線形合同法でx[0-16]まで初期値を設定
-		for(let i = 0; i <= 16; i++) {
-			for(let j = 0; j < 32; j++) {
-				seed = this._multiplication32(seed, 0x5D588B65) + 1;
-				u = (u >>> 1) + ((seed < 0) ? 0x80000000 : 0);
-			}
-			x[i] = u;
-		}
-		// 残りのビットはx[i] = x[i-32] ^ x[i-521]で生成
-		for(let i = 16; i < 521; i++) {
-			u = (i === 16) ? i : (i - 17);
-			x[i] = ((x[u] << 23) & 0xFFFFFFFF) ^ (x[i - 16] >>> 9) ^ x[i - 1];
-		}
-		// ビットをシャッフル
-		for(let i = 0; i < 4; i++) {
-			this._rnd521();
-		}
-		this.xi = 0;
-		this.haveNextNextGaussian = false;
-		this.nextNextGaussian = 0;
-	}
-
-	genrand_int32() {
-		// 全て使用したら、再び混ぜる
-		if(this.xi === 521) {
-			this._rnd521();
-			this.xi = 0;
-		}
-		const y = Random._unsigned32(this.x[this.xi]);
-		this.xi = this.xi + 1;
-		return y;
-	}
-
-	next(bits) {
-		if(bits === 0) {
-			return 0;
-		}
-		else if(bits === 32) {
-			return this.genrand_int32();
-		}
-		else if(bits < 32) {
-			// 線形合同法ではないため
-
-			// 上位のビットを使用しなくてもいいがJavaっぽく。
-			return (this.genrand_int32() >>> (32 - bits));
-		}
-		// double型のため、52ビットまでは、整数として出力可能
-		else if(bits === 63) {
-			// 正の値を出力するように調節
-			return (this.next(32) * 0x80000000 + this.next(32));
-		}
-		else if(bits === 64) {
-			return (this.next(32) * 0x100000000 + this.next(32));
-		}
-		else if(bits < 64) {
-			return (this.genrand_int32() * (1 << (bits - 32)) + (this.genrand_int32()  >>> (64 - bits)));
-		}
-	}
-
-	nextBytes(y) {
-		// 配列yに乱数を入れる
-		// 8ビットのために、32ビット乱数を1回回すのはもったいない
-		for(let i = 0;i < y.length; i++) {
-			y[i] = this.next(8);
-		}
-		return;
-	}
-
-	nextInt() {
-		if(arguments.length === 1) {
-			let r, y;
-			const a = arguments[0];
-			do {
-				r = Random._unsigned32(this.genrand_int32());
-				y = r % a;
-			} while((r - y + a) > 0x100000000 );
-			return y;
-		}
-		return (this.next(32) & 0xFFFFFFFF);
-	}
-
-	nextLong() {
-		return this.next(64);
-	}
-
-	nextBoolean() {
-		// 1ビットのために、32ビット乱数を1回回すのはもったいない
-		return (this.next(1) !== 0);
-	}
-
-	nextFloat() {
-		return (this.next(24) / 0x1000000);
-	}
-
-	nextDouble() {
-		const a1 = this.next(26) * 0x8000000 + this.next(27);
-		const a2 = 0x8000000 * 0x4000000;
-		return (a1 / a2);
-	}
-
-	nextGaussian() {
-		if(this.haveNextNextGaussian) {
-			this.haveNextNextGaussian = false;
-			return this.nextNextGaussian;
-		}
-		const a = Math.sqrt( -2 * Math.log( this.nextDouble() ) );
-		const b = 2 * Math.PI * this.nextDouble();
-		const y = a * Math.sin(b);
-		this.nextNextGaussian = a * Math.cos(b);
-		this.haveNextNextGaussian = true;
-		return y;
-	}
-}
-
-Random.seedUniquifier = 0x87654321;
-
-/**
- * The script is part of SenkoJS.
- * 
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- * 
- * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
- */
-
-// 内部では1変数内の中の16ビットごとに管理
-// 2変数で16ビット*16ビットで32ビットを表す
-
-class BigInteger {
-
-	constructor() {
-		this.element     = [];
-		this.sign        = 0;
-		if((arguments.length === 2) && (typeof Random !== "undefined") && (arguments[1] instanceof Random)) {
-			this.sign = 1;
-			const len = arguments[0];
-			const random = arguments[1];
-			const size = ((len - 1) >> 4) + 1;
-			let r;
-			if(len === 0) {
-				return;
-			}
-			for(let i = 0, j = 0; i < size; i++) {
-				if(j === 0) {
-					r = random.nextInt(); // 32ビットずつ作成する
-					this.element[i] = r & 0xFFFF;
-					j = 1;
-				}
-				else {
-					this.element[i] = (r >>> 16) & 0xFFFF;
-					j = 0;
-				}
-			}
-			// 1～15ビット余る場合は、16ビットずつ作成しているので削る
-			if((len % 16) !== 0) {
-				this.element[this.element.length - 1] &= (1 << (len % 16)) - 1;
-			}
-			// 最後のビットに 0 をたくさん作成していると、
-			// 0のみのデータになる可能性があるためメモリを修正
-			this._memory_reduction();
-		}
-		else if(arguments.length === 3) {
-			if(typeof Random === "undefined") {
-				return;
-			}
-			while(true) {
-				const x = new BigInteger(arguments[0], arguments[2]);
-				if(x.isProbablePrime(arguments[1])) {
-					this.element = x.element;
-					this.sign = x.sign;
-					break;
-				}
-			}
-		}
-		else if(arguments.length >= 1) {
-			this.sign = 1;
-			const obj = arguments[0];
-			if(obj instanceof BigInteger) {
-				for(let i = 0; i < arguments[0].element.length; i++) {
-					this.element[i] = arguments[0].element[i];
-				}
-				this.sign = arguments[0].sign;
-			}
-			else if((typeof obj === "number")||(obj instanceof Number)) {
-				let x = arguments[0];
-				if(x < 0) {
-					this.sign = -1;
-					x = -x;
-				}
-				this.element = this._number_to_binary_number(x);
-			}
-			else if((typeof obj === "string")||(obj instanceof String)) {
-				let x = arguments[0].replace(/\s/g, "").toLowerCase();
-				let buff = x.match(/^[-+]+/);
-				if(buff !==  null) {
-					buff = buff[0];
-					x = x.substring(buff.length, x.length);
-					if(buff.indexOf("-") !==  -1) {
-						this.sign = -1;
-					}
-				}
-				if(arguments.length === 2) {
-					this.element = this._string_to_binary_number(x, arguments[1]);
-				}
-				else if(/^0x/.test(x)) {
-					this.element = this._string_to_binary_number(x.substring(2, x.length), 16);
-				}
-				else if(/^0b/.test(x)) {
-					this.element = this._string_to_binary_number(x.substring(2, x.length), 2);
-				}
-				else if(/^0/.test(x)) {
-					this.element = this._string_to_binary_number(x.substring(1, x.length), 8);
-				}
-				else {
-					this.element = this._string_to_binary_number(x, 10);
-				}
-				// "0"の場合がある為
-				if((this.element.length === 1)&&(this.element[0] === 0)) {
-					this.element = [];
-				}
-			}
-		}
-	}
-
-	equals(x) {
-		if(!(x instanceof BigInteger)) {
-			x = new BigInteger(x);
-		}
-		if(this.signum() !==  x.signum()) {
-			return false;
-		}
-		if(this.element.length !==  x.element.length) {
-			return false;
-		}
-		for(let i = 0;i < x.element.length; i++) {
-			if(this.element[i] !==  x.element[i]) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	toString(radix) {
-		if(arguments.length === 0) {
-			radix = 10;
-		}
-		// int型で扱える数値で toString が可能なので、
-		// せっかくだからより大きな進数で計算していけば、あとでtoStringする回数が減るテクニック
-		// 2進数であれば、2^n乗で計算しても問題がない 4進数や8進数で計算して、2進数に戻せば巡回少数なし
-		// v0.03 出来る限りまとめてn進数変換する
-		const max_num = 0x3FFFFFFF;
-		//                        max_num > radix^x
-		// floor(log max_num / log radix) = x
-		const keta = Math.floor( Math.log(max_num) / Math.log(radix) );
-		const calcradix = Math.round(Math.pow(radix, keta));
-		// zeros = "00000000...."
-		let zeros = [];
-		let i;
-		for(i = 0; i < keta; i++) {
-			zeros[i] = "0";
-		}
-		zeros = zeros.join("");
-		// v0.03ここまで
-		const x = this._binary_number_to_string(this.element, calcradix);
-		const y = [];
-		let z = "";
-		if(this.signum() < 0) {
-			y[y.length] = "-";
-		}
-		for(i = x.length - 1;i >= 0; i--) {
-			z = x[i].toString(radix);
-			if(i < (x.length - 1)) {
-				y[y.length] = zeros.substring(0, keta - z.length);
-			}
-			y[y.length] = z;
-		}
-		return y.join("");
-	}
-
-	// 内部計算用
-	getShort(n) {
-		if((n < 0) || (this.element.length <= n)) {
-			return 0;
-		}
-		return this.element[n];
-	}
-
-	byteValue() {
-		let x = this.getShort(0);
-		x &= 0xFF;
-		if((x > 0)&&(this.sign < 0)) {
-			x = -x;
-		}
-		return x;
-	}
-
-	shortValue() {
-		let x = this.getShort(0);
-		x &= 0xFFFF;
-		if((x > 0)&&(this.sign < 0)) {
-			x = -x;
-		}
-		return x;
-	}
-
-	intValue() {
-		let x = this.getShort(0) + (this.getShort(1) << 16);
-		x &= 0xFFFFFFFF;
-		if((x > 0)&&(this.sign < 0)) {
-			x = -x;
-		}
-		return x;
-	}
-
-	longValue() {
-		let x = 0;
-		for(let i = 3; i >= 0; i--) {
-			x *= 65536;
-			x += this.getShort(i);
-		}
-		if(this.sign < 0) {
-			x = -x;
-		}
-		return x;
-	}
-
-	floatValue() {
-		return parseFloat(this.toString());
-	}
-
-	doubleValue() {
-		return parseFloat(this.toString());
-	}
-
-	clone() {
-		const y = new BigInteger();
-		y.element = this.element.slice(0);
-		y.sign    = this.sign;
-		return y;
-	}
-
-	getLowestSetBit() {
-		for(let i = 0;i < this.element.length;i++) {
-			if(this.element[i] !==  0) {
-				const x = this.element[i];
-				for(let j = 0; j < 16; j++) {
-					if(((x >>> j) & 1) !==  0) {
-						return i * 16 + j;
-					}
-				}
-			}
-		}
-		return -1;
-	}
-
-	bitLength() {
-		for(let i = this.element.length - 1;i >= 0;i--) {
-			if(this.element[i] !==  0) {
-				const x = this.element[i];
-				for(let j = 15; j >= 0; j--) {
-					if(((x >>> j) & 1) !==  0) {
-						return i * 16 + j + 1;
-					}
-				}
-			}
-		}
-		return 0;
-	}
-
-	bitCount() {
-		let target;
-		if(this.sign >= 0) {
-			target = this;
-		}
-		else {
-			target = this.add(new BigInteger(1));
-		}
-		const len = target.bitLength();
-		let bit = 0;
-		let count = 0;
-		for(let i = 0;bit < len;i++) {
-			const x = target.element[i];
-			for(let j = 0;((j < 16) && (bit < len));j++, bit++) {
-				if(((x >>> j) & 1) !==  0) {
-					count = count + 1;
-				}
-			}
-		}
-		return count;
-	}
-
-	// 内部計算用
-	// 負の場合は、2の補数表現を作成します
-	getTwosComplement(len) {
-		const y = this.clone();
-		if(y.sign >= 0) {
-			return y;
-		}
-		else {
-			// 正にする
-			y.sign = 1;
-			// ビットの数が存在しない場合は数える
-			if(arguments.length === 0) {
-				len = y.bitLength();
-			}
-			const e = y.element;
-			// ビット反転後
-			for(let i = 0; i < e.length; i++) {
-				e[i] ^= 0xFFFF;
-			}
-			// 1～15ビット余る場合は、16ビットずつ作成しているので削る
-			// nビットのマスク（なお負の値を表す最上位ビットは削除する）
-			if((len % 16) !== 0) {
-				e[e.length - 1] &= (1 << (len % 16)) - 1;
-			}
-			// 1を加算
-			y._add(new BigInteger(1));
-			return y;
-		}
-	}
-
-	_and(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		let e1  = this, e2 = val;
-		const s1  = e1.signum(), s2 = e2.signum();
-		const len = Math.max(e1.bitLength(), e2.bitLength());
-		// 引数が負の場合は、2の補数
-		e1 = e1.getTwosComplement(len).element;
-		e2 = e2.getTwosComplement(len).element;
-		const size = Math.max(e1.length, e2.length);
-		this.element = [];
-		for(let i = 0;i < size;i++) {
-			const x1 = (i >= e1.length) ? 0 : e1[i];
-			const x2 = (i >= e2.length) ? 0 : e2[i];
-			this.element[i] = x1 & x2;
-		}
-		if(this.bitLength() === 0) {
-			this.element = [];
-			this.sign = 0;
-		}
-		if((s1 === 1)||(s2 === 1)) {
-			this.sign = 1;
-		}
-		// 出力が負の場合は、2の補数
-		else if(this.sign === -1) {
-			this.element = this.getTwosComplement(len).element;
-		}
-		return this;
-	}
-
-	and(val) {
-		return this.clone()._and(val);
-	}
-
-	_or(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		let e1  = this, e2 = val;
-		const s1  = e1.signum(), s2 = e2.signum();
-		const len = Math.max(e1.bitLength(), e2.bitLength());
-		// 引数が負の場合は、2の補数
-		e1 = e1.getTwosComplement(len).element;
-		e2 = e2.getTwosComplement(len).element;
-		const size = Math.max(e1.length, e2.length);
-		this.element = [];
-		for(let i = 0;i < size;i++) {
-			const x1 = (i >= e1.length) ? 0 : e1[i];
-			const x2 = (i >= e2.length) ? 0 : e2[i];
-			this.element[i] = x1 | x2;
-		}
-		this.sign = ((s1 === -1)||(s2 === -1)) ? -1 : Math.max(s1, s2);
-		// 出力が負の場合は、2の補数
-		if(this.sign === -1) {
-			this.element = this.getTwosComplement(len).element;
-		}
-		return this;
-	}
-
-	or(val) {
-		return this.clone()._or(val);
-	}
-
-	_xor(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		let e1  = this, e2 = val;
-		const s1  = e1.signum(), s2 = e2.signum();
-		const len = Math.max(e1.bitLength(), e2.bitLength());
-		// 引数が負の場合は、2の補数
-		e1 = e1.getTwosComplement(len).element;
-		e2 = e2.getTwosComplement(len).element;
-		const size = Math.max(e1.length, e2.length);
-		this.element = [];
-		for(let i = 0;i < size;i++) {
-			const x1 = (i >= e1.length) ? 0 : e1[i];
-			const x2 = (i >= e2.length) ? 0 : e2[i];
-			this.element[i] = x1 ^ x2;
-		}
-		this.sign = ((s1 !== 0)&&(s1 !== s2)) ? -1 : 1;
-		// 出力が負の場合は、2の補数
-		if(this.sign === -1) {
-			this.element = this.getTwosComplement(len).element;
-		}
-		return this;
-	}
-
-	xor(val) {
-		return(this.clone()._xor(val));
-	}
-
-	_not() {
-		return(this._add(new BigInteger(1))._negate());
-	}
-
-	not() {
-		return(this.clone()._not());
-	}
-
-	_andNot(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		return(this._and(val.not()));
-	}
-
-	andNot(val) {
-		return(this.clone()._andNot(val));
-	}
-
-	_number_to_binary_number(x) {
-		if(x > 0xFFFFFFFF) {
-			return(this._string_to_binary_number(x.toFixed(), 10));
-		}
-		const y = [];
-		while(x !==  0) {
-			y[y.length] = x & 1;
-			x >>>= 1;
-		}
-		x = [];
-		for(let i = 0; i < y.length; i++) {
-			x[i >>> 4] |= y[i] << (i & 0xF);
-		}
-		return x;
-	}
-
-	_string_to_binary_number(text, radix) {
-		// 下の変換をすることで、2進数での変換時に内部のforの繰り返す回数が減る
-		// v0.03 出来る限りまとめてn進数変換する
-		const max_num = 0x3FFFFFFF;
-		const keta = Math.floor( Math.log(max_num) / Math.log(radix) );
-		const calcradix = Math.round(Math.pow(radix, keta));
-		let x = [];
-		const y = [];
-		const len = Math.ceil(text.length / keta);
-		let offset = text.length;
-		for(let i = 0; i < len; i++ ) {
-			offset -= keta;
-			if(offset >= 0) {
-				x[i] = parseInt(text.substring(offset, offset + keta), radix);
-			}
-			else {
-				x[i] = parseInt(text.substring(0, offset + keta), radix);
-			}
-		}
-		radix = calcradix;
-		// v0.03ここまで
-		// 2で割っていくアルゴリズムで2進数に変換する
-		while(x.length !==  0) {
-			// 2で割っていく
-			// 隣の桁でたcarryはradix進数をかけて桁上げしてる
-			let carry = 0;
-			for(let i = x.length - 1; i >= 0; i--) {
-				const a = x[i] + carry * radix;
-				x[i]  = a >>> 1;
-				carry = a & 1;
-			}
-			// 1余るかどうかをテストする
-			y[y.length] = carry;
-			// xが0になっている部分は削除していく
-			if(x[x.length - 1] === 0) {
-				x.pop();
-			}
-		}
-		// メモリ節約のため1つの変数（16ビット）に収めるだけ収めていく
-		x = [];
-		for(let i = 0; i < y.length; i++) {
-			x[i >>> 4] |= y[i] << (i & 0xF);
-		}
-		return x;
-	}
-
-	_binary_number_to_string(binary, radix) {
-		const add = function(x1, x2, y) {
-			const size = x1.length;
-			let carry = 0;
-			for(let i = 0; i < size; i++) {
-				y[i] = x1[i] + ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
-				if(y[i] >= radix) {
-					carry = 1;
-					y[i] -= radix;
-				}
-				else {
-					carry = 0;
-				}
-			}
-			if(carry === 1) {
-				y[size] = 1;
-			}
-		};
-		const y = [0];
-		const t = [1];
-		for(let i = 0;i < binary.length;i++) {
-			for(let j = 0; j < 16; j++) {
-				if((binary[i] >>> j) & 1) {
-					add(t, y, y);
-				}
-				add(t, t, t);
-			}
-		}
-		return y;
-	}
-
-	_memory_allocation(n) {
-		const elementsize = this.element.length << 4;
-		if(elementsize < n) {
-			const addsize = (((n - elementsize - 1) & 0xFFFFFFF0) >>> 4) + 1;
-			for(let i = 0;i < addsize;i++) {
-				this.element[this.element.length] = 0;
-			}
-		}
-	}
-
-	_memory_reduction() {
-		for(let i = this.element.length - 1;i >= 0;i--) {
-			if(this.element[i] !==  0) {
-				if(i < this.element.length - 1) {
-					this.element.splice(i + 1, this.element.length - i - 1);
-				}
-				return;
-			}
-		}
-		this.sign = 0;
-		this.element = [];
-	}
-
-	// ユークリッド互除法（非再帰）
-	// x = this, y = val としたとき gcd(x,y)を返す
-	gcd(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		let x = this, y = val, z;
-		while(y.signum() !== 0) {
-			z = x.remainder(y);
-			x = y;
-			y = z;
-		}
-		return x;
-	}
-
-	// 拡張ユークリッド互除法（非再帰）
-	// x = this, y = valとしたとき、 a*x + b*y = c = gcd(x, y) の[a, b, c]を返す
-	extgcd(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		const ONE  = new BigInteger(1);
-		const ZERO = new BigInteger(0);
-		let r0 = this, r1 = val, r2, q1;
-		let a0 = ONE,  a1 = ZERO, a2;
-		let b0 = ZERO, b1 = ONE,  b2;
-		while(r1.signum() !== 0) {
-			const y = r0.divideAndRemainder(r1);
-			q1 = y[0];
-			r2 = y[1];
-			a2 = a0.subtract(q1.multiply(a1));
-			b2 = b0.subtract(q1.multiply(b1));
-			a0 = a1;
-			a1 = a2;
-			b0 = b1;
-			b1 = b2;
-			r0 = r1;
-			r1 = r2;
-		}
-		return [a0, b0, r0];
-	}
-
-	_abs() {
-		// -1 -> 1, 0 -> 0, 1 -> 1
-		this.sign *= this.sign;
-		return this;
-	}
-
-	abs() {
-		return this.clone()._abs();
-	}
-
-
-	_negate() {
-		this.sign *= -1;
-		return this;
-	}
-
-	negate() {
-		return this.clone()._negate();
-	}
-
-	signum() {
-		if(this.element.length === 0) {
-			return 0;
-		}
-		return this.sign;
-	}
-
-	compareToAbs(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		if(this.element.length < val.element.length) {
-			return -1;
-		}
-		else if(this.element.length > val.element.length) {
-			return 1;
-		}
-		for(let i = this.element.length - 1;i >= 0;i--) {
-			if(this.element[i] !== val.element[i]) {
-				const x = this.element[i] - val.element[i];
-				return ( (x === 0) ? 0 : ((x > 0) ? 1 : -1) );
-			}
-		}
-		return 0;
-	}
-
-	compareTo(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		if(this.signum() !== val.signum()) {
-			if(this.sign > val.sign) {
-				return 1;
-			}
-			else {
-				return -1;
-			}
-		}
-		else if(this.signum() === 0) {
-			return 0;
-		}
-		return this.compareToAbs(val) * this.sign;
-	}
-
-	max(val) {
-		if(this.compareTo(val) >= 0) {
-			return this.clone();
-		}
-		else {
-			return val.clone();
-		}
-	}
-
-	min(val) {
-		if(this.compareTo(val) >= 0) {
-			return val.clone();
-		}
-		else {
-			return this.clone();
-		}
-	}
-
-	_shift(n) {
-		if(n === 0) {
-			return this;
-		}
-		const x = this.element;
-		// 1ビットなら専用コードで高速計算
-		if(n === 1) {
-			let i = x.length - 1;
-			if((x[i] & 0x8000) !==  0) {
-				x[x.length] = 1;
-			}
-			for(;i >= 0;i--) {
-				x[i] <<= 1;
-				x[i]  &= 0xFFFF;
-				if((i > 0) && ((x[i - 1] & 0x8000) !==  0)) {
-					x[i] += 1;
-				}
-			}
-		}
-		else if(n === -1) {
-			for(let i = 0;i < x.length;i++) {
-				x[i] >>>= 1;
-				if((i < x.length - 1) && ((x[i + 1] & 1) !==  0)) {
-					x[i] |= 0x8000;
-				}
-			}
-			if(x[x.length - 1] === 0) {
-				x.pop();
-			}
-		}
-		else {
-			// 16ビット単位なら配列を追加削除する高速計算
-			if(n >= 16) {
-				const m = n >>> 4;
-				for(let i = x.length - 1; i >= 0; i--) {
-					x[i + m] = x[i];
-				}
-				for(let i = m - 1; i >= 0; i--) {
-					x[i] = 0;
-				}
-				n &= 0xF;
-			}
-			else if(n <= -16){
-				const m = (-n) >>> 4;
-				x.splice(0, m);
-				n += m << 4;
-			}
-			if(n !== 0) {
-				// 15ビット以内ならビット演算でまとめて操作
-				if(0 < n) {
-					let carry = 0;
-					for(let i = 0; i < x.length; i++) {
-						x[i] = (x[i] << n) + carry;
-						if(x[i] > 0xFFFF) {
-							carry = x[i] >>> 16;
-							x[i] &= 0xFFFF;
-						}
-						else {
-							carry = 0;
-						}
-					}
-					if(carry !== 0) {
-						x[x.length] = carry;
-					}
-				}
-				else {
-					n = -n;
-					for(let i = 0; i < x.length; i++) {
-						if(i !== x.length - 1) {
-							x[i] += x[i + 1] << 16;
-							x[i] >>>= n;
-							x[i] &= 0xFFFF;
-						}
-						else {
-							x[i] >>>= n;
-						}
-					}
-					if(x[x.length - 1] === 0) {
-						x.pop();
-					}
-				}
-			}
-		}
-		return this;
-	}
-
-	shift(n) {
-		return this.clone()._shift(n);
-	}
-
-	shiftLeft(n) {
-		return this.shift(n);
-	}
-
-	shiftRight(n) {
-		return this.shift(-n);
-	}
-
-	_add(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		const o1 = this;
-		const o2 = val;
-		let x1 = o1.element;
-		let x2 = o2.element;
-		if(o1.sign === o2.sign) {
-			//足し算
-			this._memory_allocation(x2.length << 4);
-			let carry = 0;
-			for(let i = 0; i < x1.length; i++) {
-				x1[i] += ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
-				if(x1[i] > 0xFFFF) {
-					carry = 1;
-					x1[i] &= 0xFFFF;
-				}
-				else {
-					carry = 0;
-				}
-			}
-			if(carry !== 0) {
-				x1[x1.length] = carry;
-			}
-		}
-		else {
-			// 引き算
-			const compare = o1.compareToAbs(o2);
-			if(compare === 0) {
-				this.element = [];
-				this.sign = 1;
-				return this;
-			}
-			else if(compare === -1) {
-				this.sign = o2.sign;
-				const swap = x1;
-				x1 = x2.slice(0);
-				x2 = swap;
-			}
-			let carry = 0;
-			for(let i = 0; i < x1.length; i++) {
-				x1[i] -= ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
-				if(x1[i] < 0) {
-					x1[i] += 0x10000;
-					carry  = 1;
-				}
-				else {
-					carry  = 0;
-				}
-			}
-			this.element = x1;
-			this._memory_reduction();
-		}
-		return this;
-	}
-
-	add(val) {
-		return this.clone()._add(val);
-	}
-
-	_subtract(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		const sign = val.sign;
-		const out  = this._add(val._negate());
-		val.sign = sign;
-		return out;
-	}
-
-	subtract(val) {
-		return this.clone()._subtract(val);
-	}
-
-	_multiply(val) {
-		const x = this.multiply(val);
-		this.element = x.element;
-		this.sign    = x.sign;
-		return this;
-	}
-
-	multiply(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		const out  = new BigInteger();
-		const buff = new BigInteger();
-		const o1 = this;
-		const o2 = val;
-		const x1 = o1.element;
-		const x2 = o2.element;
-		const y  = out.element;
-		for(let i = 0; i < x1.length; i++) {
-			buff.element = [];
-			// x3 = x1[i] * x2
-			const x3 = buff.element;
-			let carry = 0;
-			for(let j = 0; j < x2.length; j++) {
-				x3[j] = x1[i] * x2[j] + carry;
-				if(x3[j] > 0xFFFF) {
-					carry = x3[j] >>> 16;
-					x3[j] &= 0xFFFF;
-				}
-				else {
-					carry = 0;
-				}
-			}
-			if(carry !== 0) {
-				x3[x3.length] = carry;
-			}
-			// x3 = x3 << (i * 16)
-			//buff._shift(i << 4);
-			for(let j = x3.length - 1; j >= 0; j--) {
-				x3[j + i] = x3[j];
-			}
-			for(let j = i - 1; j >= 0; j--) {
-				x3[j] = 0;
-			}
-			// y = y + x3 (out._add(buff))
-			//out._add(buff);
-			carry = 0;
-			out._memory_allocation(x3.length << 4);
-			for(let j = i; j < y.length; j++) {
-				y[j] += ((x3.length >= (j + 1)) ? x3[j] : 0) + carry;
-				if(y[j] > 0xFFFF) {
-					carry = 1;
-					y[j] &= 0xFFFF;
-				}
-				else {
-					carry = 0;
-				}
-			}
-			if(carry !== 0) {
-				y[y.length] = carry;
-			}
-		}
-		out.sign = this.sign * val.sign;
-		return out;
-	}
-
-	_divideAndRemainder(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		const out = [];
-		if(val.signum() === 0) {
-			out[0] = 1 / 0;
-			out[1] = 0 / 0;
-			return out;
-		}
-		const compare = this.compareToAbs(val);
-		if(compare < 0) {
-			out[0] = new BigInteger(0);
-			out[1] = this.clone();
-			return out;
-		}
-		else if(compare === 0) {
-			out[0] = new BigInteger(1);
-			out[0].sign = this.sign * val.sign;
-			out[1] = new BigInteger(0);
-			return out;
-		}
-		const ONE = new BigInteger(1);
-		const size = this.bitLength() - val.bitLength();
-		const x1 = this.clone()._abs();
-		const x2 = val.shift(size)._abs();
-		const y  = new BigInteger();
-		for(let i = 0; i <= size; i++) {
-			if(x1.compareToAbs(x2) >= 0) {
-				x1._subtract(x2);
-				y._add(ONE);
-			}
-			if(i === size) {
-				break;
-			}
-			x2._shift(-1);
-			y._shift(1);
-		}
-		out[0] = y;
-		out[0].sign = this.sign * val.sign;
-		out[1] = x1;
-		out[1].sign = this.sign;
-		return out;
-	}
-
-	divideAndRemainder(val) {
-		return this.clone()._divideAndRemainder(val);
-	}
-
-	_divide(val) {
-		return this._divideAndRemainder(val)[0];
-	}
-
-	divide(val) {
-		return this.clone()._divide(val);
-	}
-
-	_remainder(val) {
-		return this._divideAndRemainder(val)[1];
-	}
-
-	remainder(val) {
-		return this.clone()._remainder(val);
-	}
-
-	_mod(val) {
-		if(!(val instanceof BigInteger)) {
-			val = new BigInteger(val);
-		}
-		if(val.signum() < 0) {
-			return null;
-		}
-		const y = this._divideAndRemainder(val);
-		if(y[1] instanceof BigInteger) {
-			if(y[1].signum() >= 0) {
-				return y[1];
-			}
-			else {
-				return y[1]._add(val);
-			}
-		}
-		return null;
-	}
-
-	mod(val) {
-		return this.clone()._mod(val);
-	}
-
-	_setBit(n) {
-		this._memory_allocation(n + 1);
-		this.element[n >>> 4] |= 1 << (n & 0xF);
-		return this;
-	}
-
-	setBit(n) {
-		return this.clone()._setBit(n);
-	}
-
-	_flipBit(n) {
-		this._memory_allocation(n + 1);
-		this.element[n >>> 4] ^= 1 << (n & 0xF);
-		return this;
-	}
-
-	flipBit(n) {
-		return this.clone()._flipBit(n);
-	}
-
-	clearBit(n) {
-		const y = this.clone();
-		y.element[n >>> 4] &= ~(1 << (n & 0xF));
-		y._memory_reduction();
-		return y;
-	}
-
-	testBit(n) {
-		return ((this.element[n >>> 4] >>> (n & 0xF)) & 1);
-	}
-
-	pow(n) {
-		let x, y;
-		x = new BigInteger(this);
-		y = new BigInteger(1);
-		while(n !== 0) {
-			if((n & 1) !== 0) {
-				y = y.multiply(x);
-			}
-			x = x.multiply(x);
-			n >>>= 1;
-		}
-		return y;
-	}
-
-	modPow(exponent, m) {
-		m = new BigInteger(m);
-		let x = new BigInteger(this);
-		let y = new BigInteger(1);
-		const e = new BigInteger(exponent);
-		while(e.element.length !== 0) {
-			if((e.element[0] & 1) !== 0) {
-				y = y.multiply(x).mod(m);
-			}
-			x = x.multiply(x).mod(m);
-			e._shift(-1);
-		}
-		return y;
-	}
-
-	modInverse(m) {
-		m = new BigInteger(m);
-		const y = this.extgcd(m);
-		const ONE  = new BigInteger(1);
-		if(y[2].compareTo(ONE) !== 0) {
-			return null;
-		}
-		// 正にするため remainder ではなく mod を使用する
-		return y[0]._add(m)._mod(m);
-	}
-
-	isProbablePrime(certainty) {
-		const e = this.element;
-		//0, 1, 2 -> true
-		if( (e.length === 0) || ((e.length === 1)&&(e[0] <= 2)) ) {
-			return true;
-		}
-		//even number -> false
-		else if( ((e[0] & 1) === 0) || (certainty <= 0) ) {
-			return false;
-		}
-		if(typeof Random === "undefined") {
-			return false;
-		}
-		// ミラーラビン素数判定法
-		// かなり処理が重たいです。まあお遊び程度に使用という感じで。
-		certainty	= certainty >> 1;
-		const ZERO	= new BigInteger(0);
-		const ONE	= new BigInteger(1);
-		const n		= this;
-		const LEN	= n.bitLength();
-		const n_1	= n.subtract(ONE);
-		const s 	= n_1.getLowestSetBit();
-		const d 	= n_1.shift(-s);
-		const random = new Random();
-		let a;
-		let isComposite;
-		for(let i = 0; i < certainty; i++ ) {
-			//[ 1, n - 1] の範囲から a を選択
-			do {
-				a = new BigInteger( LEN, random );
-			} while(( a.compareTo(ZERO) === 0 )||( a.compareTo(n) !== -1 ));
-			// a^d != 1 mod n
-			a = a.modPow(d, n);
-			if( a.compareTo(ONE) === 0 ) {
-				continue;
-			}
-			// x ^ 4 % 2 = ((x ^ 2 % 2) ^ 2 % 2) のように分解しておく
-			isComposite = true;
-			for(let j = 0; j <= s; j++) {
-				if(a.compareTo(n_1) === 0) {
-					isComposite = false;
-					break;
-				}
-				if(j < s) {
-					a = a.multiply(a)._mod(n);
-				}
-			}
-			if(isComposite) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	nextProbablePrime() {
-		if(typeof Random === "undefined") {
-			return(new BigInteger(0));
-		}
-		const x = this.clone();
-		const ONE	= new BigInteger(1);
-		while(true) {
-			x._add(ONE);
-			if(x.isProbablePrime(100)) {
-				break;
-			}
-		}
-		return x;
-	}
-	
-	static valueOf(x) {
-		return new BigInteger(x);
-	}
-	
-	static probablePrime(bitLength, rnd) {
-		return new BigInteger(bitLength ,100 ,rnd);
-	}
-	
-}
-
-BigInteger.ONE = new BigInteger(1);
-BigInteger.TEN = new BigInteger(10);
-BigInteger.ZERO = new BigInteger(0);
-
-/**
- * The script is part of SenkoJS.
- * 
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- * 
- * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
- */
-
-class BigDecimal {
-
-	constructor() {
-		this.integer = 0;
-		this._scale = 0;
-		let p1 = 0;
-		let p2 = 0;
-		let p3 = null;
-		if(arguments.length >= 1) {
-			p1 = arguments[0];
-		}
-		if(arguments.length >= 2) {
-			p2 = arguments[1];
-		}
-		if(arguments.length >= 3) {
-			p3 = arguments[2];
-		}
-		// BigDecimal(BigInteger val, MathContext mc)
-		if(p2 instanceof MathContext) {
-			p3 = p2;
-		}
-		if(p1 instanceof BigDecimal) {
-			// Senko.println(p1.integer);
-			this.integer	= p1.integer.clone();
-			this._scale		= p1._scale;
-			this.int_string	= p1.int_string;
-		}
-		else if(p1 instanceof BigInteger) {
-			this.integer = p1.clone();
-			this._scale   = p2;
-		}
-		else if(typeof p1 === "number") {
-			// 整数か
-			if(p1 === Math.floor(p1)) {
-				this.integer = new BigInteger(p1);
-				this._scale   = 0;
-			}
-			// 実数か
-			else {
-				this._scale = 0;
-				while(true) {
-					p1 = p1 * 10;
-					this._scale = this._scale + 1;
-					if(p1 === Math.floor(p1)) {
-						break;
-					}
-				}
-				this.integer = new BigInteger(p1);
-			}
-		}
-		else if(typeof p1 === "string") {
-			this._scale = 0;
-			let buff;
-			// 正規化
-			let text = p1.replace(/\s/g, "").toLowerCase();
-			// +-の符号があるか
-			let number_text = "";
-			buff = text.match(/^[+-]+/);
-			if(buff !== null) {
-				buff = buff[0];
-				text = text.substr(buff.length);
-				if(buff.indexOf("-") !== -1) {
-					number_text += "-";
-				}
-			}
-			// 整数部があるか
-			buff = text.match(/^[0-9]+/);
-			if(buff !== null) {
-				buff = buff[0];
-				text = text.substr(buff.length);
-				number_text += buff;
-			}
-			// 小数部があるか
-			buff = text.match(/^\.[0-9]+/);
-			if(buff !== null) {
-				buff = buff[0];
-				text = text.substr(buff.length);
-				buff = buff.substr(1);
-				this._scale   = this._scale + buff.length;
-				number_text += buff;
-			}
-			// 指数表記があるか
-			buff = text.match(/^e[+-]?[0-9]+/);
-			if(buff !== null) {
-				buff = buff[0].substr(1);
-				this._scale   = this._scale - parseInt(buff, 10);
-			}
-			this.integer = new BigInteger(number_text, 10);
-		}
-		if(p3 instanceof MathContext) {
-			const newbigdecimal = this.round(p3);
-			this.integer	= newbigdecimal.integer;
-			this._scale		= newbigdecimal._scale;
-		}
-		//	Senko.println(p1 + "\t\n->\t[" + this.integer + "," + this._scale +"]\n\t"+ this.toEngineeringString() );
-	}
-
-	_getUnsignedIntegerString() {
-		// キャッシュする
-		if(typeof this.int_string === "undefined") {
-			this.int_string = this.integer.toString(10).replace(/^-/, "");
-		}
-		return this.int_string;
-	}
-
-	clone() {
-		return new BigDecimal(this);
-	}
-
-	scale() {
-		return this._scale;
-	}
-
-	signum() {
-		return this.integer.signum();
-	}
-
-	precision() {
-		return this._getUnsignedIntegerString().length;
-	}
-
-	unscaledValue() {
-		return new BigInteger(this.integer);
-	}
-
-	toScientificNotation(e) {
-		const text	= this._getUnsignedIntegerString();
-		let s		= this.scale();
-		const x		= [];
-		let i, k;
-		// -
-		if(this.signum() === -1) {
-			x[x.length] = "-";
-		}
-		// 表示上の桁数
-		s = - e - s;
-		// 小数点が付かない
-		if(s >= 0) {
-			x[x.length] = text;
-			for(i = 0; i < s; i++) {
-				x[x.length] = "0";
-			}
-		}
-		// 小数点が付く
-		else {
-			k = this.precision() + s;
-			if(0 < k) {
-				x[x.length] = text.substring(0, k);
-				x[x.length] = ".";
-				x[x.length] = text.substring(k, text.length);
-			}
-			else {
-				k = - k;
-				x[x.length] = "0.";
-				for(i = 0; i < k; i++) {
-					x[x.length] = "0";
-				}
-				x[x.length] = text;
-			}
-		}
-		x[x.length] = "E";
-		if(e >= 0) {
-			x[x.length] = "+";
-		}
-		x[x.length] = e;
-		return x.join("");
-	}
-
-	toString() {
-		// 「調整された指数」
-		const x = - this.scale() + (this.precision() - 1);
-		// スケールが 0 以上で、「調整された指数」が -6 以上
-		if((this.scale() >= 0) && (x >= -6)) {
-			return this.toPlainString();
-		}
-		else {
-			return this.toScientificNotation(x);
-		}
-	}
-
-	toEngineeringString() {
-		// 「調整された指数」
-		const x = - this.scale() + (this.precision() - 1);
-		// スケールが 0 以上で、「調整された指数」が -6 以上
-		if((this.scale() >= 0) && (x >= -6)) {
-			return this.toPlainString();
-		}
-		else {
-			// 0 でない値の整数部が 1 〜 999 の範囲に収まるように調整
-			return this.toScientificNotation(Math.floor(x / 3) * 3);
-		}
-	}
-
-	toPlainString() {
-		// スケールの変換なし
-		if(this.scale() === 0) {
-			if(this.signum() < 0) {
-				return "-" + this._getUnsignedIntegerString();
-			}
-			else {
-				return this._getUnsignedIntegerString();
-			}
-		}
-		// 指数0で文字列を作成後、Eの後ろの部分をとっぱらう
-		const text = this.toScientificNotation(0);
-		return text.match(/^[^E]*/)[0];
-	}
-
-	ulp() {
-		return new BigDecimal(BigInteger.ONE, this.scale());
-	}
-
-	setScale(newScale, roundingMode) {
-		if(this.scale() === newScale) {
-			// scaleが同一なので処理の必要なし
-			return(this.clone());
-		}
-		if(arguments.length === 1) {
-			roundingMode = RoundingMode.UNNECESSARY;
-		}
-		else {
-			roundingMode = RoundingMode.getRoundingMode(roundingMode);
-		}
-		// 文字列を扱ううえで、符号があるとやりにくいので外しておく
-		let text		= this._getUnsignedIntegerString();
-		const sign		= this.signum();
-		const sign_text	= sign >= 0 ? "" : "-";
-		// scale の誤差
-		// 0 以上なら 0 を加えればいい。0未満なら0を削るか、四捨五入など丸めを行う
-		const delta		= newScale - this.scale();	// この桁分増やすといい
-		if(0 <= delta) {
-			// 0を加える
-			let i;
-			for(i = 0; i < delta; i++) {
-				text = text + "0";
-			}
-			return new BigDecimal(new BigInteger(sign_text + text), newScale);
-		}
-		const keta			= text.length + delta;		// 最終的な桁数
-		const keta_marume		= keta + 1;
-		if(keta <= 0) {
-			// 指定した scale では設定できない場合
-			// 例えば "0.1".setScale(-2), "10".setScale(-3) としても表すことは不可能であるため、
-			// sign（-1, 0, +1）のどれかの数値を使用して丸める
-			const outdata = (sign + roundingMode.getAddNumber(sign)) / 10;
-			// 上記の式は、CEILINGなら必ず1、正でCEILINGなら1、負でFLOORなら1、それ以外は0となり、
-			// さらに元々の数値が 0 なら 0、切り捨て不能なら例外が返る計算式である。
-			// これは Java の動作をまねています。
-			return new BigDecimal(new BigInteger(outdata), newScale);
-		}
-		{
-			// 0を削るだけで解決する場合
-			// 単純な切捨て(0を削るのみ)
-			const zeros			= text.match(/0+$/);
-			const zero_length		= (zeros !== null) ? zeros[0].length : 0;
-			if(( (zero_length + delta) >= 0 ) || (roundingMode === RoundingMode.DOWN)) {
-				return new BigDecimal(new BigInteger(sign_text + text.substring(0, keta)), newScale);
-			}
-		}
-		{
-			// 丸め計算で解決する場合
-			// 12345 -> '123'45
-			text = text.substring(0, keta_marume);
-			// 丸め計算に必要な切り取る桁数(後ろの1～2桁を取得)
-			const cutsize = text.length > 1 ? 2 : 1;
-			// '123'45 -> 1'23'4
-			const number = parseInt(text.substring(text.length - cutsize, text.length)) * sign;
-			// 「元の数」と「丸めに必要な数」を足す
-			const x1 = new BigInteger(sign_text + text);
-			const x2 = new BigInteger(roundingMode.getAddNumber(number));
-			text = x1.add(x2).toString();
-			// 丸め後の桁数に戻して
-			return new BigDecimal(new BigInteger(text.substring(0, text.length - 1)), newScale);
-		}
-	}
-
-	round(mc) {
-		if(!(mc instanceof MathContext)) {
-			throw "not MathContext";
-		}
-		const newPrecision	= mc.getPrecision();
-		const delta			= newPrecision - this.precision();
-		if((delta === 0)||(newPrecision === 0)) {
-			return this.clone();
-		}
-		const newBigDecimal = this.setScale( this.scale() + delta, mc.getRoundingMode());
-		/* 精度を上げる必要があるため、0を加えた場合 */
-		if(delta > 0) {
-			return newBigDecimal;
-		}
-		/* 精度を下げる必要があるため、丸めた場合は、桁の数が正しいか調べる */
-		if(newBigDecimal.precision() === mc.getPrecision()) {
-			return newBigDecimal;
-		}
-		/* 切り上げなどで桁数が１つ増えた場合 */
-		const sign_text	= newBigDecimal.integer.signum() >= 0 ? "" : "-";
-		const abs_text	= newBigDecimal._getUnsignedIntegerString();
-		const inte_text	= sign_text + abs_text.substring(0, abs_text.length - 1);
-		return new BigDecimal(new BigInteger(inte_text), newBigDecimal.scale() - 1);
-	}
-
-	abs(mc) {
-		const output = this.clone();
-		output.integer = output.integer.abs();
-		if(arguments.length === 1) {
-			return output;
-		}
-		else {
-			if(!(mc instanceof MathContext)) {
-				throw "not MathContext";
-			}
-			return output.round(mc);
-		}
-	}
-
-	plus(mc) {
-		const output = this.clone();
-		if(arguments.length === 1) {
-			return output;
-		}
-		else {
-			if(!(mc instanceof MathContext)) {
-				throw "not MathContext";
-			}
-			return output.round(mc);
-		}
-	}
-
-	negate(mc) {
-		const output = this.clone();
-		output.integer = output.integer.negate();
-		if(arguments.length === 1) {
-			return output;
-		}
-		else {
-			if(!(mc instanceof MathContext)) {
-				throw "not MathContext";
-			}
-			return output.round(mc);
-		}
-	}
-
-	compareTo(val) {
-		if(!(val instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		const src			= this;
-		const tgt			= val;
-		// 簡易計算
-		{
-			const src_sign	= src.signum();
-			const tgt_sign	= tgt.signum();
-			if((src_sign === 0) && (src_sign === tgt_sign)) {
-				return 0;
-			}
-			else if(src_sign === 0) {
-				return - tgt_sign;
-			}
-			else if(tgt_sign === 0) {
-				return src_sign;
-			}
-		}
-		// 実際に計算する
-		if(src._scale === tgt._scale) {
-			return src.integer.compareTo(tgt.integer);
-		}
-		else if(src._scale > tgt._scale) {
-			const newdst = tgt.setScale(src._scale);
-			return src.integer.compareTo(newdst.integer);
-		}
-		else {
-			const newsrc = src.setScale(tgt._scale);
-			return newsrc.integer.compareTo(tgt.integer);
-		}
-	}
-
-	equals(x) {
-		if(!(x instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		return ((this._scale === x._scale) && (this.integer.equals(x.integer)));
-	}
-
-	min(val) {
-		if(!(val instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		if(this.compareTo(val) <= 0) {
-			return this.clone();
-		}
-		else {
-			return val.clone();
-		}
-	}
-
-	max(val) {
-		if(!(val instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		if(this.compareTo(val) >= 0) {
-			return this.clone();
-		}
-		else {
-			return val.clone();
-		}
-	}
-
-	movePointLeft(n) {
-		let output = this.scaleByPowerOfTen( -n );
-		output = output.setScale(Math.max(this.scale() + n, 0));
-		return output;
-	}
-
-	movePointRight(n) {
-		let output = this.scaleByPowerOfTen( n );
-		output = output.setScale(Math.max(this.scale() - n, 0));
-		return output;
-	}
-
-	scaleByPowerOfTen(n) {
-		const output = this.clone();
-		output._scale = this.scale() - n;
-		return output;
-	}
-
-	stripTrailingZeros() {
-		// 0をできる限り取り除く
-		const sign		= this.signum();
-		const sign_text	= sign >= 0 ? "" : "-";
-		const text		= this.integer.toString(10).replace(/^-/, "");
-		const zeros		= text.match(/0+$/);
-		let zero_length	= (zeros !== null) ? zeros[0].length : 0;
-		if(zero_length === text.length) {
-			// 全て 0 なら 1 ケタ残す
-			zero_length = text.length - 1;
-		}
-		const newScale	= this.scale() - zero_length;
-		return new BigDecimal(new BigInteger(sign_text + text.substring(0, text.length - zero_length)), newScale);
-	}
-
-	add(augend, mc) {
-		if(arguments.length === 1) {
-			mc = MathContext.UNLIMITED;
-		}
-		if(!(augend instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		if(!(mc instanceof MathContext)) {
-			throw "not MathContext";
-		}
-		const src			= this;
-		const tgt			= augend;
-		const newscale	= Math.max(src._scale, tgt._scale);
-		if(src._scale === tgt._scale) {
-			// 1 e1 + 1 e1 = 1
-			return new BigDecimal(src.integer.add(tgt.integer), newscale, mc);
-		}
-		else if(src._scale > tgt._scale) {
-			// 1 e-2 + 1 e-1
-			const newdst = tgt.setScale(src._scale);
-			// 0.01 + 0.10 = 0.11 = 11 e-2
-			return new BigDecimal(src.integer.add(newdst.integer), newscale, mc);
-		}
-		else {
-			// 1 e-1 + 1 e-2
-			const newsrc = src.setScale(tgt._scale);
-			// 0.1 + 0.01 = 0.11 = 11 e-2
-			return new BigDecimal(newsrc.integer.add(tgt.integer), newscale, mc);
-		}
-	}
-
-	subtract(subtrahend, mc) {
-		if(arguments.length === 1) {
-			mc = MathContext.UNLIMITED;
-		}
-		if(!(subtrahend instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		if(!(mc instanceof MathContext)) {
-			throw "not MathContext";
-		}
-		const src			= this;
-		const tgt			= subtrahend;
-		const newscale	= Math.max(src._scale, tgt._scale);
-		if(src._scale === tgt._scale) {
-			return new BigDecimal(src.integer.subtract(tgt.integer), newscale, mc);
-		}
-		else if(src._scale > tgt._scale) {
-			const newdst = tgt.setScale(src._scale);
-			return new BigDecimal(src.integer.subtract(newdst.integer), newscale, mc);
-		}
-		else {
-			const newsrc = src.setScale(tgt._scale);
-			return new BigDecimal(newsrc.integer.subtract(tgt.integer), newscale, mc);
-		}
-	}
-
-	multiply(multiplicand, mc) {
-		if(arguments.length === 1) {
-			mc = MathContext.UNLIMITED;
-		}
-		if(!(multiplicand instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		if(!(mc instanceof MathContext)) {
-			throw "not MathContext";
-		}
-		const src			= this;
-		const tgt			= multiplicand;
-		const newinteger	= src.integer.multiply(tgt.integer);
-		// 0.1 * 0.01 = 0.001
-		const newscale	= src._scale + tgt._scale;
-		return new BigDecimal(newinteger, newscale, mc);
-	}
-
-	divideToIntegralValue(divisor, mc) {
-		if(arguments.length === 1) {
-			mc = MathContext.UNLIMITED;
-		}
-		if(!(divisor instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		if(!(mc instanceof MathContext)) {
-			throw "not MathContext";
-		}
-		const getDigit  = function( num ) {
-			let i;
-			let text = "1";
-			for(i = 0; i < num; i++) {
-				text = text + "0";
-			}
-			return new BigInteger(text);
-		};
-		if(divisor.compareTo(BigDecimal.ZERO) === 0) {
-			throw "ArithmeticException";
-		}
-
-		// 1000e0		/	1e2				=	1000e-2
-		// 1000e0		/	10e1			=	100e-1
-		// 1000e0		/	100e0			=	10e0
-		// 1000e0		/	1000e-1			=	1e1
-		// 1000e0		/	10000e-2		=	1e1
-		// 1000e0		/	100000e-3		=	1e1
-
-		// 10e2			/	100e0			=	1e1
-		// 100e1		/	100e0			=	1e1
-		// 1000e0		/	100e0			=	10e0
-		// 10000e-1		/	100e0			=	100e-1	
-		// 100000e-2	/	100e0			=	1000e-2
-
-		const src		= this;
-		const tgt		= divisor;
-		let src_integer	= src.integer;
-		let tgt_integer	= tgt.integer;
-		const newScale	= src._scale - tgt._scale;
-
-		// 100e-2 / 3e-1 = 1 / 0.3 -> 100 / 30
-		if(src._scale > tgt._scale) {
-			// src._scale に合わせる
-			tgt_integer = tgt_integer.multiply(getDigit(  newScale ));
-		}
-		// 1e-1 / 3e-2 = 0.1 / 0.03 -> 10 / 3
-		else if(src._scale < tgt._scale) {
-			// tgt._scale に合わせる
-			src_integer = src_integer.multiply(getDigit( -newScale ));
-		}
-
-		// とりあえず計算結果だけ作ってしまう
-		const new_integer	= src_integer.divide(tgt_integer);
-		const sign			= new_integer.signum();
-		if(sign !== 0) {
-			const text	= new_integer.toString(10).replace(/^-/, "");
-			// 指定した桁では表すことができない
-			if((mc.getPrecision() !== 0) && (text.length > mc.getPrecision())) {
-				throw "ArithmeticException";
-			}
-			// 結果の優先スケール に合わせる (this.scale() - divisor.scale())
-			if(text.length <= (-newScale)) {
-				// 合わせることができないので、0をできる限り削る = stripTrailingZerosメソッド
-				const zeros			= text.match(/0+$/);
-				const zero_length	= (zeros !== null) ? zeros[0].length : 0;
-				const sign_text		= sign >= 0 ? "" : "-";
-				return(new BigDecimal(new BigInteger(sign_text + text.substring(0, text.length - zero_length)), -zero_length));
-			}
-		}
-
-		let output = new BigDecimal(new_integer);
-		output = output.setScale(newScale, RoundingMode.UP);
-		output = output.round(mc);
-		return output;
-	}
-
-	divideAndRemainder(divisor, mc) {
-		if(arguments.length === 1) {
-			mc = MathContext.UNLIMITED;
-		}
-		if(!(divisor instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		if(!(mc instanceof MathContext)) {
-			throw "not MathContext";
-		}
-
-		// 1000e0		/	1e2				=	1000e-2	... 0e0
-		// 1000e0		/	10e1			=	100e-1	... 0e0
-		// 1000e0		/	100e0			=	10e0	... 0e0
-		// 1000e0		/	1000e-1			=	1e1		... 0e0
-		// 1000e0		/	10000e-2		=	1e1		... 0e-1
-		// 1000e0		/	100000e-3		=	1e1		... 0e-2
-
-		// 10e2			/	100e0			=	1e1		... 0e1
-		// 100e1		/	100e0			=	1e1		... 0e1
-		// 1000e0		/	100e0			=	10e0	... 0e0
-		// 10000e-1		/	100e0			=	100e-1	... 0e-1
-		// 100000e-2	/	100e0			=	1000e-2	... 0e-2
-
-		const result_divide	= this.divideToIntegralValue(divisor, mc);
-		const result_remaind	= this.subtract(result_divide.multiply(divisor, mc), mc);
-
-		const output = [result_divide, result_remaind];
-		return output;
-	}
-
-	divide(divisor, p1, p2) {
-		if(!(divisor instanceof BigDecimal)) {
-			throw "not BigDecimal";
-		}
-		const src			= this;
-		const tgt			= divisor;
-		let roundingMode	= null;
-		let mc				= MathContext.UNLIMITED;
-		let newScale		= 0;
-		let isPriorityScale	= false;
-		let parm;
-		if(arguments.length === 1) {
-			newScale		 = src.scale() - tgt.scale();
-			isPriorityScale	= true;
-		}
-		else if(arguments.length === 2) {
-			parm = p1;
-			newScale		= src.scale();
-			isPriorityScale	= true;
-			if(parm instanceof MathContext) {
-				mc = parm;
-				roundingMode = mc.getRoundingMode();
-			}
-			else {
-				roundingMode = RoundingMode.getRoundingMode(arguments[0]);
-			}
-		}
-		else if(arguments.length === 3) {
-			if((typeof p1 === "number")||(p1 instanceof Number)) {
-				newScale = p1;
-			}
-			else {
-				throw "scale is not Integer";
-			}
-			parm = p2;
-			if(parm instanceof MathContext) {
-				mc = parm;
-				roundingMode = mc.getRoundingMode();
-			}
-			else {
-				roundingMode = RoundingMode.getRoundingMode(arguments[0]);
-			}
-		}
-		else {
-			throw "The argument is over.";
-		}
-		if(tgt.compareTo(BigDecimal.ZERO) === 0) {
-			throw "ArithmeticException";
-		}
-		let i;
-		let newsrc = src;
-		const result_map = [];
-		let result, result_divide, result_remaind, all_result;
-		all_result = BigDecimal.ZERO;
-		const precision = mc.getPrecision();
-		const check_max = precision !== 0 ? (precision + 8) : 0x3FFFF;
-		for(i = 0; i < check_max; i++) {
-			result = newsrc.divideAndRemainder(tgt, MathContext.UNLIMITED);
-			result_divide	= result[0];
-			result_remaind	= result[1];
-			all_result = all_result.add(result_divide.scaleByPowerOfTen(-i), MathContext.UNLIMITED);
-			if(result_remaind.compareTo(BigDecimal.ZERO) !== 0) {
-				if(precision === 0) {	// 精度無限大の場合は、循環小数のチェックが必要
-					if(result_map[result_remaind._getUnsignedIntegerString()]) {
-						throw "ArithmeticException " + all_result + "[" + result_remaind._getUnsignedIntegerString() + "]";
-					}
-					else {
-						result_map[result_remaind._getUnsignedIntegerString()] = true;
-					}
-				}
-				newsrc = result_remaind.scaleByPowerOfTen(1);
-			}
-			else {
-				break;
-			}
-		}
-		if(isPriorityScale) {
-			// 優先スケールの場合は、スケールの変更に失敗する可能性あり
-			try {
-				all_result = all_result.setScale(newScale, roundingMode);
-			}
-			catch(e) {
-				// falls through
-			}
-		}
-		else {
-			all_result = all_result.setScale(newScale, roundingMode);
-		}
-		all_result = all_result.round(mc);
-		return all_result;
-	}
-
-	toBigInteger() {
-		const x = this.toPlainString().replace(/\.\d*$/, "");
-		return new BigInteger(x.toPlainString());
-	}
-
-	toBigIntegerExact() {
-		const x = this.setScale(0, RoundingMode.UNNECESSARY);
-		return new BigInteger(x.toPlainString());
-	}
-
-	longValue() {
-		let x = this.toBigInteger();
-		x = x.longValue();
-		return x;
-	}
-
-	longValueExact() {
-		let x = this.toBigIntegerExact();
-		x = x.longValue();
-		return x;
-	}
-
-	intValue() {
-		let x = this.toBigInteger();
-		x = x.intValue();
-		return x & 0xFFFFFFFF;
-	}
-
-	intValueExact() {
-		let x = this.toBigIntegerExact();
-		x = x.longValue();
-		if((x < -2147483648) || (2147483647 < x)) {
-			throw "ArithmeticException";
-		}
-		return x;
-	}
-
-	floatValue() {
-		const p = this.precision();
-		if(MathContext.DECIMAL32.getPrecision() < p) {
-			return(this.signum() >= 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY);
-		}
-		return parseFloat(p.toEngineeringString());
-	}
-
-	doubleValue() {
-		const p = this.precision();
-		if(MathContext.DECIMAL64.getPrecision() < p) {
-			return(this.signum() >= 0 ? Number.POSITIVE_INFINITY : Number.NEGATIVE_INFINITY);
-		}
-		return parseFloat(p.toEngineeringString());
-	}
-
-	pow(n, mc) {
-		if(Math.abs(n) > 999999999) {
-			throw "ArithmeticException";
-		}
-		if(arguments.length === 1) {
-			mc = MathContext.UNLIMITED;
-		}
-		if(!(mc instanceof MathContext)) {
-			throw "not MathContext";
-		}
-		if((mc.getPrecision() === 0) && (n < 0)) {
-			throw "ArithmeticException";
-		}
-		if((mc.getPrecision() > 0) && (n > mc.getPrecision())) {
-			throw "ArithmeticException";
-		}
-		let x, y;
-		x = this.clone();
-		y = BigDecimal.ONE;
-		while(n !== 0) {
-			if((n & 1) !== 0) {
-				y = y.multiply(x, MathContext.UNLIMITED);
-			}
-			x = x.multiply(x, MathContext.UNLIMITED);
-			n >>>= 1;
-		}
-		return y.round(mc);
-	}
-	
-	static valueOf(val, scale) {
-		if(arguments.length === 1) {
-			return new BigDecimal(val);
-		}
-		else if(arguments.length === 2) {
-			if((typeof val === "number") && (val === Math.floor(val))) {
-				return new BigDecimal(new BigInteger(val), scale);
-			}
-			else {
-				throw "IllegalArgumentException";
-			}
-		}
-		throw "IllegalArgumentException";
-	}
-	
-}
-
-const RoundingMode = {
-	
-	// 0 から離れる
-	UP: {
-		toString : function() {
-			return "UP";
-		},
-		getAddNumber : function(x) {
-			x = x % 10;
-			if(x === 0) {
-				return 0;
-			}
-			else if(x > 0) {
-				return 10 - x;
-			}
-			else {
-				return (-(10 + x));
-			}
-		}
-	},
-	
-	// 0 に近づく
-	DOWN: {
-		toString : function() {
-			return "DOWN";
-		},
-		getAddNumber : function(x) {
-			x = x % 10;
-			return -x;
-		}
-	},
-	
-	// 正の無限大に近づく
-	CEILING: {
-		toString : function() {
-			return "CEILING";
-		},
-		getAddNumber : function(x) {
-			x = x % 10;
-			if(x === 0) {
-				return 0;
-			}
-			else if(x > 0) {
-				return 10 - x;
-			}
-			else {
-				return -x;
-			}
-		}
-	},
-	
-	// 負の無限大に近づく
-	FLOOR: {
-		toString : function() {
-			return "FLOOR";
-		},
-		getAddNumber : function(x) {
-			x = x % 10;
-			if(x === 0) {
-				return 0;
-			}
-			else if(x > 0) {
-				return -x;
-			}
-			else {
-				return(-(10 + x));
-			}
-		}
-	},
-	
-	// 四捨五入
-	HALF_UP: {
-		toString : function() {
-			return "HALF_UP";
-		},
-		getAddNumber : function(x) {
-			x = x % 10;
-			const sign = x >= 0 ? 1 : -1;
-			if(Math.abs(x) < 5) {
-				return (x * -1);
-			}
-			else {
-				return (sign * (10 - Math.abs(x)));
-			}
-		}
-	},
-	
-	// 五捨六入
-	HALF_DOWN: {
-		toString : function() {
-			return "HALF_DOWN";
-		},
-		getAddNumber : function(x) {
-			x = x % 10;
-			const sign = x >= 0 ? 1 : -1;
-			if(Math.abs(x) < 6) {
-				return (x * -1);
-			}
-			else {
-				return (sign * (10 - Math.abs(x)));
-			}
-		}
-	},
-	
-	// 等間隔なら偶数側へ丸める
-	HALF_EVEN: {
-		toString : function() {
-			return "HALF_EVEN";
-		},
-		getAddNumber : function(x) {
-			x = x % 100;
-			let sign, even;
-			if(x < 0) {
-				sign = -1;
-				even = Math.ceil(x / 10) & 1;
-			}
-			else {
-				sign = 1;
-				even = Math.floor(x / 10) & 1;
-			}
-			let center;
-			if(even === 1) {
-				center = 5;
-			}
-			else {
-				center = 6;
-			}
-			x = x % 10;
-			if(Math.abs(x) < center) {
-				return (x * -1);
-			}
-			else {
-				return (sign * (10 - Math.abs(x)));
-			}
-		}
-	},
-	
-	// 丸めない（丸める必要が出る場合はエラー）
-	UNNECESSARY: {
-		toString : function() {
-			return "UNNECESSARY";
-		},
-		getAddNumber : function(x) {
-			x = x % 10;
-			if(x === 0) {
-				return 0;
-			}
-			else {
-				throw "ArithmeticException";
-			}
-		}
-	},
-	
-	valueOf: function(name) {
-		if(name === null) {
-			throw "NullPointerException";
-		}
-		const values = RoundingMode.values;
-		for(let i = 0; i < values.length; i++) {
-			if(values[i].toString() === name) {
-				return values[i];
-			}
-		}
-		throw "IllegalArgumentException";
-	},
-	
-	getRoundingMode: function(roundingMode) {
-		let mode;
-		switch(roundingMode) {
-			case RoundingMode.CEILING:
-			case RoundingMode.DOWN:
-			case RoundingMode.FLOOR:
-			case RoundingMode.HALF_DOWN:
-			case RoundingMode.HALF_EVEN:
-			case RoundingMode.HALF_UP:
-			case RoundingMode.UNNECESSARY:
-			case RoundingMode.UP:
-				mode = roundingMode;
-				break;
-			default:
-				if((typeof roundingMode === "number")||(roundingMode instanceof Number)) {
-					mode = RoundingMode.values[roundingMode];
-				}
-				else if((typeof roundingMode === "string")||(roundingMode instanceof String)) {
-					mode = RoundingMode.valueOf(roundingMode);
-				}
-		}
-		if(!mode) {
-			throw "Not RoundingMode";
-		}
-		return mode;
-	}
-};
-
-RoundingMode.values = {
-	0	:	RoundingMode.CEILING,
-	1	:	RoundingMode.DOWN,
-	2	:	RoundingMode.FLOOR,
-	3	:	RoundingMode.HALF_DOWN,
-	4	:	RoundingMode.HALF_EVEN,
-	5	:	RoundingMode.HALF_UP,
-	6	:	RoundingMode.UNNECESSARY,
-	7	:	RoundingMode.UP
-};
-
-class MathContext {
-
-	constructor() {
-		this.precision = 0;
-		this.roundingMode = RoundingMode.HALF_UP;
-		let p1 = 0;
-		let p2 = 0;
-		let buff;
-		if(arguments.length >= 1) {
-			p1 = arguments[0];
-		}
-		if(arguments.length >= 2) {
-			p2 = arguments[1];
-		}
-		if((typeof p1 === "string")||(p1 instanceof String)) {
-			buff = p1.match(/precision=\d+/);
-			if(buff !== null) {
-				buff = buff[0].substring("precision=".length, buff[0].length);
-				this.precision = parseInt(buff, 10);
-			}
-			buff = p1.match(/roundingMode=\w+/);
-			if(buff !== null) {
-				buff = buff[0].substring("roundingMode=".length, buff[0].length);
-				this.roundingMode = RoundingMode.valueOf(buff);
-			}	
-		}
-		else if(arguments.length === 1) {
-			this.precision = p1;
-		}
-		else if(arguments.length === 2) {
-			this.precision = p1;
-			this.roundingMode = p2;
-		}
-		if(this.precision < 0) {
-			throw "IllegalArgumentException";
-		}
-	}
-
-	getPrecision() {
-		return this.precision;
-	}
-
-	getRoundingMode() {
-		return this.roundingMode;
-	}
-
-	equals(x) {
-		if(x instanceof MathContext) {
-			if(x.toString() === this.toString()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	toString() {
-		return ("precision=" + this.precision + " roundingMode=" + this.roundingMode.toString());
-	}
-}
-
-MathContext.UNLIMITED	= new MathContext(0,	RoundingMode.HALF_UP);
-MathContext.DECIMAL32	= new MathContext(7,	RoundingMode.HALF_EVEN);
-MathContext.DECIMAL64	= new MathContext(16,	RoundingMode.HALF_EVEN);
-MathContext.DECIMAL128	= new MathContext(34,	RoundingMode.HALF_EVEN);
-
-BigDecimal.RoundingMode			= RoundingMode;
-BigDecimal.MathContext			= MathContext;
-
-BigDecimal.ZERO					= new BigDecimal(0);
-BigDecimal.ONE					= new BigDecimal(1);
-BigDecimal.TEN					= new BigDecimal(10);
-BigDecimal.ROUND_CEILING		= RoundingMode.CEILING;
-BigDecimal.ROUND_DOWN			= RoundingMode.DOWN;
-BigDecimal.ROUND_FLOOR			= RoundingMode.FLOOR;
-BigDecimal.ROUND_HALF_DOWN		= RoundingMode.HALF_DOWN;
-BigDecimal.ROUND_HALF_EVEN		= RoundingMode.HALF_EVEN;
-BigDecimal.ROUND_HALF_UP		= RoundingMode.HALF_UP;
-BigDecimal.ROUND_UNNECESSARY	= RoundingMode.UNNECESSARY;
-BigDecimal.ROUND_UP				= RoundingMode.UP;
-
-/**
- * The script is part of SenkoJS.
- * 
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- * 
- * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
- */
-
 const S3Math =  {
 	EPSILON: 2.2204460492503130808472633361816E-8,
 	
@@ -20035,13 +20054,10 @@ Senko.Color = Color;
 Senko.File = File$1;
 Senko.HashMap = HashMap;
 Senko.Text = Text$1;
+Senko.Number = SNumber;
 Senko.Device = Device;
 Senko.ImageProcessing = ImageProcessing;
 Senko.SComponent = SComponent;
-Senko.Complex = Complex;
-Senko.BigDecimal = BigDecimal;
-Senko.BigInteger = BigInteger;
-Senko.Random = Random;
 Senko.S3 = S3;
 
 export default Senko;
