@@ -27,11 +27,12 @@ export default class Complex {
 			}
 			else if(typeof obj === "string" || obj instanceof String) {
 				const str = obj.replace(/\s/g, "").toLowerCase();
+				// 複素数の宣言がない場合
 				if(!(/[ij]/.test(str))) {
 					this._re = parseFloat(str);
 					this._im = 0.0;
 				}
-				// +i , -j のみ
+				// +i , -j のように実数部がなく、数値もない場合
 				else if((/^[-+]?[ij]/.test(str))) {
 					this._re = 0;
 					if(/^\+/.test(str)) {
@@ -42,17 +43,19 @@ export default class Complex {
 					}
 				}
 				else {
+					// 実数部の取り出し
 					const buff = str.match(/^([+-]?)([0-9]+)(\.[0-9]+)?(e[+-]?[0-9]+)?/);
 					if(buff) {
 						const a = buff[0];
 						const b = str.substr(a.length);
-						// bの1文字目がiかjであれば、実数部なしの宣言
+						// bの1文字目がiかjであれば、 3j など実数部なしの宣言
 						if(/^[ij]/.test(b.charAt(0))) {
 							this._re = 0;
 							this._im = parseFloat(a);
 						}
 						else {
 							this._re = parseFloat(a);
+							// 3 + j など j の前に数値がない場合のチェック
 							if((/^[-+]?[ij]/.test(b))) {
 								if(/^\+/.test(b)) {
 									this._im = 1;
@@ -67,8 +70,7 @@ export default class Complex {
 						}
 					}
 					else {
-						this._re = 0.0;
-						this._im = parseFloat(buff[0]);
+						throw "IllegalArgumentException";
 					}
 				}
 			}
@@ -79,15 +81,19 @@ export default class Complex {
 		else if(arguments.length === 2) {
 			const obj_0 = arguments[0];
 			const obj_1 = arguments[1];
-			if(obj_0 instanceof Complex && obj_1 instanceof Complex) {
-				if(obj_0._im || obj_1._im) {
-					throw "IllegalArgumentException";
-				}
+			if((obj_0 instanceof Complex) && (!obj_0._im)) {
 				this._re = obj_0._re;
+			}
+			else if((typeof obj_0 === "number")||(obj_0 instanceof Number)) {
+				this._re = obj_0;
+			}
+			else {
+				throw "IllegalArgumentException";
+			}
+			if((obj_1 instanceof Complex) && (!obj_1._im)) {
 				this._im = obj_1._re;
 			}
-			else if(((typeof obj_0 === "number")||(obj_0 instanceof Number)) && ((typeof obj_1 === "number")||(obj_1 instanceof Number))) {
-				this._re = obj_0;
+			else if((typeof obj_1 === "number")||(obj_1 instanceof Number)) {
 				this._im = obj_1;
 			}
 			else {
