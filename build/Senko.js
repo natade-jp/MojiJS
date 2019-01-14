@@ -7286,7 +7286,8 @@ class Complex {
 			return x;
 		}
 		else if((this._re === 0) && (x._re === 0)) {
-			x._im = this._im * x._im;
+			x._re = - this._im * x._im;
+			x._im = 0;
 			return x;
 		}
 		else {
@@ -7305,7 +7306,8 @@ class Complex {
 			return x;
 		}
 		else if((this._re === 0) && (x._re === 0)) {
-			x._im = this._im / x._im;
+			x._re = this._im / x._im;
+			x._im = 0;
 			return x;
 		}
 		else {
