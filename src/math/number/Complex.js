@@ -13,32 +13,32 @@ export default class Complex {
 	constructor() {
 		if(arguments.length === 1) {
 			const obj = arguments[0];
-			if((obj instanceof Complex) || ((obj instanceof Object) && (obj.r && obj.i))) {
-				this.re = obj.r;
-				this.im = obj.i;
+			if((obj instanceof Complex) || ((obj instanceof Object) && (obj._re && obj._im))) {
+				this._re = obj._re;
+				this._im = obj._im;
 			}
 			else if(typeof obj === "number" || obj instanceof Number) {
-				this.re = obj;
-				this.im = 0.0;
+				this._re = obj;
+				this._im = 0.0;
 			}
 			else if(obj instanceof Array && obj.length === 2) {
-				this.re = obj[0];
-				this.im = obj[1];
+				this._re = obj[0];
+				this._im = obj[1];
 			}
 			else if(typeof obj === "string" || obj instanceof String) {
 				const str = obj.replace(/\s/g, "").toLowerCase();
 				if(!(/[ij]/.test(str))) {
-					this.re = parseFloat(str);
-					this.im = 0.0;
+					this._re = parseFloat(str);
+					this._im = 0.0;
 				}
 				// +i , -j のみ
 				else if((/^[-+]?[ij]/.test(str))) {
-					this.re = 0;
+					this._re = 0;
 					if(/^\+/.test(str)) {
-						this.im = 1;
+						this._im = 1;
 					}
 					else {
-						this.im = -1;
+						this._im = -1;
 					}
 				}
 				else {
@@ -48,17 +48,27 @@ export default class Complex {
 						const b = str.substr(a.length);
 						// bの1文字目がiかjであれば、実数部なしの宣言
 						if(/^[ij]/.test(b.charAt(0))) {
-							this.re = 0;
-							this.im = parseFloat(a);
+							this._re = 0;
+							this._im = parseFloat(a);
 						}
 						else {
-							this.re = parseFloat(a);
-							this.im = parseFloat(b);
+							this._re = parseFloat(a);
+							if((/^[-+]?[ij]/.test(b))) {
+								if(/^\+/.test(b)) {
+									this._im = 1;
+								}
+								else {
+									this._im = -1;
+								}
+							}
+							else {
+								this._im = parseFloat(b);
+							}
 						}
 					}
 					else {
-						this.re = 0.0;
-						this.im = parseFloat(buff[0]);
+						this._re = 0.0;
+						this._im = parseFloat(buff[0]);
 					}
 				}
 			}
@@ -70,8 +80,8 @@ export default class Complex {
 			const obj_0 = arguments[0];
 			const obj_1 = arguments[1];
 			if(((typeof obj_0 === "number")||(obj_0 instanceof Number)) && ((typeof obj_1 === "number")||(obj_1 instanceof Number))) {
-				this.re = obj_0;
-				this.im = obj_1;
+				this._re = obj_0;
+				this._im = obj_1;
 			}
 			else {
 				throw "IllegalArgumentException";
@@ -79,6 +89,15 @@ export default class Complex {
 		}
 		else {
 			throw "IllegalArgumentException";
+		}
+	}
+
+	static createConstComplex() {
+		if((arguments.length === 1) && (arguments[0] instanceof Complex)) {
+			return arguments[0];
+		}
+		else {
+			new Complex(...arguments);
 		}
 	}
 
@@ -91,105 +110,143 @@ export default class Complex {
 			}
 			return numstr;
 		};
-		if(this.im !== 0) {
-			if(this.re === 0) {
-				return formatG(this.im) + "j";
+		if(this._im !== 0) {
+			if(this._re === 0) {
+				return formatG(this._im) + "j";
 			}
-			else if(this.im >= 0) {
-				return formatG(this.re) + " + " + formatG(this.im) + "j";
+			else if(this._im >= 0) {
+				return formatG(this._re) + " + " + formatG(this._im) + "j";
 			}
 			else {
-				return formatG(this.re) + " - " + formatG(-this.im) + "j";
+				return formatG(this._re) + " - " + formatG(-this._im) + "j";
 			}
 		}
 		else {
-			return formatG(this.re);
+			return formatG(this._re);
 		}
 	}
 	
 	clone() {
-		new Complex(this.re, this.im);
+		new Complex(this._re, this._im);
 	}
 
 	add() {
 		const x = new Complex(...arguments);
-		x.re = this.re + x.re;
-		x.im = this.im + x.im;
+		x._re = this._re + x._re;
+		x._im = this._im + x._im;
 		return x;
 	}
 
 	sub() {
 		const x = new Complex(...arguments);
-		x.re = this.re - x.re;
-		x.im = this.im - x.im;
+		x._re = this._re - x._re;
+		x._im = this._im - x._im;
 		return x;
 	}
 
 	mul() {
 		const x = new Complex(...arguments);
-		if((this.im === 0) && (x.im === 0)) {
-			x.re = this.re * x.re;
+		if((this._im === 0) && (x._im === 0)) {
+			x._re = this._re * x._re;
 			return x;
 		}
-		else if((this.re === 0) && (x.re === 0)) {
-			x.im = this.im * x.im;
+		else if((this._re === 0) && (x._re === 0)) {
+			x._im = this._im * x._im;
 			return x;
 		}
 		else {
-			const re = this.re * x.re - this.im * x.im;
-			const im = this.im * x.re + this.re * x.im;
-			x.re = re;
-			x.im = im;
+			const re = this._re * x._re - this._im * x._im;
+			const im = this._im * x._re + this._re * x._im;
+			x._re = re;
+			x._im = im;
 			return x;
 		}
 	}
 	
 	div() {
 		const x = new Complex(...arguments);
-		if((this.im === 0) && (x.im === 0)) {
-			x.re = this.re / x.re;
+		if((this._im === 0) && (x._im === 0)) {
+			x._re = this._re / x._re;
 			return x;
 		}
-		else if((this.re === 0) && (x.re === 0)) {
-			x.im = this.im / x.im;
+		else if((this._re === 0) && (x._re === 0)) {
+			x._im = this._im / x._im;
 			return x;
 		}
 		else {
-			const re = this.re * x.re + this.im * x.im;
-			const im = this.im * x.re - this.re * x.im;
-			const denominator = 1.0 / (x.re * x.re + x.im * x.im);
-			x.re = re * denominator;
-			x.im = im * denominator;
+			const re = this._re * x._re + this._im * x._im;
+			const im = this._im * x._re - this._re * x._im;
+			const denominator = 1.0 / (x._re * x._re + x._im * x._im);
+			x._re = re * denominator;
+			x._im = im * denominator;
 			return x;
 		}
 	}
 
-	get norm() {
-		if(this.im === 0) {
-			return new Complex(this.re);
+	mod() {
+		const x = new Complex(...arguments);
+		if((this._im !== 0) || (x._im !== 0)) {
+			throw "IllegalArgumentException";
 		}
-		else if(this.re === 0) {
-			return new Complex(this.im);
+		let _re = this._re - x._re * (0 | (this._re / x._re));
+		if(_re < 0) {
+			_re += x._re;
+		}
+		x._re = _re;
+		return x;
+	}
+	
+	get sign() {
+		if(this._im === 0) {
+			if(this._re === 0) {
+				return new Complex(0);
+			}
+			else {
+				return new Complex(this._re > 0 ? 1 : -1);
+			}
+		}
+		return this.div(this.norm);
+	}
+
+	get norm() {
+		if(this._im === 0) {
+			return new Complex(this._re);
+		}
+		else if(this._re === 0) {
+			return new Complex(this._im);
 		}
 		else {
-			return new Complex(Math.sqrt(this.re * this.re + this.im * this.im));
+			return new Complex(Math.sqrt(this._re * this._re + this._im * this._im));
 		}
 	}
 
 	get angle() {
-		if(this.im === 0) {
+		if(this._im === 0) {
 			return new Complex(0);
 		}
-		else if(this.re === 0) {
-			return new Complex(Math.PI * (this.im >= 0.0 ? 0.5 : -0.5));
+		else if(this._re === 0) {
+			return new Complex(Math.PI * (this._im >= 0.0 ? 0.5 : -0.5));
 		}
 		else {
-			return new Complex(Math.atan2(this.im, this.re));
+			return new Complex(Math.atan2(this._im, this._re));
 		}
 	}
 
+	get real() {
+		return new Complex(this._re);
+	}
+	
+	get imag() {
+		return new Complex(this._im);
+	}
+
+	equals() {
+		const x = Complex.createConstComplex(...arguments);
+		return (Math.abs(this._re - x._re) <  Number.EPSILON) && (Math.abs(this._im - x._im) <  Number.EPSILON);
+	}
+
 	max() {
-		const x = new Complex(...arguments);
+		const x = Complex.createConstComplex(...arguments);
 		const y1 = this.norm;
 		const y2 = x.norm;
 		if(y1 >= y2) {
@@ -201,7 +258,7 @@ export default class Complex {
 	}
 
 	min() {
-		const x = new Complex(...arguments);
+		const x = Complex.createConstComplex(...arguments);
 		const y1 = this.norm;
 		const y2 = x.norm;
 		if(y1 <= y2) {
@@ -212,17 +269,62 @@ export default class Complex {
 		}
 	}
 
+	isZero() {
+		return (Math.abs(this._re) <  Number.EPSILON) && (Math.abs(this._im) <  Number.EPSILON);
+	}
+
+	isOne() {
+		return (Math.abs(this._re - 1.0) <  Number.EPSILON) && (Math.abs(this._im) <  Number.EPSILON);
+	}
+
+	isNaN() {
+		return isNaN(this._re) || isNaN(this._im);
+	}
+
+	isPositive() {
+		return 0.0 < this._re;
+	}
+
+	isNegative() {
+		return 0.0 > this._re;
+	}
+
+	isInfinite() {
+		return	(this._re === Number.POSITIVE_INFINITY) ||
+				(this._im === Number.POSITIVE_INFINITY) ||
+				(this._re === Number.NEGATIVE_INFINITY) ||
+				(this._im === Number.NEGATIVE_INFINITY);
+	}
+
+	isFinite() {
+		return !this.isNaN() && !this.isInfinite();
+	}
+
+	compare() {
+		const x = Complex.createConstComplex(...arguments);
+		if(this.equals(x)) {
+			return 0;
+		}
+		const max = this.max(x);
+		if(max.equals(x)) {
+			return 1;
+		}
+		else {
+			return -1;
+		}
+	}
+
 	pow() {
 		const x = new Complex(...arguments);
-		if((this.im === 0) && (x.im === 0)) {
-			x.re = Math.pow(this.re, x.re);
+		if((this._im === 0) && (x._im === 0)) {
+			x._re = Math.pow(this._re, x._re);
 			return x;
 		}
-		else if(x.im === 0) {
-			const r = Math.pow(this.norm.re, x.re);
-			const s = this.angle.re * x.re;
-			x.re = r * Math.cos(s);
-			x.im = r * Math.sin(s);
+		else if(x._im === 0) {
+			const r = Math.pow(this.norm._re, x._re);
+			const s = this.angle._re * x._re;
+			x._re = r * Math.cos(s);
+			x._im = r * Math.sin(s);
 			return x;
 		}
 		else {
