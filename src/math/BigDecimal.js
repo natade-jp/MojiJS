@@ -67,10 +67,10 @@ export default class BigDecimal {
 			let text = p1.replace(/\s/g, "").toLowerCase();
 			// +-の符号があるか
 			let number_text = "";
-			buff = text.match(/^[-+]+/);
+			buff = text.match(/^[+-]+/);
 			if(buff !== null) {
 				buff = buff[0];
-				text = text.substring(buff.length, text.length);
+				text = text.substr(buff.length);
 				if(buff.indexOf("-") !== -1) {
 					number_text += "-";
 				}
@@ -79,22 +79,22 @@ export default class BigDecimal {
 			buff = text.match(/^[0-9]+/);
 			if(buff !== null) {
 				buff = buff[0];
-				text = text.substring(buff.length, text.length);
+				text = text.substr(buff.length);
 				number_text += buff;
 			}
 			// 小数部があるか
 			buff = text.match(/^\.[0-9]+/);
 			if(buff !== null) {
 				buff = buff[0];
-				text = text.substring(buff.length, text.length);
-				buff = buff.substring(1, buff.length);
+				text = text.substr(buff.length);
+				buff = buff.substr(1);
 				this._scale   = this._scale + buff.length;
 				number_text += buff;
 			}
 			// 指数表記があるか
-			buff = text.match(/^e(\+|-)?[0-9]+/);
+			buff = text.match(/^e[+-]?[0-9]+/);
 			if(buff !== null) {
-				buff = buff[0].substring(1, buff[0].length);
+				buff = buff[0].substr(1);
 				this._scale   = this._scale - parseInt(buff, 10);
 			}
 			this.integer = new BigInteger(number_text, 10);
