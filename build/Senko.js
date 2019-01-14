@@ -7214,7 +7214,14 @@ class Complex {
 		else if(arguments.length === 2) {
 			const obj_0 = arguments[0];
 			const obj_1 = arguments[1];
-			if(((typeof obj_0 === "number")||(obj_0 instanceof Number)) && ((typeof obj_1 === "number")||(obj_1 instanceof Number))) {
+			if(obj_0 instanceof Complex && obj_1 instanceof Complex) {
+				if(obj_0._im || obj_1._im) {
+					throw "IllegalArgumentException";
+				}
+				this._re = obj_0._re;
+				this._im = obj_1._re;
+			}
+			else if(((typeof obj_0 === "number")||(obj_0 instanceof Number)) && ((typeof obj_1 === "number")||(obj_1 instanceof Number))) {
 				this._re = obj_0;
 				this._im = obj_1;
 			}
@@ -7465,8 +7472,34 @@ class Complex {
 			return x;
 		}
 		else {
-			throw "IllegalArgumentException";
+			return x.mul(this.log()).exp();
 		}
+	}
+
+	sqrt() {
+		if(this._im === 0) {
+			return new Complex(Math.sqrt(this._re));
+		}
+		const r = Math.sqrt(this.norm._re);
+		const s = this.angle._re * 0.5;
+		return new Complex(r * Math.cos(s), r * Math.sin(s));
+	}
+
+	log() {
+		if(this._im === 0) {
+			return new Complex(Math.log(this._re));
+		}
+		// 複素対数関数
+		return new Complex(Math.log(this.norm), this.angle._re);
+	}
+
+	exp() {
+		if(this._im === 0) {
+			return new Complex(Math.exp(this._re));
+		}
+		// 複素指数関数
+		const r = Math.exp(this._re);
+		return new Complex(r * Math.cos(this._im), r * Math.sin(this._im));
 	}
 
 }
