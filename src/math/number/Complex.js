@@ -210,8 +210,18 @@ export default class Complex {
 		x._re = _re;
 		return x;
 	}
+
+	inv() {
+		if(this._im === 0) {
+			return new Complex(1.0 / this._re);
+		}
+		else if(this._re === 0) {
+			return new Complex(0, - 1.0 / this._im);
+		}
+		return Complex.ONE.div(this);
+	}
 	
-	get sign() {
+	sign() {
 		if(this._im === 0) {
 			if(this._re === 0) {
 				return new Complex(0);
@@ -285,11 +295,19 @@ export default class Complex {
 	}
 
 	isZero() {
-		return (Math.abs(this._re) <  Number.EPSILON) && (Math.abs(this._im) <  Number.EPSILON);
+		return (Math.abs(this._re) <  Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
 	}
 
 	isOne() {
-		return (Math.abs(this._re - 1.0) <  Number.EPSILON) && (Math.abs(this._im) <  Number.EPSILON);
+		return (Math.abs(this._re - 1.0) <  Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
+	}
+
+	isComplex() {
+		return (Math.abs(this._im) >= Number.EPSILON);
+	}
+	
+	isReal() {
+		return (Math.abs(this._im) < Number.EPSILON);
 	}
 
 	isNaN() {
@@ -315,7 +333,7 @@ export default class Complex {
 		return !this.isNaN() && !this.isInfinite();
 	}
 
-	compare() {
+	compareTo() {
 		const x = Complex.createConstComplex(...arguments);
 		if(this.equals(x)) {
 			return 0;
@@ -327,6 +345,14 @@ export default class Complex {
 		else {
 			return -1;
 		}
+	}
+
+	abs() {
+		return this.norm;
+	}
+
+	negate() {
+		return new Complex(-this._re, -this._im);
 	}
 
 	pow() {
@@ -373,4 +399,62 @@ export default class Complex {
 		return new Complex(r * Math.cos(this._im), r * Math.sin(this._im));
 	}
 
+	sin() {
+		if(this._im === 0) {
+			return new Complex(Math.sin(this._re));
+		}
+		// オイラーの公式より
+		// sin x = (e^ix - e^-ex) / 2i
+		const a = this.mul(Complex.I).exp();
+		const b = this.mul(Complex.I.negate()).exp();
+		return a.sub(b).div([0, 2]);
+	}
+
+	cos() {
+		if(this._im === 0) {
+			return new Complex(Math.cos(this._re));
+		}
+		// オイラーの公式より
+		// cos x = (e^ix + e^-ex) / 2
+		const a = this.mul(Complex.I).exp();
+		const b = this.mul(Complex.I.negate()).exp();
+		return a.add(b).div(2);
+	}
+
+	tan() {
+		if(this._im === 0) {
+			return new Complex(Math.tan(this._re));
+		}
+		// 三角関数の相互関係 tan x = sin x / cos x
+		return this.sin().div(this.cos());
+	}
+
+	atan() {
+		if(this._im === 0) {
+			return new Complex(Math.atan(this._re));
+		}
+		// 逆正接 tan-1 x = i/2 log( i+x / i-x )
+		return Complex.I.div(Complex.TWO).mul(Complex.I.add(this).div(Complex.I.sub(this)).log());
+	}
+
+	atan2() {
+		if(arguments.length === 0) {
+			return this.angle;
+		}
+		else {
+			const x = new Complex(...arguments);
+			if(this._im || x._im) {
+				throw "IllegalArgumentException";
+			}
+			return Math.atan2(this._re, x._re);
+		}
+	}
+
 }
+
+Complex.I = new Complex(0, 1);
+Complex.ZERO = new Complex(0);
+Complex.ONE = new Complex(1);
+Complex.TWO = new Complex(2);
+Complex.TEN = new Complex(10);
+
