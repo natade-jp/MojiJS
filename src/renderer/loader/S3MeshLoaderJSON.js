@@ -50,7 +50,7 @@ const S3MeshLoaderJSON = {
 	input : function(sys, mesh, json) {
 		let meshdata;
 		if((typeof json === "string")||(json instanceof String)) {
-			meshdata = eval(json);
+			meshdata = JSON.parse(json);
 		}
 		else {
 			meshdata = json;

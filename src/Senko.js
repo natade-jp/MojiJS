@@ -12,7 +12,7 @@ import ArrayList from "./basic/ArrayList.js";
 import Color from "./basic/Color.js";
 import File from "./basic/File.js";
 import HashMap from "./basic/HashMap.js";
-import Text from "./text/Text.js";
+import Format from "./basic/Format.js";
 import SNumber from "./math/SNumber.js";
 
 import Device from "./device/Device.js";
@@ -61,7 +61,7 @@ const Senko = {
 		for(let i = 0 ; i < arguments.length ; i++) {
 			x[i] = arguments[i];
 		}
-		Senko.print(Text.format.apply(this, x));
+		Senko.print(Senko.format.apply(this, x));
 	}
 };
 
@@ -70,7 +70,7 @@ Senko.ArrayList = ArrayList;
 Senko.Color = Color;
 Senko.File = File;
 Senko.HashMap = HashMap;
-Senko.Text = Text;
+Senko.format = Format.format;
 Senko.Number = SNumber;
 Senko.Device = Device;
 Senko.ImageProcessing = ImageProcessing;

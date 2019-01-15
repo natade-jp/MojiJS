@@ -1,6 +1,7 @@
 ﻿import Senko from "../../libs/Senko.js";
+import SenkoText from "../../libs/SenkoText.js";
 
-const Text = Senko.Text;
+const Text = SenkoText;
 const Japanese = Text.Japanese;
 const Unicode = Text.Unicode;
 const CP932 = Text.CP932;

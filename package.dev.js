@@ -9,9 +9,17 @@ const saveTextFile = function(filename, text) {
 	fs.writeFileSync(filename, text, "utf-8");
 };
 
-const es_text =  "import Senko from \"../../src/Senko.js\";export default Senko;";
-saveTextFile("./examples/libs/Senko.js", es_text);
+// サンプルファイルは直接関連付ける
+saveTextFile(
+	"./examples/libs/Senko.js",
+	"import Senko from \"../../src/Senko.js\";export default Senko;"
+);
+saveTextFile(
+	"./examples/libs/SenkoText.js",
+	"import SenkoText from \"../../src/SenkoText.js\";export default SenkoText;"
+);
 
+// その他のファイルをコピー
 copy("./src/gui/SComponent.css", "./build/SComponent.css");
 copy("./src/renderer/gl/S3GL.fs", "./build/S3GL.fs");
 copy("./src/renderer/gl/S3GL.vs", "./build/S3GL.vs");

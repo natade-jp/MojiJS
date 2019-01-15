@@ -14,7 +14,6 @@ import CP932 from "./encode/CP932.js";
 import SJIS2004 from "./encode/SJIS2004.js";
 import Japanese from "./language/Japanese.js";
 import Programming from "./language/Programming.js";
-import Format from "./tools/Format.js";
 import CharacterAnalyser from "./tools/CharacterAnalyser.js";
 
 const Text = {
@@ -95,9 +94,6 @@ const Text = {
 	Programming : Programming,
 	removeComment : Programming.removeComment,
 	
-	Format : Format,
-	format : Format.format,
-
 	CharacterAnalyser : CharacterAnalyser,
 	getCharacterAnalysisData : CharacterAnalyser.getCharacterAnalysisData
 	
