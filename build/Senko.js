@@ -1910,6 +1910,41 @@ class Format {
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
+
+const ToComplexFromString = function(text, that) {
+	const str = text.replace(/\s/g, "").toLowerCase();
+	// 複素数の宣言がない場合
+	if(!(/[ij]/.test(str))) {
+		that._re = parseFloat(str);
+		that._im = 0.0;
+		return;
+	}
+	// この時点で複素数である。
+	// 以下真面目に調査
+	let re = 0;
+	let im = 0;
+	let buff;
+	// 最後が$なら右側が実数、最後が[+-]なら左側が実数
+	buff = str.match(/[+-]?[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?($|[+-])/);
+	if(buff) {
+		re = parseFloat(buff[0]);
+	}
+	// 複素数は数値が省略される場合がある
+	buff = str.match(/[+-]?([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij]/);
+	if(buff) {
+		buff = buff[0].substring(0, buff[0].length - 1);
+		// i, +i, -j のように実数部がなく、数値もない場合
+		if((/^[-+]$/.test(buff)) || buff.length === 0) {
+			im = buff === "-" ? -1 : 1;
+		}
+		else {
+			im = parseFloat(buff);
+		}
+	}
+	that._re = re;
+	that._im = im;
+};
+
 class Complex {
 
 	constructor() {
@@ -1928,53 +1963,10 @@ class Complex {
 				this._im = obj[1];
 			}
 			else if(typeof obj === "string" || obj instanceof String) {
-				const str = obj.replace(/\s/g, "").toLowerCase();
-				// 複素数の宣言がない場合
-				if(!(/[ij]/.test(str))) {
-					this._re = parseFloat(str);
-					this._im = 0.0;
-				}
-				// +i , -j のように実数部がなく、数値もない場合
-				else if((/^[-+]?[ij]/.test(str))) {
-					this._re = 0;
-					if(/^\+/.test(str)) {
-						this._im = 1;
-					}
-					else {
-						this._im = -1;
-					}
-				}
-				else {
-					// 実数部の取り出し
-					const buff = str.match(/^([+-]?)([0-9]+)(\.[0-9]+)?(e[+-]?[0-9]+)?/);
-					if(buff) {
-						const a = buff[0];
-						const b = str.substr(a.length);
-						// bの1文字目がiかjであれば、 3j など実数部なしの宣言
-						if(/^[ij]/.test(b.charAt(0))) {
-							this._re = 0;
-							this._im = parseFloat(a);
-						}
-						else {
-							this._re = parseFloat(a);
-							// 3 + j など j の前に数値がない場合のチェック
-							if((/^[-+]?[ij]/.test(b))) {
-								if(/^\+/.test(b)) {
-									this._im = 1;
-								}
-								else {
-									this._im = -1;
-								}
-							}
-							else {
-								this._im = parseFloat(b);
-							}
-						}
-					}
-					else {
-						throw "IllegalArgumentException";
-					}
-				}
+				ToComplexFromString(obj, this);
+			}
+			else if(obj instanceof Object && obj.toString) {
+				ToComplexFromString(obj.toString(), this);
 			}
 			else {
 				throw "IllegalArgumentException";
@@ -2259,7 +2251,7 @@ class Complex {
 
 	pow() {
 		const x = new Complex(...arguments);
-		if((this._im === 0) && (x._im === 0)) {
+		if((this._im === 0) && (this._im >= 0) && (x._im === 0)) {
 			x._re = Math.pow(this._re, x._re);
 			return x;
 		}
@@ -2277,7 +2269,12 @@ class Complex {
 
 	sqrt() {
 		if(this._im === 0) {
-			return new Complex(Math.sqrt(this._re));
+			if(this._re >= 0) {
+				return new Complex(Math.sqrt(this._re));
+			}
+			else {
+				return new Complex(0, Math.sqrt(this._re));
+			}
 		}
 		const r = Math.sqrt(this.norm._re);
 		const s = this.angle._re * 0.5;
@@ -2285,7 +2282,7 @@ class Complex {
 	}
 
 	log() {
-		if(this._im === 0) {
+		if((this._im === 0) && (this._re >= 0)) {
 			return new Complex(Math.log(this._re));
 		}
 		// 複素対数関数
