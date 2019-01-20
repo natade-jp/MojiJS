@@ -9,6 +9,7 @@
  */
 
 import Complex from "./number/Complex.js";
+import Matrix from "./number/Matrix.js";
 import BigDecimal from "./large/BigDecimal.js";
 import BigInteger from "./large/BigInteger.js";
 import Random from "./basic/Random.js";
@@ -16,6 +17,7 @@ import Random from "./basic/Random.js";
 const SNumber = {
 	
 	Complex : Complex,
+	Matrix : Matrix,
 	BigDecimal : BigDecimal,
 	BigInteger : BigInteger,
 	Random : Random

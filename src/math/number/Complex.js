@@ -115,15 +115,15 @@ export default class Complex {
 			}
 			return numstr;
 		};
-		if(this._im !== 0) {
+		if(!this.isReal()) {
 			if(this._re === 0) {
-				return formatG(this._im) + "j";
+				return formatG(this._im) + "i";
 			}
 			else if(this._im >= 0) {
-				return formatG(this._re) + " + " + formatG(this._im) + "j";
+				return formatG(this._re) + " + " + formatG(this._im) + "i";
 			}
 			else {
-				return formatG(this._re) + " - " + formatG(-this._im) + "j";
+				return formatG(this._re) + " - " + formatG(-this._im) + "i";
 			}
 		}
 		else {
@@ -256,7 +256,7 @@ export default class Complex {
 	get imag() {
 		return new Complex(this._im);
 	}
-
+	
 	equals() {
 		const x = Complex.createConstComplex(...arguments);
 		return (Math.abs(this._re - x._re) <  Number.EPSILON) && (Math.abs(this._im - x._im) <  Number.EPSILON);
@@ -264,8 +264,8 @@ export default class Complex {
 
 	max() {
 		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm;
-		const y2 = x.norm;
+		const y1 = this.norm._re;
+		const y2 = x.norm._re;
 		if(y1 >= y2) {
 			return this;
 		}
@@ -276,8 +276,8 @@ export default class Complex {
 
 	min() {
 		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm;
-		const y2 = x.norm;
+		const y1 = this.norm._re;
+		const y2 = x.norm._re;
 		if(y1 <= y2) {
 			return this;
 		}
@@ -287,7 +287,7 @@ export default class Complex {
 	}
 
 	isZero() {
-		return (Math.abs(this._re) <  Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
+		return (Math.abs(this._re) < Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
 	}
 
 	isOne() {
@@ -306,12 +306,18 @@ export default class Complex {
 		return isNaN(this._re) || isNaN(this._im);
 	}
 
+	// Number.EPSILONは使用しない。どちらにぶれるか不明な点及び
+	// わずかな負の数だった場合に、sqrtでエラーが発生するため
 	isPositive() {
 		return 0.0 < this._re;
 	}
 
 	isNegative() {
 		return 0.0 > this._re;
+	}
+
+	isNotNegative() {
+		return 0.0 <= this._re;
 	}
 
 	isInfinite() {
@@ -325,6 +331,10 @@ export default class Complex {
 		return !this.isNaN() && !this.isInfinite();
 	}
 
+	/**
+	 * 今の値Aと、指定した値Bとを比較する
+	 * @returns {Number} A < B ? 1 : A === B ? 0 : -1
+	 */
 	compareTo() {
 		const x = Complex.createConstComplex(...arguments);
 		if(this.equals(x)) {
@@ -349,11 +359,11 @@ export default class Complex {
 
 	pow() {
 		const x = new Complex(...arguments);
-		if((this._im === 0) && (this._im >= 0) && (x._im === 0)) {
+		if((this.isReal()) && (x.isReal()) && (this.isNotNegative())) {
 			x._re = Math.pow(this._re, x._re);
 			return x;
 		}
-		else if(x._im === 0) {
+		else if(x.isReal()) {
 			const r = Math.pow(this.norm._re, x._re);
 			const s = this.angle._re * x._re;
 			x._re = r * Math.cos(s);
@@ -366,8 +376,8 @@ export default class Complex {
 	}
 
 	sqrt() {
-		if(this._im === 0) {
-			if(this._re >= 0) {
+		if(this.isReal()) {
+			if(this.isNotNegative()) {
 				return new Complex(Math.sqrt(this._re));
 			}
 			else {
@@ -380,7 +390,7 @@ export default class Complex {
 	}
 
 	log() {
-		if((this._im === 0) && (this._re >= 0)) {
+		if(this.isReal() && this.isNotNegative()) {
 			return new Complex(Math.log(this._re));
 		}
 		// 複素対数関数
@@ -388,7 +398,7 @@ export default class Complex {
 	}
 
 	exp() {
-		if(this._im === 0) {
+		if(this.isReal()) {
 			return new Complex(Math.exp(this._re));
 		}
 		// 複素指数関数
@@ -397,7 +407,7 @@ export default class Complex {
 	}
 
 	sin() {
-		if(this._im === 0) {
+		if(this.isReal()) {
 			return new Complex(Math.sin(this._re));
 		}
 		// オイラーの公式より
@@ -408,7 +418,7 @@ export default class Complex {
 	}
 
 	cos() {
-		if(this._im === 0) {
+		if(this.isReal()) {
 			return new Complex(Math.cos(this._re));
 		}
 		// オイラーの公式より
@@ -419,7 +429,7 @@ export default class Complex {
 	}
 
 	tan() {
-		if(this._im === 0) {
+		if(this.isReal()) {
 			return new Complex(Math.tan(this._re));
 		}
 		// 三角関数の相互関係 tan x = sin x / cos x
@@ -427,7 +437,7 @@ export default class Complex {
 	}
 
 	atan() {
-		if(this._im === 0) {
+		if(this.isReal()) {
 			return new Complex(Math.atan(this._re));
 		}
 		// 逆正接 tan-1 x = i/2 log( i+x / i-x )
