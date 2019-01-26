@@ -1,8 +1,8 @@
 import Senko from "../../libs/Senko.js";
+import S3 from "../../libs/SenkoS3.js";
 
 const SComponent = Senko.SComponent;
 const Device = Senko.Device;
-const S3 = Senko.S3;
 
 const testMath = function() {
 	

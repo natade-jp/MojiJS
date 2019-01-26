@@ -18,7 +18,6 @@ import MathX from "./mathx/MathX.js";
 import Device from "./device/Device.js";
 import ImageProcessing from "./graphics/ImageProcessing.js";
 import SComponent from "./gui/SComponent.js";
-import S3 from "./renderer/S3.js";
 
 const Senko = {
 
@@ -75,6 +74,5 @@ Senko.MathX = MathX;
 Senko.Device = Device;
 Senko.ImageProcessing = ImageProcessing;
 Senko.SComponent = SComponent;
-Senko.S3 = S3;
 
 export default Senko;

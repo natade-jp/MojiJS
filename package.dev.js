@@ -18,8 +18,12 @@ saveTextFile(
 	"./examples/libs/SenkoText.js",
 	"import SenkoText from \"../../src/SenkoText.js\";export default SenkoText;"
 );
+saveTextFile(
+	"./examples/libs/SenkoS3.js",
+	"import SenkoS3 from \"../../src/SenkoS3.js\";export default SenkoS3;"
+);
 
 // その他のファイルをコピー
 copy("./src/gui/SComponent.css", "./build/SComponent.css");
-copy("./src/renderer/gl/S3GL.fs", "./build/S3GL.fs");
-copy("./src/renderer/gl/S3GL.vs", "./build/S3GL.vs");
+copy("./src/s3/gl/S3GL.fs", "./build/S3GL.fs");
+copy("./src/s3/gl/S3GL.vs", "./build/S3GL.vs");
