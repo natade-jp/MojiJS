@@ -12,7 +12,7 @@
 		"image-processing",
 		"3d"
 	],
-	"license": "Zlib",
+	"license": "MIT",
 	"author": "natade",
 	"main": "./build/Senko.umd.js",
 	"module": "./build/Senko.module.js",
