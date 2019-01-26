@@ -102,7 +102,39 @@ export default class Complex {
 			return arguments[0];
 		}
 		else {
-			new Complex(...arguments);
+			return new Complex(...arguments);
+		}
+	}
+	
+	get real() {
+		return this._re;
+	}
+	
+	get imag() {
+		return this._im;
+	}
+
+	get norm() {
+		if(this._im === 0) {
+			return this._re;
+		}
+		else if(this._re === 0) {
+			return this._im;
+		}
+		else {
+			return Math.sqrt(this._re * this._re + this._im * this._im);
+		}
+	}
+
+	get angle() {
+		if(this._im === 0) {
+			return 0;
+		}
+		else if(this._re === 0) {
+			return Math.PI * (this._im >= 0.0 ? 0.5 : -0.5);
+		}
+		else {
+			return Math.atan2(this._im, this._re);
 		}
 	}
 
@@ -224,38 +256,6 @@ export default class Complex {
 		}
 		return this.div(this.norm);
 	}
-
-	get norm() {
-		if(this._im === 0) {
-			return new Complex(this._re);
-		}
-		else if(this._re === 0) {
-			return new Complex(this._im);
-		}
-		else {
-			return new Complex(Math.sqrt(this._re * this._re + this._im * this._im));
-		}
-	}
-
-	get angle() {
-		if(this._im === 0) {
-			return new Complex(0);
-		}
-		else if(this._re === 0) {
-			return new Complex(Math.PI * (this._im >= 0.0 ? 0.5 : -0.5));
-		}
-		else {
-			return new Complex(Math.atan2(this._im, this._re));
-		}
-	}
-
-	get real() {
-		return new Complex(this._re);
-	}
-	
-	get imag() {
-		return new Complex(this._im);
-	}
 	
 	equals() {
 		const x = Complex.createConstComplex(...arguments);
@@ -264,8 +264,8 @@ export default class Complex {
 
 	max() {
 		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm._re;
-		const y2 = x.norm._re;
+		const y1 = this.norm;
+		const y2 = x.norm;
 		if(y1 >= y2) {
 			return this;
 		}
@@ -276,13 +276,31 @@ export default class Complex {
 
 	min() {
 		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm._re;
-		const y2 = x.norm._re;
+		const y1 = this.norm;
+		const y2 = x.norm;
 		if(y1 <= y2) {
 			return this;
 		}
 		else {
 			return x;
+		}
+	}
+
+	/**
+	 * 今の値Aと、指定した値Bとを比較する
+	 * @returns {Number} A < B ? 1 : A === B ? 0 : -1
+	 */
+	compareTo() {
+		const x = Complex.createConstComplex(...arguments);
+		if(this.equals(x)) {
+			return 0;
+		}
+		const max = this.max(x);
+		if(max.equals(x)) {
+			return 1;
+		}
+		else {
+			return -1;
 		}
 	}
 
@@ -300,6 +318,10 @@ export default class Complex {
 	
 	isReal() {
 		return (Math.abs(this._im) < Number.EPSILON);
+	}
+
+	isInteger() {
+		return this.isReal() && this._re === (0 | this._re);
 	}
 
 	isNaN() {
@@ -331,26 +353,8 @@ export default class Complex {
 		return !this.isNaN() && !this.isInfinite();
 	}
 
-	/**
-	 * 今の値Aと、指定した値Bとを比較する
-	 * @returns {Number} A < B ? 1 : A === B ? 0 : -1
-	 */
-	compareTo() {
-		const x = Complex.createConstComplex(...arguments);
-		if(this.equals(x)) {
-			return 0;
-		}
-		const max = this.max(x);
-		if(max.equals(x)) {
-			return 1;
-		}
-		else {
-			return -1;
-		}
-	}
-
 	abs() {
-		return this.norm;
+		return new Complex(this.norm);
 	}
 
 	negate() {
@@ -364,8 +368,8 @@ export default class Complex {
 			return x;
 		}
 		else if(x.isReal()) {
-			const r = Math.pow(this.norm._re, x._re);
-			const s = this.angle._re * x._re;
+			const r = Math.pow(this.norm, x._re);
+			const s = this.angle * x._re;
 			x._re = r * Math.cos(s);
 			x._im = r * Math.sin(s);
 			return x;
@@ -384,8 +388,8 @@ export default class Complex {
 				return new Complex(0, Math.sqrt(this._re));
 			}
 		}
-		const r = Math.sqrt(this.norm._re);
-		const s = this.angle._re * 0.5;
+		const r = Math.sqrt(this.norm);
+		const s = this.angle * 0.5;
 		return new Complex(r * Math.cos(s), r * Math.sin(s));
 	}
 
@@ -394,7 +398,7 @@ export default class Complex {
 			return new Complex(Math.log(this._re));
 		}
 		// 複素対数関数
-		return new Complex(Math.log(this.norm), this.angle._re);
+		return new Complex(Math.log(this.norm), this.angle);
 	}
 
 	exp() {
@@ -456,7 +460,6 @@ export default class Complex {
 			return Math.atan2(this._re, x._re);
 		}
 	}
-
 }
 
 Complex.I = new Complex(0, 1);

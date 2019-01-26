@@ -10,8 +10,8 @@
 
 import Complex from "./number/Complex.js";
 import Matrix from "./number/Matrix.js";
-import BigDecimal from "./large/BigDecimal.js";
-import BigInteger from "./large/BigInteger.js";
+import BigDecimal from "./basic/BigDecimal.js";
+import BigInteger from "./basic/BigInteger.js";
 import Random from "./basic/Random.js";
 
 const SNumber = {

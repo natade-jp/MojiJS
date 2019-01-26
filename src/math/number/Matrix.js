@@ -50,7 +50,8 @@ const ConstructorTool = {
 		return text.substring(1, text.length - 1);
 	},
 
-	toMatrixFromStringForArrayJSON : function(text, array) {
+	toMatrixFromStringForArrayJSON : function(text) {
+		const matrix_array = [];
 		// さらにブランケット内を抽出
 		let rows = text.match(/\[[^\]]+\]/g);
 		if(rows === null) {
@@ -66,9 +67,9 @@ const ConstructorTool = {
 				const column = column_array[col_count];
 				rows_array[col_count] = new Complex(column);
 			}
-			array[row_count] = rows_array;
+			matrix_array[row_count] = rows_array;
 		}
-		return;
+		return matrix_array;
 	},
 
 	InterpolationCalculation : function(from, delta, to) {
@@ -98,7 +99,7 @@ const ConstructorTool = {
 		return rows_array;
 	},
 
-	toMatrixFromStringForArrayETC : function(text, array) {
+	toArrayFromString : function(row_text) {
 		// 左が実数（強制）で右が複素数（任意）タイプ
 		const reg1 = /[+-]? *[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?( *[+-] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij])?/;
 		// 左が複素数（強制）で右が実数（任意）タイプ
@@ -106,78 +107,89 @@ const ConstructorTool = {
 		// reg2優先で検索
 		const reg3 = new RegExp("(" + reg2.source + ")|(" + reg1.source + ")", "i");
 		// 問題として 1 - -jが通る
-		// 行ごとを抽出
-		const rows = text.split(";");
 
-		for(let row_count = 0; row_count < rows.length; row_count++) {
-			const row = rows[row_count];
-			const xs = ConstructorTool.match2(row, reg3);
-			const rows_array = [];
-			for(let i = 0; i < xs.length; i++) {
-				const xx = xs[i];
-				if(!xx[0]) {
-					// 一致していないデータであれば次へ
-					continue;
-				}
-				// 「:記法」 1:3 なら 1,2,3。 1:2:9 なら 1:3:5:7:9
-				if((i < xs.length - 2) && !xs[i + 1][0] && /:/.test(xs[i + 1][1])) {
-					let from, delta, to;
-					if((i < xs.length - 4) && !xs[i + 3][0] && /:/.test(xs[i + 3][1])) {
-						from = new Complex(xx[1]);
-						delta = new Complex(xs[i + 2][1]);
-						to = new Complex(xs[i + 4][1]);
-						i += 4;
-					}
-					else {
-						from = new Complex(xx[1]);
-						delta = Complex.ONE;
-						to = new Complex(xs[i + 2][1]);
-						i += 2;
-					}
-					const ip_array = ConstructorTool.InterpolationCalculation(from, delta, to);
-					for(let j = 0; j < ip_array.length; j++) {
-						rows_array.push(ip_array[j]);
-					}
+		const xs = ConstructorTool.match2(row_text, reg3);
+		const rows_array = [];
+
+		for(let i = 0; i < xs.length; i++) {
+			const xx = xs[i];
+			if(!xx[0]) {
+				// 一致していないデータであれば次へ
+				continue;
+			}
+			// 「:記法」 1:3 なら 1,2,3。 1:2:9 なら 1:3:5:7:9
+			if((i < xs.length - 2) && !xs[i + 1][0] && /:/.test(xs[i + 1][1])) {
+				let from, delta, to;
+				if((i < xs.length - 4) && !xs[i + 3][0] && /:/.test(xs[i + 3][1])) {
+					from = new Complex(xx[1]);
+					delta = new Complex(xs[i + 2][1]);
+					to = new Complex(xs[i + 4][1]);
+					i += 4;
 				}
 				else {
-					rows_array.push(new Complex(xx[1]));
+					from = new Complex(xx[1]);
+					delta = Complex.ONE;
+					to = new Complex(xs[i + 2][1]);
+					i += 2;
+				}
+				const ip_array = ConstructorTool.InterpolationCalculation(from, delta, to);
+				for(let j = 0; j < ip_array.length; j++) {
+					rows_array.push(ip_array[j]);
 				}
 			}
-			array[row_count] = rows_array;
+			else {
+				rows_array.push(new Complex(xx[1]));
+			}
 		}
+
+		return rows_array;
 	},
 
-	toMatrixFromStringForArray : function(text, array) {
+	toMatrixFromStringForArrayETC : function(text) {
+		// 行ごとを抽出して
+		const matrix_array = [];
+		const rows = text.split(";");
+		for(let row_count = 0; row_count < rows.length; row_count++) {
+			// 各行の文字を解析
+			matrix_array[row_count] = ConstructorTool.toArrayFromString(rows[row_count]);
+		}
+		return matrix_array;
+	},
+
+	toMatrixFromStringForArray : function(text) {
 		// JSON形式
 		if(/[[\],]/.test(text)) {
-			ConstructorTool.toMatrixFromStringForArrayJSON(text, array);
+			return ConstructorTool.toMatrixFromStringForArrayJSON(text);
 		}
 		// それ以外(MATLAB, Octave, Scilab)
 		else {
-			ConstructorTool.toMatrixFromStringForArrayETC(text, array);
+			return ConstructorTool.toMatrixFromStringForArrayETC(text);
 		}
 	},
 
-	toMatrixFromString : function(text, array) {
+	toMatrixFromString : function(text) {
 		// 前後のスペースを除去
 		const trimtext = text.replace(/^\s*|\s*$/g, "");
 		// ブランケットを外す
 		const withoutBracket = ConstructorTool.trimBracket(trimtext);
 		if(withoutBracket) {
 			// 配列用の初期化
-			ConstructorTool.toMatrixFromStringForArray(withoutBracket, array);
+			return ConstructorTool.toMatrixFromStringForArray(withoutBracket);
 		}
 		else {
 			// スカラー用の初期化
-			array[0] = [new Complex(text)];
+			return [new Complex(text)];
 		}
 	},
 
 	isCorrectMatrixArray : function(m_array) {
-		if(m_array.length === 1) {
-			return true;
+		if(m_array.length === 0) {
+			return false;
 		}
 		const num = m_array[0].length;
+		if(num === 0) {
+			return false;
+		}
 		for(let i = 1; i < m_array.length; i++) {
 			if(m_array[i].length !== num) {
 				return false;
@@ -185,18 +197,27 @@ const ConstructorTool = {
 		}
 		return true;
 	}
-
 };
 
 export default class Matrix {
 	constructor() {
-		const x = [];
+		let x = null;
 		if(arguments.length === 1) {
 			const y = arguments[0];
-			if(y instanceof Complex) {
-				x[0] = [y];
+			if(y instanceof Matrix) {
+				x = [];
+				for(let i = 0; i < y.row_length; i++) {
+					x[i] = [];
+					for(let j = 0; j < y.column_length; j++) {
+						x[i][j] = y[i][j];
+					}
+				}
+			}
+			else if(y instanceof Complex) {
+				x = [y];
 			}
 			else if(y instanceof Array) {
+				x = [];
 				for(let row_count = 0; row_count < y.length; row_count++) {
 					const row = y[row_count];
 					if(row instanceof Complex) {
@@ -221,13 +242,13 @@ export default class Matrix {
 				}
 			}
 			else if(typeof y === "string" || y instanceof String) {
-				ConstructorTool.toMatrixFromString(y, x);
+				x = ConstructorTool.toMatrixFromString(y);
 			}
 			else if(y instanceof Object && y.toString) {
-				ConstructorTool.toMatrixFromString(y.toString(), x);
+				x = ConstructorTool.toMatrixFromString(y.toString());
 			}
 			else {
-				x[0] = [new Complex(y)];
+				x = [new Complex(y)];
 			}
 		}
 		if(!ConstructorTool.isCorrectMatrixArray(x)) {
@@ -247,6 +268,35 @@ export default class Matrix {
 				eachfunc(row[j], i, j);
 			}
 		}
+	}
+
+	clone() {
+		return new Matrix(this.x);
+	}
+
+	get scalar() {
+		return this.x[0][0];
+	}
+
+	static createConstMatrix() {
+		if((arguments.length === 1) && (arguments[0] instanceof Complex)) {
+			return arguments[0];
+		}
+		else {
+			return new Matrix(...arguments);
+		}
+	}
+
+	createMatrixDoEachCalculation(eachfunc) {
+		const x = [];
+		for(let i = 0; i < this.row_length; i++) {
+			const row = this.x[i];
+			x[i] = [];
+			for(let j = 0; j < this.column_length; j++) {
+				x[i][j] = eachfunc(row[j], i, j);
+			}
+		}
+		return new Matrix(x);
 	}
 	
 	toString() {
@@ -336,7 +386,18 @@ export default class Matrix {
 			}
 		);
 
-		return output.join("");
+		this.string_cash = output.join("");
+
+		return this.string_cash;
 	}
+
+	isSquareMatrix() {
+		return this.row_length === this.column_length;
+	}
+
+	isScalar() {
+		return this.row_length === 1 && this.column_length == 1;
+	}
+
 
 }
