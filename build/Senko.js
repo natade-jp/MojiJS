@@ -5,7 +5,7 @@
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ArrayList {
@@ -196,7 +196,7 @@ class ArrayList {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 // 色を扱うクラス
@@ -910,7 +910,7 @@ Color.BLUE			= Color.blue;
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const CSVTool = {
@@ -1429,7 +1429,7 @@ class File$1 {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class HashMap {
@@ -1551,7 +1551,7 @@ class HashMap {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class Format {
@@ -1907,7 +1907,7 @@ class Format {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 // 「M系列乱数」
@@ -2089,7 +2089,7 @@ Random.seedUniquifier = 0x87654321;
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 // 内部では1変数内の中の16ビットごとに管理
@@ -3228,7 +3228,7 @@ BigInteger.ZERO = new BigInteger(0);
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class BigDecimal {
@@ -4337,7 +4337,7 @@ BigDecimal.ROUND_UP				= RoundingMode.UP;
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 
@@ -4807,7 +4807,7 @@ Complex.TEN = new Complex(10);
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const ConstructorTool = {
@@ -5209,7 +5209,7 @@ class Matrix {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const SMath = {
@@ -5226,7 +5226,7 @@ const SMath = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const MathX = {
@@ -5245,7 +5245,7 @@ const MathX = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class IDSwitch {
@@ -5342,7 +5342,7 @@ class IDSwitch {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class IDPosition {
@@ -5423,7 +5423,7 @@ class IDPosition {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class IDDraggableSwitch {
@@ -5548,7 +5548,7 @@ class IDDraggableSwitch {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class IDMouse {
@@ -5672,7 +5672,7 @@ IDMouse.MOUSE_EVENTS = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class IDTouch extends IDMouse {
@@ -5843,7 +5843,7 @@ class IDTouch extends IDMouse {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const IDTools = {
@@ -5873,7 +5873,7 @@ const IDTools = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const Device = {
@@ -5892,7 +5892,7 @@ const Device = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const BlendFunctions = {
@@ -6004,7 +6004,7 @@ ImgBlend.MODE = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgColor {
@@ -6193,7 +6193,7 @@ ImgColor.NORM_MODE = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgWrapInside {
@@ -6236,7 +6236,7 @@ class ImgWrapInside {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgWrapClamp extends ImgWrapInside {
@@ -6270,7 +6270,7 @@ class ImgWrapClamp extends ImgWrapInside {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgWrapRepeat extends ImgWrapInside {
@@ -6312,7 +6312,7 @@ class ImgWrapRepeat extends ImgWrapInside {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgWrap {
@@ -6375,7 +6375,7 @@ ImgWrap.MODE = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const InterpolationFunctions = {
@@ -6616,7 +6616,7 @@ ImgInterpolation.MODE = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgFIRMatrix {
@@ -6795,7 +6795,7 @@ class ImgFIRMatrix {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgData {
@@ -7337,7 +7337,7 @@ ImgData.MODE_BLEND	= ImgBlend.MODE;
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgVector {
@@ -7410,7 +7410,7 @@ class ImgVector {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgColorRGBA extends ImgColor {
@@ -7656,7 +7656,7 @@ class ImgColorRGBA extends ImgColor {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgColorY extends ImgColor {
@@ -7788,7 +7788,7 @@ class ImgColorY extends ImgColor {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgDataY extends ImgData {
@@ -7926,7 +7926,7 @@ class ImgDataY extends ImgData {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class ImgDataRGBA extends ImgData {
@@ -8535,7 +8535,7 @@ ImgDataRGBA.quantization = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const ImageProcessing = {
@@ -8555,7 +8555,7 @@ const ImageProcessing = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 /**
@@ -9066,7 +9066,7 @@ SBase.node_tool = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SButton extends SBase {
@@ -9098,7 +9098,7 @@ class SButton extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SCanvas extends SBase {
@@ -9305,7 +9305,7 @@ SCanvas.drawtype = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SCheckBox extends SBase {
@@ -9388,7 +9388,7 @@ class SCheckBox extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SColorPicker extends SBase {
@@ -9676,7 +9676,7 @@ class SColorPicker extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SComboBox extends SBase {
@@ -9773,7 +9773,7 @@ class SComboBox extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SFileLoadButton extends SBase {
@@ -9843,7 +9843,7 @@ SFileLoadButton.FILE_ACCEPT = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SFileSaveButton extends SBase {
@@ -9892,7 +9892,7 @@ class SFileSaveButton extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SGroupBox extends SBase {
@@ -9933,7 +9933,7 @@ class SGroupBox extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SImagePanel extends SBase {
@@ -10023,7 +10023,7 @@ class SImagePanel extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SLabel extends SBase {
@@ -10046,7 +10046,7 @@ class SLabel extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SPanel extends SBase {
@@ -10101,7 +10101,7 @@ class SPanel extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SProgressBar extends SBase {
@@ -10188,7 +10188,7 @@ class SProgressBar extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SSlidePanel extends SBase {
@@ -10256,7 +10256,7 @@ class SSlidePanel extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SSlider extends SBase {
@@ -10413,7 +10413,7 @@ class SSlider extends SBase {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const SComponent = {
@@ -10447,7 +10447,7 @@ const SComponent = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const S3Math =  {
@@ -10506,7 +10506,7 @@ const S3Math =  {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Matrix {
@@ -10810,7 +10810,7 @@ class S3Matrix {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Vector {
@@ -11220,7 +11220,7 @@ S3Vector.ZERO = new S3Vector(0.0, 0.0, 0.0);
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Camera {
@@ -11389,7 +11389,7 @@ class S3Camera {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Light {
@@ -11460,7 +11460,7 @@ S3Light.MODE = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Material {
@@ -11548,7 +11548,7 @@ class S3Material {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Vertex {
@@ -11578,7 +11578,7 @@ class S3Vertex {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3TriangleIndex {
@@ -11649,7 +11649,7 @@ class S3TriangleIndex {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Mesh {
@@ -11762,7 +11762,7 @@ class S3Mesh {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Angles {
@@ -11840,7 +11840,7 @@ S3Angles.PI2	= 2.0 * S3Angles.PI;
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Model {
@@ -11940,7 +11940,7 @@ class S3Model {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Scene {
@@ -11996,7 +11996,7 @@ class S3Scene {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Texture {
@@ -12090,7 +12090,7 @@ class S3Texture {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 
@@ -12853,7 +12853,7 @@ S3System.CULL_MODE = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLShader {
@@ -12965,7 +12965,7 @@ class S3GLShader {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLArray {
@@ -13066,7 +13066,7 @@ S3GLArray.gltypetable = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLProgram {
@@ -13543,7 +13543,7 @@ class S3GLProgram {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLLight extends S3Light {
@@ -13589,7 +13589,7 @@ class S3GLLight extends S3Light {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLMaterial extends S3Material {
@@ -13643,7 +13643,7 @@ class S3GLMaterial extends S3Material {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLTexture extends S3Texture {
@@ -13690,7 +13690,7 @@ class S3GLTexture extends S3Texture {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLMesh extends S3Mesh {
@@ -14045,7 +14045,7 @@ class S3GLMesh extends S3Mesh {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLModel extends S3Model {
@@ -14087,7 +14087,7 @@ class S3GLModel extends S3Model {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLScene extends S3Scene {
@@ -14132,7 +14132,7 @@ class S3GLScene extends S3Scene {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLTriangleIndexData {
@@ -14192,7 +14192,7 @@ class S3GLTriangleIndexData {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLTriangleIndex extends S3TriangleIndex {
@@ -14230,7 +14230,7 @@ class S3GLTriangleIndex extends S3TriangleIndex {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLVertex extends S3Vertex {
@@ -14268,7 +14268,7 @@ class S3GLVertex extends S3Vertex {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3GLSystem extends S3System {
@@ -14701,7 +14701,7 @@ class S3GLSystem extends S3System {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const DefaultMaterial = {
@@ -14825,7 +14825,7 @@ const S3MeshLoaderJSON = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class File$2 {
@@ -15088,7 +15088,7 @@ const S3MeshLoaderMQO = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const S3MeshLoaderOBJ = {
@@ -15215,7 +15215,7 @@ const S3MeshLoaderOBJ = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const S3MeshLoader = {
@@ -15268,7 +15268,7 @@ S3MeshLoader._DATA_INPUT_FUNCTION[S3MeshLoaderOBJ.name] = S3MeshLoaderOBJ.input;
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class S3Plane {
@@ -15334,7 +15334,7 @@ class S3Plane {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class CameraController {
@@ -15388,7 +15388,7 @@ class CameraController {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const S3 = {
@@ -15422,7 +15422,7 @@ const S3 = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const Senko = {

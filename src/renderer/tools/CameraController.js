@@ -5,7 +5,7 @@
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 import Device from "../../device/Device.js";

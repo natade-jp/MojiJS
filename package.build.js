@@ -40,8 +40,8 @@ const addHeader = function(filename) {
 	header.push(" * https://github.com/natade-jp/SenkoJS");
 	header.push(" * Copyright 2013-" + build_date.getFullYear() + " natade");
 	header.push(" *");
-	header.push(" * The zlib/libpng License.");
-	header.push(" * https://opensource.org/licenses/Zlib");
+	header.push(" * The MIT license.");
+	header.push(" * https://opensource.org/licenses/MIT");
 	header.push(" */");
 	header.push("");
 	header = header.join("\n");

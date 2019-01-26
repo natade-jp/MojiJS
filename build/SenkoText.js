@@ -5,7 +5,7 @@
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class Unicode {
@@ -333,7 +333,7 @@ class Unicode {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SJIS {
@@ -938,7 +938,7 @@ class SJIS {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class CP932MAP {
@@ -2346,7 +2346,7 @@ class CP932 {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class SJIS2004MAP {
@@ -3947,7 +3947,7 @@ class SJIS2004 {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class Japanese {
@@ -4523,7 +4523,7 @@ class Japanese {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class Programming {
@@ -4629,7 +4629,7 @@ class Programming {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 class CHAR_MAP {
@@ -5142,7 +5142,7 @@ class CharacterAnalyser {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const Text = {
@@ -5235,7 +5235,7 @@ const Text = {
  *  natade (http://twitter.com/natadea)
  * 
  * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ *  The MIT license https://opensource.org/licenses/MIT
  */
 
 const SenkoText = Text;
