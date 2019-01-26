@@ -1910,814 +1910,6 @@ class Format {
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-
-const ToComplexFromString = function(text, that) {
-	const str = text.replace(/\s/g, "").toLowerCase();
-	// 複素数の宣言がない場合
-	if(!(/[ij]/.test(str))) {
-		that._re = parseFloat(str);
-		that._im = 0.0;
-		return;
-	}
-	// この時点で複素数である。
-	// 以下真面目に調査
-	let re = 0;
-	let im = 0;
-	let buff;
-	// 最後が$なら右側が実数、最後が[+-]なら左側が実数
-	buff = str.match(/[+-]?[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?($|[+-])/);
-	if(buff) {
-		re = parseFloat(buff[0]);
-	}
-	// 複素数は数値が省略される場合がある
-	buff = str.match(/[+-]?([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij]/);
-	if(buff) {
-		buff = buff[0].substring(0, buff[0].length - 1);
-		// i, +i, -j のように実数部がなく、数値もない場合
-		if((/^[-+]$/.test(buff)) || buff.length === 0) {
-			im = buff === "-" ? -1 : 1;
-		}
-		else {
-			im = parseFloat(buff);
-		}
-	}
-	that._re = re;
-	that._im = im;
-};
-
-class Complex {
-
-	constructor() {
-		if(arguments.length === 1) {
-			const obj = arguments[0];
-			if((obj instanceof Complex) || ((obj instanceof Object) && (obj._re && obj._im))) {
-				this._re = obj._re;
-				this._im = obj._im;
-			}
-			else if(typeof obj === "number" || obj instanceof Number) {
-				this._re = obj;
-				this._im = 0.0;
-			}
-			else if(obj instanceof Array && obj.length === 2) {
-				this._re = obj[0];
-				this._im = obj[1];
-			}
-			else if(typeof obj === "string" || obj instanceof String) {
-				ToComplexFromString(obj, this);
-			}
-			else if(obj instanceof Object && obj.toString) {
-				ToComplexFromString(obj.toString(), this);
-			}
-			else {
-				throw "IllegalArgumentException";
-			}
-		}
-		else if(arguments.length === 2) {
-			const obj_0 = arguments[0];
-			const obj_1 = arguments[1];
-			if((obj_0 instanceof Complex) && (!obj_0._im)) {
-				this._re = obj_0._re;
-			}
-			else if((typeof obj_0 === "number")||(obj_0 instanceof Number)) {
-				this._re = obj_0;
-			}
-			else {
-				throw "IllegalArgumentException";
-			}
-			if((obj_1 instanceof Complex) && (!obj_1._im)) {
-				this._im = obj_1._re;
-			}
-			else if((typeof obj_1 === "number")||(obj_1 instanceof Number)) {
-				this._im = obj_1;
-			}
-			else {
-				throw "IllegalArgumentException";
-			}
-		}
-		else {
-			throw "IllegalArgumentException";
-		}
-	}
-
-	static createConstComplex() {
-		if((arguments.length === 1) && (arguments[0] instanceof Complex)) {
-			return arguments[0];
-		}
-		else {
-			new Complex(...arguments);
-		}
-	}
-
-	toString() {
-		const formatG = function(x) {
-			let numstr = x.toPrecision(6);
-			if(numstr.indexOf(".") !== -1) {
-				numstr = numstr.replace(/\.?0+$/, "");  // 1.00 , 1.10
-				numstr = numstr.replace(/\.?0+e/, "e"); // 1.0e , 1.10e
-			}
-			return numstr;
-		};
-		if(!this.isReal()) {
-			if(this._re === 0) {
-				return formatG(this._im) + "i";
-			}
-			else if(this._im >= 0) {
-				return formatG(this._re) + " + " + formatG(this._im) + "i";
-			}
-			else {
-				return formatG(this._re) + " - " + formatG(-this._im) + "i";
-			}
-		}
-		else {
-			return formatG(this._re);
-		}
-	}
-	
-	clone() {
-		new Complex(this._re, this._im);
-	}
-
-	add() {
-		const x = new Complex(...arguments);
-		x._re = this._re + x._re;
-		x._im = this._im + x._im;
-		return x;
-	}
-
-	sub() {
-		const x = new Complex(...arguments);
-		x._re = this._re - x._re;
-		x._im = this._im - x._im;
-		return x;
-	}
-
-	mul() {
-		const x = new Complex(...arguments);
-		if((this._im === 0) && (x._im === 0)) {
-			x._re = this._re * x._re;
-			return x;
-		}
-		else if((this._re === 0) && (x._re === 0)) {
-			x._re = - this._im * x._im;
-			x._im = 0;
-			return x;
-		}
-		else {
-			const re = this._re * x._re - this._im * x._im;
-			const im = this._im * x._re + this._re * x._im;
-			x._re = re;
-			x._im = im;
-			return x;
-		}
-	}
-	
-	div() {
-		const x = new Complex(...arguments);
-		if((this._im === 0) && (x._im === 0)) {
-			x._re = this._re / x._re;
-			return x;
-		}
-		else if((this._re === 0) && (x._re === 0)) {
-			x._re = this._im / x._im;
-			x._im = 0;
-			return x;
-		}
-		else {
-			const re = this._re * x._re + this._im * x._im;
-			const im = this._im * x._re - this._re * x._im;
-			const denominator = 1.0 / (x._re * x._re + x._im * x._im);
-			x._re = re * denominator;
-			x._im = im * denominator;
-			return x;
-		}
-	}
-
-	mod() {
-		const x = new Complex(...arguments);
-		if((this._im !== 0) || (x._im !== 0)) {
-			throw "IllegalArgumentException";
-		}
-		let _re = this._re - x._re * (0 | (this._re / x._re));
-		if(_re < 0) {
-			_re += x._re;
-		}
-		x._re = _re;
-		return x;
-	}
-
-	inv() {
-		if(this._im === 0) {
-			return new Complex(1.0 / this._re);
-		}
-		else if(this._re === 0) {
-			return new Complex(0, - 1.0 / this._im);
-		}
-		return Complex.ONE.div(this);
-	}
-	
-	sign() {
-		if(this._im === 0) {
-			if(this._re === 0) {
-				return new Complex(0);
-			}
-			else {
-				return new Complex(this._re > 0 ? 1 : -1);
-			}
-		}
-		return this.div(this.norm);
-	}
-
-	get norm() {
-		if(this._im === 0) {
-			return new Complex(this._re);
-		}
-		else if(this._re === 0) {
-			return new Complex(this._im);
-		}
-		else {
-			return new Complex(Math.sqrt(this._re * this._re + this._im * this._im));
-		}
-	}
-
-	get angle() {
-		if(this._im === 0) {
-			return new Complex(0);
-		}
-		else if(this._re === 0) {
-			return new Complex(Math.PI * (this._im >= 0.0 ? 0.5 : -0.5));
-		}
-		else {
-			return new Complex(Math.atan2(this._im, this._re));
-		}
-	}
-
-	get real() {
-		return new Complex(this._re);
-	}
-	
-	get imag() {
-		return new Complex(this._im);
-	}
-	
-	equals() {
-		const x = Complex.createConstComplex(...arguments);
-		return (Math.abs(this._re - x._re) <  Number.EPSILON) && (Math.abs(this._im - x._im) <  Number.EPSILON);
-	}
-
-	max() {
-		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm._re;
-		const y2 = x.norm._re;
-		if(y1 >= y2) {
-			return this;
-		}
-		else {
-			return x;
-		}
-	}
-
-	min() {
-		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm._re;
-		const y2 = x.norm._re;
-		if(y1 <= y2) {
-			return this;
-		}
-		else {
-			return x;
-		}
-	}
-
-	isZero() {
-		return (Math.abs(this._re) < Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
-	}
-
-	isOne() {
-		return (Math.abs(this._re - 1.0) <  Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
-	}
-
-	isComplex() {
-		return (Math.abs(this._im) >= Number.EPSILON);
-	}
-	
-	isReal() {
-		return (Math.abs(this._im) < Number.EPSILON);
-	}
-
-	isNaN() {
-		return isNaN(this._re) || isNaN(this._im);
-	}
-
-	// Number.EPSILONは使用しない。どちらにぶれるか不明な点及び
-	// わずかな負の数だった場合に、sqrtでエラーが発生するため
-	isPositive() {
-		return 0.0 < this._re;
-	}
-
-	isNegative() {
-		return 0.0 > this._re;
-	}
-
-	isNotNegative() {
-		return 0.0 <= this._re;
-	}
-
-	isInfinite() {
-		return	(this._re === Number.POSITIVE_INFINITY) ||
-				(this._im === Number.POSITIVE_INFINITY) ||
-				(this._re === Number.NEGATIVE_INFINITY) ||
-				(this._im === Number.NEGATIVE_INFINITY);
-	}
-
-	isFinite() {
-		return !this.isNaN() && !this.isInfinite();
-	}
-
-	/**
-	 * 今の値Aと、指定した値Bとを比較する
-	 * @returns {Number} A < B ? 1 : A === B ? 0 : -1
-	 */
-	compareTo() {
-		const x = Complex.createConstComplex(...arguments);
-		if(this.equals(x)) {
-			return 0;
-		}
-		const max = this.max(x);
-		if(max.equals(x)) {
-			return 1;
-		}
-		else {
-			return -1;
-		}
-	}
-
-	abs() {
-		return this.norm;
-	}
-
-	negate() {
-		return new Complex(-this._re, -this._im);
-	}
-
-	pow() {
-		const x = new Complex(...arguments);
-		if((this.isReal()) && (x.isReal()) && (this.isNotNegative())) {
-			x._re = Math.pow(this._re, x._re);
-			return x;
-		}
-		else if(x.isReal()) {
-			const r = Math.pow(this.norm._re, x._re);
-			const s = this.angle._re * x._re;
-			x._re = r * Math.cos(s);
-			x._im = r * Math.sin(s);
-			return x;
-		}
-		else {
-			return x.mul(this.log()).exp();
-		}
-	}
-
-	sqrt() {
-		if(this.isReal()) {
-			if(this.isNotNegative()) {
-				return new Complex(Math.sqrt(this._re));
-			}
-			else {
-				return new Complex(0, Math.sqrt(this._re));
-			}
-		}
-		const r = Math.sqrt(this.norm._re);
-		const s = this.angle._re * 0.5;
-		return new Complex(r * Math.cos(s), r * Math.sin(s));
-	}
-
-	log() {
-		if(this.isReal() && this.isNotNegative()) {
-			return new Complex(Math.log(this._re));
-		}
-		// 複素対数関数
-		return new Complex(Math.log(this.norm), this.angle._re);
-	}
-
-	exp() {
-		if(this.isReal()) {
-			return new Complex(Math.exp(this._re));
-		}
-		// 複素指数関数
-		const r = Math.exp(this._re);
-		return new Complex(r * Math.cos(this._im), r * Math.sin(this._im));
-	}
-
-	sin() {
-		if(this.isReal()) {
-			return new Complex(Math.sin(this._re));
-		}
-		// オイラーの公式より
-		// sin x = (e^ix - e^-ex) / 2i
-		const a = this.mul(Complex.I).exp();
-		const b = this.mul(Complex.I.negate()).exp();
-		return a.sub(b).div([0, 2]);
-	}
-
-	cos() {
-		if(this.isReal()) {
-			return new Complex(Math.cos(this._re));
-		}
-		// オイラーの公式より
-		// cos x = (e^ix + e^-ex) / 2
-		const a = this.mul(Complex.I).exp();
-		const b = this.mul(Complex.I.negate()).exp();
-		return a.add(b).div(2);
-	}
-
-	tan() {
-		if(this.isReal()) {
-			return new Complex(Math.tan(this._re));
-		}
-		// 三角関数の相互関係 tan x = sin x / cos x
-		return this.sin().div(this.cos());
-	}
-
-	atan() {
-		if(this.isReal()) {
-			return new Complex(Math.atan(this._re));
-		}
-		// 逆正接 tan-1 x = i/2 log( i+x / i-x )
-		return Complex.I.div(Complex.TWO).mul(Complex.I.add(this).div(Complex.I.sub(this)).log());
-	}
-
-	atan2() {
-		if(arguments.length === 0) {
-			return this.angle;
-		}
-		else {
-			const x = new Complex(...arguments);
-			if(this._im || x._im) {
-				throw "IllegalArgumentException";
-			}
-			return Math.atan2(this._re, x._re);
-		}
-	}
-
-}
-
-Complex.I = new Complex(0, 1);
-Complex.ZERO = new Complex(0);
-Complex.ONE = new Complex(1);
-Complex.TWO = new Complex(2);
-Complex.TEN = new Complex(10);
-
-/**
- * The script is part of SenkoJS.
- * 
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- * 
- * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
- */
-
-const ConstructorTool = {
-
-	match2 : function(text, regexp) {
-		// 対象ではないregexpの情報以外も抽出match
-		// つまり "1a2b" で \d を抽出すると、次のように抽出される
-		// [false "1"]
-		// [true "a"]
-		// [false "2"]
-		// [true "b"]
-		// 0 ... 一致したかどうか
-		// 1 ... 一致した文字列、あるいは一致していない文字列
-		const output = [];
-		let search_target = text;
-		let match = true;
-		for(let x = 0; x < 1000; x++) {
-			match = search_target.match(regexp);
-			if(match === null) {
-				if(search_target.length) {
-					output.push([ false, search_target ]);
-				}
-				break;
-			}
-			if(match.index > 0) {
-				output.push([ false, search_target.substr(0, match.index) ]);
-			}
-			output.push([ true, match[0] ]);
-			search_target = search_target.substr(match.index + match[0].length);
-		}
-		return output;
-	},
-	
-	trimBracket : function(text) {
-		// 前後に[]があるか確認
-		if( !(/^\[/).test(text) || !(/\]$/).test(text)) {
-			return null;
-		}
-		// 前後の[]を除去
-		return text.substring(1, text.length - 1);
-	},
-
-	toMatrixFromStringForArrayJSON : function(text, array) {
-		// さらにブランケット内を抽出
-		let rows = text.match(/\[[^\]]+\]/g);
-		if(rows === null) {
-			// ブランケットがない場合は、1行行列である
-			rows = [text];
-		}
-		// 各ブランケット内を列ごとに調査
-		for(let row_count = 0; row_count < rows.length; row_count++) {
-			const row = rows[row_count];
-			const column_array = row.substring(1, row.length - 1).split(",");
-			const rows_array = [];
-			for(let col_count = 0; col_count < column_array.length; col_count++) {
-				const column = column_array[col_count];
-				rows_array[col_count] = new Complex(column);
-			}
-			array[row_count] = rows_array;
-		}
-		return;
-	},
-
-	InterpolationCalculation : function(from, delta, to) {
-		const FromIsGreaterThanTo = to.compareTo(from);
-		if(FromIsGreaterThanTo === 0) {
-			return from;
-		}
-		if(delta.isZero()) {
-			throw "IllegalArgumentException";
-		}
-		// delta が負のため、どれだけたしても to にならない。
-		if(delta.isNegative() && (FromIsGreaterThanTo === -1)) {
-			throw "IllegalArgumentException";
-		}
-		const rows_array = [];
-		let num = from;
-		rows_array[0] = num;
-		for(let i = 1; i < 0x10000; i++) {
-			num = num.add(delta);
-			if(num.compareTo(to) === FromIsGreaterThanTo) {
-				break;
-			}
-			rows_array[i] = num;
-		}
-
-
-		return rows_array;
-	},
-
-	toMatrixFromStringForArrayETC : function(text, array) {
-		// 左が実数（強制）で右が複素数（任意）タイプ
-		const reg1 = /[+-]? *[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?( *[+-] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij])?/;
-		// 左が複素数（強制）で右が実数（任意）タイプ
-		const reg2 = /[+-]? *([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij]( *[+] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?)?/;
-		// reg2優先で検索
-		const reg3 = new RegExp("(" + reg2.source + ")|(" + reg1.source + ")", "i");
-		// 問題として 1 - -jが通る
-		// 行ごとを抽出
-		const rows = text.split(";");
-
-		for(let row_count = 0; row_count < rows.length; row_count++) {
-			const row = rows[row_count];
-			const xs = ConstructorTool.match2(row, reg3);
-			const rows_array = [];
-			for(let i = 0; i < xs.length; i++) {
-				const xx = xs[i];
-				if(!xx[0]) {
-					// 一致していないデータであれば次へ
-					continue;
-				}
-				// 「:記法」 1:3 なら 1,2,3。 1:2:9 なら 1:3:5:7:9
-				if((i < xs.length - 2) && !xs[i + 1][0] && /:/.test(xs[i + 1][1])) {
-					let from, delta, to;
-					if((i < xs.length - 4) && !xs[i + 3][0] && /:/.test(xs[i + 3][1])) {
-						from = new Complex(xx[1]);
-						delta = new Complex(xs[i + 2][1]);
-						to = new Complex(xs[i + 4][1]);
-						i += 4;
-					}
-					else {
-						from = new Complex(xx[1]);
-						delta = Complex.ONE;
-						to = new Complex(xs[i + 2][1]);
-						i += 2;
-					}
-					const ip_array = ConstructorTool.InterpolationCalculation(from, delta, to);
-					for(let j = 0; j < ip_array.length; j++) {
-						rows_array.push(ip_array[j]);
-					}
-				}
-				else {
-					rows_array.push(new Complex(xx[1]));
-				}
-			}
-			array[row_count] = rows_array;
-		}
-	},
-
-	toMatrixFromStringForArray : function(text, array) {
-		// JSON形式
-		if(/[[\],]/.test(text)) {
-			ConstructorTool.toMatrixFromStringForArrayJSON(text, array);
-		}
-		// それ以外(MATLAB, Octave, Scilab)
-		else {
-			ConstructorTool.toMatrixFromStringForArrayETC(text, array);
-		}
-	},
-
-	toMatrixFromString : function(text, array) {
-		// 前後のスペースを除去
-		const trimtext = text.replace(/^\s*|\s*$/g, "");
-		// ブランケットを外す
-		const withoutBracket = ConstructorTool.trimBracket(trimtext);
-		if(withoutBracket) {
-			// 配列用の初期化
-			ConstructorTool.toMatrixFromStringForArray(withoutBracket, array);
-		}
-		else {
-			// スカラー用の初期化
-			array[0] = [new Complex(text)];
-		}
-	},
-
-	isCorrectMatrixArray : function(m_array) {
-		if(m_array.length === 1) {
-			return true;
-		}
-		const num = m_array[0].length;
-		for(let i = 1; i < m_array.length; i++) {
-			if(m_array[i].length !== num) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-};
-
-class Matrix {
-	constructor() {
-		const x = [];
-		if(arguments.length === 1) {
-			const y = arguments[0];
-			if(y instanceof Complex) {
-				x[0] = [y];
-			}
-			else if(y instanceof Array) {
-				for(let row_count = 0; row_count < y.length; row_count++) {
-					const row = y[row_count];
-					if(row instanceof Complex) {
-						x[row_count] = row;
-					}
-					else if(row instanceof Array) {
-						const rows_array = [];
-						for(let col_count = 0; col_count < row.length; col_count++) {
-							const column = row[col_count];
-							if(column instanceof Complex) {
-								rows_array[col_count] = column;
-							}
-							else {
-								rows_array[col_count] = new Complex(column);
-							}
-						}
-						x[row_count] = rows_array;
-					}
-					else {
-						x[row_count] = new Complex(row);
-					}
-				}
-			}
-			else if(typeof y === "string" || y instanceof String) {
-				ConstructorTool.toMatrixFromString(y, x);
-			}
-			else if(y instanceof Object && y.toString) {
-				ConstructorTool.toMatrixFromString(y.toString(), x);
-			}
-			else {
-				x[0] = [new Complex(y)];
-			}
-		}
-		if(!ConstructorTool.isCorrectMatrixArray(x)) {
-			throw "IllegalArgumentException";
-		}
-		this.x = x;
-		this.row_length = this.x.length;
-		this.column_length = this.x[0].length;
-		this.string_cash = null;
-	}
-
-	_each(eachfunc) {
-		// 行優先ですべての値に対して指定した関数を実行する
-		for(let i = 0; i < this.row_length; i++) {
-			const row = this.x[i];
-			for(let j = 0; j < this.column_length; j++) {
-				eachfunc(row[j], i, j);
-			}
-		}
-	}
-	
-	toString() {
-		if(this.string_cash) {
-			return this.string_cash;
-		}
-		const exp_turn_point = 9;
-		const exp_turn_num = Math.pow(10, exp_turn_point);
-		const exp_point = 4;
-		let isDrawImag = false;
-		let isDrawExp = false;
-
-		// 表示方法の確認
-		this._each(
-			function(num) {
-				if(!num.isReal()) {
-					isDrawImag = true;
-				}
-				if(Math.abs(num._re) >= exp_turn_num) {
-					isDrawExp = true;
-				}
-				if(Math.abs(num._im) >= exp_turn_num) {
-					isDrawExp = true;
-				}
-			}
-		);
-
-		const draw_buff = [];
-
-		// 数値を文字列にする。なお、eの桁を3桁にする
-		const toStrFromFloat = function(text) {
-			if(!isDrawExp) {
-				return text.toFixed();
-			}
-			const str = text.toExponential(exp_point);
-			const split = str.split("e");
-			let exp_text = split[1];
-			if(exp_text.length === 2) {
-				exp_text = exp_text.substr(0, 1) + "00" + exp_text.substr(1);
-			}
-			else if(exp_text.length === 3) {
-				exp_text = exp_text.substr(0, 1) + "0" + exp_text.substr(1);
-			}
-			return split[0] + "e" + exp_text;
-		};
-
-		// 右寄せ用関数
-		const right = function(text, length) {
-			const space = "                                        ";
-			return space.substr(0, length - text.length) + text;
-		};
-		
-		let str_max = 0;
-
-		// 文字列データを作成
-		this._each(
-			function(num) {
-				const data = {};
-				let real = num._re;
-				data.re_sign = real < 0 ? "-" : " ";
-				real = Math.abs(real);
-				data.re_str = toStrFromFloat(real);
-				str_max = Math.max(str_max, data.re_str.length + 1);
-				if(isDrawImag) {
-					let imag = num._im;
-					data.im_sign = imag < 0 ? "-" : "+";
-					imag = Math.abs(imag);
-					data.im_str = toStrFromFloat(imag);
-					str_max = Math.max(str_max, data.im_str.length + 1);
-				}
-				draw_buff.push(data);
-			}
-		);
-
-		// 出直用文字列の作成
-		const output = [];
-		const that = this;
-		this._each(
-			function(num, i, j) {
-				const data = draw_buff.shift();
-				let text = right(data.re_sign + data.re_str, str_max);
-				if(isDrawImag) {
-					text += " " + data.im_sign + right(data.im_str, str_max) + "i";
-				}
-				output.push(text);
-				output.push((j < that.column_length - 1) ? " " : "\n");
-			}
-		);
-
-		return output.join("");
-	}
-
-}
-
-/**
- * The script is part of SenkoJS.
- * 
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- * 
- * LICENSE:
- *  The zlib/libpng License https://opensource.org/licenses/Zlib
- */
-
 // 「M系列乱数」
 // 比較的長い 2^521 - 1通りを出力します。
 // 詳細は、奥村晴彦 著『C言語によるアルゴリズム辞典』を参照
@@ -5148,13 +4340,901 @@ BigDecimal.ROUND_UP				= RoundingMode.UP;
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-const SNumber = {
+
+const ToComplexFromString = function(text, that) {
+	const str = text.replace(/\s/g, "").toLowerCase();
+	// 複素数の宣言がない場合
+	if(!(/[ij]/.test(str))) {
+		that._re = parseFloat(str);
+		that._im = 0.0;
+		return;
+	}
+	// この時点で複素数である。
+	// 以下真面目に調査
+	let re = 0;
+	let im = 0;
+	let buff;
+	// 最後が$なら右側が実数、最後が[+-]なら左側が実数
+	buff = str.match(/[+-]?[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?($|[+-])/);
+	if(buff) {
+		re = parseFloat(buff[0]);
+	}
+	// 複素数は数値が省略される場合がある
+	buff = str.match(/[+-]?([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij]/);
+	if(buff) {
+		buff = buff[0].substring(0, buff[0].length - 1);
+		// i, +i, -j のように実数部がなく、数値もない場合
+		if((/^[-+]$/.test(buff)) || buff.length === 0) {
+			im = buff === "-" ? -1 : 1;
+		}
+		else {
+			im = parseFloat(buff);
+		}
+	}
+	that._re = re;
+	that._im = im;
+};
+
+class Complex {
+
+	constructor() {
+		if(arguments.length === 1) {
+			const obj = arguments[0];
+			if((obj instanceof Complex) || ((obj instanceof Object) && (obj._re && obj._im))) {
+				this._re = obj._re;
+				this._im = obj._im;
+			}
+			else if(typeof obj === "number" || obj instanceof Number) {
+				this._re = obj;
+				this._im = 0.0;
+			}
+			else if(obj instanceof Array && obj.length === 2) {
+				this._re = obj[0];
+				this._im = obj[1];
+			}
+			else if(typeof obj === "string" || obj instanceof String) {
+				ToComplexFromString(obj, this);
+			}
+			else if(obj instanceof Object && obj.toString) {
+				ToComplexFromString(obj.toString(), this);
+			}
+			else {
+				throw "IllegalArgumentException";
+			}
+		}
+		else if(arguments.length === 2) {
+			const obj_0 = arguments[0];
+			const obj_1 = arguments[1];
+			if((obj_0 instanceof Complex) && (!obj_0._im)) {
+				this._re = obj_0._re;
+			}
+			else if((typeof obj_0 === "number")||(obj_0 instanceof Number)) {
+				this._re = obj_0;
+			}
+			else {
+				throw "IllegalArgumentException";
+			}
+			if((obj_1 instanceof Complex) && (!obj_1._im)) {
+				this._im = obj_1._re;
+			}
+			else if((typeof obj_1 === "number")||(obj_1 instanceof Number)) {
+				this._im = obj_1;
+			}
+			else {
+				throw "IllegalArgumentException";
+			}
+		}
+		else {
+			throw "IllegalArgumentException";
+		}
+	}
+
+	static createConstComplex() {
+		if((arguments.length === 1) && (arguments[0] instanceof Complex)) {
+			return arguments[0];
+		}
+		else {
+			return new Complex(...arguments);
+		}
+	}
+	
+	get real() {
+		return this._re;
+	}
+	
+	get imag() {
+		return this._im;
+	}
+
+	get norm() {
+		if(this._im === 0) {
+			return this._re;
+		}
+		else if(this._re === 0) {
+			return this._im;
+		}
+		else {
+			return Math.sqrt(this._re * this._re + this._im * this._im);
+		}
+	}
+
+	get angle() {
+		if(this._im === 0) {
+			return 0;
+		}
+		else if(this._re === 0) {
+			return Math.PI * (this._im >= 0.0 ? 0.5 : -0.5);
+		}
+		else {
+			return Math.atan2(this._im, this._re);
+		}
+	}
+
+	toString() {
+		const formatG = function(x) {
+			let numstr = x.toPrecision(6);
+			if(numstr.indexOf(".") !== -1) {
+				numstr = numstr.replace(/\.?0+$/, "");  // 1.00 , 1.10
+				numstr = numstr.replace(/\.?0+e/, "e"); // 1.0e , 1.10e
+			}
+			return numstr;
+		};
+		if(!this.isReal()) {
+			if(this._re === 0) {
+				return formatG(this._im) + "i";
+			}
+			else if(this._im >= 0) {
+				return formatG(this._re) + " + " + formatG(this._im) + "i";
+			}
+			else {
+				return formatG(this._re) + " - " + formatG(-this._im) + "i";
+			}
+		}
+		else {
+			return formatG(this._re);
+		}
+	}
+	
+	clone() {
+		new Complex(this._re, this._im);
+	}
+
+	add() {
+		const x = new Complex(...arguments);
+		x._re = this._re + x._re;
+		x._im = this._im + x._im;
+		return x;
+	}
+
+	sub() {
+		const x = new Complex(...arguments);
+		x._re = this._re - x._re;
+		x._im = this._im - x._im;
+		return x;
+	}
+
+	mul() {
+		const x = new Complex(...arguments);
+		if((this._im === 0) && (x._im === 0)) {
+			x._re = this._re * x._re;
+			return x;
+		}
+		else if((this._re === 0) && (x._re === 0)) {
+			x._re = - this._im * x._im;
+			x._im = 0;
+			return x;
+		}
+		else {
+			const re = this._re * x._re - this._im * x._im;
+			const im = this._im * x._re + this._re * x._im;
+			x._re = re;
+			x._im = im;
+			return x;
+		}
+	}
+	
+	div() {
+		const x = new Complex(...arguments);
+		if((this._im === 0) && (x._im === 0)) {
+			x._re = this._re / x._re;
+			return x;
+		}
+		else if((this._re === 0) && (x._re === 0)) {
+			x._re = this._im / x._im;
+			x._im = 0;
+			return x;
+		}
+		else {
+			const re = this._re * x._re + this._im * x._im;
+			const im = this._im * x._re - this._re * x._im;
+			const denominator = 1.0 / (x._re * x._re + x._im * x._im);
+			x._re = re * denominator;
+			x._im = im * denominator;
+			return x;
+		}
+	}
+
+	mod() {
+		const x = new Complex(...arguments);
+		if((this._im !== 0) || (x._im !== 0)) {
+			throw "IllegalArgumentException";
+		}
+		let _re = this._re - x._re * (0 | (this._re / x._re));
+		if(_re < 0) {
+			_re += x._re;
+		}
+		x._re = _re;
+		return x;
+	}
+
+	inv() {
+		if(this._im === 0) {
+			return new Complex(1.0 / this._re);
+		}
+		else if(this._re === 0) {
+			return new Complex(0, - 1.0 / this._im);
+		}
+		return Complex.ONE.div(this);
+	}
+	
+	sign() {
+		if(this._im === 0) {
+			if(this._re === 0) {
+				return new Complex(0);
+			}
+			else {
+				return new Complex(this._re > 0 ? 1 : -1);
+			}
+		}
+		return this.div(this.norm);
+	}
+	
+	equals() {
+		const x = Complex.createConstComplex(...arguments);
+		return (Math.abs(this._re - x._re) <  Number.EPSILON) && (Math.abs(this._im - x._im) <  Number.EPSILON);
+	}
+
+	max() {
+		const x = Complex.createConstComplex(...arguments);
+		const y1 = this.norm;
+		const y2 = x.norm;
+		if(y1 >= y2) {
+			return this;
+		}
+		else {
+			return x;
+		}
+	}
+
+	min() {
+		const x = Complex.createConstComplex(...arguments);
+		const y1 = this.norm;
+		const y2 = x.norm;
+		if(y1 <= y2) {
+			return this;
+		}
+		else {
+			return x;
+		}
+	}
+
+	/**
+	 * 今の値Aと、指定した値Bとを比較する
+	 * @returns {Number} A < B ? 1 : A === B ? 0 : -1
+	 */
+	compareTo() {
+		const x = Complex.createConstComplex(...arguments);
+		if(this.equals(x)) {
+			return 0;
+		}
+		const max = this.max(x);
+		if(max.equals(x)) {
+			return 1;
+		}
+		else {
+			return -1;
+		}
+	}
+
+	isZero() {
+		return (Math.abs(this._re) < Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
+	}
+
+	isOne() {
+		return (Math.abs(this._re - 1.0) <  Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
+	}
+
+	isComplex() {
+		return (Math.abs(this._im) >= Number.EPSILON);
+	}
+	
+	isReal() {
+		return (Math.abs(this._im) < Number.EPSILON);
+	}
+
+	isInteger() {
+		return this.isReal() && this._re === (0 | this._re);
+	}
+
+	isNaN() {
+		return isNaN(this._re) || isNaN(this._im);
+	}
+
+	// Number.EPSILONは使用しない。どちらにぶれるか不明な点及び
+	// わずかな負の数だった場合に、sqrtでエラーが発生するため
+	isPositive() {
+		return 0.0 < this._re;
+	}
+
+	isNegative() {
+		return 0.0 > this._re;
+	}
+
+	isNotNegative() {
+		return 0.0 <= this._re;
+	}
+
+	isInfinite() {
+		return	(this._re === Number.POSITIVE_INFINITY) ||
+				(this._im === Number.POSITIVE_INFINITY) ||
+				(this._re === Number.NEGATIVE_INFINITY) ||
+				(this._im === Number.NEGATIVE_INFINITY);
+	}
+
+	isFinite() {
+		return !this.isNaN() && !this.isInfinite();
+	}
+
+	abs() {
+		return new Complex(this.norm);
+	}
+
+	negate() {
+		return new Complex(-this._re, -this._im);
+	}
+
+	pow() {
+		const x = new Complex(...arguments);
+		if((this.isReal()) && (x.isReal()) && (this.isNotNegative())) {
+			x._re = Math.pow(this._re, x._re);
+			return x;
+		}
+		else if(x.isReal()) {
+			const r = Math.pow(this.norm, x._re);
+			const s = this.angle * x._re;
+			x._re = r * Math.cos(s);
+			x._im = r * Math.sin(s);
+			return x;
+		}
+		else {
+			return x.mul(this.log()).exp();
+		}
+	}
+
+	sqrt() {
+		if(this.isReal()) {
+			if(this.isNotNegative()) {
+				return new Complex(Math.sqrt(this._re));
+			}
+			else {
+				return new Complex(0, Math.sqrt(this._re));
+			}
+		}
+		const r = Math.sqrt(this.norm);
+		const s = this.angle * 0.5;
+		return new Complex(r * Math.cos(s), r * Math.sin(s));
+	}
+
+	log() {
+		if(this.isReal() && this.isNotNegative()) {
+			return new Complex(Math.log(this._re));
+		}
+		// 複素対数関数
+		return new Complex(Math.log(this.norm), this.angle);
+	}
+
+	exp() {
+		if(this.isReal()) {
+			return new Complex(Math.exp(this._re));
+		}
+		// 複素指数関数
+		const r = Math.exp(this._re);
+		return new Complex(r * Math.cos(this._im), r * Math.sin(this._im));
+	}
+
+	sin() {
+		if(this.isReal()) {
+			return new Complex(Math.sin(this._re));
+		}
+		// オイラーの公式より
+		// sin x = (e^ix - e^-ex) / 2i
+		const a = this.mul(Complex.I).exp();
+		const b = this.mul(Complex.I.negate()).exp();
+		return a.sub(b).div([0, 2]);
+	}
+
+	cos() {
+		if(this.isReal()) {
+			return new Complex(Math.cos(this._re));
+		}
+		// オイラーの公式より
+		// cos x = (e^ix + e^-ex) / 2
+		const a = this.mul(Complex.I).exp();
+		const b = this.mul(Complex.I.negate()).exp();
+		return a.add(b).div(2);
+	}
+
+	tan() {
+		if(this.isReal()) {
+			return new Complex(Math.tan(this._re));
+		}
+		// 三角関数の相互関係 tan x = sin x / cos x
+		return this.sin().div(this.cos());
+	}
+
+	atan() {
+		if(this.isReal()) {
+			return new Complex(Math.atan(this._re));
+		}
+		// 逆正接 tan-1 x = i/2 log( i+x / i-x )
+		return Complex.I.div(Complex.TWO).mul(Complex.I.add(this).div(Complex.I.sub(this)).log());
+	}
+
+	atan2() {
+		if(arguments.length === 0) {
+			return this.angle;
+		}
+		else {
+			const x = new Complex(...arguments);
+			if(this._im || x._im) {
+				throw "IllegalArgumentException";
+			}
+			return Math.atan2(this._re, x._re);
+		}
+	}
+}
+
+Complex.I = new Complex(0, 1);
+Complex.ZERO = new Complex(0);
+Complex.ONE = new Complex(1);
+Complex.TWO = new Complex(2);
+Complex.TEN = new Complex(10);
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+const ConstructorTool = {
+
+	match2 : function(text, regexp) {
+		// 対象ではないregexpの情報以外も抽出match
+		// つまり "1a2b" で \d を抽出すると、次のように抽出される
+		// [false "1"]
+		// [true "a"]
+		// [false "2"]
+		// [true "b"]
+		// 0 ... 一致したかどうか
+		// 1 ... 一致した文字列、あるいは一致していない文字列
+		const output = [];
+		let search_target = text;
+		let match = true;
+		for(let x = 0; x < 1000; x++) {
+			match = search_target.match(regexp);
+			if(match === null) {
+				if(search_target.length) {
+					output.push([ false, search_target ]);
+				}
+				break;
+			}
+			if(match.index > 0) {
+				output.push([ false, search_target.substr(0, match.index) ]);
+			}
+			output.push([ true, match[0] ]);
+			search_target = search_target.substr(match.index + match[0].length);
+		}
+		return output;
+	},
+	
+	trimBracket : function(text) {
+		// 前後に[]があるか確認
+		if( !(/^\[/).test(text) || !(/\]$/).test(text)) {
+			return null;
+		}
+		// 前後の[]を除去
+		return text.substring(1, text.length - 1);
+	},
+
+	toMatrixFromStringForArrayJSON : function(text) {
+		const matrix_array = [];
+		// さらにブランケット内を抽出
+		let rows = text.match(/\[[^\]]+\]/g);
+		if(rows === null) {
+			// ブランケットがない場合は、1行行列である
+			rows = [text];
+		}
+		// 各ブランケット内を列ごとに調査
+		for(let row_count = 0; row_count < rows.length; row_count++) {
+			const row = rows[row_count];
+			const column_array = row.substring(1, row.length - 1).split(",");
+			const rows_array = [];
+			for(let col_count = 0; col_count < column_array.length; col_count++) {
+				const column = column_array[col_count];
+				rows_array[col_count] = new Complex(column);
+			}
+			matrix_array[row_count] = rows_array;
+		}
+		return matrix_array;
+	},
+
+	InterpolationCalculation : function(from, delta, to) {
+		const FromIsGreaterThanTo = to.compareTo(from);
+		if(FromIsGreaterThanTo === 0) {
+			return from;
+		}
+		if(delta.isZero()) {
+			throw "IllegalArgumentException";
+		}
+		// delta が負のため、どれだけたしても to にならない。
+		if(delta.isNegative() && (FromIsGreaterThanTo === -1)) {
+			throw "IllegalArgumentException";
+		}
+		const rows_array = [];
+		let num = from;
+		rows_array[0] = num;
+		for(let i = 1; i < 0x10000; i++) {
+			num = num.add(delta);
+			if(num.compareTo(to) === FromIsGreaterThanTo) {
+				break;
+			}
+			rows_array[i] = num;
+		}
+
+
+		return rows_array;
+	},
+
+	toArrayFromString : function(row_text) {
+		// 左が実数（強制）で右が複素数（任意）タイプ
+		const reg1 = /[+-]? *[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?( *[+-] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij])?/;
+		// 左が複素数（強制）で右が実数（任意）タイプ
+		const reg2 = /[+-]? *([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij]( *[+] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?)?/;
+		// reg2優先で検索
+		const reg3 = new RegExp("(" + reg2.source + ")|(" + reg1.source + ")", "i");
+		// 問題として 1 - -jが通る
+
+		const xs = ConstructorTool.match2(row_text, reg3);
+		const rows_array = [];
+
+		for(let i = 0; i < xs.length; i++) {
+			const xx = xs[i];
+			if(!xx[0]) {
+				// 一致していないデータであれば次へ
+				continue;
+			}
+			// 「:記法」 1:3 なら 1,2,3。 1:2:9 なら 1:3:5:7:9
+			if((i < xs.length - 2) && !xs[i + 1][0] && /:/.test(xs[i + 1][1])) {
+				let from, delta, to;
+				if((i < xs.length - 4) && !xs[i + 3][0] && /:/.test(xs[i + 3][1])) {
+					from = new Complex(xx[1]);
+					delta = new Complex(xs[i + 2][1]);
+					to = new Complex(xs[i + 4][1]);
+					i += 4;
+				}
+				else {
+					from = new Complex(xx[1]);
+					delta = Complex.ONE;
+					to = new Complex(xs[i + 2][1]);
+					i += 2;
+				}
+				const ip_array = ConstructorTool.InterpolationCalculation(from, delta, to);
+				for(let j = 0; j < ip_array.length; j++) {
+					rows_array.push(ip_array[j]);
+				}
+			}
+			else {
+				rows_array.push(new Complex(xx[1]));
+			}
+		}
+
+		return rows_array;
+	},
+
+	toMatrixFromStringForArrayETC : function(text) {
+		// 行ごとを抽出して
+		const matrix_array = [];
+		const rows = text.split(";");
+		for(let row_count = 0; row_count < rows.length; row_count++) {
+			// 各行の文字を解析
+			matrix_array[row_count] = ConstructorTool.toArrayFromString(rows[row_count]);
+		}
+		return matrix_array;
+	},
+
+	toMatrixFromStringForArray : function(text) {
+		// JSON形式
+		if(/[[\],]/.test(text)) {
+			return ConstructorTool.toMatrixFromStringForArrayJSON(text);
+		}
+		// それ以外(MATLAB, Octave, Scilab)
+		else {
+			return ConstructorTool.toMatrixFromStringForArrayETC(text);
+		}
+	},
+
+	toMatrixFromString : function(text) {
+		// 前後のスペースを除去
+		const trimtext = text.replace(/^\s*|\s*$/g, "");
+		// ブランケットを外す
+		const withoutBracket = ConstructorTool.trimBracket(trimtext);
+		if(withoutBracket) {
+			// 配列用の初期化
+			return ConstructorTool.toMatrixFromStringForArray(withoutBracket);
+		}
+		else {
+			// スカラー用の初期化
+			return [new Complex(text)];
+		}
+	},
+
+	isCorrectMatrixArray : function(m_array) {
+		if(m_array.length === 0) {
+			return false;
+		}
+		const num = m_array[0].length;
+		if(num === 0) {
+			return false;
+		}
+		for(let i = 1; i < m_array.length; i++) {
+			if(m_array[i].length !== num) {
+				return false;
+			}
+		}
+		return true;
+	}
+};
+
+class Matrix {
+	constructor() {
+		let x = null;
+		if(arguments.length === 1) {
+			const y = arguments[0];
+			if(y instanceof Matrix) {
+				x = [];
+				for(let i = 0; i < y.row_length; i++) {
+					x[i] = [];
+					for(let j = 0; j < y.column_length; j++) {
+						x[i][j] = y[i][j];
+					}
+				}
+			}
+			else if(y instanceof Complex) {
+				x = [y];
+			}
+			else if(y instanceof Array) {
+				x = [];
+				for(let row_count = 0; row_count < y.length; row_count++) {
+					const row = y[row_count];
+					if(row instanceof Complex) {
+						x[row_count] = row;
+					}
+					else if(row instanceof Array) {
+						const rows_array = [];
+						for(let col_count = 0; col_count < row.length; col_count++) {
+							const column = row[col_count];
+							if(column instanceof Complex) {
+								rows_array[col_count] = column;
+							}
+							else {
+								rows_array[col_count] = new Complex(column);
+							}
+						}
+						x[row_count] = rows_array;
+					}
+					else {
+						x[row_count] = new Complex(row);
+					}
+				}
+			}
+			else if(typeof y === "string" || y instanceof String) {
+				x = ConstructorTool.toMatrixFromString(y);
+			}
+			else if(y instanceof Object && y.toString) {
+				x = ConstructorTool.toMatrixFromString(y.toString());
+			}
+			else {
+				x = [new Complex(y)];
+			}
+		}
+		if(!ConstructorTool.isCorrectMatrixArray(x)) {
+			throw "IllegalArgumentException";
+		}
+		this.x = x;
+		this.row_length = this.x.length;
+		this.column_length = this.x[0].length;
+		this.string_cash = null;
+	}
+
+	_each(eachfunc) {
+		// 行優先ですべての値に対して指定した関数を実行する
+		for(let i = 0; i < this.row_length; i++) {
+			const row = this.x[i];
+			for(let j = 0; j < this.column_length; j++) {
+				eachfunc(row[j], i, j);
+			}
+		}
+	}
+
+	clone() {
+		return new Matrix(this.x);
+	}
+
+	get scalar() {
+		return this.x[0][0];
+	}
+
+	static createConstMatrix() {
+		if((arguments.length === 1) && (arguments[0] instanceof Complex)) {
+			return arguments[0];
+		}
+		else {
+			return new Matrix(...arguments);
+		}
+	}
+
+	createMatrixDoEachCalculation(eachfunc) {
+		const x = [];
+		for(let i = 0; i < this.row_length; i++) {
+			const row = this.x[i];
+			x[i] = [];
+			for(let j = 0; j < this.column_length; j++) {
+				x[i][j] = eachfunc(row[j], i, j);
+			}
+		}
+		return new Matrix(x);
+	}
+	
+	toString() {
+		if(this.string_cash) {
+			return this.string_cash;
+		}
+		const exp_turn_point = 9;
+		const exp_turn_num = Math.pow(10, exp_turn_point);
+		const exp_point = 4;
+		let isDrawImag = false;
+		let isDrawExp = false;
+
+		// 表示方法の確認
+		this._each(
+			function(num) {
+				if(!num.isReal()) {
+					isDrawImag = true;
+				}
+				if(Math.abs(num._re) >= exp_turn_num) {
+					isDrawExp = true;
+				}
+				if(Math.abs(num._im) >= exp_turn_num) {
+					isDrawExp = true;
+				}
+			}
+		);
+
+		const draw_buff = [];
+
+		// 数値を文字列にする。なお、eの桁を3桁にする
+		const toStrFromFloat = function(text) {
+			if(!isDrawExp) {
+				return text.toFixed();
+			}
+			const str = text.toExponential(exp_point);
+			const split = str.split("e");
+			let exp_text = split[1];
+			if(exp_text.length === 2) {
+				exp_text = exp_text.substr(0, 1) + "00" + exp_text.substr(1);
+			}
+			else if(exp_text.length === 3) {
+				exp_text = exp_text.substr(0, 1) + "0" + exp_text.substr(1);
+			}
+			return split[0] + "e" + exp_text;
+		};
+
+		// 右寄せ用関数
+		const right = function(text, length) {
+			const space = "                                        ";
+			return space.substr(0, length - text.length) + text;
+		};
+		
+		let str_max = 0;
+
+		// 文字列データを作成
+		this._each(
+			function(num) {
+				const data = {};
+				let real = num._re;
+				data.re_sign = real < 0 ? "-" : " ";
+				real = Math.abs(real);
+				data.re_str = toStrFromFloat(real);
+				str_max = Math.max(str_max, data.re_str.length + 1);
+				if(isDrawImag) {
+					let imag = num._im;
+					data.im_sign = imag < 0 ? "-" : "+";
+					imag = Math.abs(imag);
+					data.im_str = toStrFromFloat(imag);
+					str_max = Math.max(str_max, data.im_str.length + 1);
+				}
+				draw_buff.push(data);
+			}
+		);
+
+		// 出直用文字列の作成
+		const output = [];
+		const that = this;
+		this._each(
+			function(num, i, j) {
+				const data = draw_buff.shift();
+				let text = right(data.re_sign + data.re_str, str_max);
+				if(isDrawImag) {
+					text += " " + data.im_sign + right(data.im_str, str_max) + "i";
+				}
+				output.push(text);
+				output.push((j < that.column_length - 1) ? " " : "\n");
+			}
+		);
+
+		this.string_cash = output.join("");
+
+		return this.string_cash;
+	}
+
+	isSquareMatrix() {
+		return this.row_length === this.column_length;
+	}
+
+	isScalar() {
+		return this.row_length === 1 && this.column_length == 1;
+	}
+
+
+}
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+const SMath = {
 	
 	Complex : Complex,
-	Matrix : Matrix,
+	Matrix : Matrix
+
+};
+
+/**
+ * The script is part of SenkoJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The zlib/libpng License https://opensource.org/licenses/Zlib
+ */
+
+const MathX = {
+	
 	BigDecimal : BigDecimal,
 	BigInteger : BigInteger,
-	Random : Random
+	Random : Random,
+	SMath : SMath
 
 };
 
@@ -15396,7 +15476,7 @@ Senko.Color = Color;
 Senko.File = File$1;
 Senko.HashMap = HashMap;
 Senko.format = Format.format;
-Senko.Number = SNumber;
+Senko.MathX = MathX;
 Senko.Device = Device;
 Senko.ImageProcessing = ImageProcessing;
 Senko.SComponent = SComponent;

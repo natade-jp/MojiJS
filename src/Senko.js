@@ -13,7 +13,7 @@ import Color from "./basic/Color.js";
 import File from "./basic/File.js";
 import HashMap from "./basic/HashMap.js";
 import Format from "./basic/Format.js";
-import SNumber from "./math/SNumber.js";
+import MathX from "./mathx/MathX.js";
 
 import Device from "./device/Device.js";
 import ImageProcessing from "./graphics/ImageProcessing.js";
@@ -71,7 +71,7 @@ Senko.Color = Color;
 Senko.File = File;
 Senko.HashMap = HashMap;
 Senko.format = Format.format;
-Senko.Number = SNumber;
+Senko.MathX = MathX;
 Senko.Device = Device;
 Senko.ImageProcessing = ImageProcessing;
 Senko.SComponent = SComponent;

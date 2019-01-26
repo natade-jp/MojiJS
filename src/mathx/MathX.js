@@ -8,20 +8,18 @@
  *  The zlib/libpng License https://opensource.org/licenses/Zlib
  */
 
-import Complex from "./number/Complex.js";
-import Matrix from "./number/Matrix.js";
 import BigDecimal from "./basic/BigDecimal.js";
 import BigInteger from "./basic/BigInteger.js";
 import Random from "./basic/Random.js";
+import SMath from "./smath/SMath.js";
 
-const SNumber = {
+const MathX = {
 	
-	Complex : Complex,
-	Matrix : Matrix,
 	BigDecimal : BigDecimal,
 	BigInteger : BigInteger,
-	Random : Random
+	Random : Random,
+	SMath : SMath
 
 };
 
-export default SNumber;
+export default MathX;
