@@ -3,10 +3,11 @@ import S3 from "../../libs/SenkoS3.js";
 
 const SComponent = Senko.SComponent;
 const Device = Senko.Device;
+const Log = Senko.Log;
 
 const testMath = function() {
 	
-	Senko.println("Math のサンプル");
+	Log.println("Math のサンプル");
 	
 	const m4 = new S3.Matrix(
 		3, -2, -6, 4,
@@ -15,17 +16,17 @@ const testMath = function() {
 		2, -3, -5, 8
 	);
 	
-	Senko.println("行列を作成");
-	Senko.println(m4);
+	Log.println("行列を作成");
+	Log.println(m4);
 	
-	Senko.println("4x4行列の行列式");
-	Senko.println(m4.det4());
+	Log.println("4x4行列の行列式");
+	Log.println(m4.det4());
 	
-	Senko.println("4x4行列の逆行列");
-	Senko.println(m4.inverse4());
+	Log.println("4x4行列の逆行列");
+	Log.println(m4.inverse4());
 	
-	Senko.println("行列の掛け算");
-	Senko.println(m4.mul(m4));
+	Log.println("行列の掛け算");
+	Log.println(m4.mul(m4));
 	
 	const m3 = new S3.Matrix(
 		1, 2, 1,
@@ -33,11 +34,11 @@ const testMath = function() {
 		1, 1, 2
 	);
 	
-	Senko.println("3x3行列の行列式");
-	Senko.println(m3.det3());
+	Log.println("3x3行列の行列式");
+	Log.println(m3.det3());
 	
-	Senko.println("3x3行列の逆行列");
-	Senko.println(m3.inverse3());
+	Log.println("3x3行列の逆行列");
+	Log.println(m3.inverse3());
 	
 };
 
@@ -46,7 +47,7 @@ const main = function(args) {
 	
 	testMath();
 
-	Senko.println("S3 クラスのサンプル");
+	Log.println("S3 クラスのサンプル");
 	
 	// 縦スクロール防止
 	Device.Tools.noScroll();
@@ -71,7 +72,7 @@ const main = function(args) {
 		sys.setSystemMode(S3.SYSTEM_MODE.OPEN_GL);
 		// s3.setSystemMode(S3.SYSTEM_MODE.DIRECT_X);
 
-		Senko.println("json形式での読み書きのテスト");
+		Log.println("json形式での読み書きのテスト");
 		const meshdata = {
 			Indexes:{
 				body:[
@@ -89,15 +90,15 @@ const main = function(args) {
 			]
 		};
 		let mesh;
-		Senko.println(".json");
+		Log.println(".json");
 		mesh = S3.MeshLoader.inputData(sys, meshdata, S3.MESH_TYPE.JSON);
-		Senko.println(S3.MeshLoader.outputData(mesh, S3.MESH_TYPE.JSON));
+		Log.println(S3.MeshLoader.outputData(mesh, S3.MESH_TYPE.JSON));
 
-		Senko.println("MQOでの出力テスト");
-		Senko.println(".mqo");
-		Senko.println(S3.MeshLoader.outputData(mesh, S3.MESH_TYPE.MQO));
+		Log.println("MQOでの出力テスト");
+		Log.println(".mqo");
+		Log.println(S3.MeshLoader.outputData(mesh, S3.MESH_TYPE.MQO));
 
-		Senko.println("MQOでの入力テスト");
+		Log.println("MQOでの入力テスト");
 		mesh = S3.MeshLoader.inputData(sys, "../resource/teapot.mqo", S3.MESH_TYPE.MQO);
 
 		const model = sys.createModel();

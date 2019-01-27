@@ -2,6 +2,7 @@ import Senko from "../../libs/Senko.js";
 
 const SComponent = Senko.SComponent;
 const ImageProcessing = Senko.ImageProcessing;
+const Log = Senko.Log;
 
 const testFileLoad = function(panel) {
 	
@@ -22,7 +23,7 @@ const testFileLoad = function(panel) {
 		canvas.putImage(
 			file[0],
 			function() {
-				Senko.println("ロード完了");
+				Log.println("ロード完了");
 			}
 		);
 	});
@@ -33,7 +34,7 @@ const testFileLoad = function(panel) {
 		imagepanel.putImage(
 			canvas,
 			function() {
-				Senko.println("描写完了");
+				Log.println("描写完了");
 			}
 		);
 	});
@@ -377,7 +378,7 @@ function testEtc(panel) {
 
 const main = function() {
 	
-	Senko.println("ImageProcessing クラスのサンプル");
+	Log.println("ImageProcessing クラスのサンプル");
 	
 	// パネルを作って、指定した ID の要素内に入れる。
 	const mainpanel = new SComponent.Panel();

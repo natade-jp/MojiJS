@@ -3,6 +3,7 @@ import S3 from "../../libs/SenkoS3.js";
 
 const SComponent = Senko.SComponent;
 const Device = Senko.Device;
+const Log = Senko.Log;
 
 class S3DGLTest {
 
@@ -123,14 +124,14 @@ const createOperationPanel = function() {
 	loadbutton.putMe(filebox, SComponent.PUT_TYPE.NEWLINE);
 	loadbutton.addListener(function () {
 		const filename = filebox.getSelectedItem();
-		Senko.println(filename);
+		Log.println(filename);
 		gl.setModel(filename);
 	});
 };
 
 const main = function() {
 	
-	Senko.println("S3DGL クラスのサンプル");
+	Log.println("S3DGL クラスのサンプル");
 	
 	// 縦スクロール防止
 	Device.Tools.noScroll();

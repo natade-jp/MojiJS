@@ -2,10 +2,11 @@
 
 const SComponent = Senko.SComponent;
 const File = Senko.File;
+const Log = Senko.Log;
 
 const main = function() {
 	
-	Senko.println("File クラスのサンプル");
+	Log.println("File クラスのサンプル");
 	
 	const panel = new SComponent.Panel();
 	panel.putMe("test_space", SComponent.PUT_TYPE.IN);
@@ -14,24 +15,24 @@ const main = function() {
 	const slCanvas = new SComponent.Canvas();
 	slCanvas.putMe(slLabel, SComponent.PUT_TYPE.NEWLINE);
 	
-	Senko.println("ファイルの情報");
+	Log.println("ファイルの情報");
 	const file = new File("../resource/sampletext.txt");
-	Senko.println(file.getAbsolutePath());
-	Senko.println(file.getName());
-	Senko.println(file.getParent());
-	Senko.println(file.getExtensionName());
-	Senko.println("ファイルをロードする");
+	Log.println(file.getAbsolutePath());
+	Log.println(file.getName());
+	Log.println(file.getParent());
+	Log.println(file.getExtensionName());
+	Log.println("ファイルをロードする");
 	file.download(function(file) {
-		Senko.println("[" + file.getName() + "] ダウンロード完了");
-		Senko.println(file.getText());
+		Log.println("[" + file.getName() + "] ダウンロード完了");
+		Log.println(file.getText());
 	});
 	
 	const fText = new File("../resource/sampletext.txt");
 	const fImage = new File("../resource/sampleimage.png");
 	File.downloadFileList([fText, fImage], function() {
-		Senko.println("[" + fText.getName() + "] ダウンロード完了");
-		Senko.println("[" + fImage.getName() + "] ダウンロード完了");
-		Senko.println("テキストと画像を同時に書き換えます！");
+		Log.println("[" + fText.getName() + "] ダウンロード完了");
+		Log.println("[" + fImage.getName() + "] ダウンロード完了");
+		Log.println("テキストと画像を同時に書き換えます！");
 		slLabel.setText(fText.getText());
 		slCanvas.putImage(fImage.getImage());
 	});

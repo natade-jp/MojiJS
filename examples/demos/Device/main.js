@@ -3,10 +3,11 @@ import Senko from "../../libs/Senko.js";
 const Color = Senko.Color;
 const SComponent = Senko.SComponent;
 const Device = Senko.Device;
+const Log = Senko.Log;
 
 const main = function() {
 	
-	Senko.println("InputDevice クラスのサンプル");
+	Log.println("InputDevice クラスのサンプル");
 	
 	// 縦スクロール防止
 	Device.Tools.noScroll();
@@ -28,14 +29,14 @@ const main = function() {
 	const checkMouse = function() {
 		const data = new Device.Touch();
 		mouse.pickInput(data);
-		Senko.println("time[" + (times++) + "]");
-		Senko.println("position      "		+ data.position.x + "," + data.position.y);
-		Senko.println("wheelrotation "		+ data.wheelrotation);
-		Senko.println("draggedL       "	+ data.left.dragged.x	+ "," + data.left.dragged.y);
-		Senko.println("draggedR       "	+ data.right.dragged.x	+ "," + data.right.dragged.y);
-		Senko.println("ispressed  "		+ data.left.switch.ispressed	+ "," + data.right.switch.ispressed		+ "," + data.center.switch.ispressed);
-		Senko.println("isreleased "		+ data.left.switch.isreleased	+ "," + data.right.switch.isreleased	+ "," + data.center.switch.isreleased);
-		Senko.println("istyped    "		+ data.left.switch.istyped		+ "," + data.right.switch.istyped		+ "," + data.center.switch.istyped);
+		Log.println("time[" + (times++) + "]");
+		Log.println("position      "		+ data.position.x + "," + data.position.y);
+		Log.println("wheelrotation "		+ data.wheelrotation);
+		Log.println("draggedL       "	+ data.left.dragged.x	+ "," + data.left.dragged.y);
+		Log.println("draggedR       "	+ data.right.dragged.x	+ "," + data.right.dragged.y);
+		Log.println("ispressed  "		+ data.left.switch.ispressed	+ "," + data.right.switch.ispressed		+ "," + data.center.switch.ispressed);
+		Log.println("isreleased "		+ data.left.switch.isreleased	+ "," + data.right.switch.isreleased	+ "," + data.center.switch.isreleased);
+		Log.println("istyped    "		+ data.left.switch.istyped		+ "," + data.right.switch.istyped		+ "," + data.center.switch.istyped);
 		let color;
 		const ispressed = data.left.switch.ispressed || data.right.switch.ispressed || data.center.switch.ispressed;
 		if(data.left.switch.ispressed) {

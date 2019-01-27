@@ -1,26 +1,27 @@
 import Senko from "../../libs/Senko.js";
 
 const Random = Senko.MathX.Random;
+const Log = Senko.Log;
 
 const main = function() {
 
-	Senko.println("Random クラスのサンプル(使い方はJavaと同じ)");
+	Log.println("Random クラスのサンプル(使い方はJavaと同じ)");
 	
-	Senko.println("int型の乱数を 10個出力する");
+	Log.println("int型の乱数を 10個出力する");
 	for(let i = 0;i < 10; i++) {
-		Senko.println((new Random()).nextInt());
+		Log.println((new Random()).nextInt());
 	}
 	
 	const r = new Random();
 
-	Senko.println("乱数 [0, 1) 10個出力する");
+	Log.println("乱数 [0, 1) 10個出力する");
 	for(let i = 0;i < 10; i++) {
-		Senko.println(i + "\t" +r.nextDouble());
+		Log.println(i + "\t" +r.nextDouble());
 	}
 
-	Senko.println("乱数 [0, 10) を10個出力する");
+	Log.println("乱数 [0, 10) を10個出力する");
 	for(let i = 0;i < 10; i++) {
-		Senko.println(i + "\t" +r.nextInt(10));
+		Log.println(i + "\t" +r.nextInt(10));
 	}
 	
 	const loop = 1 << 18;
@@ -29,9 +30,9 @@ const main = function() {
 		sum += r.nextDouble();
 	}
 	const average = sum / loop;
-	Senko.println(loop+"回ランダム→平均値\t"+average);
+	Log.println(loop+"回ランダム→平均値\t"+average);
 
-	Senko.println("初期化後の1つ目の乱数について");
+	Log.println("初期化後の1つ目の乱数について");
 	let min = 1;
 	let max = -1;
 	for(let i = 0; i < 1000; ++i){
@@ -41,7 +42,7 @@ const main = function() {
 		if(x < min) min = x;
 	}
 
-	Senko.println("最小値 = " + min + ", 最大値 = " + max);
+	Log.println("最小値 = " + min + ", 最大値 = " + max);
 
 };
 

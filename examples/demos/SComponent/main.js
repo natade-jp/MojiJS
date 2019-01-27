@@ -1,12 +1,13 @@
 import Senko from "../../libs/Senko.js";
 
 const SComponent = Senko.SComponent;
+const Log = Senko.Log;
 
 const main = function() {
 	
-	Senko.println("SComponent クラスのサンプル");
+	Log.println("SComponent クラスのサンプル");
 	
-	Senko.println("HTML での部品用のクラスです。");
+	Log.println("HTML での部品用のクラスです。");
 	
 	// パネルを作って、指定した ID の要素内に入れる。
 	const panel = new SComponent.Panel();
@@ -27,8 +28,8 @@ const main = function() {
 	// obj3 のサイズを指定する
 	label3.setUnit(SComponent.UNIT_TYPE.EM);
 	label3.setSize(30, 2);
-	Senko.println("width " + label3.getWidth() + label3.getUnit());
-	Senko.println("height " + label3.getHeight() + label3.getUnit());
+	Log.println("width " + label3.getWidth() + label3.getUnit());
+	Log.println("height " + label3.getHeight() + label3.getUnit());
 	
 	// obj1 の内容を変更する
 	label1.setText("【" + label1.getText() + "】");
@@ -101,7 +102,7 @@ const main = function() {
 	groupbox.put(fileloadbtn, SComponent.PUT_TYPE.IN);
 	fileloadbtn.addListener(function(file) {
 		for(let i = 0; i < file.length; i++) {
-			Senko.println(file[i].name + " " + file[i].size + "byte");
+			Log.println(file[i].name + " " + file[i].size + "byte");
 		}
 	});
 	
@@ -129,19 +130,19 @@ const main = function() {
 	combobox.setWidth(12);
 	// getText は配列で取得ができる
 	const selectitem = combobox.getText();
-	Senko.println(selectitem[0]);
-	Senko.println(selectitem[1]);
+	Log.println(selectitem[0]);
+	Log.println(selectitem[1]);
 	// 2番目を選択する
 	combobox.setSelectedItem("test2");
 	combobox.addListener(function () {
-		Senko.println("ComboBox " + combobox.getSelectedItem());
+		Log.println("ComboBox " + combobox.getSelectedItem());
 	});
 	
 	// CheckBox
 	const checkbox = new SComponent.CheckBox("チェックボックス");
 	combobox.put(checkbox, SComponent.PUT_TYPE.NEWLINE);
 	checkbox.addListener(function () {
-		Senko.println("CheckBox " + checkbox.isChecked());
+		Log.println("CheckBox " + checkbox.isChecked());
 	});
 	
 	// Slider
@@ -150,7 +151,7 @@ const main = function() {
 	slider.setMinorTickSpacing(10);
 	slider.setMajorTickSpacing(50);
 	slider.addListener(function () {
-		Senko.println("" + slider.getValue());
+		Log.println("" + slider.getValue());
 	});
 	
 	const imagepanel = new SComponent.ImagePanel();
@@ -161,7 +162,7 @@ const main = function() {
 	const picker = new SComponent.ColorPicker();
 	imagepanel.put(picker, SComponent.PUT_TYPE.NEWLINE);
 	picker.addListener(function () {
-		Senko.println("ColorPicker " + picker.getColor());
+		Log.println("ColorPicker " + picker.getColor());
 	});
 	
 };
