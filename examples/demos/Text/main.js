@@ -226,6 +226,23 @@ const testCharacterAnalyser = function() {
 	Log.println("");
 };
 
+const testStringComparator = function() {
+	const a = ["3", "2", "10", "4", "2-4", "0-1", "テスト", "てすと２", "てスと01"];
+	Log.println("");
+	Log.println("◆◆StringComparator クラスのサンプル");
+
+	Log.println("標準ソート");
+	a.sort();
+	Log.println(a.join(", "));
+	Log.println("通常文字列ソート");
+	a.sort(Text.COMPARE.DEFAULT);
+	Log.println(a.join(", "));
+	Log.println("自然順ソート (Natural Sort)");
+	a.sort(Text.COMPARE.NATURAL);
+	Log.println(a.join(", "));
+
+};
+
 const main = function() {
 	
 	let x;
@@ -244,6 +261,7 @@ const main = function() {
 	testUnicode();
 	testCP932();
 	testCharacterAnalyser();
+	testStringComparator();
 
 };
 

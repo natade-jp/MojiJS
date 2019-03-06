@@ -143,15 +143,7 @@ export default class ArrayList {
 		let compare;
 		if(arguments.length === 0) {
 			// 比較関数
-			compare = function(a, b) {
-				if(a === b) {
-					return(0);
-				}
-				if(typeof a === typeof b) {
-					return(a < b ? -1 : 1);
-				}
-				return ((typeof a < typeof b) ? -1 : 1);
-			};
+			compare = ArrayList.COMPARE.DEFAULT;
 		}
 		else {
 			compare = compareFunction;
@@ -188,3 +180,14 @@ export default class ArrayList {
 	}
 
 }
+
+ArrayList.COMPARE = {};
+ArrayList.COMPARE.DEFAULT = function(a, b) {
+	if(a === b) {
+		return 0;
+	}
+	if(typeof a === typeof b) {
+		return (a < b ? -1 : 1);
+	}
+	return ((typeof a < typeof b) ? -1 : 1);
+};

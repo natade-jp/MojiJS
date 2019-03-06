@@ -15,6 +15,7 @@ import SJIS2004 from "./encode/SJIS2004.js";
 import Japanese from "./language/Japanese.js";
 import Programming from "./language/Programming.js";
 import CharacterAnalyser from "./tools/CharacterAnalyser.js";
+import StringComparator from "./tools/StringComparator.js";
 
 const Text = {
 	
@@ -95,7 +96,13 @@ const Text = {
 	removeComment : Programming.removeComment,
 	
 	CharacterAnalyser : CharacterAnalyser,
-	getCharacterAnalysisData : CharacterAnalyser.getCharacterAnalysisData
+	getCharacterAnalysisData : CharacterAnalyser.getCharacterAnalysisData,
+	StringComparator : StringComparator,
+
+	COMPARE : {
+		DEFAULT : StringComparator.DEFAULT,
+		NATURAL : StringComparator.NATURAL
+	}
 	
 };
 
