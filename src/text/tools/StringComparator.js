@@ -18,11 +18,11 @@ import Unicode from "../encode/Unicode.js";
  */
 const toNormalizeString = function(string_data) {
 	let normalize_text = null;
-	// 全角英数記号を半角小文字に変換
-	normalize_text = Japanese.toHalfWidthAsciiCode(string_data).toLowerCase();
-	// 半角カタカナを全角カタカナに変換
-	normalize_text = Japanese.toFullWidthKana(normalize_text);
-	// 全角カタカナを全角ひらがなに変換
+	// NORM_IGNOREWIDTH 半角全角区別しない（半角英数記号と全角カタカナに統一）
+	normalize_text = Japanese.toHalfWidthAsciiCode(Japanese.toHalfWidthAsciiCode(string_data));
+	// LCMAP_LOWERCASE 半角に統一
+	normalize_text = normalize_text.toLowerCase();
+	// NORM_IGNOREKANATYPE ひらがなとカタカナを区別しない
 	normalize_text = Japanese.toHiragana(normalize_text);
 	// NORM_IGNORENONSPACE 簡単に場所をとらない記号を削除
 	normalize_text = normalize_text.replace(/[゛゜]/g, "");
