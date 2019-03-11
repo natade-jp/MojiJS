@@ -320,11 +320,11 @@ export default class Matrix {
 		let str_max = 0;
 		const draw_buff = [];
 		// 数値データを文字列にする関数（eの桁がある場合は中身は3桁にする）
-		const toStrFromFloat = function(text) {
+		const toStrFromFloat = function(number) {
 			if(!isDrawExp) {
-				return text.toFixed();
+				return number.toFixed(exp_point);
 			}
-			const str = text.toExponential(exp_point);
+			const str = number.toExponential(exp_point);
 			const split = str.split("e");
 			let exp_text = split[1];
 			if(exp_text.length === 2) {
@@ -470,6 +470,81 @@ export default class Matrix {
 				y[row][col] = sum;
 			}
 		}
+		return new Matrix(y);
+	}
+
+	inv() {
+		if(this.isScalar()) {
+			return new Matrix(Complex.ONE.div(this.matrix_array[0][0]));
+		}
+		if(!this.isSquareMatrix()) {
+			throw "IllegalArgumentMatrixException";
+		}
+		const len = this.column_length;
+		
+		// 初期値の設定
+		const long_matrix_array = [];
+		const long_length = len * 2;
+		for(let i = 0; i < len; i++) {
+			long_matrix_array[i] = [];
+			for(let j = 0; j < len; j++) {
+				long_matrix_array[i][j] = this.matrix_array[i][j];
+			}
+			for(let j = 0; j < len; j++) {
+				long_matrix_array[i][len + j] = i === j ? Complex.ONE : Complex.ZERO;
+			}
+		}
+
+		//前進消去
+		for(let k = 0; k < len; k++) {
+			//ピポットの選択
+			{
+				let max_number = Complex.ZERO;
+				let max_position = k;
+				//絶対値が大きいのを調べる
+				for(let j = k, i = k; i < len; i++) {
+					if(max_number.compareTo(long_matrix_array[i][j]) > 0) {
+						max_number = long_matrix_array[i][j];
+						max_position = i;
+					}
+				}
+				//交換を行う
+				if(max_position !== k) {
+					const swap = long_matrix_array[k];
+					long_matrix_array[k] = long_matrix_array[max_position];
+					long_matrix_array[max_position] = swap;
+				}
+			}
+			//正規化
+			{
+				//ピポット
+				const normalize_value = long_matrix_array[k][k].inv();
+				for(let i = k, j = k; j < long_length; j++) {
+					long_matrix_array[i][j] = long_matrix_array[i][j].mul(normalize_value);
+				}
+			}
+			//消去
+			for(let i = 0;i < len; i++) {
+				if(i === k) {
+					continue;
+				}
+				const temp = long_matrix_array[i][k];
+				for(let j = k; j < long_length; j++)
+				{
+					long_matrix_array[i][j] = long_matrix_array[i][j].sub(long_matrix_array[k][j].mul(temp));
+				}
+			}
+		}
+
+		const y = [];
+		//右の列を抜き取る
+		for(let i = 0; i < len; i++) {
+			y[i] = [];
+			for(let j = 0; j < len; j++) {
+				y[i][j] = long_matrix_array[i][len + j];
+			}
+		}
+
 		return new Matrix(y);
 	}
 
