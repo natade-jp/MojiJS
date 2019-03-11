@@ -94,8 +94,6 @@ const ConstructorTool = {
 			}
 			rows_array[i] = num;
 		}
-
-
 		return rows_array;
 	},
 
@@ -201,27 +199,27 @@ const ConstructorTool = {
 
 export default class Matrix {
 	constructor() {
-		let x = null;
+		let matrix_array = null;
 		if(arguments.length === 1) {
 			const y = arguments[0];
 			if(y instanceof Matrix) {
-				x = [];
+				matrix_array = [];
 				for(let i = 0; i < y.row_length; i++) {
-					x[i] = [];
+					matrix_array[i] = [];
 					for(let j = 0; j < y.column_length; j++) {
-						x[i][j] = y[i][j];
+						matrix_array[i][j] = y[i][j];
 					}
 				}
 			}
 			else if(y instanceof Complex) {
-				x = [y];
+				matrix_array = [[y]];
 			}
 			else if(y instanceof Array) {
-				x = [];
+				matrix_array = [];
 				for(let row_count = 0; row_count < y.length; row_count++) {
 					const row = y[row_count];
 					if(row instanceof Complex) {
-						x[row_count] = row;
+						matrix_array[row_count] = row;
 					}
 					else if(row instanceof Array) {
 						const rows_array = [];
@@ -234,36 +232,36 @@ export default class Matrix {
 								rows_array[col_count] = new Complex(column);
 							}
 						}
-						x[row_count] = rows_array;
+						matrix_array[row_count] = rows_array;
 					}
 					else {
-						x[row_count] = new Complex(row);
+						matrix_array[row_count] = new Complex(row);
 					}
 				}
 			}
 			else if(typeof y === "string" || y instanceof String) {
-				x = ConstructorTool.toMatrixFromString(y);
+				matrix_array = ConstructorTool.toMatrixFromString(y);
 			}
 			else if(y instanceof Object && y.toString) {
-				x = ConstructorTool.toMatrixFromString(y.toString());
+				matrix_array = ConstructorTool.toMatrixFromString(y.toString());
 			}
 			else {
-				x = [new Complex(y)];
+				matrix_array = [[new Complex(y)]];
 			}
 		}
-		if(!ConstructorTool.isCorrectMatrixArray(x)) {
+		if(!ConstructorTool.isCorrectMatrixArray(matrix_array)) {
 			throw "IllegalArgumentException";
 		}
-		this.x = x;
-		this.row_length = this.x.length;
-		this.column_length = this.x[0].length;
+		this.matrix_array = matrix_array;
+		this.row_length = this.matrix_array.length;
+		this.column_length = this.matrix_array[0].length;
 		this.string_cash = null;
 	}
 
 	_each(eachfunc) {
 		// 行優先ですべての値に対して指定した関数を実行する
 		for(let i = 0; i < this.row_length; i++) {
-			const row = this.x[i];
+			const row = this.matrix_array[i];
 			for(let j = 0; j < this.column_length; j++) {
 				eachfunc(row[j], i, j);
 			}
@@ -271,15 +269,15 @@ export default class Matrix {
 	}
 
 	clone() {
-		return new Matrix(this.x);
+		return new Matrix(this.matrix_array);
 	}
 
 	get scalar() {
-		return this.x[0][0];
+		return this.matrix_array[0][0];
 	}
 
 	static createConstMatrix() {
-		if((arguments.length === 1) && (arguments[0] instanceof Complex)) {
+		if((arguments.length === 1) && (arguments[0] instanceof Matrix)) {
 			return arguments[0];
 		}
 		else {
@@ -288,15 +286,9 @@ export default class Matrix {
 	}
 
 	createMatrixDoEachCalculation(eachfunc) {
-		const x = [];
-		for(let i = 0; i < this.row_length; i++) {
-			const row = this.x[i];
-			x[i] = [];
-			for(let j = 0; j < this.column_length; j++) {
-				x[i][j] = eachfunc(row[j], i, j);
-			}
-		}
-		return new Matrix(x);
+		const output = this.clone();
+		output._each(eachfunc);
+		return output;
 	}
 	
 	toString() {
@@ -309,7 +301,7 @@ export default class Matrix {
 		let isDrawImag = false;
 		let isDrawExp = false;
 
-		// 表示方法の確認
+		// 行列を確認して表示するための表示方法の確認する
 		this._each(
 			function(num) {
 				if(!num.isReal()) {
@@ -324,9 +316,10 @@ export default class Matrix {
 			}
 		);
 
+		// 文字列データを作成とともに、最大の長さを記録する
+		let str_max = 0;
 		const draw_buff = [];
-
-		// 数値を文字列にする。なお、eの桁を3桁にする
+		// 数値データを文字列にする関数（eの桁がある場合は中身は3桁にする）
 		const toStrFromFloat = function(text) {
 			if(!isDrawExp) {
 				return text.toFixed();
@@ -342,16 +335,6 @@ export default class Matrix {
 			}
 			return split[0] + "e" + exp_text;
 		};
-
-		// 右寄せ用関数
-		const right = function(text, length) {
-			const space = "                                        ";
-			return space.substr(0, length - text.length) + text;
-		};
-		
-		let str_max = 0;
-
-		// 文字列データを作成
 		this._each(
 			function(num) {
 				const data = {};
@@ -371,7 +354,12 @@ export default class Matrix {
 			}
 		);
 
-		// 出直用文字列の作成
+		// 右寄せ用関数
+		const right = function(text, length) {
+			const space = "                                        ";
+			return space.substr(0, length - text.length) + text;
+		};
+		// 出力用文字列を作成する
 		const output = [];
 		const that = this;
 		this._each(
@@ -399,5 +387,90 @@ export default class Matrix {
 		return this.row_length === 1 && this.column_length == 1;
 	}
 
+	static _checkMatrixArrayErrorType1(M1, M2) {
+		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
+			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+			throw "IllegalArgumentMatrixException";
+		}
+	}
+
+	add() {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(...arguments);
+		Matrix._checkMatrixErrorType1(M1, M2);
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		const y = [];
+		const y_row_length = Math.max(M1.row_length, M2.row_length);
+		const y_column_length = Math.max(M1.column_length, M2.column_length);
+		for(let row = 0; row < y_row_length; row++) {
+			y[row] = [];
+			for(let col = 0; col < y_column_length; col++) {
+				y[row][col] = x1[row % M1.row_length][col % M1.column_length].add(x2[row % M2.row_length][col % M2.column_length]);
+			}
+		}
+		return new Matrix(y);
+	}
+
+	sub() {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(...arguments);
+		Matrix._checkMatrixErrorType1(M1, M2);
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		const y = [];
+		const y_row_length = Math.max(M1.row_length, M2.row_length);
+		const y_column_length = Math.max(M1.column_length, M2.column_length);
+		for(let row = 0; row < y_row_length; row++) {
+			y[row] = [];
+			for(let col = 0; col < y_column_length; col++) {
+				y[row][col] = x1[row % M1.row_length][col % M1.column_length].sub(x2[row % M2.row_length][col % M2.column_length]);
+			}
+		}
+		return new Matrix(y);
+	}
+
+	mul() {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(...arguments);
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		if(M1.isScalar() && M2.isScalar()) {
+			return new Matrix(x1.matrix_array[0][0].mul(x2.matrix_array[0][0]));
+		}
+		const y = [];
+		if(M1.isScalar()) {
+			for(let row = 0; row < M2.row_length; row++) {
+				y[row] = [];
+				for(let col = 0; col < M2.column_length; col++) {
+					y[row][col] = x1[0][0].mul(x2[row][col]);
+				}
+			}
+			return new Matrix(y);
+		}
+		else if(M2.isScalar()) {
+			for(let row = 0; row < M1.row_length; row++) {
+				y[row] = [];
+				for(let col = 0; col < M1.column_length; col++) {
+					y[row][col] = x1[row][col].mul(x2[0][0]);
+				}
+			}
+			return new Matrix(y);
+		}
+		if((M1.row_length !== M1.column_length) || (M2.row_length !== M1.column_length)) {
+			throw "IllegalArgumentMatrixException";
+		}
+		for(let row = 0; row < M1.row_length; row++) {
+			y[row] = [];
+			for(let col = 0; col < M1.column_length; col++) {
+				let sum = Complex.ZERO;
+				for(let i = 0; i < M1.row_length; i++) {
+					sum = sum.add(x1[row][i].mul(x2[i][col]));
+				}
+				y[row][col] = sum;
+			}
+		}
+		return new Matrix(y);
+	}
 
 }
