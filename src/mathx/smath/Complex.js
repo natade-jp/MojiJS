@@ -138,6 +138,20 @@ export default class Complex {
 		}
 	}
 
+	getDecimalPosition() {
+		// 小数点の桁を調べる
+		let point = 0;
+		let x = this;
+		for(let i = 0; i < 20; i++) {
+			if(x.isComplexInteger()) {
+				break;
+			}
+			x = x.mul(Complex.TEN);
+			point++;
+		}
+		return point;
+	}
+
 	toString() {
 		const formatG = function(x) {
 			let numstr = x.toPrecision(6);
@@ -288,7 +302,7 @@ export default class Complex {
 
 	/**
 	 * 今の値Aと、指定した値Bとを比較する
-	 * @returns {Number} A < B ? 1 : A === B ? 0 : -1
+	 * @returns {Number} A < B ? 1 : (A === B ? 0 : -1)
 	 */
 	compareTo() {
 		const x = Complex.createConstComplex(...arguments);
@@ -302,6 +316,16 @@ export default class Complex {
 		else {
 			return -1;
 		}
+	}
+
+	isInteger() {
+		return this.isReal() && (Math.abs(this._re - (this._re | 0)) < Number.EPSILON);
+	}
+
+	isComplexInteger() {
+		// 複素整数
+		return (Math.abs(this._re - (this._re | 0)) < Number.EPSILON) || 
+				(Math.abs(this._im - (this._im | 0)) < Number.EPSILON);
 	}
 
 	isZero() {
@@ -318,10 +342,6 @@ export default class Complex {
 	
 	isReal() {
 		return (Math.abs(this._im) < Number.EPSILON);
-	}
-
-	isInteger() {
-		return this.isReal() && this._re === (0 | this._re);
 	}
 
 	isNaN() {

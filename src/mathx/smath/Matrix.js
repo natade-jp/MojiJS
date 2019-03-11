@@ -300,6 +300,7 @@ export default class Matrix {
 		const exp_point = 4;
 		let isDrawImag = false;
 		let isDrawExp = false;
+		let draw_decimal_position = 0;
 
 		// 行列を確認して表示するための表示方法の確認する
 		this._each(
@@ -313,8 +314,13 @@ export default class Matrix {
 				if(Math.abs(num._im) >= exp_turn_num) {
 					isDrawExp = true;
 				}
+				draw_decimal_position = Math.max(draw_decimal_position, num.getDecimalPosition());
 			}
 		);
+
+		if(draw_decimal_position > 0) {
+			draw_decimal_position = exp_point + 1;
+		}
 
 		// 文字列データを作成とともに、最大の長さを記録する
 		let str_max = 0;
@@ -322,7 +328,7 @@ export default class Matrix {
 		// 数値データを文字列にする関数（eの桁がある場合は中身は3桁にする）
 		const toStrFromFloat = function(number) {
 			if(!isDrawExp) {
-				return number.toFixed(exp_point);
+				return number.toFixed(draw_decimal_position);
 			}
 			const str = number.toExponential(exp_point);
 			const split = str.split("e");
@@ -481,7 +487,7 @@ export default class Matrix {
 			throw "IllegalArgumentMatrixException";
 		}
 		const len = this.column_length;
-		
+		// ガウス・ジョルダン法
 		// 初期値の設定
 		const long_matrix_array = [];
 		const long_length = len * 2;
@@ -546,6 +552,37 @@ export default class Matrix {
 		}
 
 		return new Matrix(y);
+	}
+
+	div() {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(...arguments);
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		if(M1.isScalar() && M2.isScalar()) {
+			return new Matrix(x1.matrix_array[0][0].div(x2.matrix_array[0][0]));
+		}
+		const y = [];
+		if(M2.isScalar()) {
+			for(let row = 0; row < M1.row_length; row++) {
+				y[row] = [];
+				for(let col = 0; col < M1.column_length; col++) {
+					y[row][col] = x1[row][col].div(x2[0][0]);
+				}
+			}
+			return new Matrix(y);
+		}
+		if(M2.row_length === M2.column_length) {
+			return this.mul(M2.inv());
+		}
+		if(M1.column_length !== M2.column_length) {
+			throw "IllegalArgumentMatrixException";
+		}
+		
+		// 疑似逆行列
+		// return this.mul(M2.pinv());
+		// 未実装なのでエラー
+		throw "Unimplemented";
 	}
 
 }

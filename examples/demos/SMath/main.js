@@ -13,9 +13,11 @@ const main = function() {
 
 	Log.println(_("[1 2 + j; 3 4]").mul(_("[4 5; 7 8]")));
 
-	Log.println(_("[1 2 + j; 3 4]").mul(_(2)));
+	Log.println(_("[1 2 + j; 3 4]").mul(_(3)));
 
 	Log.println(_("[j 1 -1; -2 0 1; 0 2 1]").inv());
+
+	Log.println(_("[1 2;2 2]").div("[3 2;1 1]"));
 	
 };
 
