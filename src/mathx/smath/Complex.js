@@ -324,7 +324,7 @@ export default class Complex {
 
 	isComplexInteger() {
 		// 複素整数
-		return (Math.abs(this._re - (this._re | 0)) < Number.EPSILON) || 
+		return (Math.abs(this._re - (this._re | 0)) < Number.EPSILON) &&
 				(Math.abs(this._im - (this._im | 0)) < Number.EPSILON);
 	}
 
@@ -375,6 +375,11 @@ export default class Complex {
 
 	abs() {
 		return new Complex(this.norm);
+	}
+
+	conj() {
+		// 共役複素数
+		return new Complex(this._re, -this._im);
 	}
 
 	negate() {

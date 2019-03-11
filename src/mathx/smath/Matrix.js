@@ -260,10 +260,9 @@ export default class Matrix {
 
 	_each(eachfunc) {
 		// 行優先ですべての値に対して指定した関数を実行する
-		for(let i = 0; i < this.row_length; i++) {
-			const row = this.matrix_array[i];
-			for(let j = 0; j < this.column_length; j++) {
-				eachfunc(row[j], i, j);
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = 0; col < this.column_length; col++) {
+				eachfunc(this.matrix_array[row][col], row, col);
 			}
 		}
 	}
@@ -322,6 +321,7 @@ export default class Matrix {
 			draw_decimal_position = exp_point + 1;
 		}
 
+
 		// 文字列データを作成とともに、最大の長さを記録する
 		let str_max = 0;
 		const draw_buff = [];
@@ -369,14 +369,14 @@ export default class Matrix {
 		const output = [];
 		const that = this;
 		this._each(
-			function(num, i, j) {
+			function(num, row, col) {
 				const data = draw_buff.shift();
 				let text = right(data.re_sign + data.re_str, str_max);
 				if(isDrawImag) {
 					text += " " + data.im_sign + right(data.im_str, str_max) + "i";
 				}
 				output.push(text);
-				output.push((j < that.column_length - 1) ? " " : "\n");
+				output.push((col < that.column_length - 1) ? " " : "\n");
 			}
 		);
 
@@ -491,13 +491,11 @@ export default class Matrix {
 		// 初期値の設定
 		const long_matrix_array = [];
 		const long_length = len * 2;
-		for(let i = 0; i < len; i++) {
-			long_matrix_array[i] = [];
-			for(let j = 0; j < len; j++) {
-				long_matrix_array[i][j] = this.matrix_array[i][j];
-			}
-			for(let j = 0; j < len; j++) {
-				long_matrix_array[i][len + j] = i === j ? Complex.ONE : Complex.ZERO;
+		for(let row = 0; row < len; row++) {
+			long_matrix_array[row] = [];
+			for(let col = 0; col < len; col++) {
+				long_matrix_array[row][col] = this.matrix_array[row][col];
+				long_matrix_array[row][len + col] = row === col ? Complex.ONE : Complex.ZERO;
 			}
 		}
 
@@ -508,10 +506,10 @@ export default class Matrix {
 				let max_number = Complex.ZERO;
 				let max_position = k;
 				//絶対値が大きいのを調べる
-				for(let j = k, i = k; i < len; i++) {
-					if(max_number.compareTo(long_matrix_array[i][j]) > 0) {
-						max_number = long_matrix_array[i][j];
-						max_position = i;
+				for(let row = k, col = k; row < len; row++) {
+					if(max_number.compareTo(long_matrix_array[row][col]) > 0) {
+						max_number = long_matrix_array[row][col];
+						max_position = row;
 					}
 				}
 				//交換を行う
@@ -525,29 +523,29 @@ export default class Matrix {
 			{
 				//ピポット
 				const normalize_value = long_matrix_array[k][k].inv();
-				for(let i = k, j = k; j < long_length; j++) {
-					long_matrix_array[i][j] = long_matrix_array[i][j].mul(normalize_value);
+				for(let row = k, col = k; col < long_length; col++) {
+					long_matrix_array[row][col] = long_matrix_array[row][col].mul(normalize_value);
 				}
 			}
 			//消去
-			for(let i = 0;i < len; i++) {
-				if(i === k) {
+			for(let row = 0;row < len; row++) {
+				if(row === k) {
 					continue;
 				}
-				const temp = long_matrix_array[i][k];
-				for(let j = k; j < long_length; j++)
+				const temp = long_matrix_array[row][k];
+				for(let col = k; col < long_length; col++)
 				{
-					long_matrix_array[i][j] = long_matrix_array[i][j].sub(long_matrix_array[k][j].mul(temp));
+					long_matrix_array[row][col] = long_matrix_array[row][col].sub(long_matrix_array[k][col].mul(temp));
 				}
 			}
 		}
 
 		const y = [];
 		//右の列を抜き取る
-		for(let i = 0; i < len; i++) {
-			y[i] = [];
-			for(let j = 0; j < len; j++) {
-				y[i][j] = long_matrix_array[i][len + j];
+		for(let row = 0; row < len; row++) {
+			y[row] = [];
+			for(let col = 0; col < len; col++) {
+				y[row][col] = long_matrix_array[row][len + col];
 			}
 		}
 
@@ -579,10 +577,99 @@ export default class Matrix {
 			throw "IllegalArgumentMatrixException";
 		}
 		
-		// 疑似逆行列
+		// 疑似逆行列を使用するとよい
 		// return this.mul(M2.pinv());
 		// 未実装なのでエラー
 		throw "Unimplemented";
+	}
+
+	qr() {
+		// グラム・シュミットの正規直交化法を用いてQR分解を行う。
+		// 正方行列以外の直交化はハウスホルダーの方法を用いるとよいが技術不足で未実装
+		// http://www.math.meiji.ac.jp/~mk/labo/text/eigen-values-add/node16.html
+
+		if(!this.isSquareMatrix()) {
+			// ハウスホルダーの方法をとるといい
+			// 未実装なのでエラー
+			throw "Unimplemented";
+		}
+
+		const len = this.column_length;
+		const A = this.matrix_array;
+		const Q = [];
+		const R = [];
+		const a = [];
+		
+		for(let row = 0; row < len; row++) {
+			Q[row] = [];
+			R[row] = [];
+			for(let col = 0; col < len; col++) {
+				Q[row][col] = Complex.ZERO;
+				R[row][col] = Complex.ZERO;
+			}
+		}
+		for(let i = 0; i < len; i++) {
+			for(let j = 0; j < len; j++) {
+				a[j] = A[j][i];
+			}
+			if(i > 0) {
+				for(let j = 0; j < i; j++) {
+					for(let k = 0; k < len; k++) {
+						R[j][i] = R[j][i].add(Q[k][j].mul(A[k][i]));
+					}
+				}
+				for(let j = 0; j < i; j++) {
+					for(let k = 0; k < len; k++) {
+						a[k] = a[k].sub(R[j][i].mul(Q[k][j]));
+					}
+				}
+			}
+			for(let j = 0; j < len; j++) {
+				R[i][i] = R[i][i].add(a[j].mul(a[j]));
+			}
+			R[i][i] = Math.sqrt(R[i][i]);
+			for(let j = 0;j < len;j++) {
+				Q[j][i] = a[j].div(R[i][i]);
+			}
+		}
+
+		return {
+			Q : new Matrix(Q),
+			R : new Matrix(R),
+		};
+	}
+
+	conj() {
+		// 複素共役
+		const y = new Matrix(this);
+		y._each(
+			function(num, row, col) {
+				y[row][col] = num.conj();
+			}
+		);
+		return y;
+	}
+
+	transpose() {
+		// 転置行列
+		const y = [];
+		for(let col = 0; col < this.column_length; col++) {
+			y[col] = [];
+			for(let row = 0; row < this.row_length; row++) {
+				y[col][row] = this.matrix_array[row][col];
+			}
+		}
+		return new Matrix(y);
+	}
+
+	ctranspose() {
+		// エルミート転置行列
+		return this.transpose().conj();
+	}
+
+	dash() {
+		// X' = 転置行列を指す
+		return this.ctranspose();
 	}
 
 }

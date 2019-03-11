@@ -19,6 +19,12 @@ const main = function() {
 
 	Log.println(_("[1 2;2 2]").div("[3 2;1 1]"));
 	
+	let A = _("[1 2;3 4]").qr();
+	
+	Log.println(A.Q);
+	Log.println(A.R);
+	Log.println(A.Q.mul(A.R));
+
 };
 
 main();
