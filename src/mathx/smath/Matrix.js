@@ -405,6 +405,27 @@ export default class Matrix {
 		return this.string_cash;
 	}
 
+	equals() {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(...arguments);
+		if((M1.row_length !== M2.row_length) || (M1.column_length !== M2.column_length)) {
+			return false;
+		}
+		if((M1.row_length === 1) || (M1.column_length ===1)) {
+			return M1.scalar.equals(M2.scalar);
+		}
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = 0; col < this.column_length; col++) {
+				if(!x1[row][col].equals(x2[row][col])) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	isSquare() {
 		// 正方行列を判定
 		return this.row_length === this.column_length;
@@ -470,7 +491,7 @@ export default class Matrix {
 		// ランクが行列の次元と等しいかどうかで判定
 		// det(M) != 0 でもよいが、時間がかかる可能性があるので
 		// 誤差は自動で計算など本当はもうすこし良い方法を考える必要がある
-		return (this.rank(1.0e-10).scalar === this.row_length);
+		return (this.rank(1.0e-10).equals(this.row_length));
 	}
 
 	isSymmetric() {
@@ -542,14 +563,14 @@ export default class Matrix {
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
 		if(M1.isScalar() && M2.isScalar()) {
-			return new Matrix(x1.matrix_array[0][0].mul(x2.matrix_array[0][0]));
+			return new Matrix(x1.scalar.mul(x2.scalar));
 		}
 		const y = [];
 		if(M1.isScalar()) {
 			for(let row = 0; row < M2.row_length; row++) {
 				y[row] = [];
 				for(let col = 0; col < M2.column_length; col++) {
-					y[row][col] = x1[0][0].mul(x2[row][col]);
+					y[row][col] = M1.scalar.mul(x2[row][col]);
 				}
 			}
 			return new Matrix(y);
@@ -558,7 +579,7 @@ export default class Matrix {
 			for(let row = 0; row < M1.row_length; row++) {
 				y[row] = [];
 				for(let col = 0; col < M1.column_length; col++) {
-					y[row][col] = x1[row][col].mul(x2[0][0]);
+					y[row][col] = x1[row][col].mul(M2.scalar);
 				}
 			}
 			return new Matrix(y);
@@ -581,11 +602,20 @@ export default class Matrix {
 
 	inv() {
 		if(this.isScalar()) {
-			return new Matrix(Complex.ONE.div(this.matrix_array[0][0]));
+			return new Matrix(Complex.ONE.div(this.scalar));
 		}
 		if(!this.isSquare()) {
 			throw "IllegalArgumentMatrixException";
 		}
+		if(this.isDiagonal()) {
+			// 対角行列の場合は、対角成分のみ逆数をとる
+			const y = new Matrix(this);
+			for(let i = 0; i < y.row_length; i++) {
+				y.matrix_array[i][i] = y.matrix_array[i][i].inv();
+			}
+			return y;
+		}
+		// (ここで正規直交行列の場合なら、転置させるなど入れてもいい？判定はできないけども)
 		const len = this.column_length;
 		// ガウス・ジョルダン法
 		// 初期値の設定
@@ -658,14 +688,14 @@ export default class Matrix {
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
 		if(M1.isScalar() && M2.isScalar()) {
-			return new Matrix(x1.matrix_array[0][0].div(x2.matrix_array[0][0]));
+			return new Matrix(x1.scalar.div(x2.scalar));
 		}
 		const y = [];
 		if(M2.isScalar()) {
 			for(let row = 0; row < M1.row_length; row++) {
 				y[row] = [];
 				for(let col = 0; col < M1.column_length; col++) {
-					y[row][col] = x1[row][col].div(x2[0][0]);
+					y[row][col] = x1[row][col].div(M2.scalar);
 				}
 			}
 			return new Matrix(y);
@@ -732,6 +762,7 @@ export default class Matrix {
 
 		if(this.isSquare()) {
 			// 正方行列であれば、グラム・シュミットの正規直交化法を用いてQR分解を行う。
+			// Q は正規直交行列である。
 			return gram_schmidt_orthonormalization(this);
 		}
 		else {
