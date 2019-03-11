@@ -415,8 +415,21 @@ export default class Matrix {
 		return this.row_length === 1 && this.column_length == 1;
 	}
 
+	isIdentity() {
+		// 単位行列を判定
+		if(!this.isDiagonal()) {
+			return false;
+		}
+		for(let row = 0; row < this.row_length; row++) {
+			if(!this.matrix_array[row][row].isOne()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	isDiagonal() {
-		// 対角行列
+		// 対角行列を判定
 		if(!this.isSquare()) {
 			return false;
 		}
@@ -433,7 +446,7 @@ export default class Matrix {
 	}
 	
 	isTridiagonal() {
-		// 三重対角行列
+		// 三重対角行列を判定
 		if(!this.isSquare()) {
 			return false;
 		}
@@ -748,6 +761,44 @@ export default class Matrix {
 	dash() {
 		// X' = 転置行列を指す
 		return this.ctranspose();
+	}
+
+	det() {
+		// 行列式を返す
+		if(!this.isSquare()) {
+			throw "not square";
+		}
+		const M = this.matrix_array;
+		const calcDet = function(x) {
+			if(x.length === 2) {
+				// 2次元の行列式になったら、たすき掛け計算する
+				return x[0][0].mul(x[1][1]).sub(x[0][1].mul(x[1][0]));
+			}
+			let y = Complex.ZERO;
+			for(let i = 0; i < x.length; i++) {
+				// N次元の行列式を、N-1次元の行列式に分解していく
+				const D = [];
+				const a = x[i][0];
+				for(let row = 0, D_low = 0; row < x.length; row++) {
+					if(i === row) {
+						continue;
+					}
+					D[D_low] = [];
+					for(let col = 1, D_col = 0; col < x.length; col++, D_col++) {
+						D[D_low][D_col] = x[row][col];
+					}
+					D_low++;
+				}
+				if((i % 2) === 0) {
+					y = y.add(a.mul(calcDet(D)));
+				}
+				else {
+					y = y.sub(a.mul(calcDet(D)));
+				}
+			}
+			return y;
+		};
+		return new Matrix(calcDet(M));
 	}
 
 }

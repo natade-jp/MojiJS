@@ -21,13 +21,19 @@ const main = function() {
 
 	Log.println(_("[1 2;2 2]").div("[3 2;1 1]"));
 	
-	let A = _("[1 2;3 4]").qr();
-	
+	const A = _("[1 2;3 4]").qr();
 	Log.println(A.Q);
 	Log.println(A.R);
 	Log.println(A.Q.mul(A.R));
 	
 	Log.println(_("[2 3 4;1 4 2;2 1 4]").rank(1e-10));
+
+	// 22
+	Log.println(_("[6 2;1 4]").det());
+	// -45
+	Log.println(_("[1 2 3;0 -1 5;-2 3 4]").det());
+	// -32
+	Log.println(_("[3 2 1 0;1 2 3 4;2 1 0 1;2 0 2 1]").det());
 
 };
 
