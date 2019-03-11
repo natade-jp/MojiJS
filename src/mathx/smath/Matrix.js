@@ -462,6 +462,32 @@ export default class Matrix {
 		return true;
 	}
 
+	isRegular() {
+		// 正則行列を判定
+		if(!this.isSquare()) {
+			return false;
+		}
+		// ランクが行列の次元と等しいかどうかで判定
+		// det(M) != 0 でもよいが、時間がかかる可能性があるので
+		// 誤差は自動で計算など本当はもうすこし良い方法を考える必要がある
+		return (this.rank(1.0e-10).scalar === this.row_length);
+	}
+
+	isSymmetric() {
+		// 対称行列を判定
+		if(!this.isSquare()) {
+			return false;
+		}
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = row + 1; col < this.column_length; col++) {
+				if(!this.matrix_array[row][col].equals(this.matrix_array[col][row])) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	size() {
 		// 行列のサイズを取得
 		return new Matrix([[this.row_length, this.column_length]]);
