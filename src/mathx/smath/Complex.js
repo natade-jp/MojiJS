@@ -318,34 +318,40 @@ export default class Complex {
 		}
 	}
 
-	isInteger() {
-		return this.isReal() && (Math.abs(this._re - (this._re | 0)) < Number.EPSILON);
+	isInteger(epsilon) {
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		return this.isReal() && (Math.abs(this._re - (this._re | 0)) < tolerance);
 	}
 
-	isComplexInteger() {
+	isComplexInteger(epsilon) {
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
 		// 複素整数
-		return (Math.abs(this._re - (this._re | 0)) < Number.EPSILON) &&
-				(Math.abs(this._im - (this._im | 0)) < Number.EPSILON);
+		return (Math.abs(this._re - (this._re | 0)) < tolerance) &&
+				(Math.abs(this._im - (this._im | 0)) < tolerance);
 	}
 
-	isZero() {
-		return (Math.abs(this._re) < Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
+	isZero(epsilon) {
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		return (Math.abs(this._re) < tolerance) && (Math.abs(this._im) < tolerance);
 	}
 
-	isOne() {
-		return (Math.abs(this._re - 1.0) <  Number.EPSILON) && (Math.abs(this._im) < Number.EPSILON);
+	isOne(epsilon) {
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		return (Math.abs(this._re - 1.0) < tolerance) && (Math.abs(this._im) < tolerance);
 	}
 
-	isComplex() {
-		return (Math.abs(this._im) >= Number.EPSILON);
+	isComplex(epsilon) {
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		return (Math.abs(this._im) >= tolerance);
 	}
 	
-	isReal() {
-		return (Math.abs(this._im) < Number.EPSILON);
+	isReal(epsilon) {
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		return (Math.abs(this._im) < tolerance);
 	}
 
 	isNaN() {
-		return isNaN(this._re) || isNaN(this._im);
+		return Math.isNaN(this._re) || Math.isNaN(this._im);
 	}
 
 	// Number.EPSILONは使用しない。どちらにぶれるか不明な点及び

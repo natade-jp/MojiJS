@@ -9,6 +9,8 @@ const main = function() {
 
 	Log.println("◆◆SMath クラスのサンプル");
 	
+	Log.println(Matrix.eye(3));
+
 	Log.println(_("[1 2 3; 4 5 6; 7 8 9]"));
 
 	Log.println(_("[1 2 + j; 3 4]").mul(_("[4 5; 7 8]")));
@@ -24,6 +26,8 @@ const main = function() {
 	Log.println(A.Q);
 	Log.println(A.R);
 	Log.println(A.Q.mul(A.R));
+	
+	Log.println(_("[2 3 4;1 4 2;2 1 4]").rank(1e-10));
 
 };
 

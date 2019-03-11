@@ -235,7 +235,8 @@ export default class Matrix {
 						matrix_array[row_count] = rows_array;
 					}
 					else {
-						matrix_array[row_count] = new Complex(row);
+						// 1行の行列を定義する
+						matrix_array[0][row_count] = new Complex(row);
 					}
 				}
 			}
@@ -259,12 +260,16 @@ export default class Matrix {
 	}
 
 	_each(eachfunc) {
-		// 行優先ですべての値に対して指定した関数を実行する
+		// 行優先ですべての値に対して指定した関数を実行する。内容を書き換える可能性もある
 		for(let row = 0; row < this.row_length; row++) {
 			for(let col = 0; col < this.column_length; col++) {
-				eachfunc(this.matrix_array[row][col], row, col);
+				const ret = eachfunc(this.matrix_array[row][col], row, col);
+				if(ret instanceof Matrix) {
+					this.matrix_array[row][col] = ret;
+				}
 			}
 		}
+		return this;
 	}
 
 	clone() {
@@ -284,10 +289,25 @@ export default class Matrix {
 		}
 	}
 
+	static eye() {
+		// 単位行列を作成する
+		if((arguments.length === 0) || (arguments.length > 2)) {
+			throw "IllegalArgumentException";
+		}
+		const y = [];
+		const y_row_length = arguments[0];
+		const y_column_length = arguments.length === 1 ? y_row_length : arguments[1];
+		for(let row = 0; row < y_row_length; row++) {
+			y[row] = [];
+			for(let col = 0; col < y_column_length; col++) {
+				y[row][col] = row === col ? Complex.ONE : Complex.ZERO;
+			}
+		}
+		return new Matrix(y);
+	}
+
 	createMatrixDoEachCalculation(eachfunc) {
-		const output = this.clone();
-		output._each(eachfunc);
-		return output;
+		return this.clone()._each(eachfunc);
 	}
 	
 	toString() {
@@ -385,12 +405,53 @@ export default class Matrix {
 		return this.string_cash;
 	}
 
-	isSquareMatrix() {
+	isSquare() {
+		// 正方行列を判定
 		return this.row_length === this.column_length;
 	}
 
 	isScalar() {
+		// スカラーを判定
 		return this.row_length === 1 && this.column_length == 1;
+	}
+
+	isDiagonal() {
+		// 対角行列
+		if(!this.isSquare()) {
+			return false;
+		}
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = 0; col < this.column_length; col++) {
+				if(row !== col) {
+					if(!this.matrix_array[row][col].isZero()) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
+	isTridiagonal() {
+		// 三重対角行列
+		if(!this.isSquare()) {
+			return false;
+		}
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = 0; col < this.column_length; col++) {
+				if(Math.abs(row - col) > 1) {
+					if(!this.matrix_array[row][col].isZero()) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+
+	size() {
+		// 行列のサイズを取得
+		return new Matrix([[this.row_length, this.column_length]]);
 	}
 
 	static _checkMatrixArrayErrorType1(M1, M2) {
@@ -483,7 +544,7 @@ export default class Matrix {
 		if(this.isScalar()) {
 			return new Matrix(Complex.ONE.div(this.matrix_array[0][0]));
 		}
-		if(!this.isSquareMatrix()) {
+		if(!this.isSquare()) {
 			throw "IllegalArgumentMatrixException";
 		}
 		const len = this.column_length;
@@ -584,70 +645,87 @@ export default class Matrix {
 	}
 
 	qr() {
-		// グラム・シュミットの正規直交化法を用いてQR分解を行う。
-		// 正方行列以外の直交化はハウスホルダーの方法を用いるとよいが技術不足で未実装
-		// http://www.math.meiji.ac.jp/~mk/labo/text/eigen-values-add/node16.html
+		const gram_schmidt_orthonormalization = function(M) {
+			const len = M.column_length;
+			const A = M.matrix_array;
+			const Q = [];
+			const R = [];
+			const a = [];
+			
+			for(let row = 0; row < len; row++) {
+				Q[row] = [];
+				R[row] = [];
+				for(let col = 0; col < len; col++) {
+					Q[row][col] = Complex.ZERO;
+					R[row][col] = Complex.ZERO;
+				}
+			}
+			for(let i = 0; i < len; i++) {
+				for(let j = 0; j < len; j++) {
+					a[j] = A[j][i];
+				}
+				if(i > 0) {
+					for(let j = 0; j < i; j++) {
+						for(let k = 0; k < len; k++) {
+							R[j][i] = R[j][i].add(Q[k][j].mul(A[k][i]));
+						}
+					}
+					for(let j = 0; j < i; j++) {
+						for(let k = 0; k < len; k++) {
+							a[k] = a[k].sub(R[j][i].mul(Q[k][j]));
+						}
+					}
+				}
+				for(let j = 0; j < len; j++) {
+					R[i][i] = R[i][i].add(a[j].mul(a[j]));
+				}
+				R[i][i] = R[i][i].sqrt();
+				for(let j = 0;j < len;j++) {
+					Q[j][i] = a[j].div(R[i][i]);
+				}
+			}
+	
+			return {
+				Q : new Matrix(Q),
+				R : new Matrix(R),
+			};
+		};
 
-		if(!this.isSquareMatrix()) {
-			// ハウスホルダーの方法をとるといい
+		if(this.isSquare()) {
+			// 正方行列であれば、グラム・シュミットの正規直交化法を用いてQR分解を行う。
+			return gram_schmidt_orthonormalization(this);
+		}
+		else {
+			// ハウスホルダー変換を用いてQR分解を行う。
 			// 未実装なのでエラー
 			throw "Unimplemented";
 		}
 
-		const len = this.column_length;
-		const A = this.matrix_array;
-		const Q = [];
-		const R = [];
-		const a = [];
-		
-		for(let row = 0; row < len; row++) {
-			Q[row] = [];
-			R[row] = [];
-			for(let col = 0; col < len; col++) {
-				Q[row][col] = Complex.ZERO;
-				R[row][col] = Complex.ZERO;
-			}
-		}
-		for(let i = 0; i < len; i++) {
-			for(let j = 0; j < len; j++) {
-				a[j] = A[j][i];
-			}
-			if(i > 0) {
-				for(let j = 0; j < i; j++) {
-					for(let k = 0; k < len; k++) {
-						R[j][i] = R[j][i].add(Q[k][j].mul(A[k][i]));
-					}
-				}
-				for(let j = 0; j < i; j++) {
-					for(let k = 0; k < len; k++) {
-						a[k] = a[k].sub(R[j][i].mul(Q[k][j]));
-					}
-				}
-			}
-			for(let j = 0; j < len; j++) {
-				R[i][i] = R[i][i].add(a[j].mul(a[j]));
-			}
-			R[i][i] = Math.sqrt(R[i][i]);
-			for(let j = 0;j < len;j++) {
-				Q[j][i] = a[j].div(R[i][i]);
-			}
-		}
+	}
 
-		return {
-			Q : new Matrix(Q),
-			R : new Matrix(R),
-		};
+	rank(epsilon) {
+		// 対角線を見てランクを計算する
+		const R = this.qr().R;
+		const min_length = Math.min(R.row_length, R.column_length);
+		let rank = min_length;
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		//const tol = // 許容誤差
+		for(let i = min_length - 1; i >= 0; i--) {
+			if(R.matrix_array[i][i].isZero(tolerance)) {
+				rank--;
+			}
+			else {
+				break;
+			}
+		}
+		return new Matrix(rank);
 	}
 
 	conj() {
 		// 複素共役
-		const y = new Matrix(this);
-		y._each(
-			function(num, row, col) {
-				y[row][col] = num.conj();
-			}
+		return this.createMatrixDoEachCalculation(
+			function(num) { return num.conj(); }
 		);
-		return y;
 	}
 
 	transpose() {
