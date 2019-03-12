@@ -116,10 +116,10 @@ export default class Complex {
 
 	get norm() {
 		if(this._im === 0) {
-			return this._re;
+			return Math.abs(this._re);
 		}
 		else if(this._re === 0) {
-			return this._im;
+			return Math.abs(this._im);
 		}
 		else {
 			return Math.sqrt(this._re * this._re + this._im * this._im);
@@ -278,9 +278,7 @@ export default class Complex {
 
 	max() {
 		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm;
-		const y2 = x.norm;
-		if(y1 >= y2) {
+		if(this.compareTo(x) <= 0) {
 			return this;
 		}
 		else {
@@ -290,9 +288,7 @@ export default class Complex {
 
 	min() {
 		const x = Complex.createConstComplex(...arguments);
-		const y1 = this.norm;
-		const y2 = x.norm;
-		if(y1 <= y2) {
+		if(this.compareTo(x) >= 0) {
 			return this;
 		}
 		else {
@@ -309,13 +305,9 @@ export default class Complex {
 		if(this.equals(x)) {
 			return 0;
 		}
-		const max = this.max(x);
-		if(max.equals(x)) {
-			return 1;
-		}
-		else {
-			return -1;
-		}
+		const a = this.real + this.imag;
+		const b = x.real + x.imag;
+		return a < b ? 1 : -1;
 	}
 
 	isInteger(epsilon) {
