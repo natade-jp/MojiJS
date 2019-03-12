@@ -338,9 +338,8 @@ export default class Matrix {
 		);
 
 		if(draw_decimal_position > 0) {
-			draw_decimal_position = exp_point + 1;
+			draw_decimal_position = exp_point;
 		}
-
 
 		// 文字列データを作成とともに、最大の長さを記録する
 		let str_max = 0;
@@ -600,6 +599,86 @@ export default class Matrix {
 		return new Matrix(y);
 	}
 
+	linsolve() {
+		if(!this.isSquare()) {
+			throw "IllegalArgumentMatrixException";
+		}
+		// 連立一次方程式を解く
+		const len = this.column_length;
+		const arg = Matrix.createConstMatrix(...arguments);
+		const A = this.matrix_array;
+		const B = arg.matrix_array;
+		if((arg.row_length !== this.row_length) || (arg.column_length > 1)) {
+			throw "IllegalArgumentMatrixException";
+		}
+		// 行列を準備する
+		const long_matrix_array = [];
+		const long_length = len + 1;
+		for(let row = 0; row < len; row++) {
+			long_matrix_array[row] = [];
+			for(let col = 0; col < len; col++) {
+				long_matrix_array[row][col] = A[row][col];
+			}
+			long_matrix_array[row][long_length - 1] = B[row][0];
+		}
+		// ガウスの消去法で連立1次方程式の未知数を求める
+		//前進消去
+		for(let k = 0; k < (len - 1); k++) {
+			//ピポットの選択
+			{
+				let max_number = Complex.ZERO;
+				let max_position = k;
+				//絶対値が大きいのを調べる
+				for(let row = k, col = k; row < len; row++) {
+					const abs_data = long_matrix_array[row][col].abs();
+					if(max_number.compareTo(abs_data) > 0) {
+						max_number = abs_data;
+						max_position = row;
+					}
+				}
+				//交換を行う
+				if(max_position !== k) {
+					const swap = long_matrix_array[k];
+					long_matrix_array[k] = long_matrix_array[max_position];
+					long_matrix_array[max_position] = swap;
+				}
+			}
+			//正規化
+			{
+				//ピポット
+				const normalize_value = long_matrix_array[k][k].inv();
+				for(let row = k, col = k; col < long_length; col++) {
+					long_matrix_array[row][col] = long_matrix_array[row][col].mul(normalize_value);
+				}
+			}
+			//消去
+			for(let row = k + 1;row < len; row++) {
+				const temp = long_matrix_array[row][k];
+				for(let col = k; col < long_length; col++)
+				{
+					long_matrix_array[row][col] = long_matrix_array[row][col].sub(long_matrix_array[k][col].mul(temp));
+				}
+			}
+		}
+
+		//後退代入
+		const y = [];
+		y[len - 1] = long_matrix_array[len - 1][len].div(long_matrix_array[len - 1][len - 1]);
+		for(let row = len - 2; row >= 0; row--) {
+			y[row] = long_matrix_array[row][long_length - 1];
+			for(let j = row + 1; j < len; j++) {
+				y[row] = y[row].sub(long_matrix_array[row][j] * y[j]);
+			}
+			y[row] = y[row].div(long_matrix_array[row][row]);
+		}
+		const y2 = [];
+		for(let row = 0; row < this.row_length; row++) {
+			y2[row] = [y[row]];
+		}
+
+		return new Matrix(y2);
+	}
+
 	inv() {
 		if(this.isScalar()) {
 			return new Matrix(Complex.ONE.div(this.scalar));
@@ -637,8 +716,9 @@ export default class Matrix {
 				let max_position = k;
 				//絶対値が大きいのを調べる
 				for(let row = k, col = k; row < len; row++) {
-					if(max_number.compareTo(long_matrix_array[row][col]) > 0) {
-						max_number = long_matrix_array[row][col];
+					const abs_data = long_matrix_array[row][col].abs();
+					if(max_number.compareTo(abs_data) > 0) {
+						max_number = abs_data;
 						max_position = row;
 					}
 				}
@@ -762,7 +842,7 @@ export default class Matrix {
 
 		if(this.isSquare()) {
 			// 正方行列であれば、グラム・シュミットの正規直交化法を用いてQR分解を行う。
-			// Q は正規直交行列である。
+			// Q は正規直交行列、Rは上三角行列である
 			return gram_schmidt_orthonormalization(this);
 		}
 		else {
