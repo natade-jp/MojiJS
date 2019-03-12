@@ -513,6 +513,34 @@ export default class Matrix {
 		return new Matrix([[this.row_length, this.column_length]]);
 	}
 
+	max() {
+		const y = [];
+		y[0] = [];
+		for(let col = 0; col < this.column_length; col++) {
+			y[0][col] = this.matrix_array[0][col];
+			for(let row = 1; row < this.row_length; row++) {
+				if(y[0][col].compareTo(this.matrix_array[row][col]) > 0) {
+					y[0][col] = this.matrix_array[row][col];
+				}
+			}
+		}
+		return new Matrix(y);
+	}
+	
+	min() {
+		const y = [];
+		y[0] = [];
+		for(let col = 0; col < this.column_length; col++) {
+			y[0][col] = this.matrix_array[0][col];
+			for(let row = 1; row < this.row_length; row++) {
+				if(y[0][col].compareTo(this.matrix_array[row][col]) < 0) {
+					y[0][col] = this.matrix_array[row][col];
+				}
+			}
+		}
+		return new Matrix(y);
+	}
+
 	static _checkMatrixArrayErrorType1(M1, M2) {
 		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
 			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
