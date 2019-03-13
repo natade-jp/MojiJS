@@ -98,6 +98,10 @@ const ConstructorTool = {
 	},
 
 	toArrayFromString : function(row_text) {
+		// 「:」のみ記載されていないかの確認
+		if(row_text.trim() === ":") {
+			return ":";
+		}
 		// 左が実数（強制）で右が複素数（任意）タイプ
 		const reg1 = /[+-]? *[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?( *[+-] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij])?/;
 		// 左が複素数（強制）で右が実数（任意）タイプ
@@ -105,7 +109,6 @@ const ConstructorTool = {
 		// reg2優先で検索
 		const reg3 = new RegExp("(" + reg2.source + ")|(" + reg1.source + ")", "i");
 		// 問題として 1 - -jが通る
-
 		const xs = ConstructorTool.match2(row_text, reg3);
 		const rows_array = [];
 
@@ -200,6 +203,7 @@ const ConstructorTool = {
 export default class Matrix {
 	constructor() {
 		let matrix_array = null;
+		let is_check_string = false;
 		if(arguments.length === 1) {
 			const y = arguments[0];
 			if(y instanceof Matrix) {
@@ -218,15 +222,18 @@ export default class Matrix {
 				matrix_array = [];
 				for(let row_count = 0; row_count < y.length; row_count++) {
 					const row = y[row_count];
-					if(row instanceof Complex) {
-						matrix_array[row_count] = row;
-					}
-					else if(row instanceof Array) {
+					if(row instanceof Array) {
 						const rows_array = [];
 						for(let col_count = 0; col_count < row.length; col_count++) {
 							const column = row[col_count];
 							if(column instanceof Complex) {
 								rows_array[col_count] = column;
+							}
+							else if(column instanceof Matrix) {
+								if(!column.isScalar()) {
+									throw "IllegalArgumentException";
+								}
+								rows_array[col_count] = column.scalar;
 							}
 							else {
 								rows_array[col_count] = new Complex(column);
@@ -236,23 +243,49 @@ export default class Matrix {
 					}
 					else {
 						// 1行の行列を定義する
-						matrix_array[0][row_count] = new Complex(row);
+						if(row_count === 0) {
+							matrix_array[0] = [];
+						}
+						if(row instanceof Complex) {
+							matrix_array[0][row_count] = row;
+						}
+						else if(row instanceof Matrix) {
+							if(!row.isScalar()) {
+								throw "IllegalArgumentException";
+							}
+							matrix_array[0][row_count] = row.scalar;
+						}
+						else {
+							matrix_array[0][row_count] = new Complex(row);
+						}
 					}
 				}
 			}
 			else if(typeof y === "string" || y instanceof String) {
+				is_check_string = true;
 				matrix_array = ConstructorTool.toMatrixFromString(y);
 			}
 			else if(y instanceof Object && y.toString) {
+				is_check_string = true;
 				matrix_array = ConstructorTool.toMatrixFromString(y.toString());
 			}
 			else {
 				matrix_array = [[new Complex(y)]];
 			}
 		}
+		if(is_check_string) {
+			// 文字列データの解析の場合、":" データが紛れていないかを確認する。
+			// 紛れていたらその行は削除する。
+			for(let row = 0; row < matrix_array.length; row++) {
+				if(matrix_array[row] === ":") {
+					matrix_array.splice(row--, 1);
+				}
+			}
+		}
 		if(!ConstructorTool.isCorrectMatrixArray(matrix_array)) {
 			throw "IllegalArgumentException";
 		}
+
 		this.matrix_array = matrix_array;
 		this.row_length = this.matrix_array.length;
 		this.column_length = this.matrix_array[0].length;
@@ -425,14 +458,34 @@ export default class Matrix {
 		return true;
 	}
 
-	isSquare() {
-		// 正方行列を判定
-		return this.row_length === this.column_length;
-	}
-
 	isScalar() {
 		// スカラーを判定
 		return this.row_length === 1 && this.column_length == 1;
+	}
+	
+	isRow() {
+		// 行ベクトルかを判定
+		return this.row_length === 1;
+	}
+	
+	isColumn() {
+		// 列ベクトルかを判定
+		return this.column_length === 1;
+	}
+
+	isVector() {
+		// ベクトルかを判定
+		return this.row_length === 1 || this.column_length === 1;
+	}
+
+	isMatrix() {
+		// 行列かを判定
+		return this.row_length !== 1 && this.column_length !== 1;
+	}
+
+	isSquare() {
+		// 正方行列を判定
+		return this.row_length === this.column_length;
 	}
 
 	isIdentity() {
@@ -514,31 +567,53 @@ export default class Matrix {
 	}
 
 	max() {
-		const y = [];
-		y[0] = [];
-		for(let col = 0; col < this.column_length; col++) {
-			y[0][col] = this.matrix_array[0][col];
-			for(let row = 1; row < this.row_length; row++) {
-				if(y[0][col].compareTo(this.matrix_array[row][col]) > 0) {
-					y[0][col] = this.matrix_array[row][col];
+		if(this.isRow()) {
+			let y = this.matrix_array[0][0];
+			for(let col = 1; col < this.column_length; col++) {
+				if(y.compareTo(this.matrix_array[0][col]) > 0) {
+					y = this.matrix_array[0][col];
 				}
 			}
+			return new Matrix(y);
 		}
-		return new Matrix(y);
+		else {
+			const y = [];
+			y[0] = [];
+			for(let col = 0; col < this.column_length; col++) {
+				y[0][col] = this.matrix_array[0][col];
+				for(let row = 1; row < this.row_length; row++) {
+					if(y[0][col].compareTo(this.matrix_array[row][col]) > 0) {
+						y[0][col] = this.matrix_array[row][col];
+					}
+				}
+			}
+			return new Matrix(y);
+		}
 	}
 	
 	min() {
-		const y = [];
-		y[0] = [];
-		for(let col = 0; col < this.column_length; col++) {
-			y[0][col] = this.matrix_array[0][col];
-			for(let row = 1; row < this.row_length; row++) {
-				if(y[0][col].compareTo(this.matrix_array[row][col]) < 0) {
-					y[0][col] = this.matrix_array[row][col];
+		if(this.isRow()) {
+			let y = this.matrix_array[0][0];
+			for(let col = 1; col < this.column_length; col++) {
+				if(y.compareTo(this.matrix_array[0][col]) < 0) {
+					y = this.matrix_array[0][col];
 				}
 			}
+			return new Matrix(y);
 		}
-		return new Matrix(y);
+		else {
+			const y = [];
+			y[0] = [];
+			for(let col = 0; col < this.column_length; col++) {
+				y[0][col] = this.matrix_array[0][col];
+				for(let row = 1; row < this.row_length; row++) {
+					if(y[0][col].compareTo(this.matrix_array[row][col]) < 0) {
+						y[0][col] = this.matrix_array[row][col];
+					}
+				}
+			}
+			return new Matrix(y);
+		}
 	}
 
 	static _checkMatrixArrayErrorType1(M1, M2) {
