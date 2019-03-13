@@ -2,6 +2,7 @@
 
 const Log = Senko.Log;
 const SMath = Senko.MathX.SMath;
+const Complex = SMath.Complex;
 const Matrix = SMath.Matrix;
 const _ = Matrix.createConstMatrix;
 
@@ -9,8 +10,19 @@ const main = function() {
 
 	Log.println("◆◆SMath クラスのサンプル");
 	
-	Log.println(Matrix.eye(3));
+	// 3.16578 + 1.9596i
+	Log.println((new Complex("1 + 2i")).sin());
+	// 2.03272 - 3.0519ii
+	Log.println((new Complex("1 + 2i")).cos());
+	// 0.0338128 + 1.01479i
+	Log.println((new Complex("1 + 2i")).tan());
+	// 1.33897 + 0.402359i
+	Log.println((new Complex("1 + 2i")).atan());
+	// -0.0151327 - 0.179867i
+	Log.println((new Complex("1 + 2i")).pow("2 + 3i"));
 
+	Log.println(Matrix.eye(3));
+	
 	Log.println(_("[1 2 3; 4 5 6; 7 8 9]"));
 
 	Log.println(_("[1 2 + j; 3 4]").mul(_("[4 5; 7 8]")));

@@ -494,6 +494,7 @@ export default class Complex {
 
 Complex.I = new Complex(0, 1);
 Complex.ZERO = new Complex(0);
+Complex.HALF = new Complex(0.5);
 Complex.ONE = new Complex(1);
 Complex.TWO = new Complex(2);
 Complex.TEN = new Complex(10);
