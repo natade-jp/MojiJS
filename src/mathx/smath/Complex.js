@@ -107,14 +107,17 @@ export default class Complex {
 	}
 	
 	get real() {
+		// ※実数を返す（非Complexオブジェクト）
 		return this._re;
 	}
 	
 	get imag() {
+		// ※実数を返す（非Complexオブジェクト）
 		return this._im;
 	}
 
 	get norm() {
+		// ※実数を返す（非Complexオブジェクト）
 		if(this._im === 0) {
 			return Math.abs(this._re);
 		}
@@ -127,6 +130,7 @@ export default class Complex {
 	}
 
 	get angle() {
+		// ※実数を返す（非Complexオブジェクト）
 		if(this._im === 0) {
 			return 0;
 		}
@@ -139,6 +143,7 @@ export default class Complex {
 	}
 
 	getDecimalPosition() {
+		// ※実数を返す（非Complexオブジェクト）
 		// 小数点の桁を調べる
 		let point = 0;
 		let x = this;
@@ -301,6 +306,7 @@ export default class Complex {
 	 * @returns {Number} A < B ? 1 : (A === B ? 0 : -1)
 	 */
 	compareTo() {
+		// ※実数を返す（非Complexオブジェクト）
 		const x = Complex.createConstComplex(...arguments);
 		if(this.equals(x)) {
 			return 0;
@@ -473,15 +479,16 @@ export default class Complex {
 
 	atan2() {
 		if(arguments.length === 0) {
-			return this.angle;
+			return new Complex(this.angle);
 		}
-		else {
-			const x = new Complex(...arguments);
-			if(this._im || x._im) {
-				throw "IllegalArgumentException";
-			}
-			return Math.atan2(this._re, x._re);
+		// y.atan2(x) とする。
+		const y = this;
+		const x = new Complex(...arguments);
+		if(y.isReal() && x.isReal()) {
+			return new Complex(Math.atan2(y._re, x._re));
 		}
+		// 複素数のatan2は未定義である（実装不可能）
+		throw "calculation method is undefined.";
 	}
 }
 
