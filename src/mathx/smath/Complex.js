@@ -8,7 +8,12 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-
+/**
+ * 文字列から複素数を解析する
+ * @param {String} text 解析したい文字列
+ * @param {Complex} that 代入先 
+ * @returns
+ */
 const ToComplexFromString = function(text, that) {
 	const str = text.replace(/\s/g, "").toLowerCase();
 	// 複素数の宣言がない場合
@@ -45,9 +50,13 @@ const ToComplexFromString = function(text, that) {
 
 export default class Complex {
 
-	constructor() {
+	/**
+	 * 複素数 (immutable)
+	 * @param {Object} number 複素数データ( "1 + j", [1 , 1] など)
+	 */
+	constructor(number) {
 		if(arguments.length === 1) {
-			const obj = arguments[0];
+			const obj = number;
 			if((obj instanceof Complex) || ((obj instanceof Object) && (obj._re && obj._im))) {
 				this._re = obj._re;
 				this._im = obj._im;
@@ -67,57 +76,49 @@ export default class Complex {
 				ToComplexFromString(obj.toString(), this);
 			}
 			else {
-				throw "IllegalArgumentException";
-			}
-		}
-		else if(arguments.length === 2) {
-			const obj_0 = arguments[0];
-			const obj_1 = arguments[1];
-			if((obj_0 instanceof Complex) && (!obj_0._im)) {
-				this._re = obj_0._re;
-			}
-			else if((typeof obj_0 === "number")||(obj_0 instanceof Number)) {
-				this._re = obj_0;
-			}
-			else {
-				throw "IllegalArgumentException";
-			}
-			if((obj_1 instanceof Complex) && (!obj_1._im)) {
-				this._im = obj_1._re;
-			}
-			else if((typeof obj_1 === "number")||(obj_1 instanceof Number)) {
-				this._im = obj_1;
-			}
-			else {
-				throw "IllegalArgumentException";
+				throw "Unsupported argument";
 			}
 		}
 		else {
-			throw "IllegalArgumentException";
+			throw "Many arguments : " + arguments.length;
 		}
 	}
 
-	static createConstComplex() {
-		if((arguments.length === 1) && (arguments[0] instanceof Complex)) {
-			return arguments[0];
+	/**
+	 * 引数から複素数を作成する（作成が不要の場合はnewしない）
+	 * @param {Object} number 
+	 * @returns {Complex}
+	 */
+	static createConstComplex(number) {
+		if(number instanceof Complex) {
+			return number;
 		}
 		else {
-			return new Complex(...arguments);
+			return new Complex(number);
 		}
 	}
 	
+	/**
+	 * 実部
+	 * @returns {Number} 実部の数値（非Complexオブジェクト）
+	 */
 	get real() {
-		// ※実数を返す（非Complexオブジェクト）
 		return this._re;
 	}
 	
+	/**
+	 * 虚部
+	 * @returns {Number} 虚部の数値（非Complexオブジェクト）
+	 */
 	get imag() {
-		// ※実数を返す（非Complexオブジェクト）
 		return this._im;
 	}
 
+	/**
+	 * ノルム（極座標のノルム）
+	 * @returns {Number} ノルムの数値（非Complexオブジェクト）
+	 */
 	get norm() {
-		// ※実数を返す（非Complexオブジェクト）
 		if(this._im === 0) {
 			return Math.abs(this._re);
 		}
@@ -129,8 +130,11 @@ export default class Complex {
 		}
 	}
 
+	/**
+	 * 偏角（極座標の角度）
+	 * @returns {Number} 偏角の数値（非Complexオブジェクト）
+	 */
 	get angle() {
-		// ※実数を返す（非Complexオブジェクト）
 		if(this._im === 0) {
 			return 0;
 		}
@@ -142,9 +146,11 @@ export default class Complex {
 		}
 	}
 
+	/**
+	 * 実部、虚部の小数点の桁数の最大値
+	 * @returns {Number} 小数点の桁（非Complexオブジェクト）
+	 */
 	getDecimalPosition() {
-		// ※実数を返す（非Complexオブジェクト）
-		// 小数点の桁を調べる
 		let point = 0;
 		let x = this;
 		for(let i = 0; i < 20; i++) {
@@ -157,6 +163,10 @@ export default class Complex {
 		return point;
 	}
 
+	/**
+	 * 文字列データ
+	 * @returns {String} 
+	 */
 	toString() {
 		const formatG = function(x) {
 			let numstr = x.toPrecision(6);
@@ -182,26 +192,45 @@ export default class Complex {
 		}
 	}
 	
+	/**
+	 * ディープコピー（※実際にはイミュータブルなのでコピーする）
+	 * @returns {Complex} 
+	 */
 	clone() {
-		new Complex(this._re, this._im);
+		return this;
 	}
 
-	add() {
-		const x = new Complex(...arguments);
+	/**
+	 * A.add(B) = A + B
+	 * @param {Object} number 
+	 * @returns {Complex}
+	 */
+	add(number) {
+		const x = new Complex(number);
 		x._re = this._re + x._re;
 		x._im = this._im + x._im;
 		return x;
 	}
 
-	sub() {
-		const x = new Complex(...arguments);
+	/**
+	 * A.sub(B) = A - B
+	 * @param {Object} number 
+	 * @returns {Complex}
+	 */
+	sub(number) {
+		const x = new Complex(number);
 		x._re = this._re - x._re;
 		x._im = this._im - x._im;
 		return x;
 	}
 
-	mul() {
-		const x = new Complex(...arguments);
+	/**
+	 * A.mul(B) = A * B
+	 * @param {Object} number 
+	 * @returns {Complex}
+	 */
+	mul(number) {
+		const x = new Complex(number);
 		if((this._im === 0) && (x._im === 0)) {
 			x._re = this._re * x._re;
 			return x;
@@ -220,8 +249,13 @@ export default class Complex {
 		}
 	}
 	
-	div() {
-		const x = new Complex(...arguments);
+	/**
+	 * A.div(B) = A / B
+	 * @param {Object} number 
+	 * @returns {Complex}
+	 */
+	div(number) {
+		const x = new Complex(number);
 		if((this._im === 0) && (x._im === 0)) {
 			x._re = this._re / x._re;
 			return x;
@@ -241,10 +275,15 @@ export default class Complex {
 		}
 	}
 
-	mod() {
-		const x = new Complex(...arguments);
+	/**
+	 * A.mod(B) = A mod B (複素数での計算はできません)
+	 * @param {Object} number 複素数を含まない数値 
+	 * @returns {Complex}
+	 */
+	mod(number) {
+		const x = new Complex(number);
 		if((this._im !== 0) || (x._im !== 0)) {
-			throw "IllegalArgumentException";
+			throw "calculation method is undefined.";
 		}
 		let _re = this._re - x._re * (0 | (this._re / x._re));
 		if(_re < 0) {
@@ -254,16 +293,24 @@ export default class Complex {
 		return x;
 	}
 
+	/**
+	 * A.inv() = 1 / A
+	 * @returns {Complex}
+	 */
 	inv() {
 		if(this._im === 0) {
 			return new Complex(1.0 / this._re);
 		}
 		else if(this._re === 0) {
-			return new Complex(0, - 1.0 / this._im);
+			return new Complex([0, - 1.0 / this._im]);
 		}
 		return Complex.ONE.div(this);
 	}
 	
+	/**
+	 * A.sign() は長さを1にします -100 なら -1 にします
+	 * @returns {Complex}
+	 */
 	sign() {
 		if(this._im === 0) {
 			if(this._re === 0) {
@@ -276,24 +323,27 @@ export default class Complex {
 		return this.div(this.norm);
 	}
 	
-	equals() {
-		const x = Complex.createConstComplex(...arguments);
-		return (Math.abs(this._re - x._re) <  Number.EPSILON) && (Math.abs(this._im - x._im) <  Number.EPSILON);
+	/**
+	 * A.equals(B)
+	 * @param {Object} number
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean} A === B
+	 */
+	equals(number, epsilon) {
+		const x = Complex.createConstComplex(number);
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		return (Math.abs(this._re - x._re) <  tolerance) && (Math.abs(this._im - x._im) < tolerance);
 	}
 
-	max() {
-		const x = Complex.createConstComplex(...arguments);
-		if(this.compareTo(x) <= 0) {
-			return this;
-		}
-		else {
-			return x;
-		}
-	}
-
-	min() {
-		const x = Complex.createConstComplex(...arguments);
-		if(this.compareTo(x) >= 0) {
+	/**
+	 * A.max(B) = max([A, B])
+	 * @param {Object} number
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Complex}
+	 */
+	max(number, epsilon) {
+		const x = Complex.createConstComplex(number);
+		if(this.compareTo(x, epsilon) <= 0) {
 			return this;
 		}
 		else {
@@ -302,25 +352,56 @@ export default class Complex {
 	}
 
 	/**
-	 * 今の値Aと、指定した値Bとを比較する
-	 * @returns {Number} A < B ? 1 : (A === B ? 0 : -1)
+	 * A.min(B) = min([A, B])
+	 * @param {Object} number
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Complex}
 	 */
-	compareTo() {
+	min(number, epsilon) {
+		const x = Complex.createConstComplex(number);
+		if(this.compareTo(x, epsilon) >= 0) {
+			return this;
+		}
+		else {
+			return x;
+		}
+	}
+
+	/**
+	 * A.compareTo(B) 今の値Aと、指定した値Bとを比較する
+	 * 戻り値は、IF文で利用できるように、非Complexオブジェクトとなる。
+	 * @param {Object} number
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Number} A < B ? 1 : (A === B ? 0 : -1)（※非Complexオブジェクト）
+	 */
+	compareTo(number, epsilon) {
 		// ※実数を返す（非Complexオブジェクト）
-		const x = Complex.createConstComplex(...arguments);
-		if(this.equals(x)) {
+		const x = Complex.createConstComplex(number);
+		if(this.equals(x, epsilon)) {
 			return 0;
 		}
+		// 実部と虚部の比較は、どちらを優先すべきか分からない
+		// 符号付きでマンハッタン距離を算出して、距離の比較を行う
 		const a = this.real + this.imag;
 		const b = x.real + x.imag;
 		return a < b ? 1 : -1;
 	}
 
+	/**
+	 * 整数を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
 	isInteger(epsilon) {
 		const tolerance = epsilon ? epsilon : Number.EPSILON;
 		return this.isReal() && (Math.abs(this._re - (this._re | 0)) < tolerance);
 	}
 
+	/**
+	 * 複素整数を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
 	isComplexInteger(epsilon) {
 		const tolerance = epsilon ? epsilon : Number.EPSILON;
 		// 複素整数
@@ -328,70 +409,131 @@ export default class Complex {
 				(Math.abs(this._im - (this._im | 0)) < tolerance);
 	}
 
+	/**
+	 * 0 を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
 	isZero(epsilon) {
 		const tolerance = epsilon ? epsilon : Number.EPSILON;
 		return (Math.abs(this._re) < tolerance) && (Math.abs(this._im) < tolerance);
 	}
 
+	/**
+	 * 1 を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
 	isOne(epsilon) {
 		const tolerance = epsilon ? epsilon : Number.EPSILON;
 		return (Math.abs(this._re - 1.0) < tolerance) && (Math.abs(this._im) < tolerance);
 	}
 
+	/**
+	 * 複素数を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
 	isComplex(epsilon) {
 		const tolerance = epsilon ? epsilon : Number.EPSILON;
 		return (Math.abs(this._im) >= tolerance);
 	}
 	
+	/**
+	 * 実数を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
 	isReal(epsilon) {
 		const tolerance = epsilon ? epsilon : Number.EPSILON;
 		return (Math.abs(this._im) < tolerance);
 	}
 
+	/**
+	 * 非数を判定
+	 * @returns {Boolean}
+	 */
 	isNaN() {
 		return Math.isNaN(this._re) || Math.isNaN(this._im);
 	}
 
-	// Number.EPSILONは使用しない。どちらにぶれるか不明な点及び
-	// わずかな負の数だった場合に、sqrtでエラーが発生するため
+	/**
+	 * real(x) > 0
+	 * @returns {Boolean}
+	 */
 	isPositive() {
+		// Number.EPSILONは使用しない。どちらにぶれるか不明な点及び
+		// わずかな負の数だった場合に、sqrtでエラーが発生するため
 		return 0.0 < this._re;
 	}
 
+	/**
+	 * real(x) < 0
+	 * @returns {Boolean}
+	 */
 	isNegative() {
 		return 0.0 > this._re;
 	}
 
+	/**
+	 * real(x) >= 0
+	 * @returns {Boolean}
+	 */
 	isNotNegative() {
 		return 0.0 <= this._re;
 	}
 
+	/**
+	 * 無限を判定
+	 * @returns {Boolean}
+	 */
 	isInfinite() {
 		return	(this._re === Number.POSITIVE_INFINITY) ||
 				(this._im === Number.POSITIVE_INFINITY) ||
 				(this._re === Number.NEGATIVE_INFINITY) ||
 				(this._im === Number.NEGATIVE_INFINITY);
 	}
-
+	
+	/**
+	 * 有限数を判定
+	 * @returns {Boolean}
+	 */
 	isFinite() {
 		return !this.isNaN() && !this.isInfinite();
 	}
 
+	/**
+	 * A.abs() = abs(A)
+	 * @returns {Complex}
+	 */
 	abs() {
 		return new Complex(this.norm);
 	}
 
+	/**
+	 * A.conj() = real(A) - imag(A)j (共役複素数)
+	 * @returns {Complex}
+	 */
 	conj() {
 		// 共役複素数
-		return new Complex(this._re, -this._im);
+		return new Complex([this._re, -this._im]);
 	}
 
+	/**
+	 * A.negate() = - A
+	 * @returns {Complex}
+	 */
 	negate() {
-		return new Complex(-this._re, -this._im);
+		return new Complex([-this._re, -this._im]);
 	}
 
-	pow() {
-		const x = new Complex(...arguments);
+	/**
+	 * A.pow(B) = A^B
+	 * @param {Object} number
+	 * @returns {Complex}
+	 */
+	pow(number) {
+		const x = new Complex(number);
 		if((this.isReal()) && (x.isReal()) && (this.isNotNegative())) {
 			x._re = Math.pow(this._re, x._re);
 			return x;
@@ -408,37 +550,53 @@ export default class Complex {
 		}
 	}
 
+	/**
+	 * A.sqrt() = sqrt(A)
+	 * @returns {Complex}
+	 */
 	sqrt() {
 		if(this.isReal()) {
 			if(this.isNotNegative()) {
 				return new Complex(Math.sqrt(this._re));
 			}
 			else {
-				return new Complex(0, Math.sqrt(this._re));
+				return new Complex([0, Math.sqrt(this._re)]);
 			}
 		}
 		const r = Math.sqrt(this.norm);
 		const s = this.angle * 0.5;
-		return new Complex(r * Math.cos(s), r * Math.sin(s));
+		return new Complex([r * Math.cos(s), r * Math.sin(s)]);
 	}
 
+	/**
+	 * A.log() = log A
+	 * @returns {Complex}
+	 */
 	log() {
 		if(this.isReal() && this.isNotNegative()) {
 			return new Complex(Math.log(this._re));
 		}
 		// 複素対数関数
-		return new Complex(Math.log(this.norm), this.angle);
+		return new Complex([Math.log(this.norm), this.angle]);
 	}
 
+	/**
+	 * A.exp() = e^A
+	 * @returns {Complex}
+	 */
 	exp() {
 		if(this.isReal()) {
 			return new Complex(Math.exp(this._re));
 		}
 		// 複素指数関数
 		const r = Math.exp(this._re);
-		return new Complex(r * Math.cos(this._im), r * Math.sin(this._im));
+		return new Complex([r * Math.cos(this._im), r * Math.sin(this._im)]);
 	}
 
+	/**
+	 * A.sin() = sin(A)
+	 * @returns {Complex}
+	 */
 	sin() {
 		if(this.isReal()) {
 			return new Complex(Math.sin(this._re));
@@ -450,6 +608,10 @@ export default class Complex {
 		return a.sub(b).div([0, 2]);
 	}
 
+	/**
+	 * A.cos() = cos(A)
+	 * @returns {Complex}
+	 */
 	cos() {
 		if(this.isReal()) {
 			return new Complex(Math.cos(this._re));
@@ -461,6 +623,10 @@ export default class Complex {
 		return a.add(b).div(2);
 	}
 
+	/**
+	 * A.tan() = tan(A)
+	 * @returns {Complex}
+	 */
 	tan() {
 		if(this.isReal()) {
 			return new Complex(Math.tan(this._re));
@@ -469,6 +635,10 @@ export default class Complex {
 		return this.sin().div(this.cos());
 	}
 
+	/**
+	 * A.atan() = atan(A)
+	 * @returns {Complex}
+	 */
 	atan() {
 		if(this.isReal()) {
 			return new Complex(Math.atan(this._re));
@@ -477,6 +647,11 @@ export default class Complex {
 		return Complex.I.div(Complex.TWO).mul(Complex.I.add(this).div(Complex.I.sub(this)).log());
 	}
 
+	/**
+	 * Y.atan2(X) = atan2(Y, X) 複素数のatan2は計算不能
+	 * @param {Object} number 複素数を含まない数値 
+	 * @returns {Complex}
+	 */
 	atan2() {
 		if(arguments.length === 0) {
 			return new Complex(this.angle);
@@ -492,7 +667,7 @@ export default class Complex {
 	}
 }
 
-Complex.I = new Complex(0, 1);
+Complex.I = new Complex([0, 1]);
 Complex.ZERO = new Complex(0);
 Complex.HALF = new Complex(0.5);
 Complex.ONE = new Complex(1);
