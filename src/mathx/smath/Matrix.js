@@ -179,7 +179,7 @@ const ConstructorTool = {
 		}
 		else {
 			// スカラー用の初期化
-			return [new Complex(text)];
+			return [[new Complex(text)]];
 		}
 	},
 
@@ -201,11 +201,20 @@ const ConstructorTool = {
 };
 
 export default class Matrix {
-	constructor() {
+	
+	/**
+	 * 複素行列 (immutable)
+	 * 単純な計算用のためイミュータブルとしていますが、
+	 * 超巨大な行列を計算をするためには、イミュータブルはメモリを使っていくので、
+	 * ミュータブルな専用メソッドを追加するのもありかもしれません……。
+	 * 一応 new Matrix時に全データコピーするので。イミュータブルにしても影響はありません。
+	 * @param {Object} number 行列データ( "1 + j", [1 , 1] など)
+	 */
+	constructor(number) {
 		let matrix_array = null;
 		let is_check_string = false;
 		if(arguments.length === 1) {
-			const y = arguments[0];
+			const y = number;
 			if(y instanceof Matrix) {
 				matrix_array = [];
 				for(let i = 0; i < y.row_length; i++) {
@@ -222,6 +231,7 @@ export default class Matrix {
 				matrix_array = [];
 				for(let row_count = 0; row_count < y.length; row_count++) {
 					const row = y[row_count];
+					// 毎行ごと調査
 					if(row instanceof Array) {
 						const rows_array = [];
 						for(let col_count = 0; col_count < row.length; col_count++) {
@@ -231,7 +241,7 @@ export default class Matrix {
 							}
 							else if(column instanceof Matrix) {
 								if(!column.isScalar()) {
-									throw "IllegalArgumentException";
+									throw "Matrix in matrix";
 								}
 								rows_array[col_count] = column.scalar;
 							}
@@ -251,7 +261,7 @@ export default class Matrix {
 						}
 						else if(row instanceof Matrix) {
 							if(!row.isScalar()) {
-								throw "IllegalArgumentException";
+								throw "Matrix in matrix";
 							}
 							matrix_array[0][row_count] = row.scalar;
 						}
@@ -273,6 +283,9 @@ export default class Matrix {
 				matrix_array = [[new Complex(y)]];
 			}
 		}
+		else {
+			throw "Many arguments : " + arguments.length;
+		}
 		if(is_check_string) {
 			// 文字列データの解析の場合、":" データが紛れていないかを確認する。
 			// 紛れていたらその行は削除する。
@@ -285,64 +298,24 @@ export default class Matrix {
 		if(!ConstructorTool.isCorrectMatrixArray(matrix_array)) {
 			throw "IllegalArgumentException";
 		}
-
 		this.matrix_array = matrix_array;
 		this.row_length = this.matrix_array.length;
 		this.column_length = this.matrix_array[0].length;
 		this.string_cash = null;
 	}
 
-	_each(eachfunc) {
-		// 行優先ですべての値に対して指定した関数を実行する。内容を書き換える可能性もある
-		for(let row = 0; row < this.row_length; row++) {
-			for(let col = 0; col < this.column_length; col++) {
-				const ret = eachfunc(this.matrix_array[row][col], row, col);
-				if(ret instanceof Matrix) {
-					this.matrix_array[row][col] = ret;
-				}
-			}
-		}
-		return this;
-	}
-
+	/**
+	 * 複製します
+	 * @returns {Matrix}
+	 */
 	clone() {
 		return new Matrix(this.matrix_array);
 	}
 
-	get scalar() {
-		return this.matrix_array[0][0];
-	}
-
-	static createConstMatrix() {
-		if((arguments.length === 1) && (arguments[0] instanceof Matrix)) {
-			return arguments[0];
-		}
-		else {
-			return new Matrix(...arguments);
-		}
-	}
-
-	static eye() {
-		// 単位行列を作成する
-		if((arguments.length === 0) || (arguments.length > 2)) {
-			throw "IllegalArgumentException";
-		}
-		const y = [];
-		const y_row_length = arguments[0];
-		const y_column_length = arguments.length === 1 ? y_row_length : arguments[1];
-		for(let row = 0; row < y_row_length; row++) {
-			y[row] = [];
-			for(let col = 0; col < y_column_length; col++) {
-				y[row][col] = row === col ? Complex.ONE : Complex.ZERO;
-			}
-		}
-		return new Matrix(y);
-	}
-
-	createMatrixDoEachCalculation(eachfunc) {
-		return this.clone()._each(eachfunc);
-	}
-	
+	/**
+	 * 文字列データ
+	 * @returns {String} 
+	 */
 	toString() {
 		if(this.string_cash) {
 			return this.string_cash;
@@ -437,9 +410,15 @@ export default class Matrix {
 		return this.string_cash;
 	}
 
-	equals() {
+	/**
+	 * A.equals(B)
+	 * @param {Object} number
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean} A === B
+	 */
+	equals(number, epsilon) {
 		const M1 = this;
-		const M2 = Matrix.createConstMatrix(...arguments);
+		const M2 = Matrix.createConstMatrix(number);
 		if((M1.row_length !== M2.row_length) || (M1.column_length !== M2.column_length)) {
 			return false;
 		}
@@ -450,7 +429,7 @@ export default class Matrix {
 		const x2 = M2.matrix_array;
 		for(let row = 0; row < this.row_length; row++) {
 			for(let col = 0; col < this.column_length; col++) {
-				if(!x1[row][col].equals(x2[row][col])) {
+				if(!x1[row][col].equals(x2[row][col], epsilon)) {
 					return false;
 				}
 			}
@@ -458,58 +437,177 @@ export default class Matrix {
 		return true;
 	}
 
+	/**
+	 * 引数から行列を作成する（作成が不要の場合はnewしない）
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	static createConstMatrix(number) {
+		if((arguments.length === 1) && (number instanceof Matrix)) {
+			return number;
+		}
+		else {
+			return new Matrix(number);
+		}
+	}
+
+	/**
+	 * 行列内の全ての値に処理を加えます。ミュータブルです。
+	 * 内部で利用するようです。
+	 * @param {Function} eachfunc Function(num, row, col)
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_each(eachfunc) {
+		// 行優先ですべての値に対して指定した関数を実行する。内容を書き換える可能性もある
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = 0; col < this.column_length; col++) {
+				const ret = eachfunc(this.matrix_array[row][col], row, col);
+				if(ret === undefined) {
+					continue;
+				}
+				else if(ret instanceof Complex) {
+					this.matrix_array[row][col] = ret;
+				}
+				else if(ret instanceof Matrix) {
+					this.matrix_array[row][col] = ret.scalar;
+				}
+				else {
+					this.matrix_array[row][col] = new Complex(ret);
+				}
+			}
+		}
+		return this;
+	}
+
+	/**
+	 * 自分の行列内の全ての値に処理を加えます。イミュータブルです。
+	 * @param {Function} eachfunc Function(num, row, col)
+	 * @returns {Matrix} 新規作成に処理を加えた行列
+	 */
+	createMatrixDoEachCalculation(eachfunc) {
+		return this.clone()._each(eachfunc);
+	}
+
+	// ----------------------
+	// 内部の値を取得する
+	// ----------------------
+	
+	/**
+	 * 行列の最初の要素を返します。スカラー値を取得するときに使用してください。
+	 * @returns {Complex}
+	 */
+	get scalar() {
+		return this.matrix_array[0][0];
+	}
+
+	// ----------------------
+	// 行列の作成関係
+	// ----------------------
+	
+	/**
+	 * 単位行列を作成
+	 * @param {Number} dimension 次元数
+	 * @param {Number} column_length 列数（任意）
+	 * @returns {Matrix}
+	 */
+	static eye(dimension, column_length ) {
+		if((arguments.length === 0) || (arguments.length > 2)) {
+			throw "IllegalArgumentException";
+		}
+		const y = [];
+		const y_row_length = dimension;
+		const y_column_length = arguments.length === 1 ? dimension : column_length;
+		for(let row = 0; row < y_row_length; row++) {
+			y[row] = [];
+			for(let col = 0; col < y_column_length; col++) {
+				y[row][col] = row === col ? Complex.ONE : Complex.ZERO;
+			}
+		}
+		return new Matrix(y);
+	}
+
+	// ----------------------
+	// 判定関係
+	// ----------------------
+	
+	/**
+	 * スカラー値の判定
+	 * @returns {Boolean}
+	 */
 	isScalar() {
-		// スカラーを判定
 		return this.row_length === 1 && this.column_length == 1;
 	}
 	
+	/**
+	 * 行ベクトル／横ベクトルの判定
+	 * @returns {Boolean}
+	 */
 	isRow() {
-		// 行ベクトルかを判定
 		return this.row_length === 1;
 	}
 	
+	/**
+	 * 列ベクトル／縦ベクトルの判定
+	 * @returns {Boolean}
+	 */
 	isColumn() {
-		// 列ベクトルかを判定
 		return this.column_length === 1;
 	}
 
+	/**
+	 * ベクトルの判定
+	 * @returns {Boolean}
+	 */
 	isVector() {
-		// ベクトルかを判定
 		return this.row_length === 1 || this.column_length === 1;
 	}
 
+	/**
+	 * 行列の判定
+	 * @returns {Boolean}
+	 */
 	isMatrix() {
-		// 行列かを判定
 		return this.row_length !== 1 && this.column_length !== 1;
 	}
 
+	/**
+	 * 正方行列の判定
+	 * @returns {Boolean}
+	 */
 	isSquare() {
-		// 正方行列を判定
 		return this.row_length === this.column_length;
 	}
 
-	isIdentity() {
-		// 単位行列を判定
+	/**
+	 * 単位行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isIdentity(epsilon) {
 		if(!this.isDiagonal()) {
 			return false;
 		}
 		for(let row = 0; row < this.row_length; row++) {
-			if(!this.matrix_array[row][row].isOne()) {
+			if(!this.matrix_array[row][row].isOne(epsilon)) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	isDiagonal() {
-		// 対角行列を判定
+	/**
+	 * 対角行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isDiagonal(epsilon) {
 		if(!this.isSquare()) {
 			return false;
 		}
 		for(let row = 0; row < this.row_length; row++) {
 			for(let col = 0; col < this.column_length; col++) {
 				if(row !== col) {
-					if(!this.matrix_array[row][col].isZero()) {
+					if(!this.matrix_array[row][col].isZero(epsilon)) {
 						return false;
 					}
 				}
@@ -518,15 +616,19 @@ export default class Matrix {
 		return true;
 	}
 	
-	isTridiagonal() {
-		// 三重対角行列を判定
+	/**
+	 * 三重対角行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isTridiagonal(epsilon) {
 		if(!this.isSquare()) {
 			return false;
 		}
 		for(let row = 0; row < this.row_length; row++) {
 			for(let col = 0; col < this.column_length; col++) {
 				if(Math.abs(row - col) > 1) {
-					if(!this.matrix_array[row][col].isZero()) {
+					if(!this.matrix_array[row][col].isZero(epsilon)) {
 						return false;
 					}
 				}
@@ -535,25 +637,34 @@ export default class Matrix {
 		return true;
 	}
 
-	isRegular() {
-		// 正則行列を判定
+	/**
+	 * 正則行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isRegular(epsilon) {
 		if(!this.isSquare()) {
 			return false;
 		}
 		// ランクが行列の次元と等しいかどうかで判定
 		// det(M) != 0 でもよいが、時間がかかる可能性があるので
 		// 誤差は自動で計算など本当はもうすこし良い方法を考える必要がある
-		return (this.rank(1.0e-10).equals(this.row_length));
+		const tolerance = epsilon ? epsilon : 1.0e-10;
+		return (this.rank(1.0e-10).equals(this.row_length, tolerance));
 	}
 
-	isSymmetric() {
-		// 対称行列を判定
+	/**
+	 * 対称行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isSymmetric(epsilon) {
 		if(!this.isSquare()) {
 			return false;
 		}
 		for(let row = 0; row < this.row_length; row++) {
 			for(let col = row + 1; col < this.column_length; col++) {
-				if(!this.matrix_array[row][col].equals(this.matrix_array[col][row])) {
+				if(!this.matrix_array[row][col].equals(this.matrix_array[col][row], epsilon)) {
 					return false;
 				}
 			}
@@ -561,16 +672,25 @@ export default class Matrix {
 		return true;
 	}
 
+	/**
+	 * A.size() = [row_length column_length] 行列のサイズを取得
+	 * @returns {Matix}
+	 */
 	size() {
 		// 行列のサイズを取得
 		return new Matrix([[this.row_length, this.column_length]]);
 	}
 
-	max() {
+	/**
+	 * A.max() 行列内の最大値ベクトル、ベクトル内の最大スカラー値を取得
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matix}
+	 */
+	max(epsilon) {
 		if(this.isRow()) {
 			let y = this.matrix_array[0][0];
 			for(let col = 1; col < this.column_length; col++) {
-				if(y.compareTo(this.matrix_array[0][col]) > 0) {
+				if(y.compareTo(this.matrix_array[0][col], epsilon) > 0) {
 					y = this.matrix_array[0][col];
 				}
 			}
@@ -582,7 +702,7 @@ export default class Matrix {
 			for(let col = 0; col < this.column_length; col++) {
 				y[0][col] = this.matrix_array[0][col];
 				for(let row = 1; row < this.row_length; row++) {
-					if(y[0][col].compareTo(this.matrix_array[row][col]) > 0) {
+					if(y[0][col].compareTo(this.matrix_array[row][col], epsilon) > 0) {
 						y[0][col] = this.matrix_array[row][col];
 					}
 				}
@@ -591,11 +711,16 @@ export default class Matrix {
 		}
 	}
 	
-	min() {
+	/**
+	 * A.min() 行列内の最小値ベクトル、ベクトル内の最小スカラー値を取得
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matix}
+	 */
+	min(epsilon) {
 		if(this.isRow()) {
 			let y = this.matrix_array[0][0];
 			for(let col = 1; col < this.column_length; col++) {
-				if(y.compareTo(this.matrix_array[0][col]) < 0) {
+				if(y.compareTo(this.matrix_array[0][col], epsilon) < 0) {
 					y = this.matrix_array[0][col];
 				}
 			}
@@ -607,7 +732,7 @@ export default class Matrix {
 			for(let col = 0; col < this.column_length; col++) {
 				y[0][col] = this.matrix_array[0][col];
 				for(let row = 1; row < this.row_length; row++) {
-					if(y[0][col].compareTo(this.matrix_array[row][col]) < 0) {
+					if(y[0][col].compareTo(this.matrix_array[row][col], epsilon) < 0) {
 						y[0][col] = this.matrix_array[row][col];
 					}
 				}
@@ -616,17 +741,22 @@ export default class Matrix {
 		}
 	}
 
-	static _checkMatrixArrayErrorType1(M1, M2) {
+	// ----------------------
+	// 四則演算
+	// ----------------------
+	
+	/**
+	 * A.add(B) = A + B
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	add(number) {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(number);
 		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
 			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
-			throw "IllegalArgumentMatrixException";
+			throw "Matrix size does not match";
 		}
-	}
-
-	add() {
-		const M1 = this;
-		const M2 = Matrix.createConstMatrix(...arguments);
-		Matrix._checkMatrixErrorType1(M1, M2);
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
 		const y = [];
@@ -641,10 +771,18 @@ export default class Matrix {
 		return new Matrix(y);
 	}
 
-	sub() {
+	/**
+	 * A.sub(B) = A - B
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	sub(number) {
 		const M1 = this;
-		const M2 = Matrix.createConstMatrix(...arguments);
-		Matrix._checkMatrixErrorType1(M1, M2);
+		const M2 = Matrix.createConstMatrix(number);
+		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
+			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+			throw "Matrix size does not match";
+		}
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
 		const y = [];
@@ -659,9 +797,14 @@ export default class Matrix {
 		return new Matrix(y);
 	}
 
-	mul() {
+	/**
+	 * A.mul(B) = A * B
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	mul(number) {
 		const M1 = this;
-		const M2 = Matrix.createConstMatrix(...arguments);
+		const M2 = Matrix.createConstMatrix(number);
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
 		if(M1.isScalar() && M2.isScalar()) {
@@ -687,7 +830,7 @@ export default class Matrix {
 			return new Matrix(y);
 		}
 		if((M1.row_length !== M1.column_length) || (M2.row_length !== M1.column_length)) {
-			throw "IllegalArgumentMatrixException";
+			throw "Matrix size does not match";
 		}
 		for(let row = 0; row < M1.row_length; row++) {
 			y[row] = [];
@@ -702,92 +845,16 @@ export default class Matrix {
 		return new Matrix(y);
 	}
 
-	linsolve() {
-		if(!this.isSquare()) {
-			throw "IllegalArgumentMatrixException";
-		}
-		// 連立一次方程式を解く
-		const len = this.column_length;
-		const arg = Matrix.createConstMatrix(...arguments);
-		const A = this.matrix_array;
-		const B = arg.matrix_array;
-		if((arg.row_length !== this.row_length) || (arg.column_length > 1)) {
-			throw "IllegalArgumentMatrixException";
-		}
-		// 行列を準備する
-		const long_matrix_array = [];
-		const long_length = len + 1;
-		for(let row = 0; row < len; row++) {
-			long_matrix_array[row] = [];
-			for(let col = 0; col < len; col++) {
-				long_matrix_array[row][col] = A[row][col];
-			}
-			long_matrix_array[row][long_length - 1] = B[row][0];
-		}
-		// ガウスの消去法で連立1次方程式の未知数を求める
-		//前進消去
-		for(let k = 0; k < (len - 1); k++) {
-			//ピポットの選択
-			{
-				let max_number = Complex.ZERO;
-				let max_position = k;
-				//絶対値が大きいのを調べる
-				for(let row = k, col = k; row < len; row++) {
-					const abs_data = long_matrix_array[row][col].abs();
-					if(max_number.compareTo(abs_data) > 0) {
-						max_number = abs_data;
-						max_position = row;
-					}
-				}
-				//交換を行う
-				if(max_position !== k) {
-					const swap = long_matrix_array[k];
-					long_matrix_array[k] = long_matrix_array[max_position];
-					long_matrix_array[max_position] = swap;
-				}
-			}
-			//正規化
-			{
-				//ピポット
-				const normalize_value = long_matrix_array[k][k].inv();
-				for(let row = k, col = k; col < long_length; col++) {
-					long_matrix_array[row][col] = long_matrix_array[row][col].mul(normalize_value);
-				}
-			}
-			//消去
-			for(let row = k + 1;row < len; row++) {
-				const temp = long_matrix_array[row][k];
-				for(let col = k; col < long_length; col++)
-				{
-					long_matrix_array[row][col] = long_matrix_array[row][col].sub(long_matrix_array[k][col].mul(temp));
-				}
-			}
-		}
-
-		//後退代入
-		const y = [];
-		y[len - 1] = long_matrix_array[len - 1][len].div(long_matrix_array[len - 1][len - 1]);
-		for(let row = len - 2; row >= 0; row--) {
-			y[row] = long_matrix_array[row][long_length - 1];
-			for(let j = row + 1; j < len; j++) {
-				y[row] = y[row].sub(long_matrix_array[row][j] * y[j]);
-			}
-			y[row] = y[row].div(long_matrix_array[row][row]);
-		}
-		const y2 = [];
-		for(let row = 0; row < this.row_length; row++) {
-			y2[row] = [y[row]];
-		}
-
-		return new Matrix(y2);
-	}
-
+	/**
+	 * A.inv() = 単位行列 / A
+	 * @returns {Matrix}
+	 */
 	inv() {
 		if(this.isScalar()) {
 			return new Matrix(Complex.ONE.div(this.scalar));
 		}
 		if(!this.isSquare()) {
-			throw "IllegalArgumentMatrixException";
+			throw "not square";
 		}
 		if(this.isDiagonal()) {
 			// 対角行列の場合は、対角成分のみ逆数をとる
@@ -865,9 +932,14 @@ export default class Matrix {
 		return new Matrix(y);
 	}
 
-	div() {
+	/**
+	 * A.div(B) = A / B
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	div(number) {
 		const M1 = this;
-		const M2 = Matrix.createConstMatrix(...arguments);
+		const M2 = Matrix.createConstMatrix(number);
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
 		if(M1.isScalar() && M2.isScalar()) {
@@ -887,15 +959,513 @@ export default class Matrix {
 			return this.mul(M2.inv());
 		}
 		if(M1.column_length !== M2.column_length) {
-			throw "IllegalArgumentMatrixException";
+			throw "Matrix size does not match";
 		}
 		
-		// 疑似逆行列を使用するとよい
+		// 疑似逆行列を使用するとよいと思われる
 		// return this.mul(M2.pinv());
 		// 未実装なのでエラー
 		throw "Unimplemented";
 	}
 
+	// ----------------------
+	// Comlexクラスの機能
+	// ----------------------
+
+	/**
+	 * 行列の各値の実部
+	 * @returns {Matrix}
+	 */
+	real() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return new Complex(num.real);
+		});
+	}
+	
+	/**
+	 * 行列の各値の虚部
+	 * @returns {Matrix}
+	 */
+	imag() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return new Complex(num.imag);
+		});
+	}
+
+	/**
+	 * 行列の各値のノルム（極座標のノルム）
+	 * @returns {Matrix}
+	 */
+	norm() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return new Complex(num.norm);
+		});
+	}
+
+	/**
+	 * 行列の各値の偏角（極座標の角度）
+	 * @returns {Matrix}
+	 */
+	angle() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return new Complex(num.angle);
+		});
+	}
+
+	/**
+	 * 行列の各値の符号値
+	 * @returns {Matrix}
+	 */
+	sign() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return new Complex(num.sign());
+		});
+	}
+
+	/**
+	 * 整数を判定(1 or 0)
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix}
+	 */
+	testInteger(epsilon) {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isInteger(epsilon) ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * 複素整数を判定(1 or 0)
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix}
+	 */
+	testComplexInteger(epsilon) {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isComplexInteger(epsilon) ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * 0 を判定(1 or 0)
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix}
+	 */
+	testZero(epsilon) {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isZero(epsilon) ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * 1 を判定(1 or 0)
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix}
+	 */
+	testOne(epsilon) {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isOne(epsilon) ? Complex.ONE : Complex.ZERO;
+		});
+	}
+	
+	/**
+	 * 複素数を判定(1 or 0)
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix}
+	 */
+	testComplex(epsilon) {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isComplex(epsilon) ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * 実数を判定(1 or 0)
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix}
+	 */
+	testReal(epsilon) {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isReal(epsilon) ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * 非数を判定(1 or 0)
+	 * @returns {Matrix}
+	 */
+	testNaN() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isNaN() ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+
+	/**
+	 * real(x) > 0
+	 * @returns {Boolean}
+	 */
+	testPositive() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isPositive() ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * real(x) < 0
+	 * @returns {Boolean}
+	 */
+	testNegative() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isNegative() ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * real(x) >= 0
+	 * @returns {Boolean}
+	 */
+	testNotNegative() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isNotNegative() ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * 無限を判定
+	 * @returns {Boolean}
+	 */
+	testInfinite() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isInfinite() ? Complex.ONE : Complex.ZERO;
+		});
+	}
+	
+	/**
+	 * 有限数を判定
+	 * @returns {Boolean}
+	 */
+	testFinite() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.isFinite() ? Complex.ONE : Complex.ZERO;
+		});
+	}
+
+	/**
+	 * 行列の各値の絶対値をとる
+	 * @returns {Matrix}
+	 */
+	abs() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.abs();
+		});
+	}
+
+	/**
+	 * 複素共役行列
+	 * @returns {Matrix}
+	 */
+	conj() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.conj();
+		});
+	}
+
+	/**
+	 * 行列の各値に -1 を掛け算する
+	 * @returns {Matrix}
+	 */
+	negate() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.negate();
+		});
+	}
+
+	/**
+	 * 行列の各値に sqrt()
+	 * @returns {Matrix}
+	 */
+	sqrt() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.sqrt();
+		});
+	}
+
+	/**
+	 * 行列の各値に pow(x)
+	 * @param {Object} number スカラー
+	 * @returns {Matrix}
+	 */
+	pow(number) {
+		const M = Matrix.createConstMatrix(number);
+		if(!M.isScalar()) {
+			throw "not set Scalar";
+		}
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.pow(M.scalar);
+		});
+	}
+
+	/**
+	 * 行列の各値に log()
+	 * @returns {Matrix}
+	 */
+	log() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.log();
+		});
+	}
+
+	/**
+	 * 行列の各値に exp()
+	 * @returns {Matrix}
+	 */
+	exp() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.exp();
+		});
+	}
+
+	/**
+	 * 行列の各値に sin()
+	 * @returns {Matrix}
+	 */
+	sin() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.sin();
+		});
+	}
+
+	/**
+	 * 行列の各値に cos()
+	 * @returns {Matrix}
+	 */
+	cos() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.cos();
+		});
+	}
+
+	/**
+	 * 行列の各値に tan()
+	 * @returns {Matrix}
+	 */
+	tan() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.tan();
+		});
+	}
+	
+	/**
+	 * 行列の各値に atan()
+	 * @returns {Matrix}
+	 */
+	atan() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.atan();
+		});
+	}
+
+	/**
+	 * 行列の各値に atan2()
+	 * @param {Object} number スカラー
+	 * @returns {Matrix}
+	 */
+	atan2(number) {
+		const M = Matrix.createConstMatrix(number);
+		if(!M.isScalar) {
+			throw "not set Scalar";
+		}
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.atan2(M.scalar);
+		});
+	}
+
+	// ----------------------
+	// 行列用の計算
+	// ----------------------
+	
+	/**
+	 * 行列のランク
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix}
+	 */
+	rank(epsilon) {
+		// 対角線を見てランクを計算する
+		const R = this.qr().R;
+		const min_length = Math.min(R.row_length, R.column_length);
+		let rank = min_length;
+		//const tol = // 許容誤差
+		for(let i = min_length - 1; i >= 0; i--) {
+			if(R.matrix_array[i][i].isZero(epsilon)) {
+				rank--;
+			}
+			else {
+				break;
+			}
+		}
+		return new Matrix(rank);
+	}
+
+	/**
+	 * 転置行列
+	 * @returns {Matrix}
+	 */
+	transpose() {
+		const y = [];
+		for(let col = 0; col < this.column_length; col++) {
+			y[col] = [];
+			for(let row = 0; row < this.row_length; row++) {
+				y[col][row] = this.matrix_array[row][col];
+			}
+		}
+		return new Matrix(y);
+	}
+
+	/**
+	 * エルミート転置行列
+	 * @returns {Matrix}
+	 */
+	ctranspose() {
+		return this.transpose().conj();
+	}
+
+	/**
+	 * エルミート転置行列
+	 * @returns {Matrix}
+	 */
+	T() {
+		return this.ctranspose();
+	}
+
+	/**
+	 * A.det() = [A] 行列式
+	 * @returns {Matrix}
+	 */
+	det() {
+		if(!this.isSquare()) {
+			throw "not square";
+		}
+		const M = this.matrix_array;
+		const calcDet = function(x) {
+			if(x.length === 2) {
+				// 2次元の行列式になったら、たすき掛け計算する
+				return x[0][0].mul(x[1][1]).sub(x[0][1].mul(x[1][0]));
+			}
+			let y = Complex.ZERO;
+			for(let i = 0; i < x.length; i++) {
+				// N次元の行列式を、N-1次元の行列式に分解していく
+				const D = [];
+				const a = x[i][0];
+				for(let row = 0, D_low = 0; row < x.length; row++) {
+					if(i === row) {
+						continue;
+					}
+					D[D_low] = [];
+					for(let col = 1, D_col = 0; col < x.length; col++, D_col++) {
+						D[D_low][D_col] = x[row][col];
+					}
+					D_low++;
+				}
+				if((i % 2) === 0) {
+					y = y.add(a.mul(calcDet(D)));
+				}
+				else {
+					y = y.sub(a.mul(calcDet(D)));
+				}
+			}
+			return y;
+		};
+		return new Matrix(calcDet(M));
+	}
+
+	/**
+	 * A.linsolve(B) = Ax = B となる xを解く
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	linsolve(number) {
+		if(!this.isSquare()) {
+			throw "Matrix size does not match";
+		}
+		// 連立一次方程式を解く
+		const len = this.column_length;
+		const arg = Matrix.createConstMatrix(number);
+		const A = this.matrix_array;
+		const B = arg.matrix_array;
+		if((arg.row_length !== this.row_length) || (arg.column_length > 1)) {
+			throw "Matrix size does not match";
+		}
+		// 行列を準備する
+		const long_matrix_array = [];
+		const long_length = len + 1;
+		for(let row = 0; row < len; row++) {
+			long_matrix_array[row] = [];
+			for(let col = 0; col < len; col++) {
+				long_matrix_array[row][col] = A[row][col];
+			}
+			long_matrix_array[row][long_length - 1] = B[row][0];
+		}
+		// ガウスの消去法で連立1次方程式の未知数を求める
+		//前進消去
+		for(let k = 0; k < (len - 1); k++) {
+			//ピポットの選択
+			{
+				let max_number = Complex.ZERO;
+				let max_position = k;
+				//絶対値が大きいのを調べる
+				for(let row = k, col = k; row < len; row++) {
+					const abs_data = long_matrix_array[row][col].abs();
+					if(max_number.compareTo(abs_data) > 0) {
+						max_number = abs_data;
+						max_position = row;
+					}
+				}
+				//交換を行う
+				if(max_position !== k) {
+					const swap = long_matrix_array[k];
+					long_matrix_array[k] = long_matrix_array[max_position];
+					long_matrix_array[max_position] = swap;
+				}
+			}
+			//正規化
+			{
+				//ピポット
+				const normalize_value = long_matrix_array[k][k].inv();
+				for(let row = k, col = k; col < long_length; col++) {
+					long_matrix_array[row][col] = long_matrix_array[row][col].mul(normalize_value);
+				}
+			}
+			//消去
+			for(let row = k + 1;row < len; row++) {
+				const temp = long_matrix_array[row][k];
+				for(let col = k; col < long_length; col++)
+				{
+					long_matrix_array[row][col] = long_matrix_array[row][col].sub(long_matrix_array[k][col].mul(temp));
+				}
+			}
+		}
+
+		//後退代入
+		const y = [];
+		y[len - 1] = long_matrix_array[len - 1][len].div(long_matrix_array[len - 1][len - 1]);
+		for(let row = len - 2; row >= 0; row--) {
+			y[row] = long_matrix_array[row][long_length - 1];
+			for(let j = row + 1; j < len; j++) {
+				y[row] = y[row].sub(long_matrix_array[row][j] * y[j]);
+			}
+			y[row] = y[row].div(long_matrix_array[row][row]);
+		}
+		const y2 = [];
+		for(let row = 0; row < this.row_length; row++) {
+			y2[row] = [y[row]];
+		}
+
+		return new Matrix(y2);
+	}
+
+	/**
+	 * {Q, R} = A.qr() QR分解を行う
+	 * @returns {Object} {Q, R} Qは正規直行行列、Rは上三角行列
+	 */
 	qr() {
 		const gram_schmidt_orthonormalization = function(M) {
 			const len = M.column_length;
@@ -954,91 +1524,6 @@ export default class Matrix {
 			throw "Unimplemented";
 		}
 
-	}
-
-	rank(epsilon) {
-		// 対角線を見てランクを計算する
-		const R = this.qr().R;
-		const min_length = Math.min(R.row_length, R.column_length);
-		let rank = min_length;
-		const tolerance = epsilon ? epsilon : Number.EPSILON;
-		//const tol = // 許容誤差
-		for(let i = min_length - 1; i >= 0; i--) {
-			if(R.matrix_array[i][i].isZero(tolerance)) {
-				rank--;
-			}
-			else {
-				break;
-			}
-		}
-		return new Matrix(rank);
-	}
-
-	conj() {
-		// 複素共役
-		return this.createMatrixDoEachCalculation(
-			function(num) { return num.conj(); }
-		);
-	}
-
-	transpose() {
-		// 転置行列
-		const y = [];
-		for(let col = 0; col < this.column_length; col++) {
-			y[col] = [];
-			for(let row = 0; row < this.row_length; row++) {
-				y[col][row] = this.matrix_array[row][col];
-			}
-		}
-		return new Matrix(y);
-	}
-
-	ctranspose() {
-		// エルミート転置行列
-		return this.transpose().conj();
-	}
-
-	dash() {
-		// X' = 転置行列を指す
-		return this.ctranspose();
-	}
-
-	det() {
-		// 行列式を返す
-		if(!this.isSquare()) {
-			throw "not square";
-		}
-		const M = this.matrix_array;
-		const calcDet = function(x) {
-			if(x.length === 2) {
-				// 2次元の行列式になったら、たすき掛け計算する
-				return x[0][0].mul(x[1][1]).sub(x[0][1].mul(x[1][0]));
-			}
-			let y = Complex.ZERO;
-			for(let i = 0; i < x.length; i++) {
-				// N次元の行列式を、N-1次元の行列式に分解していく
-				const D = [];
-				const a = x[i][0];
-				for(let row = 0, D_low = 0; row < x.length; row++) {
-					if(i === row) {
-						continue;
-					}
-					D[D_low] = [];
-					for(let col = 1, D_col = 0; col < x.length; col++, D_col++) {
-						D[D_low][D_col] = x[row][col];
-					}
-					D_low++;
-				}
-				if((i % 2) === 0) {
-					y = y.add(a.mul(calcDet(D)));
-				}
-				else {
-					y = y.sub(a.mul(calcDet(D)));
-				}
-			}
-			return y;
-		};
-		return new Matrix(calcDet(M));
 	}
 
 }

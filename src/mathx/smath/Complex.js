@@ -52,6 +52,7 @@ export default class Complex {
 
 	/**
 	 * 複素数 (immutable)
+	 * 行列で使うためイミュータブルは必ず守ること。
 	 * @param {Object} number 複素数データ( "1 + j", [1 , 1] など)
 	 */
 	constructor(number) {
@@ -85,6 +86,43 @@ export default class Complex {
 	}
 
 	/**
+	 * ディープコピー（※実際にはイミュータブルなのでコピーする）
+	 * @returns {Complex} 
+	 */
+	clone() {
+		return this;
+	}
+
+	/**
+	 * 文字列データ
+	 * @returns {String} 
+	 */
+	toString() {
+		const formatG = function(x) {
+			let numstr = x.toPrecision(6);
+			if(numstr.indexOf(".") !== -1) {
+				numstr = numstr.replace(/\.?0+$/, "");  // 1.00 , 1.10
+				numstr = numstr.replace(/\.?0+e/, "e"); // 1.0e , 1.10e
+			}
+			return numstr;
+		};
+		if(!this.isReal()) {
+			if(this._re === 0) {
+				return formatG(this._im) + "i";
+			}
+			else if(this._im >= 0) {
+				return formatG(this._re) + " + " + formatG(this._im) + "i";
+			}
+			else {
+				return formatG(this._re) + " - " + formatG(-this._im) + "i";
+			}
+		}
+		else {
+			return formatG(this._re);
+		}
+	}
+	
+	/**
 	 * 引数から複素数を作成する（作成が不要の場合はnewしない）
 	 * @param {Object} number 
 	 * @returns {Complex}
@@ -98,6 +136,18 @@ export default class Complex {
 		}
 	}
 	
+	/**
+	 * A.equals(B)
+	 * @param {Object} number
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean} A === B
+	 */
+	equals(number, epsilon) {
+		const x = Complex.createConstComplex(number);
+		const tolerance = epsilon ? epsilon : Number.EPSILON;
+		return (Math.abs(this._re - x._re) <  tolerance) && (Math.abs(this._im - x._im) < tolerance);
+	}
+
 	/**
 	 * 実部
 	 * @returns {Number} 実部の数値（非Complexオブジェクト）
@@ -161,43 +211,6 @@ export default class Complex {
 			point++;
 		}
 		return point;
-	}
-
-	/**
-	 * 文字列データ
-	 * @returns {String} 
-	 */
-	toString() {
-		const formatG = function(x) {
-			let numstr = x.toPrecision(6);
-			if(numstr.indexOf(".") !== -1) {
-				numstr = numstr.replace(/\.?0+$/, "");  // 1.00 , 1.10
-				numstr = numstr.replace(/\.?0+e/, "e"); // 1.0e , 1.10e
-			}
-			return numstr;
-		};
-		if(!this.isReal()) {
-			if(this._re === 0) {
-				return formatG(this._im) + "i";
-			}
-			else if(this._im >= 0) {
-				return formatG(this._re) + " + " + formatG(this._im) + "i";
-			}
-			else {
-				return formatG(this._re) + " - " + formatG(-this._im) + "i";
-			}
-		}
-		else {
-			return formatG(this._re);
-		}
-	}
-	
-	/**
-	 * ディープコピー（※実際にはイミュータブルなのでコピーする）
-	 * @returns {Complex} 
-	 */
-	clone() {
-		return this;
 	}
 
 	/**
@@ -324,18 +337,6 @@ export default class Complex {
 	}
 	
 	/**
-	 * A.equals(B)
-	 * @param {Object} number
-	 * @param {Number} epsilon 誤差（任意）
-	 * @returns {Boolean} A === B
-	 */
-	equals(number, epsilon) {
-		const x = Complex.createConstComplex(number);
-		const tolerance = epsilon ? epsilon : Number.EPSILON;
-		return (Math.abs(this._re - x._re) <  tolerance) && (Math.abs(this._im - x._im) < tolerance);
-	}
-
-	/**
 	 * A.max(B) = max([A, B])
 	 * @param {Object} number
 	 * @param {Number} epsilon 誤差（任意）
@@ -387,6 +388,10 @@ export default class Complex {
 		return a < b ? 1 : -1;
 	}
 
+	// ----------------------
+	// テスト系
+	// ----------------------
+	
 	/**
 	 * 整数を判定
 	 * @param {Number} epsilon 誤差（任意）
@@ -502,6 +507,10 @@ export default class Complex {
 		return !this.isNaN() && !this.isInfinite();
 	}
 
+	// ----------------------
+	// 複素数
+	// ----------------------
+	
 	/**
 	 * A.abs() = abs(A)
 	 * @returns {Complex}
@@ -527,6 +536,10 @@ export default class Complex {
 		return new Complex([-this._re, -this._im]);
 	}
 
+	// ----------------------
+	// 指数
+	// ----------------------
+	
 	/**
 	 * A.pow(B) = A^B
 	 * @param {Object} number
@@ -593,6 +606,10 @@ export default class Complex {
 		return new Complex([r * Math.cos(this._im), r * Math.sin(this._im)]);
 	}
 
+	// ----------------------
+	// 三角関数
+	// ----------------------
+	
 	/**
 	 * A.sin() = sin(A)
 	 * @returns {Complex}
