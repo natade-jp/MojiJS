@@ -204,10 +204,6 @@ export default class Matrix {
 	
 	/**
 	 * 複素行列 (immutable)
-	 * 単純な計算用のためイミュータブルとしていますが、
-	 * 超巨大な行列を計算をするためには、イミュータブルはメモリを使っていくので、
-	 * ミュータブルな専用メソッドを追加するのもありかもしれません……。
-	 * 一応 new Matrix時に全データコピーするので。イミュータブルにしても影響はありません。
 	 * @param {Object} number 行列データ( "1 + j", [1 , 1] など)
 	 */
 	constructor(number) {
@@ -218,10 +214,7 @@ export default class Matrix {
 			if(y instanceof Matrix) {
 				matrix_array = [];
 				for(let i = 0; i < y.row_length; i++) {
-					matrix_array[i] = [];
-					for(let j = 0; j < y.column_length; j++) {
-						matrix_array[i][j] = y[i][j];
-					}
+					matrix_array[i] = y[i];
 				}
 			}
 			else if(y instanceof Complex) {
@@ -296,7 +289,7 @@ export default class Matrix {
 			}
 		}
 		if(!ConstructorTool.isCorrectMatrixArray(matrix_array)) {
-			throw "IllegalArgumentException";
+			throw "new Matrix IllegalArgumentException";
 		}
 		this.matrix_array = matrix_array;
 		this.row_length = this.matrix_array.length;
@@ -510,17 +503,109 @@ export default class Matrix {
 	 * @param {Number} column_length 列数（任意）
 	 * @returns {Matrix}
 	 */
-	static eye(dimension, column_length ) {
+	static eye(dimension, column_length) {
 		if((arguments.length === 0) || (arguments.length > 2)) {
 			throw "IllegalArgumentException";
 		}
 		const y = [];
 		const y_row_length = dimension;
-		const y_column_length = arguments.length === 1 ? dimension : column_length;
+		const y_column_length = column_length ? column_length : dimension;
 		for(let row = 0; row < y_row_length; row++) {
 			y[row] = [];
 			for(let col = 0; col < y_column_length; col++) {
 				y[row][col] = row === col ? Complex.ONE : Complex.ZERO;
+			}
+		}
+		return new Matrix(y);
+	}
+	
+	/**
+	 * 指定した数値で初期化
+	 * @param {Object} number 
+	 * @param {Number} dimension 次元数
+	 * @param {Number} column_length 列数（任意）
+	 * @returns {Matrix}
+	 */
+	static memset(number, dimension, column_length) {
+		if((arguments.length === 0) || (arguments.length > 3)) {
+			throw "IllegalArgumentException";
+		}
+		const y = [];
+		const y_row_length = dimension;
+		const y_column_length = column_length ? column_length : dimension;
+		if((number instanceof Matrix) && (!number.isScalar())) {
+			const x = number.matrix_array;
+			const x_row_length = number.row_length;
+			const x_column_length = number.column_length;
+			for(let row = 0; row < y_row_length; row++) {
+				y[row] = [];
+				for(let col = 0; col < y_column_length; col++) {
+					y[row][col] = x[row % x_row_length][col % x_column_length];
+				}
+			}
+			return new Matrix(y);
+		}
+		else {
+			let x = 0;
+			if((number instanceof Matrix) && (number.isScalar())) {
+				x = number.scalar;
+			}
+			else {
+				x = Complex.createConstComplex(number);
+			}
+			for(let row = 0; row < y_row_length; row++) {
+				y[row] = [];
+				for(let col = 0; col < y_column_length; col++) {
+					y[row][col] = x;
+				}
+			}
+			return new Matrix(y);
+		}
+	}
+
+	/**
+	 * 0で初期化
+	 * @param {Number} dimension 次元数
+	 * @param {Number} column_length 列数（任意）
+	 * @returns {Matrix}
+	 */
+	static zeros(dimension, column_length) {
+		if((arguments.length === 0) || (arguments.length > 2)) {
+			throw "IllegalArgumentException";
+		}
+		return Matrix.memset(Complex.ZERO, dimension, column_length);
+	}
+
+	/**
+	 * 1で初期化
+	 * @param {Number} dimension 次元数
+	 * @param {Number} column_length 列数（任意）
+	 * @returns {Matrix}
+	 */
+	static ones(dimension, column_length) {
+		if((arguments.length === 0) || (arguments.length > 2)) {
+			throw "IllegalArgumentException";
+		}
+		return Matrix.memset(Complex.ONE, dimension, column_length);
+	}
+
+	/**
+	 * ランダム値で初期化
+	 * @param {Number} dimension 次元数
+	 * @param {Number} column_length 列数（任意）
+	 * @returns {Matrix}
+	 */
+	static rand(dimension, column_length) {
+		if((arguments.length === 0) || (arguments.length > 2)) {
+			throw "IllegalArgumentException";
+		}
+		const y = [];
+		const y_row_length = dimension;
+		const y_column_length = column_length ? column_length : dimension;
+		for(let row = 0; row < y_row_length; row++) {
+			y[row] = [];
+			for(let col = 0; col < y_column_length; col++) {
+				y[row][col] = Complex.rand();
 			}
 		}
 		return new Matrix(y);
@@ -1276,6 +1361,36 @@ export default class Matrix {
 		}
 		return this.createMatrixDoEachCalculation(function(num) {
 			return num.atan2(M.scalar);
+		});
+	}
+
+	/**
+	 * 行列の各値に floor()
+	 * @returns {Matrix}
+	 */
+	floor() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.floor();
+		});
+	}
+
+	/**
+	 * 行列の各値に ceil()
+	 * @returns {Matrix}
+	 */
+	ceil() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.ceil();
+		});
+	}
+
+	/**
+	 * 行列の各値に round()
+	 * @returns {Matrix}
+	 */
+	round() {
+		return this.createMatrixDoEachCalculation(function(num) {
+			return num.round();
 		});
 	}
 

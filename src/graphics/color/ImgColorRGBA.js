@@ -9,7 +9,6 @@
  */
 
 import ImgColor from "./ImgColor.js";
-import ImgVector from "./ImgVector.js";
 
 export default class ImgColorRGBA extends ImgColor {
 	
@@ -230,19 +229,6 @@ export default class ImgColorRGBA extends ImgColor {
 						this.b * m[3][2] +
 						this.a * m[3][3];
 		return color;
-	}
-	
-	/**
-	 * RGBの画素から方向ベクトルへの変換
-	 * 右がX+,U+、下がY+,V+としたとき、RGB＝（+X, -Y, +Z）系とします。
-	 * @returns {ImgVector}
-	 */
-	getNormalVector() {
-		return new ImgVector(
-			(this.r / 128.0) - 1.0,
-			- (this.g / 128.0) + 1.0,
-			(this.b / 128.0) - 1.0
-		);
 	}
 	
 }

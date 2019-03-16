@@ -71,4 +71,22 @@ export default class ImgVector {
 			255
 		]);
 	}
+	
+	/**
+	 * RGBの画素から方向ベクトルへの変換
+	 * 右がX+,U+、下がY+,V+としたとき、RGB＝（+X, -Y, +Z）系とします。
+	 * @param {ImgColorRGBA} rgbcolor
+	 * @returns {ImgVector}
+	 */
+	static createNormalVector(rgbcolor) {
+		if(!(rgbcolor instanceof ImgColorRGBA)) {
+			throw "not ImgColorRGBA";
+		}
+		return new ImgVector(
+			(rgbcolor.r / 128.0) - 1.0,
+			- (rgbcolor.g / 128.0) + 1.0,
+			(rgbcolor.b / 128.0) - 1.0
+		);
+	}
+
 }

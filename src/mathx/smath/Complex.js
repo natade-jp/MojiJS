@@ -8,6 +8,10 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Random from "../basic/Random.js";
+
+const random_class = new Random();
+
 /**
  * 文字列から複素数を解析する
  * @param {String} text 解析したい文字列
@@ -136,6 +140,14 @@ export default class Complex {
 		}
 	}
 	
+	/**
+	 * ランダムな値を作成
+	 * @returns {Complex}
+	 */
+	static rand() {
+		return new Complex(random_class.nextDouble());
+	}
+
 	/**
 	 * A.equals(B)
 	 * @param {Object} number
@@ -682,6 +694,36 @@ export default class Complex {
 		// 複素数のatan2は未定義である（実装不可能）
 		throw "calculation method is undefined.";
 	}
+	
+	// ----------------------
+	// 丸め
+	// ----------------------
+	
+	/**
+	 * A.floor() = floor(A)
+	 * @returns {Complex}
+	 */
+	floor() {
+		return new Complex([Math.floor(this._im), Math.floor(this._re)]);
+	}
+
+	/**
+	 * A.ceil() = ceil(A)
+	 * @returns {Complex}
+	 */
+	ceil() {
+		return new Complex([Math.ceil(this._im), Math.ceil(this._re)]);
+	}
+	
+	/**
+	 * A.round() = round(A)
+	 * @returns {Complex}
+	 */
+	round() {
+		return new Complex([Math.round(this._im), Math.round(this._re)]);
+	}
+
+
 }
 
 Complex.I = new Complex([0, 1]);

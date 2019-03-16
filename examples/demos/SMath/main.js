@@ -25,6 +25,9 @@ const main = function() {
 	Log.println(_("1 + 2i").pow("2 + 3i"));
 
 	Log.println(Matrix.eye(3));
+	Log.println(Matrix.ones(3));
+	Log.println(Matrix.zeros(3));
+	Log.println(Matrix.rand(3));
 	
 	Log.println(_("[1 2 3; 4 5 6; 7 8 9]"));
 
