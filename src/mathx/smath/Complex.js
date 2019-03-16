@@ -149,6 +149,14 @@ export default class Complex {
 	}
 
 	/**
+	 * 正規分布に従うランダムな値を作成
+	 * @returns {Complex}
+	 */
+	static randn() {
+		return new Complex(random_class.nextGaussian());
+	}
+
+	/**
 	 * A.equals(B)
 	 * @param {Object} number
 	 * @param {Number} epsilon 誤差（任意）

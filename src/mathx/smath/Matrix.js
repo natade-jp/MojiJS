@@ -474,10 +474,45 @@ export default class Matrix {
 
 	/**
 	 * 自分の行列内の全ての値に処理を加えます。イミュータブルです。
+	 * @param {Function} eachfunc Function(row, col)
+	 * @param {Number} dimension 次元数
+	 * @param {Number} column_length 列数（任意）
+	 * @returns {Matrix} 新規作成に処理を加えた行列
+	 */
+	static createMatrixDoEachCalculation(eachfunc, dimension, column_length) {
+		if((arguments.length === 0) || (arguments.length > 3)) {
+			throw "IllegalArgumentException";
+		}
+		const y = [];
+		const y_row_length = dimension;
+		const y_column_length = column_length ? column_length : dimension;
+		for(let row = 0; row < y_row_length; row++) {
+			y[row] = [];
+			for(let col = 0; col < y_column_length; col++) {
+				const ret = eachfunc(row, col);
+				if(ret === undefined) {
+					continue;
+				}
+				else if(ret instanceof Complex) {
+					y[row][col] = ret;
+				}
+				else if(ret instanceof Matrix) {
+					y[row][col] = ret.scalar;
+				}
+				else {
+					y[row][col] = new Complex(ret);
+				}
+			}
+		}
+		return new Matrix(y);
+	}
+
+	/**
+	 * 自分の行列内の全ての値に処理を加えます。イミュータブルです。
 	 * @param {Function} eachfunc Function(num, row, col)
 	 * @returns {Matrix} 新規作成に処理を加えた行列
 	 */
-	createMatrixDoEachCalculation(eachfunc) {
+	cloneMatrixDoEachCalculation(eachfunc) {
 		return this.clone()._each(eachfunc);
 	}
 
@@ -493,6 +528,8 @@ export default class Matrix {
 		return this.matrix_array[0][0];
 	}
 
+	// TODO 行列の指定した部分の切り出しが欲しい
+
 	// ----------------------
 	// 行列の作成関係
 	// ----------------------
@@ -504,19 +541,9 @@ export default class Matrix {
 	 * @returns {Matrix}
 	 */
 	static eye(dimension, column_length) {
-		if((arguments.length === 0) || (arguments.length > 2)) {
-			throw "IllegalArgumentException";
-		}
-		const y = [];
-		const y_row_length = dimension;
-		const y_column_length = column_length ? column_length : dimension;
-		for(let row = 0; row < y_row_length; row++) {
-			y[row] = [];
-			for(let col = 0; col < y_column_length; col++) {
-				y[row][col] = row === col ? Complex.ONE : Complex.ZERO;
-			}
-		}
-		return new Matrix(y);
+		return Matrix.createMatrixDoEachCalculation(function(row, col) {
+			return row === col ? Complex.ONE : Complex.ZERO;
+		}, dimension, column_length);
 	}
 	
 	/**
@@ -530,20 +557,13 @@ export default class Matrix {
 		if((arguments.length === 0) || (arguments.length > 3)) {
 			throw "IllegalArgumentException";
 		}
-		const y = [];
-		const y_row_length = dimension;
-		const y_column_length = column_length ? column_length : dimension;
 		if((number instanceof Matrix) && (!number.isScalar())) {
 			const x = number.matrix_array;
 			const x_row_length = number.row_length;
 			const x_column_length = number.column_length;
-			for(let row = 0; row < y_row_length; row++) {
-				y[row] = [];
-				for(let col = 0; col < y_column_length; col++) {
-					y[row][col] = x[row % x_row_length][col % x_column_length];
-				}
-			}
-			return new Matrix(y);
+			return Matrix.createMatrixDoEachCalculation(function(row, col) {
+				return x[row % x_row_length][col % x_column_length];
+			}, dimension, column_length);
 		}
 		else {
 			let x = 0;
@@ -553,13 +573,9 @@ export default class Matrix {
 			else {
 				x = Complex.createConstComplex(number);
 			}
-			for(let row = 0; row < y_row_length; row++) {
-				y[row] = [];
-				for(let col = 0; col < y_column_length; col++) {
-					y[row][col] = x;
-				}
-			}
-			return new Matrix(y);
+			return Matrix.createMatrixDoEachCalculation(function() {
+				return x;
+			}, dimension, column_length);
 		}
 	}
 
@@ -596,20 +612,24 @@ export default class Matrix {
 	 * @returns {Matrix}
 	 */
 	static rand(dimension, column_length) {
-		if((arguments.length === 0) || (arguments.length > 2)) {
-			throw "IllegalArgumentException";
-		}
-		const y = [];
-		const y_row_length = dimension;
-		const y_column_length = column_length ? column_length : dimension;
-		for(let row = 0; row < y_row_length; row++) {
-			y[row] = [];
-			for(let col = 0; col < y_column_length; col++) {
-				y[row][col] = Complex.rand();
-			}
-		}
-		return new Matrix(y);
+		return Matrix.createMatrixDoEachCalculation(function() {
+			return Complex.rand();
+		}, dimension, column_length);
 	}
+
+	/**
+	 * 正規分布に従うランダム値で初期化
+	 * @param {Number} dimension 次元数
+	 * @param {Number} column_length 列数（任意）
+	 * @returns {Matrix}
+	 */
+	static randn(dimension, column_length) {
+		return Matrix.createMatrixDoEachCalculation(function() {
+			return Complex.randn();
+		}, dimension, column_length);
+	}
+
+	// TODO 行列の結合がほしい
 
 	// ----------------------
 	// 判定関係
@@ -844,16 +864,11 @@ export default class Matrix {
 		}
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
-		const y = [];
 		const y_row_length = Math.max(M1.row_length, M2.row_length);
 		const y_column_length = Math.max(M1.column_length, M2.column_length);
-		for(let row = 0; row < y_row_length; row++) {
-			y[row] = [];
-			for(let col = 0; col < y_column_length; col++) {
-				y[row][col] = x1[row % M1.row_length][col % M1.column_length].add(x2[row % M2.row_length][col % M2.column_length]);
-			}
-		}
-		return new Matrix(y);
+		return Matrix.createMatrixDoEachCalculation(function(row, col) {
+			return x1[row % M1.row_length][col % M1.column_length].add(x2[row % M2.row_length][col % M2.column_length]);
+		}, y_row_length, y_column_length);
 	}
 
 	/**
@@ -870,16 +885,11 @@ export default class Matrix {
 		}
 		const x1 = M1.matrix_array;
 		const x2 = M2.matrix_array;
-		const y = [];
 		const y_row_length = Math.max(M1.row_length, M2.row_length);
 		const y_column_length = Math.max(M1.column_length, M2.column_length);
-		for(let row = 0; row < y_row_length; row++) {
-			y[row] = [];
-			for(let col = 0; col < y_column_length; col++) {
-				y[row][col] = x1[row % M1.row_length][col % M1.column_length].sub(x2[row % M2.row_length][col % M2.column_length]);
-			}
-		}
-		return new Matrix(y);
+		return Matrix.createMatrixDoEachCalculation(function(row, col) {
+			return x1[row % M1.row_length][col % M1.column_length].sub(x2[row % M2.row_length][col % M2.column_length]);
+		}, y_row_length, y_column_length);
 	}
 
 	/**
@@ -1053,132 +1063,174 @@ export default class Matrix {
 		throw "Unimplemented";
 	}
 
+	/**
+	 * A.nmul(B) = A .* B 各項ごとの掛け算
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	nmul(number) {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(number);
+		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
+			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+			throw "Matrix size does not match";
+		}
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		const y_row_length = Math.max(M1.row_length, M2.row_length);
+		const y_column_length = Math.max(M1.column_length, M2.column_length);
+		return Matrix.createMatrixDoEachCalculation(function(row, col) {
+			return x1[row % M1.row_length][col % M1.column_length].mul(x2[row % M2.row_length][col % M2.column_length]);
+		}, y_row_length, y_column_length);
+	}
+
+	/**
+	 * A.ndiv(B) = A ./ B 各項ごとの割り算
+	 * @param {Object} number 
+	 * @returns {Matrix}
+	 */
+	ndiv(number) {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(number);
+		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
+			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+			throw "Matrix size does not match";
+		}
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		const y_row_length = Math.max(M1.row_length, M2.row_length);
+		const y_column_length = Math.max(M1.column_length, M2.column_length);
+		return Matrix.createMatrixDoEachCalculation(function(row, col) {
+			return x1[row % M1.row_length][col % M1.column_length].div(x2[row % M2.row_length][col % M2.column_length]);
+		}, y_row_length, y_column_length);
+	}
+
 	// ----------------------
 	// Comlexクラスの機能
 	// ----------------------
 
 	/**
-	 * 行列の各値の実部
+	 * 各項の実部
 	 * @returns {Matrix}
 	 */
 	real() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return new Complex(num.real);
 		});
 	}
 	
 	/**
-	 * 行列の各値の虚部
+	 * 各項の虚部
 	 * @returns {Matrix}
 	 */
 	imag() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return new Complex(num.imag);
 		});
 	}
 
 	/**
-	 * 行列の各値のノルム（極座標のノルム）
+	 * 各項のノルム（極座標のノルム）
 	 * @returns {Matrix}
 	 */
 	norm() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return new Complex(num.norm);
 		});
 	}
 
 	/**
-	 * 行列の各値の偏角（極座標の角度）
+	 * 各項の偏角（極座標の角度）
 	 * @returns {Matrix}
 	 */
 	angle() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return new Complex(num.angle);
 		});
 	}
 
 	/**
-	 * 行列の各値の符号値
+	 * 各項の符号値
 	 * @returns {Matrix}
 	 */
 	sign() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return new Complex(num.sign());
 		});
 	}
 
 	/**
-	 * 整数を判定(1 or 0)
+	 * 各項の整数を判定(1 or 0)
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix}
 	 */
 	testInteger(epsilon) {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isInteger(epsilon) ? Complex.ONE : Complex.ZERO;
 		});
 	}
 
 	/**
-	 * 複素整数を判定(1 or 0)
+	 * 各項の複素整数を判定(1 or 0)
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix}
 	 */
 	testComplexInteger(epsilon) {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isComplexInteger(epsilon) ? Complex.ONE : Complex.ZERO;
 		});
 	}
 
 	/**
-	 * 0 を判定(1 or 0)
+	 * 各項の 0 を判定(1 or 0)
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix}
 	 */
 	testZero(epsilon) {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isZero(epsilon) ? Complex.ONE : Complex.ZERO;
 		});
 	}
 
 	/**
-	 * 1 を判定(1 or 0)
+	 * 各項の 1 を判定(1 or 0)
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix}
 	 */
 	testOne(epsilon) {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isOne(epsilon) ? Complex.ONE : Complex.ZERO;
 		});
 	}
 	
 	/**
-	 * 複素数を判定(1 or 0)
+	 * 各項の複素数を判定(1 or 0)
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix}
 	 */
 	testComplex(epsilon) {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isComplex(epsilon) ? Complex.ONE : Complex.ZERO;
 		});
 	}
 
 	/**
-	 * 実数を判定(1 or 0)
+	 * 各項の実数を判定(1 or 0)
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix}
 	 */
 	testReal(epsilon) {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isReal(epsilon) ? Complex.ONE : Complex.ZERO;
 		});
 	}
 
 	/**
-	 * 非数を判定(1 or 0)
+	 * 各項の非数を判定(1 or 0)
 	 * @returns {Matrix}
 	 */
 	testNaN() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isNaN() ? Complex.ONE : Complex.ZERO;
 		});
 	}
@@ -1189,7 +1241,7 @@ export default class Matrix {
 	 * @returns {Boolean}
 	 */
 	testPositive() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isPositive() ? Complex.ONE : Complex.ZERO;
 		});
 	}
@@ -1199,7 +1251,7 @@ export default class Matrix {
 	 * @returns {Boolean}
 	 */
 	testNegative() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isNegative() ? Complex.ONE : Complex.ZERO;
 		});
 	}
@@ -1209,37 +1261,37 @@ export default class Matrix {
 	 * @returns {Boolean}
 	 */
 	testNotNegative() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isNotNegative() ? Complex.ONE : Complex.ZERO;
 		});
 	}
 
 	/**
-	 * 無限を判定
+	 * 各項の無限を判定
 	 * @returns {Boolean}
 	 */
 	testInfinite() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isInfinite() ? Complex.ONE : Complex.ZERO;
 		});
 	}
 	
 	/**
-	 * 有限数を判定
+	 * 各項の有限数を判定
 	 * @returns {Boolean}
 	 */
 	testFinite() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.isFinite() ? Complex.ONE : Complex.ZERO;
 		});
 	}
 
 	/**
-	 * 行列の各値の絶対値をとる
+	 * 各項の絶対値をとる
 	 * @returns {Matrix}
 	 */
 	abs() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.abs();
 		});
 	}
@@ -1249,33 +1301,33 @@ export default class Matrix {
 	 * @returns {Matrix}
 	 */
 	conj() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.conj();
 		});
 	}
 
 	/**
-	 * 行列の各値に -1 を掛け算する
+	 * 各項に -1 を掛け算する
 	 * @returns {Matrix}
 	 */
 	negate() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.negate();
 		});
 	}
 
 	/**
-	 * 行列の各値に sqrt()
+	 * 各項に sqrt()
 	 * @returns {Matrix}
 	 */
 	sqrt() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.sqrt();
 		});
 	}
 
 	/**
-	 * 行列の各値に pow(x)
+	 * 各項に pow(x)
 	 * @param {Object} number スカラー
 	 * @returns {Matrix}
 	 */
@@ -1284,73 +1336,73 @@ export default class Matrix {
 		if(!M.isScalar()) {
 			throw "not set Scalar";
 		}
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.pow(M.scalar);
 		});
 	}
 
 	/**
-	 * 行列の各値に log()
+	 * 各項に log()
 	 * @returns {Matrix}
 	 */
 	log() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.log();
 		});
 	}
 
 	/**
-	 * 行列の各値に exp()
+	 * 各項に exp()
 	 * @returns {Matrix}
 	 */
 	exp() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.exp();
 		});
 	}
 
 	/**
-	 * 行列の各値に sin()
+	 * 各項に sin()
 	 * @returns {Matrix}
 	 */
 	sin() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.sin();
 		});
 	}
 
 	/**
-	 * 行列の各値に cos()
+	 * 各項に cos()
 	 * @returns {Matrix}
 	 */
 	cos() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.cos();
 		});
 	}
 
 	/**
-	 * 行列の各値に tan()
+	 * 各項に tan()
 	 * @returns {Matrix}
 	 */
 	tan() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.tan();
 		});
 	}
 	
 	/**
-	 * 行列の各値に atan()
+	 * 各項に atan()
 	 * @returns {Matrix}
 	 */
 	atan() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.atan();
 		});
 	}
 
 	/**
-	 * 行列の各値に atan2()
+	 * 各項に atan2()
 	 * @param {Object} number スカラー
 	 * @returns {Matrix}
 	 */
@@ -1359,37 +1411,37 @@ export default class Matrix {
 		if(!M.isScalar) {
 			throw "not set Scalar";
 		}
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.atan2(M.scalar);
 		});
 	}
 
 	/**
-	 * 行列の各値に floor()
+	 * 各項に floor()
 	 * @returns {Matrix}
 	 */
 	floor() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.floor();
 		});
 	}
 
 	/**
-	 * 行列の各値に ceil()
+	 * 各項に ceil()
 	 * @returns {Matrix}
 	 */
 	ceil() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.ceil();
 		});
 	}
 
 	/**
-	 * 行列の各値に round()
+	 * 各項に round()
 	 * @returns {Matrix}
 	 */
 	round() {
-		return this.createMatrixDoEachCalculation(function(num) {
+		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.round();
 		});
 	}
@@ -1398,6 +1450,8 @@ export default class Matrix {
 	// 行列用の計算
 	// ----------------------
 	
+	// TODO normが欲しい
+
 	/**
 	 * 行列のランク
 	 * @param {Number} epsilon 誤差（任意）
