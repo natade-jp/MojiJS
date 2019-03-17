@@ -5,6 +5,7 @@ const SMath = Senko.MathX.SMath;
 const Matrix = SMath.Matrix;
 const _ = Matrix.createConstMatrix;
 
+
 const main = function() {
 
 	Log.println("◆◆SMath クラスのサンプル");
@@ -73,6 +74,19 @@ const main = function() {
 
 	// [1 2 3;4 5 6]
 	Log.println(_("[1 2 3;:;4 5 6]"));
+
+	// 6
+	Log.println(_("[1 2 3 4 5 6]").length);
+	Log.println(_("[1;2;3;4;5;6]").length);
+
+	// 5
+	Log.println(_("[1 2 3; 4 5 6]").get(1, 1));
+
+	// 26 44
+	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]"));
+
+	// 17; 53
+	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]", 2));
 
 };
 

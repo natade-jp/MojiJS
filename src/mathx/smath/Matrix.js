@@ -528,7 +528,91 @@ export default class Matrix {
 		return this.matrix_array[0][0];
 	}
 
-	// TODO 行列の指定した部分の切り出しが欲しい
+	/**
+	 * 行列の最も大きい行数、列数を返す
+	 * @returns {Number}
+	 */
+	get length() {
+		return this.row_length > this.column_length ? this.row_length : this.column_length;
+	}
+
+	/**
+	 * 作成中
+	 * @param {Number} arg1 位置／行番号／ベクトルの場合は何番目のベクトルか
+	 * @param {Number} arg2 列番号（行番号と列番号でした場合（任意））
+	 * @returns {Object} 1つを指定した場合はComplex, 2つ以上指定した場合はMatrix
+	 */
+	get(arg1, arg2) {
+		let arg1_data = null;
+		let arg2_data = null;
+		
+		{
+			if(typeof arg1 === "string" || arg1 instanceof String) {
+				arg1_data = new Matrix(arg1);
+			}
+			else {
+				arg1_data = arg1;
+			}
+		}
+		if(arguments.length === 2) {
+			if(typeof arg2 === "string" || arg2 instanceof String) {
+				arg2_data = new Matrix(arg2);
+			}
+			else {
+				arg2_data = arg2;
+			}
+		}
+
+		const get_scalar = function(x) {
+			let y;
+			let is_scalar = false;
+			if(typeof arg1 === "number" || arg1 instanceof Number) {
+				y = Math.round(x);
+				is_scalar = true;
+			}
+			else if(arg1 instanceof Complex)  {
+				y = Math.round(x._re);
+				is_scalar = true;
+			}
+			else if((arg1 instanceof Matrix) && arg1.isScalar()) {
+				y = Math.round(x.scalar._re);
+				is_scalar = true;
+			}
+			return {
+				number : y,
+				is_scalar : is_scalar
+			};
+		};
+
+		let is_scalar = true;
+		let arg1_scalar = null;
+		let arg2_scalar = null;
+
+		if(arguments.length === 1) {
+			arg1_scalar = get_scalar(arg1_data);
+			is_scalar &= arg1_scalar.is_scalar;
+		}
+		else if(arguments.length === 2) {
+			arg1_scalar = get_scalar(arg1_data);
+			is_scalar &= arg1_scalar.is_scalar;
+			arg2_scalar = get_scalar(arg2_data);
+			is_scalar &= arg2_scalar.is_scalar;
+		}
+
+		if(is_scalar) {
+			if(this.isRow()) {
+				return this.matrix_array[0][arg1_scalar.number];
+			}
+			else if(this.isColumn()) {
+				return this.matrix_array[arg1_scalar.number][0];
+			}
+			else {
+				return this.matrix_array[arg1_scalar.number][arg2_scalar.number];
+			}
+		}
+		
+		return null;
+	}
 
 	// ----------------------
 	// 行列の作成関係
@@ -684,6 +768,35 @@ export default class Matrix {
 	}
 
 	/**
+	 * 実行列の判定
+	 * @returns {Boolean}
+	 */
+	isReal() {
+		let is_real = true;
+		this._each(function(num){
+			if(is_real && (!num.isReal())) {
+				is_real = false;
+			}
+		});
+		return is_real;
+	}
+
+	/**
+	 * 零行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isZero(epsilon) {
+		let is_zeros = true;
+		this._each(function(num){
+			if(is_zeros && (!num.isZero(epsilon))) {
+				is_zeros = false;
+			}
+		});
+		return is_zeros;
+	}
+
+	/**
 	 * 単位行列を判定
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Boolean}
@@ -709,16 +822,13 @@ export default class Matrix {
 		if(!this.isSquare()) {
 			return false;
 		}
-		for(let row = 0; row < this.row_length; row++) {
-			for(let col = 0; col < this.column_length; col++) {
-				if(row !== col) {
-					if(!this.matrix_array[row][col].isZero(epsilon)) {
-						return false;
-					}
-				}
+		let is_diagonal = true;
+		this._each(function(num, row, col){
+			if(is_diagonal && (row !== col) && (!num.isZero(epsilon))) {
+				is_diagonal = false;
 			}
-		}
-		return true;
+		});
+		return is_diagonal;
 	}
 	
 	/**
@@ -730,16 +840,13 @@ export default class Matrix {
 		if(!this.isSquare()) {
 			return false;
 		}
-		for(let row = 0; row < this.row_length; row++) {
-			for(let col = 0; col < this.column_length; col++) {
-				if(Math.abs(row - col) > 1) {
-					if(!this.matrix_array[row][col].isZero(epsilon)) {
-						return false;
-					}
-				}
+		let is_tridiagonal = true;
+		this._each(function(num, row, col){
+			if(is_tridiagonal && (Math.abs(row - col) > 1) && (!num.isZero(epsilon))) {
+				is_tridiagonal = false;
 			}
-		}
-		return true;
+		});
+		return is_tridiagonal;
 	}
 
 	/**
@@ -924,7 +1031,7 @@ export default class Matrix {
 			}
 			return new Matrix(y);
 		}
-		if((M1.row_length !== M1.column_length) || (M2.row_length !== M1.column_length)) {
+		if((M1.row_length !== M2.column_length) || (M2.row_length !== M1.column_length)) {
 			throw "Matrix size does not match";
 		}
 		for(let row = 0; row < M1.row_length; row++) {
@@ -1453,6 +1560,59 @@ export default class Matrix {
 	// TODO normが欲しい
 
 	/**
+	 * A.dot(B) = ドット積
+	 * @param {Object} number 
+	 * @param {Number} dimension (任意)
+	 * @returns {Matrix}
+	 */
+	dot(number, dimension) {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(number);
+		const x1 = M1.matrix_array;
+		const x2 = M2.matrix_array;
+		const dim = dimension ? dimension : 1;
+		if(M1.isScalar() && M2.isScalar()) {
+			return new Matrix(x1.scalar.mul(x2.scalar));
+		}
+		if(M1.isVector() && M2.isVector()) {
+			let sum = Complex.ZERO;
+			for(let i = 0; i < M1.length; i++) {
+				sum = sum.add(x1.get(i).mul(x2.get(i)));
+			}
+			return new Matrix(sum);
+		}
+		if((M1.row_length !== M2.row_length) || (M1.column_length !== M2.column_length)) {
+			throw "Matrix size does not match";
+		}
+		if(dim === 1) {
+			const y = [];
+			y[0] = [];
+			for(let col = 0; col < M1.column_length; col++) {
+				let sum = Complex.ZERO;
+				for(let row = 0; row < M1.row_length; row++) {
+					sum = sum.add(x1[row][col].mul(x2[row][col]));
+				}
+				y[0][col] = sum;
+			}
+			return new Matrix(y);
+		}
+		else if(dim === 2) {
+			const y = [];
+			for(let row = 0; row < M1.row_length; row++) {
+				let sum = Complex.ZERO;
+				for(let col = 0; col < M1.column_length; col++) {
+					sum = sum.add(x1[row][col].mul(x2[row][col]));
+				}
+				y[row] = [sum];
+			}
+			return new Matrix(y);
+		}
+		else {
+			throw "dim";
+		}
+	}
+
+	/**
 	 * 行列のランク
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix}
@@ -1692,7 +1852,27 @@ export default class Matrix {
 			// 未実装なのでエラー
 			throw "Unimplemented";
 		}
+	}
 
+	/**
+	 * ヤコビ法により固有値を求める
+	 * このオブジェクトは実対称行列である必要がある
+	 * @returns {Object} {Q, R} Qは正規直行行列、Rは上三角行列
+	 */
+	eigForJacobiMethod() {
+		if(this.isScalar()) {
+			return new Matrix(this.scalar);
+		}
+		if(!this.isSquare()) {
+			throw "not square matrix";
+		}
+		if(!this.isSymmetric()) {
+			throw "not Symmetric";
+		}
+		if(!this.isReal()) {
+			throw "not Real Matrix";
+		}
+		// 作りかけ
 	}
 
 }
