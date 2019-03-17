@@ -214,7 +214,10 @@ export default class Matrix {
 			if(y instanceof Matrix) {
 				matrix_array = [];
 				for(let i = 0; i < y.row_length; i++) {
-					matrix_array[i] = y.matrix_array[i];
+					matrix_array[i] = [];
+					for(let j = 0; j < y.column_length; j++) {
+						matrix_array[i][j] = y.matrix_array[i][j];
+					}
 				}
 			}
 			else if(y instanceof Complex) {
@@ -2104,6 +2107,38 @@ export default class Matrix {
 			// べき乗法 とかある
 			throw "Unimplemented";
 		}
+	}
+
+	/**
+	 * SVD分解（途中）
+	 * @returns {Object} {U,S,V}
+	 */
+	svd() {
+		if(!this.isSquare()) {
+			// 正方行列じゃないと、QR関数が使用できないので非対応
+			throw "Unimplemented";
+		}
+		if(this.isComplex()) {
+			// 複素数が入っている場合は、eig関数が使用できないので非対応
+			throw "Unimplemented";
+		}
+		const rank = this.rank();
+		// 対称行列をヤコビ法で固有値を求める
+		const VD = this.T().mul(this).eigForJacobiMethod();
+		// 実際には固有値と固有ベクトルを、固有値の大きい順にソートする必要がある。未実装
+		const sigma = Matrix.zeros(this.row_length, this.column_length);
+		sigma._each(function(num, row, col) {
+			if((row === col) && (row < rank)) {
+				return VD.D.get(row, row).sqrt();
+			}
+		});
+		const u = this.mul(VD.V).mul(sigma.inv());
+		const QR = u.qr();
+		return {
+			U : QR.Q,
+			S : sigma,
+			V : VD.V.T()
+		};
 	}
 
 }

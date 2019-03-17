@@ -93,6 +93,13 @@ const main = function() {
 	Log.println(VD.V);
 	Log.println(VD.D);
 
+	const USV = _("[1 2;3 4]").svd();
+	
+	Log.println(USV.U);
+	Log.println(USV.S);
+	Log.println(USV.V);
+
+
 };
 
 main();
