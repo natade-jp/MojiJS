@@ -214,7 +214,7 @@ export default class Matrix {
 			if(y instanceof Matrix) {
 				matrix_array = [];
 				for(let i = 0; i < y.row_length; i++) {
-					matrix_array[i] = y[i];
+					matrix_array[i] = y.matrix_array[i];
 				}
 			}
 			else if(y instanceof Complex) {
@@ -769,16 +769,32 @@ export default class Matrix {
 
 	/**
 	 * 実行列の判定
+	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Boolean}
 	 */
-	isReal() {
+	isReal(epsilon) {
 		let is_real = true;
 		this._each(function(num){
-			if(is_real && (!num.isReal())) {
+			if(is_real && (num.isComplex(epsilon))) {
 				is_real = false;
 			}
 		});
 		return is_real;
+	}
+
+	/**
+	 * 複素行列の判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isComplex(epsilon) {
+		let is_complex = true;
+		this._each(function(num){
+			if(is_complex && (num.isReal(epsilon))) {
+				is_complex = false;
+			}
+		});
+		return is_complex;
 	}
 
 	/**
@@ -788,8 +804,9 @@ export default class Matrix {
 	 */
 	isZero(epsilon) {
 		let is_zeros = true;
+		const tolerance = epsilon ? epsilon : 1.0e-10;
 		this._each(function(num){
-			if(is_zeros && (!num.isZero(epsilon))) {
+			if(is_zeros && (!num.isZero(tolerance))) {
 				is_zeros = false;
 			}
 		});
@@ -805,8 +822,9 @@ export default class Matrix {
 		if(!this.isDiagonal()) {
 			return false;
 		}
+		const tolerance = epsilon ? epsilon : 1.0e-10;
 		for(let row = 0; row < this.row_length; row++) {
-			if(!this.matrix_array[row][row].isOne(epsilon)) {
+			if(!this.matrix_array[row][row].isOne(tolerance)) {
 				return false;
 			}
 		}
@@ -823,8 +841,9 @@ export default class Matrix {
 			return false;
 		}
 		let is_diagonal = true;
+		const tolerance = epsilon ? epsilon : 1.0e-10;
 		this._each(function(num, row, col){
-			if(is_diagonal && (row !== col) && (!num.isZero(epsilon))) {
+			if(is_diagonal && (row !== col) && (!num.isZero(tolerance))) {
 				is_diagonal = false;
 			}
 		});
@@ -841,8 +860,9 @@ export default class Matrix {
 			return false;
 		}
 		let is_tridiagonal = true;
+		const tolerance = epsilon ? epsilon : 1.0e-10;
 		this._each(function(num, row, col){
-			if(is_tridiagonal && (Math.abs(row - col) > 1) && (!num.isZero(epsilon))) {
+			if(is_tridiagonal && (Math.abs(row - col) > 1) && (!num.isZero(tolerance))) {
 				is_tridiagonal = false;
 			}
 		});
@@ -866,6 +886,32 @@ export default class Matrix {
 	}
 
 	/**
+	 * 直行行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isOrthogonal(epsilon) {
+		if(!this.isSquare()) {
+			return false;
+		}
+		const tolerance = epsilon ? epsilon : 1.0e-10;
+		return (this.mul(this.transpose()).isIdentity(tolerance));
+	}
+
+	/**
+	 * ユニタリ行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isUnitary(epsilon) {
+		if(!this.isSquare()) {
+			return false;
+		}
+		const tolerance = epsilon ? epsilon : 1.0e-10;
+		return (this.mul(this.ctranspose()).isIdentity(tolerance));
+	}
+
+	/**
 	 * 対称行列を判定
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Boolean}
@@ -874,9 +920,35 @@ export default class Matrix {
 		if(!this.isSquare()) {
 			return false;
 		}
+		const tolerance = epsilon ? epsilon : 1.0e-10;
 		for(let row = 0; row < this.row_length; row++) {
 			for(let col = row + 1; col < this.column_length; col++) {
-				if(!this.matrix_array[row][col].equals(this.matrix_array[col][row], epsilon)) {
+				if(!this.matrix_array[row][col].equals(this.matrix_array[col][row], tolerance)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * エルミート行列を判定
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Boolean}
+	 */
+	isHermitian(epsilon) {
+		if(!this.isSquare()) {
+			return false;
+		}
+		const tolerance = epsilon ? epsilon : 1.0e-10;
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = row; col < this.column_length; col++) {
+				if(row === col) {
+					if(!this.matrix_array[row][col].isReal(tolerance)) {
+						return false;
+					}
+				}
+				else if(!this.matrix_array[row][col].equals(this.matrix_array[col][row].conj(), tolerance)) {
 					return false;
 				}
 			}
@@ -1855,9 +1927,26 @@ export default class Matrix {
 	}
 
 	/**
+	 * n行n列のギブンス回転行列を作成
+	 * @param {Number} n 行列のサイズ
+	 * @param {Number} p 行番号
+	 * @param {Number} q 列番号
+	 * @param {Number} phi 回転角度 
+	 * @returns {Matrix} G(n,p,q,phi)
+	 */
+	static createGivensRotation(n, p, q, phi) {
+		const m = Matrix.eye(n);
+		m.matrix_array[p][p] = new Complex(Math.cos(phi));
+		m.matrix_array[p][q] = new Complex(Math.sin(phi));
+		m.matrix_array[q][p] = new Complex(-Math.sin(phi));
+		m.matrix_array[q][q] = m.matrix_array[p][p];
+		return m;
+	}
+
+	/**
 	 * ヤコビ法により固有値を求める
 	 * このオブジェクトは実対称行列である必要がある
-	 * @returns {Object} {Q, R} Qは正規直行行列、Rは上三角行列
+	 * @returns {Object} {V, D} Vは固有ベクトルの行列、Dは固有値の行列
 	 */
 	eigForJacobiMethod() {
 		if(this.isScalar()) {
@@ -1869,10 +1958,152 @@ export default class Matrix {
 		if(!this.isSymmetric()) {
 			throw "not Symmetric";
 		}
-		if(!this.isReal()) {
+		if(this.isComplex()) {
 			throw "not Real Matrix";
 		}
+
+		const length = this.row_length;
+		let V = Matrix.eye(length);
+		const A = new Matrix(this);
+
 		// 作りかけ
+		let a = A.matrix_array;
+
+		for(let count = 0;count < 150;count++) {
+
+			// 行列Aの非対角成分Apqの中から絶対値が最大の成分を探す
+			// p < q とすることにより上三角から調べる
+			let p = 0;
+			let q = 1;
+			let max_value = a[p][q].norm;
+			for(let row = 0; row < length; row++) {
+				for(let col = row + 1; col < length; col++) {
+					const norm = a[row][col].norm;
+					if(max_value < norm) {
+						max_value = norm;
+						p = row;
+						q = col;
+					}
+				}
+			}
+
+			// 非対角要素がほぼ0になるまで繰り返す
+			if(max_value < 1e-14) {
+				break;
+			}
+
+			// 以下、ギブンス回転
+
+			// a_pp + a_qq
+			const pp_add_qq = a[p][p].add(a[q][q]);
+			// a_pp - a_qq
+			const pp_sub_qq = a[p][p].sub(a[q][q]);
+			// (a_pp + a_qq)*0.5
+			const half_pp_add_qq = pp_add_qq.mul(Complex.HALF);
+			// (a_pp - a_qq)*0.5
+			const half_pp_sub_qq = pp_sub_qq.mul(Complex.HALF);
+
+			// shita を求める
+			let phi1;
+			let phi2;
+			if(pp_sub_qq.isZero()) {
+				// π / 4
+				phi1 = new Complex(Math.PI / 4.0);
+				phi2 = new Complex(Math.PI / 2.0);
+			}
+			else {
+				// 0.5 * atan( (2 * a_pq) / (a_pp - a_qq) )
+				phi1 = Complex.HALF.mul((Complex.TWO.negate().mul(a[p][q]).div(pp_sub_qq)).atan());
+				phi2 = phi1.mul(Complex.TWO);
+			}
+
+			// cos(s)
+			const cos = phi1.cos();
+			// sin(s)
+			const sin = phi1.sin();
+			// cos(2s)
+			const cos2 = phi2.cos();
+			// sin(2s)
+			const sin2 = phi2.sin();
+
+			const b = [];
+			for(let i = 0; i < length; i++) {
+				b[i] = [];
+				for(let j = 0; j < length; j++) {
+					let y;
+					if((i === p) && (j === p)) {
+						// b_pp
+						y = half_pp_add_qq.add(half_pp_sub_qq.mul(cos2)).sub(a[p][q].mul(sin2));
+					}
+					else if((i === q) && (j === q)) {
+						// b_qq
+						y = half_pp_add_qq.sub(half_pp_sub_qq.mul(cos2)).add(a[p][q].mul(sin2));
+					}
+					else if(
+						((i === p) && (j === q)) || 
+						((i === q) && (j === p))) {
+						// b_pq = b_qp
+						// この計算は回転によって0になるはず？
+						// y = half_pp_sub_qq.negate().mul(sin2).add(a[p][q].mul(sin2));
+						y = Complex.ZERO;
+					}
+					else if(i === p) {
+						// b_pj
+						y = a[p][j].mul(cos).sub(a[q][j].mul(sin));
+					}
+					else if(j === p) {
+						// b_ip
+						y = a[p][i].mul(cos).sub(a[q][i].mul(sin));
+					}
+					else if(i === q) {
+						// b_qj
+						y = a[p][j].mul(sin).add(a[q][j].mul(cos));
+					}
+					else if(j === q) {
+						// b_iq
+						y = a[p][i].mul(sin).add(a[q][i].mul(cos));
+					}
+					else {
+						// b_ij
+						y = a[i][j];
+					}
+					b[i][j] = y;
+				}
+			}
+
+			a = b;
+			V = V.mul(Matrix.createGivensRotation(length, p, q, phi1));
+		}
+
+		// 最終的に代入
+		A.matrix_array = a;
+
+		return {
+			V : V,
+			D : A
+		};
+	}
+
+	/**
+	 * 固有値を求める
+	 * @returns {Object} {V, D} Vは固有ベクトルの行列、Dは固有値の行列
+	 */
+	eig() {
+		if(this.isScalar()) {
+			return new Matrix(this.scalar);
+		}
+		if(!this.isSquare()) {
+			throw "not square matrix";
+		}
+		if(this.isSymmetric() && this.isReal()) {
+			// ヤコビ法により固有値を求める
+			return this.eigForJacobiMethod();
+		}
+		else {
+			// 未実装なのでエラー
+			// べき乗法 とかある
+			throw "Unimplemented";
+		}
 	}
 
 }

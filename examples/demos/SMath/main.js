@@ -41,10 +41,10 @@ const main = function() {
 
 	Log.println(_("[1 2;2 2]").div("[3 2;1 1]"));
 	
-	const A = _("[1 2;3 4]").qr();
-	Log.println(A.Q);
-	Log.println(A.R);
-	Log.println(A.Q.mul(A.R));
+	const QR = _("[1 2;3 4]").qr();
+	Log.println(QR.Q);
+	Log.println(QR.R);
+	Log.println(QR.Q.mul(QR.R));
 	
 	Log.println(_("[2 3 4;1 4 2;2 1 4]").rank(1e-10));
 
@@ -87,6 +87,11 @@ const main = function() {
 
 	// 17; 53
 	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]", 2));
+
+	const VD = _("[1 -1;-1 2]").eigForJacobiMethod();
+//	const VD = _("[1 2 3 4;2 5 4 0;3 4 1 1;4 0 1 2]").eigForJacobiMethod();
+	Log.println(VD.V);
+	Log.println(VD.D);
 
 };
 
