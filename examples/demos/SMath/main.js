@@ -88,18 +88,6 @@ const main = function() {
 	// 17; 53
 	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]", 2));
 
-	const VD = _("[1 -1;-1 2]").eigForJacobiMethod();
-//	const VD = _("[1 2 3 4;2 5 4 0;3 4 1 1;4 0 1 2]").eigForJacobiMethod();
-	Log.println(VD.V);
-	Log.println(VD.D);
-
-	const USV = _("[1 2;3 4]").svd();
-	
-	Log.println(USV.U);
-	Log.println(USV.S);
-	Log.println(USV.V);
-
-
 };
 
 main();

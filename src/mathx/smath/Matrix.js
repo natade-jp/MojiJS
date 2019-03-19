@@ -1871,6 +1871,8 @@ export default class Matrix {
 	 * @returns {Object} {Q, R} Qは正規直行行列、Rは上三角行列
 	 */
 	qr() {
+		// グラム・シュミットの正規直交化法
+		// 参考：Gilbert Strang (2007). Computational Science and Engineering.
 		const gram_schmidt_orthonormalization = function(M) {
 			const len = M.column_length;
 			const A = M.matrix_array;
@@ -2088,29 +2090,63 @@ export default class Matrix {
 	}
 
 	/**
-	 * 固有値を求める
+	 * 固有値（工事中）
+	 * @param {Object} info
 	 * @returns {Object} {V, D} Vは固有ベクトルの行列、Dは固有値の行列
 	 */
-	eig() {
+	eig(info) {
 		if(this.isScalar()) {
 			return new Matrix(this.scalar);
 		}
 		if(!this.isSquare()) {
 			throw "not square matrix";
 		}
+		let VD;
 		if(this.isSymmetric() && this.isReal()) {
 			// ヤコビ法により固有値を求める
-			return this.eigForJacobiMethod();
+			VD = this.eigForJacobiMethod();
 		}
 		else {
 			// 未実装なのでエラー
 			// べき乗法 とかある
 			throw "Unimplemented";
 		}
+		if(!info) {
+			return VD;
+		}
+
+		if(info.is_sort) {
+			const vd_sort = function(V, D) {
+				const len = D.row_length;
+				const sortdata = [];
+				for(let i = 0; i < len; i++) {
+					sortdata[i] = {
+						sigma : D.matrix_array[i][i],
+						index : i
+					};
+				}
+				const compare = function(a, b){
+					return a.sigma.compareTo(b.sigma);
+				};
+				sortdata.sort(compare);
+				const MOVE = Matrix.zeros(len);
+				const ND = Matrix.zeros(len);
+				for(let i = 0; i < len; i++) {
+					ND.matrix_array[i][i] = sortdata[i].sigma;
+					MOVE.matrix_array[sortdata[i].index][i] = Complex.ONE;
+				}
+				return {
+					V : V.mul(MOVE),
+					D : ND
+				};
+			};
+
+			return vd_sort(VD.V, VD.D);
+		}
 	}
 
 	/**
-	 * SVD分解（途中）
+	 * SVD分解（工事中）
 	 * @returns {Object} {U,S,V}
 	 */
 	svd() {
@@ -2122,10 +2158,16 @@ export default class Matrix {
 			// 複素数が入っている場合は、eig関数が使用できないので非対応
 			throw "Unimplemented";
 		}
-		const rank = this.rank();
+		const rank = this.rank(1.0e-10).scalar.norm;
+		if(rank !== this.column_length) {
+			// 後に使用するQR関数が使用できないので非対応
+			throw "Unimplemented";
+		}
+		// SVD分解
+		// 参考：Gilbert Strang (2007). Computational Science and Engineering.
 		// 対称行列をヤコビ法で固有値を求める
-		const VD = this.T().mul(this).eigForJacobiMethod();
-		// 実際には固有値と固有ベクトルを、固有値の大きい順にソートする必要がある。未実装
+		// 固有値と固有ベクトルのセットはソート済みにする
+		const VD = this.T().mul(this).eig({is_sort : true});
 		const sigma = Matrix.zeros(this.row_length, this.column_length);
 		sigma._each(function(num, row, col) {
 			if((row === col) && (row < rank)) {
