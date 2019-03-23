@@ -40,13 +40,14 @@ const main = function() {
 	Log.println(_("[j 1 -1; -2 0 1; 0 2 1]").inv());
 
 	Log.println(_("[1 2;2 2]").div("[3 2;1 1]"));
-	
+	/*
 	const QR = _("[1 2;3 4]").qr();
 	Log.println(QR.Q);
 	Log.println(QR.R);
 	Log.println(QR.Q.mul(QR.R));
-	
-	Log.println(_("[2 3 4;1 4 2;2 1 4]").rank(1e-10));
+	*/
+	Log.println("rank");
+	Log.println(_("[2 3 4;1 4 2;2 1 4]").rank());
 
 	// 22
 	Log.println(_("[6 2;1 4]").det());

@@ -584,6 +584,14 @@ export default class Complex {
 	}
 
 	/**
+	 * A.square() = A^2
+	 * @returns {Complex}
+	 */
+	square() {
+		return new Complex(this._re * this._re + this._im * this._im);
+	}
+
+	/**
 	 * A.sqrt() = sqrt(A)
 	 * @returns {Complex}
 	 */
