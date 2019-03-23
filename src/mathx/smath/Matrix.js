@@ -490,84 +490,6 @@ export default class Matrix {
 	}
 
 	/**
-	 * 行を消去します。ミュータブルです。
-	 * 内部処理用
-	 * @param {Number} row_index 行番号
-	 * @returns {Matrix} 自分自身を返します。
-	 */
-	_delete_row(row_index) {
-		if((this.row_length === 1) || (this.row_length <= row_index)) {
-			throw "_delete_row";
-		}
-		this.matrix_array.splice(row_index, 1);
-		this.row_length--;
-		this._clearCash();
-		return this;
-	}
-	
-	/**
-	 * 列を消去します。ミュータブルです。
-	 * 内部処理用
-	 * @param {Number} column_index 列番号
-	 * @returns {Matrix} 自分自身を返します。
-	 */
-	_delete_column(column_index) {
-		if((this.column_length === 1) || (this.column_length <= column_index)) {
-			throw "_delete_column";
-		}
-		for(let row = 0; row < this.row_length; row++) {
-			this.matrix_array[row].splice(column_index, 1);
-		}
-		this.column_length--;
-		this._clearCash();
-		return this;
-	}
-
-	/**
-	 * 行を交換します。ミュータブルです。
-	 * 内部処理用
-	 * @param {Number} row_index1 行番号1
-	 * @param {Number} row_index2 行番号2
-	 * @returns {Matrix} 自分自身を返します。
-	 */
-	_exchange_row(row_index1, row_index2) {
-		if((this.row_length === 1) || (this.row_length <= row_index1) || (this.row_length <= row_index2)) {
-			throw "_exchange_row";
-		}
-		if(row_index1 === row_index2) {
-			return this;
-		}
-		const swap = this.matrix_array[row_index1];
-		this.matrix_array[row_index1] = this.matrix_array[row_index2];
-		this.matrix_array[row_index2] = swap;
-		this._clearCash();
-		return this;
-	}
-
-	/**
-	 * 行を交換します。ミュータブルです。
-	 * 内部処理用
-	 * @param {Number} column_index1 行番号1
-	 * @param {Number} column_index2 行番号2
-	 * @returns {Matrix} 自分自身を返します。
-	 */
-	_exchange_column(column_index1, column_index2) {
-		if((this.column_length === 1) || (this.column_length <= column_index1) || (this.column_length <= column_index2)) {
-			throw "_exchange_column";
-		}
-		if(column_index1 === column_index2) {
-			return this;
-		}
-		for(let row = 0; row < this.row_length; row++) {
-			const swap = this.matrix_array[row][column_index1];
-			this.matrix_array[row][column_index1] = this.matrix_array[row][column_index2];
-			this.matrix_array[row][column_index2] = swap;
-		}
-		this._clearCash();
-		return this;
-	}
-
-	/**
 	 * 自分の行列内の全ての値に処理を加えます。イミュータブルです。
 	 * @param {Function} eachfunc Function(row, col)
 	 * @param {Number} dimension 次元数
@@ -1302,40 +1224,22 @@ export default class Matrix {
 		const len = this.column_length;
 		// ガウス・ジョルダン法
 		// 初期値の設定
-		const long_matrix_array = [];
-		const long_length = len * 2;
-		for(let row = 0; row < len; row++) {
-			long_matrix_array[row] = [];
-			for(let col = 0; col < len; col++) {
-				long_matrix_array[row][col] = this.matrix_array[row][col];
-				long_matrix_array[row][len + col] = row === col ? Complex.ONE : Complex.ZERO;
-			}
-		}
+		const M = new Matrix(this);
+		M._concat_left(Matrix.eye(len));
+		const long_matrix_array = M.matrix_array;
+		const long_length = M.column_length;
 
 		//前進消去
 		for(let k = 0; k < len; k++) {
 			//ピポットの選択
 			{
-				let max_number = Complex.ZERO;
-				let max_position = k;
-				//絶対値が大きいのを調べる
-				for(let row = k, col = k; row < len; row++) {
-					const abs_data = long_matrix_array[row][col].abs();
-					if(max_number.compareTo(abs_data) > 0) {
-						max_number = abs_data;
-						max_position = row;
-					}
-				}
+				// k列目で最も大きな行を取得(k列目から調べる)
+				const row_num = M._max_row_number(k, k);
 				//交換を行う
-				if(max_position !== k) {
-					const swap = long_matrix_array[k];
-					long_matrix_array[k] = long_matrix_array[max_position];
-					long_matrix_array[max_position] = swap;
-				}
+				M._exchange_row(k, row_num);
 			}
-			//正規化
+			//ピポットの正規化
 			{
-				//ピポット
 				const normalize_value = long_matrix_array[k][k].inv();
 				for(let row = k, col = k; col < long_length; col++) {
 					long_matrix_array[row][col] = long_matrix_array[row][col].mul(normalize_value);
@@ -1776,6 +1680,179 @@ export default class Matrix {
 	}
 
 	// ----------------------
+	// 行列の計算でよく使用する処理。前提条件があるメソッド、ミュータブル
+	// ----------------------
+
+	/**
+	 * 行を消去します。ミュータブルです。
+	 * 内部処理用
+	 * @param {Number} row_index 行番号
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_delete_row(row_index) {
+		if((this.row_length === 1) || (this.row_length <= row_index)) {
+			throw "_delete_row";
+		}
+		this.matrix_array.splice(row_index, 1);
+		this.row_length--;
+		this._clearCash();
+		return this;
+	}
+	
+	/**
+	 * 列を消去します。ミュータブルです。
+	 * 内部処理用
+	 * @param {Number} column_index 列番号
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_delete_column(column_index) {
+		if((this.column_length === 1) || (this.column_length <= column_index)) {
+			throw "_delete_column";
+		}
+		for(let row = 0; row < this.row_length; row++) {
+			this.matrix_array[row].splice(column_index, 1);
+		}
+		this.column_length--;
+		this._clearCash();
+		return this;
+	}
+
+	/**
+	 * 行を交換します。ミュータブルです。
+	 * 内部処理用
+	 * @param {Number} row_index1 行番号1
+	 * @param {Number} row_index2 行番号2
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_exchange_row(row_index1, row_index2) {
+		if((this.row_length === 1) || (this.row_length <= row_index1) || (this.row_length <= row_index2)) {
+			throw "_exchange_row";
+		}
+		if(row_index1 === row_index2) {
+			return this;
+		}
+		const swap = this.matrix_array[row_index1];
+		this.matrix_array[row_index1] = this.matrix_array[row_index2];
+		this.matrix_array[row_index2] = swap;
+		this._clearCash();
+		return this;
+	}
+
+	/**
+	 * 行を交換します。ミュータブルです。
+	 * 内部処理用
+	 * @param {Number} column_index1 行番号1
+	 * @param {Number} column_index2 行番号2
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_exchange_column(column_index1, column_index2) {
+		if((this.column_length === 1) || (this.column_length <= column_index1) || (this.column_length <= column_index2)) {
+			throw "_exchange_column";
+		}
+		if(column_index1 === column_index2) {
+			return this;
+		}
+		for(let row = 0; row < this.row_length; row++) {
+			const swap = this.matrix_array[row][column_index1];
+			this.matrix_array[row][column_index1] = this.matrix_array[row][column_index2];
+			this.matrix_array[row][column_index2] = swap;
+		}
+		this._clearCash();
+		return this;
+	}
+
+	/**
+	 * 行列の右に行列をくっつけます。ミュータブルです。
+	 * 内部処理用
+	 * @param {Matrix} left_matrix 結合したい行列
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_concat_left(left_matrix) {
+		for(let row = 0; row < this.row_length; row++) {
+			for(let col = 0; col < left_matrix.column_length; col++) {
+				this.matrix_array[row].push(left_matrix.matrix_array[row][col]);
+			}
+		}
+		this.column_length += left_matrix.column_length;
+		this._clearCash();
+		return this;
+	}
+
+	/**
+	 * 行列の下に行列をくっつけます。ミュータブルです。
+	 * 内部処理用
+	 * @param {Matrix} left_matrix 結合したい行列
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_concat_bottom(bottom_matrix) {
+		for(let row = 0; row < bottom_matrix.row_length; row++) {
+			this.matrix_array.push(bottom_matrix.matrix_array[row]);
+		}
+		this.row_length += bottom_matrix.row_length;
+		this._clearCash();
+		return this;
+	}
+
+	/**
+	 * 列の中で最もノルムが最大の値がある行番号を返します。ミュータブルです。
+	 * 内部処理用
+	 * @param {Number} column_index 列番号
+	 * @param {Number} row_index_offset 行のオフセット(この値から行う)
+	 * @param {Number} row_index_max 行の最大(この値は含めない)
+	 * @returns {Number} 行番号
+	 */
+	_max_row_number(column_index, row_index_offset, row_index_max) {
+		let row_index = 0;
+		let row_max = 0;
+		let row = row_index_offset ? row_index_offset : 0;
+		const row_imax = row_index_max ? row_index_max : this.row_length;
+		// n列目で最も大きな行を取得
+		for(; row < row_imax; row++) {
+			const norm = this.matrix_array[row][column_index].norm;
+			if(norm > row_max) {
+				row_max = norm;
+				row_index = row;
+			}
+		}
+		return row_index;
+	}
+
+	/**
+	 * 正則行列をなす場合に問題となる行番号を取得(工事中)
+	 * 内部処理用
+	 * @returns {Array} 行番号の行列
+	 */
+	_get_not_regular_rows() {
+	}
+
+	/**
+	 * 行列の全行ベクトルに対して、直行したベクトルを作成する(工事中)
+	 * @param {Number} epsilon 誤差（任意）
+	 * @returns {Matrix} 直行したベクトルがなければNULLを返す
+	 */
+	_createOrthogonalVector(epsilon) {
+		const rank = this.rank;
+		// 新しいベクトルを作り出そうにも、列がないため作成不可
+		if(this.rank <= this.column_length) {
+			return null;
+		}
+		const tolerance = epsilon ? epsilon : 1.0e-10;
+		const M = new Matrix(this);
+		const m = M.matrix_array;
+		// ゼロベクトルがある場合はNULLを返す
+		for(let row = 0; row < m.row_length;) {
+			let sum = 0.0;
+			for(let col = 0; col < m.column_length; col++) {
+				sum += m[row][col].norm;
+			}
+			if(sum < tolerance) {
+				return null;
+			}
+		}
+		// 直行したベクトルは、全行ベクトルに対して内積が0になる。
+	}
+
+	// ----------------------
 	// 行列用の計算
 	// ----------------------
 
@@ -1900,16 +1977,10 @@ export default class Matrix {
 				return rank;
 			}
 
-			let row_num = 0;
-			let row_max = 0;
 			// 1列目で最も大きな行を取得
-			for(let row = 0; row < M.row_length; row++) {
-				const norm = m[row][0].norm;
-				if(norm > row_max) {
-					row_max = norm;
-					row_num = row;
-				}
-			}
+			const row_num = M._max_row_number(0);
+			const row_max = m[row_num][0];
+
 			// 0より大きいあたいがある場合
 			if(row_max > tolerance) {
 				rank++;
@@ -2021,40 +2092,22 @@ export default class Matrix {
 			throw "Matrix size does not match";
 		}
 		// 行列を準備する
-		const long_matrix_array = [];
-		const long_length = len + 1;
-		for(let row = 0; row < len; row++) {
-			long_matrix_array[row] = [];
-			for(let col = 0; col < len; col++) {
-				long_matrix_array[row][col] = A[row][col];
-			}
-			long_matrix_array[row][long_length - 1] = B[row][0];
-		}
+		const M = new Matrix(this);
+		M._concat_left(arg);
+		const long_matrix_array = M.matrix_array;
+		const long_length = M.column_length;
 		// ガウスの消去法で連立1次方程式の未知数を求める
 		//前進消去
 		for(let k = 0; k < (len - 1); k++) {
 			//ピポットの選択
 			{
-				let max_number = Complex.ZERO;
-				let max_position = k;
-				//絶対値が大きいのを調べる
-				for(let row = k, col = k; row < len; row++) {
-					const abs_data = long_matrix_array[row][col].abs();
-					if(max_number.compareTo(abs_data) > 0) {
-						max_number = abs_data;
-						max_position = row;
-					}
-				}
+				// k列目で最も大きな行を取得(k列目から調べる)
+				const row_num = M._max_row_number(k, k);
 				//交換を行う
-				if(max_position !== k) {
-					const swap = long_matrix_array[k];
-					long_matrix_array[k] = long_matrix_array[max_position];
-					long_matrix_array[max_position] = swap;
-				}
+				M._exchange_row(k, row_num);
 			}
-			//正規化
+			//ピポットの正規化
 			{
-				//ピポット
 				const normalize_value = long_matrix_array[k][k].inv();
 				for(let row = k, col = k; col < long_length; col++) {
 					long_matrix_array[row][col] = long_matrix_array[row][col].mul(normalize_value);
@@ -2069,7 +2122,6 @@ export default class Matrix {
 				}
 			}
 		}
-
 		//後退代入
 		const y = [];
 		y[len - 1] = long_matrix_array[len - 1][len].div(long_matrix_array[len - 1][len - 1]);

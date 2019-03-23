@@ -30,22 +30,29 @@ const main = function() {
 	Log.println(Matrix.zeros(3));
 	Log.println(Matrix.rand(3));
 	Log.println(Matrix.randn(3));
-	
+
+	// 1  2  3
+	// 4  5  6
+	// 7  8  9
 	Log.println(_("[1 2 3; 4 5 6; 7 8 9]"));
 
+	// 18 +  7i  21 +  8i
+	// 40 +  0i  47 +  0i
 	Log.println(_("[1 2 + j; 3 4]").mul(_("[4 5; 7 8]")));
 
+	// 3 +  0i   6 +  3i
+	// 9 +  0i  12 +  0i
 	Log.println(_("[1 2 + j; 3 4]").mul(_(3)));
 
-	Log.println(_("[j 1 -1; -2 0 1; 0 2 1]").inv());
+	// -0.5000 -0.7500  0.2500
+	//  0.5000  0.2500  0.2500
+	// -1.0000 -0.5000  0.5000
+	Log.println(_("[1 1 -1; -2 0 1; 0 2 1]").inv());
 
+	//-1.0000  4.0000
+	// 0.0000  2.0000
 	Log.println(_("[1 2;2 2]").div("[3 2;1 1]"));
-	/*
-	const QR = _("[1 2;3 4]").qr();
-	Log.println(QR.Q);
-	Log.println(QR.R);
-	Log.println(QR.Q.mul(QR.R));
-	*/
+
 	Log.println("rank");
 	Log.println(_("[2 3 4;1 4 2;2 1 4]").rank());
 
@@ -59,6 +66,7 @@ const main = function() {
 	Log.println(_("[3 2 1 0;1 2 3 4;2 1 0 1;2 0 2 1]").det());
 
 	// 1, -1, 3, -2
+	Log.println("linsolve");
 	Log.println(_("[2 1 3 4;3 2 5 2; 3 4 1 -1; -1 -3 1 3]").linsolve("[2; 12; 4; -1]"));
 
 	// [2 4]
