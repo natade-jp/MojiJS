@@ -1818,11 +1818,56 @@ export default class Matrix {
 	}
 
 	/**
-	 * 正則行列をなす場合に問題となる行番号を取得(工事中)
+	 * 正則行列をなす場合に問題となる行番号を取得
 	 * 内部処理用
+	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Array} 行番号の行列
 	 */
-	_get_not_regular_rows() {
+	_get_not_regular_rows(epsilon) {
+		const M = new Matrix(this);
+		const m = M.matrix_array;
+		const tolerance = epsilon ? epsilon : 1.0e-10;
+		// 確認する行番号（ここから終わった行は削除していく）
+		const row_index_array = [];
+		for(let i = 0; i < this.row_length; i++) {
+			row_index_array[i] = i;
+		}
+		// ガウスの消去法を使用して、行ベクトルを抽出していく
+		for(let col_target = 0; col_target < M.column_length; col_target++) {
+			let row_max_index = 0;
+			{
+				let row_max = 0;
+				let row_max_key = 0;
+				// n列目で絶対値が最も大きな行を取得
+				for(const row_key in row_index_array) {
+					const row = row_index_array[row_key];
+					const norm = m[row][col_target].norm;
+					if(norm > row_max) {
+						row_max = norm;
+						row_max_key = row_key;
+						row_max_index = row;
+					}
+				}
+				// 大きいのが0である＝その列は全て0である
+				if(row_max <= tolerance) {
+					continue;
+				}
+				// 大きな値があった行は、リストから除去する
+				row_index_array.splice(row_max_key, 1);
+				if(col_target === M.column_length - 1) {
+					break;
+				}
+			}
+			// 次の列から、大きな値があった行の成分を削除
+			for(const row_key in row_index_array) {
+				const row = row_index_array[row_key];
+				const inv = m[row][col_target].div(m[row_max_index][col_target]);
+				for(let col = col_target; col < M.column_length; col++) {
+					m[row][col] = m[row][col].sub(m[row_max_index][col].mul(inv));
+				}
+			}
+		}
+		return row_index_array;
 	}
 
 	/**
@@ -1956,50 +2001,10 @@ export default class Matrix {
 	/**
 	 * 行列のランク
 	 * @param {Number} epsilon 誤差（任意）
-	 * @returns {Matrix}
+	 * @returns {Number}
 	 */
 	rank(epsilon) {
-		const tolerance = epsilon ? epsilon : 1.0e-10;
-		// 1行1列行列の場合
-		if(this.isScalar()) {
-			return this.scalar.norm <= tolerance ? 0 : 1;
-		}
-
-		let rank = 0;
-		const M = new Matrix(this);
-		const m = M.matrix_array;
-
-		while(true) {
-			
-			// 行か列が1つの場合
-			if(M.isRow() || M.isColumn()) {
-				rank += M.max().max().scalar.norm <= tolerance ? 0 : 1;
-				return rank;
-			}
-
-			// 1列目で最も大きな行を取得
-			const row_num = M._max_row_number(0);
-			const row_max = m[row_num][0];
-
-			// 0より大きいあたいがある場合
-			if(row_max > tolerance) {
-				rank++;
-				// 1行目を最も大きな値に変更
-				M._exchange_row(0, row_num);
-				// 2行目以降のベクトルに対して、1行目の成分を削除
-				for(let row = 1; row < M.row_length; row++) {
-					const inv = m[row][0].div(row_max);
-					for(let col = 1; col < M.column_length; col++) {
-						m[row][col] = m[row][col].sub(m[0][col].mul(inv));
-					}
-				}
-				// 1行目の調査が完了したので削除
-				M._delete_row(0);
-			}
-			// 1列目の調査が完了したので削除
-			M._delete_column(0);
-			continue;
-		}
+		return Math.abs(this.row_length, this.column_length) - (this._get_not_regular_rows(epsilon)).length;
 	}
 
 	/**
