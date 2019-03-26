@@ -5,6 +5,15 @@ const SMath = Senko.MathX.SMath;
 const Matrix = SMath.Matrix;
 const _ = Matrix.createConstMatrix;
 
+const testQR = function(text) {
+	const A = _(text);
+	Log.println(A);
+	const QR = A.qr();
+	Log.println(QR.Q);
+	Log.println(QR.R);
+	Log.println(QR.Q.mul(QR.R));
+//	Log.println(QR.Q.mul(QR.Q.T()));
+};
 
 const main = function() {
 
@@ -125,6 +134,13 @@ const main = function() {
 	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]"));
 	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]", 2));
 
+	// QR分解
+	testQR("[1 2 3;4 5 6;7 8 9]");
+	testQR("[0 0 0;1 2 3;4 5 6]");
+	testQR("[1 2 3;4 5 6;0 0 0]");
+	testQR("[1 2; 3 4; 5 6]");
+	testQR("[1 2 3;4 5 6]");
+	
 };
 
 main();

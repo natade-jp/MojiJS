@@ -9,6 +9,7 @@
  */
 
 import Complex from "./Complex.js";
+import Random from "../basic/Random.js";
 
 const ConstructorTool = {
 
@@ -1185,14 +1186,14 @@ export default class Matrix {
 			}
 			return new Matrix(y);
 		}
-		if((M1.row_length !== M2.column_length) || (M2.row_length !== M1.column_length)) {
+		if(M1.column_length !== M2.row_length) {
 			throw "Matrix size does not match";
 		}
 		for(let row = 0; row < M1.row_length; row++) {
 			y[row] = [];
-			for(let col = 0; col < M1.column_length; col++) {
+			for(let col = 0; col < M2.column_length; col++) {
 				let sum = Complex.ZERO;
-				for(let i = 0; i < M1.row_length; i++) {
+				for(let i = 0; i < M1.column_length; i++) {
 					sum = sum.add(x1[row][i].mul(x2[i][col]));
 				}
 				y[row][col] = sum;
@@ -1684,6 +1685,50 @@ export default class Matrix {
 	// ----------------------
 
 	/**
+	 * 行列を拡張します。ミュータブルです。
+	 * 拡張した場合は、0を初期値にします。
+	 * 内部処理用
+	 * @param {Number} row_length 新しい行の長さ
+	 * @param {Number} column_length 新しい列の長さ
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_resize(row_length, column_length) {
+		if((row_length === this.row_length) && (column_length === this.column_length)) {
+			return this;
+		}
+		if((row_length <= 0) || (column_length <= 0)) {
+			throw "_resize";
+		}
+		const row_max = Math.max(this.row_length, row_length);
+		const col_max = Math.max(this.column_length, column_length);
+		const y = this.matrix_array;
+		// 大きくなった行と列に対してゼロで埋める
+		for(let row = 0; row < row_max; row++) {
+			if(row >= this.row_length) {
+				y[row] = [];
+			}
+			for(let col = 0; col < col_max; col++) {
+				if((row >= this.row_length) || (col >= this.column_length)) {
+					y[row][col] = Complex.ZERO;
+				}
+			}
+		}
+		// 小さくなった行と列を削除する
+		if(this.row_length > row_length) {
+			y.splice(row_length);
+		}
+		if(this.column_length > column_length) {
+			for(let row = 0; row < y.length; row++) {
+				y[row].splice(column_length);
+			}
+		}
+		this.row_length = row_length;
+		this.column_length = column_length;
+		this._clearCash();
+		return this;
+	}
+
+	/**
 	 * 行を消去します。ミュータブルです。
 	 * 内部処理用
 	 * @param {Number} row_index 行番号
@@ -1818,12 +1863,12 @@ export default class Matrix {
 	}
 
 	/**
-	 * 正則行列をなす場合に問題となる行番号を取得
+	 * 行列の各行をベクトルと見立て、線型従属している行を抽出する
 	 * 内部処理用
 	 * @param {Number} epsilon 誤差（任意）
-	 * @returns {Array} 行番号の行列
+	 * @returns {Array} 行番号の行列(昇順)
 	 */
-	_get_not_regular_rows(epsilon) {
+	_get_linear_dependence_vector(epsilon) {
 		const M = new Matrix(this);
 		const m = M.matrix_array;
 		const tolerance = epsilon ? epsilon : 1.0e-10;
@@ -1871,30 +1916,132 @@ export default class Matrix {
 	}
 
 	/**
-	 * 行列の全行ベクトルに対して、直行したベクトルを作成する(工事中)
+	 * 行列をベクトルと見立て、正規直行化し、QとRの行列を作る
+	 * 内部処理用
+	 * @param {Matrix} M 正方行列
+	 * @returns {Object}
+	 */
+	static _gram_schmidt_orthonormalization(M) {
+		// グラム・シュミットの正規直交化法を使用する
+		// 参考：Gilbert Strang (2007). Computational Science and Engineering.
+
+		const len = M.column_length;
+		const A = M.matrix_array;
+		const Q_Matrix = Matrix.zeros(len);
+		const R_Matrix = Matrix.zeros(len);
+		const Q = Q_Matrix.matrix_array;
+		const R = R_Matrix.matrix_array;
+		const non_orthogonalized = [];
+		const a = [];
+		
+		for(let col = 0; col < len; col++) {
+			// i列目を抽出
+			for(let row = 0; row < len; row++) {
+				a[row] = A[row][col];
+			}
+			// 直行ベクトルを作成
+			if(col > 0) {
+				// Rのi列目を内積で計算する
+				for(let j = 0; j < col; j++) {
+					for(let k = 0; k < len; k++) {
+						R[j][col] = R[j][col].add(Q[k][j].mul(A[k][col]));
+					}
+				}
+				for(let j = 0; j < col; j++) {
+					for(let k = 0; k < len; k++) {
+						a[k] = a[k].sub(R[j][col].mul(Q[k][j]));
+					}
+				}
+			}
+			{
+				// 正規化と距離を1にする
+				for(let j = 0; j < len; j++) {
+					R[col][col] = R[col][col].add(a[j].mul(a[j]));
+				}
+				R[col][col] = R[col][col].sqrt();
+				if(R[col][col].isZero(1e-10)) {
+					// 直行化が不可能だった列の番号をメモして、その列はゼロで埋める
+					non_orthogonalized.push(col);
+					for(let j = 0;j < len;j++) {
+						Q[j][col] = Complex.ZERO;
+					}
+				}
+				else {
+					// ここで R[i][i] === 0 の場合、直行させたベクトルaは0であり、
+					// ランク落ちしており、計算不可能である。
+					// 0割りした値を、j列目のQに記録していくがInfとなる。
+					for(let j = 0;j < len;j++) {
+						Q[j][col] = a[j].div(R[col][col]);
+					}
+				}
+			}
+		}
+		return {
+			Q : Q_Matrix,
+			R : R_Matrix,
+			non_orthogonalized : non_orthogonalized
+		};
+	}
+	
+	/**
+	 * 行列の全行ベクトルに対して、直行したベクトルを作成する
 	 * @param {Number} epsilon 誤差（任意）
 	 * @returns {Matrix} 直行したベクトルがなければNULLを返す
 	 */
 	_createOrthogonalVector(epsilon) {
-		const rank = this.rank;
-		// 新しいベクトルを作り出そうにも、列がないため作成不可
-		if(this.rank <= this.column_length) {
-			return null;
-		}
-		const tolerance = epsilon ? epsilon : 1.0e-10;
 		const M = new Matrix(this);
 		const m = M.matrix_array;
-		// ゼロベクトルがある場合はNULLを返す
-		for(let row = 0; row < m.row_length;) {
-			let sum = 0.0;
-			for(let col = 0; col < m.column_length; col++) {
-				sum += m[row][col].norm;
-			}
-			if(sum < tolerance) {
-				return null;
+		const tolerance = epsilon ? epsilon : 1.0e-10;
+		// 正則行列をなす場合に問題となる行番号を取得
+		const not_regular_rows = M._get_linear_dependence_vector(tolerance);
+		// 不要な行を削除する
+		{
+			// not_regular_rowsは昇順リストなので、後ろから消していく
+			for(let i = not_regular_rows.length - 1; i >= 0; i--) {
+				m.splice(not_regular_rows[i], 1);
+				M.row_length--;
 			}
 		}
-		// 直行したベクトルは、全行ベクトルに対して内積が0になる。
+		// 追加できるベクトルの数
+		const add_vectors = this.column_length - m.length;
+		if(add_vectors <= 0) {
+			return null;
+		}
+		// ランダムベクトル（seed値は毎回同一とする）
+		const noise = new Random(0);
+		let orthogonal_matrix = null;
+		for(let i = 0; i < 100; i++) {
+			// 直行ベクトルを作るために、いったん行と列を交換する
+			// これは、グラム・シュミットの正規直交化法が列ごとに行う手法のため。
+			const M2 = M.T();
+			// ランダム行列を作成する
+			const R = Matrix.createMatrixDoEachCalculation(function() {
+				return new Complex(noise.nextGaussian());
+			}, M2.row_length, add_vectors);
+			// 列に追加する
+			M2._concat_left(R);
+			// 正規直行行列を作成する
+			orthogonal_matrix = Matrix._gram_schmidt_orthonormalization(M2);
+			// 正しく作成できていたら完了
+			if(orthogonal_matrix.non_orthogonalized.length === 0) {
+				break;
+			}
+		}
+		if(orthogonal_matrix.non_orthogonalized.length !== 0) {
+			// 普通は作成できないことはないが・・・
+			console.log("miss");
+			return null;
+		}
+		// 作成した列を切り出す
+		const y = [];
+		const q = orthogonal_matrix.Q.matrix_array;
+		for(let row = 0; row < add_vectors; row++) {
+			y[row] = [];
+			for(let col = 0; col < this.column_length; col++) {
+				y[row][col] = q[col][this.column_length - add_vectors + row];
+			}
+		}
+		return new Matrix(y);
 	}
 
 	// ----------------------
@@ -2004,7 +2151,7 @@ export default class Matrix {
 	 * @returns {Number}
 	 */
 	rank(epsilon) {
-		return Math.abs(this.row_length, this.column_length) - (this._get_not_regular_rows(epsilon)).length;
+		return Math.abs(this.row_length, this.column_length) - (this._get_linear_dependence_vector(epsilon)).length;
 	}
 
 	/**
@@ -2091,8 +2238,6 @@ export default class Matrix {
 		// 連立一次方程式を解く
 		const len = this.column_length;
 		const arg = Matrix.createConstMatrix(number);
-		const A = this.matrix_array;
-		const B = arg.matrix_array;
 		if((arg.row_length !== this.row_length) || (arg.column_length > 1)) {
 			throw "Matrix size does not match";
 		}
@@ -2150,105 +2295,58 @@ export default class Matrix {
 	 * @returns {Object} {Q, R} Qは正規直行行列、Rは上三角行列
 	 */
 	qr() {
-		// グラム・シュミットの正規直交化法
-		// 参考：Gilbert Strang (2007). Computational Science and Engineering.
-		const gram_schmidt_orthonormalization = function(M) {
-			const len = M.column_length;
-			const A = M.matrix_array;
-			const Q_Matrix = Matrix.zeros(len);
-			const R_Matrix = Matrix.zeros(len);
-			const Q = Q_Matrix.matrix_array;
-			const R = R_Matrix.matrix_array;
-			const a = [];
-			
-			for(let i = 0; i < len; i++) {
-				// i列目を抽出
-				for(let j = 0; j < len; j++) {
-					a[j] = A[j][i];
+		// 行列を準備する
+		const M = new Matrix(this);
+		// 作成後のQとRのサイズ
+		const Q_row_length = this.row_length;
+		const Q_column_length = this.row_length;
+		const R_row_length = this.row_length;
+		const R_column_length = this.column_length;
+		// 計算時の行と列のサイズ
+		const dummy_size = Math.max(this.row_length, this.column_length);
+		// 正方行列にする
+		M._resize(dummy_size, dummy_size);
+		// 正規直行化
+		const orthogonal_matrix = Matrix._gram_schmidt_orthonormalization(M);
+		// 計算したデータを取得
+		const Q_Matrix = orthogonal_matrix.Q;
+		const R_Matrix = orthogonal_matrix.R;
+		const non_orthogonalized = orthogonal_matrix.non_orthogonalized;
+		// Qのサイズを成型する
+		if(non_orthogonalized.length !== 0) {
+			// 直行化できていない列があるため直行化できてない列以外を抽出
+			const map = {};
+			for(let i = 0; i < non_orthogonalized.length; i++) {
+				map[non_orthogonalized[i]] = 1;
+			}
+			const orthogonalized = [];
+			for(let i = 0; i < dummy_size; i++) {
+				if(map[i]) {
+					continue;
 				}
-				// 直行ベクトルを作成
-				if(i > 0) {
-					// Rのi列目を内積で計算する
-					for(let j = 0; j < i; j++) {
-						for(let k = 0; k < len; k++) {
-							R[j][i] = R[j][i].add(Q[k][j].mul(A[k][i]));
-						}
-					}
-					for(let j = 0; j < i; j++) {
-						for(let k = 0; k < len; k++) {
-							a[k] = a[k].sub(R[j][i].mul(Q[k][j]));
-						}
-					}
+				const array = [];
+				for(let j = 0; j < dummy_size; j++) {
+					array[j] = Q_Matrix.matrix_array[j][i];
 				}
-				{
-					// 正規化と距離を1にする
-					for(let j = 0; j < len; j++) {
-						R[i][i] = R[i][i].add(a[j].mul(a[j]));
-					}
-					R[i][i] = R[i][i].sqrt();
-					// ここで R[i][i] === 0 の場合、直行させたベクトルaは0であり、
-					// ランク落ちしており、計算不可能である。
-					// 0割りした値を、j列目のQに記録していくがInfとなる。
-					for(let j = 0;j < len;j++) {
-						Q[j][i] = a[j].div(R[i][i]);
-					}
+				orthogonalized.push(array);
+			}
+			// 直行ベクトルを作成する
+			const orthogonal_vector = (new Matrix(orthogonalized))._createOrthogonalVector();
+			// 直行化できていない列を差し替える
+			for(let i = 0; i < non_orthogonalized.length; i++) {
+				const q_col = non_orthogonalized[i];
+				for(let j = 0; j < dummy_size; j++) {
+					Q_Matrix.matrix_array[j][q_col] = orthogonal_vector.matrix_array[i][j];
 				}
 			}
-	
-			return {
-				Q : new Matrix(Q),
-				R : new Matrix(R),
-			};
-		};
-
-		/*
-		const factorization = function(M) {
-			const R = M.clone();
-
-			const dot = function(offset, x1, x2) {
-				let sum = Complex.ZERO;
-				for(let i = offset; i < x1.length; i++) {
-					sum = sum.add(x1[i].mul(x2[i]));
-				}
-				return sum;
-			};
-
-			const m = M.row_length;
-			const n = M.column_length;
-			const x = R.matrix_array;
-
-			// Rを求める
-			for(let r = 0; r < m && r < n; r++) {
-				const v = x[r];
-				let u = dot(r, v, v).sqrt();
-				if(v[r].isNegative()) {
-					u = u.negate();
-				}
-				v[r] = v[r].add(u);
-				const t = v[r].mul(u).inv();
-				for(let j = r + 1; j < m; j++) {
-					const w = x[j];
-					const s = t.mul(dot(r, v, w));
-					for(let i = r; i < n; i++) {
-						w[i] = w[i].sub(s.mul(v[i]));
-					}
-				}
-				v[r] = u.negate();
-			}
-
-			return {
-				R : R,
-			};
-		};
-		*/
-
-		if(this.isSquare()) {
-			// グラム・シュミットの正規直交化法を用いてQR分解を行う。
-			return gram_schmidt_orthonormalization(this);
 		}
-		else {
-			return null;
-		}
+		Q_Matrix._resize(Q_row_length, Q_column_length);
+		// Rのサイズを成形する
+		R_Matrix._resize(R_row_length, R_column_length);
+		return {
+			Q : Q_Matrix,
+			R : R_Matrix
+		};
 	}
 
 	/**
