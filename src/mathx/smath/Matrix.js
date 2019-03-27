@@ -104,9 +104,9 @@ const ConstructorTool = {
 			return ":";
 		}
 		// 左が実数（強制）で右が複素数（任意）タイプ
-		const reg1 = /[+-]? *[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?( *[+-] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij])?/;
+		const reg1 = /[+-]? *[0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?( *[+-] *[- ]?([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij])?/;
 		// 左が複素数（強制）で右が実数（任意）タイプ
-		const reg2 = /[+-]? *([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij]( *[+] *[- ]([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?)?/;
+		const reg2 = /[+-]? *([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?[ij]( *[+] *[- ]?([0-9]+(\.[0-9]+)?(e[+-]?[0-9]+)?)?)?/;
 		// reg2優先で検索
 		const reg3 = new RegExp("(" + reg2.source + ")|(" + reg1.source + ")", "i");
 		// 問題として 1 - -jが通る
@@ -1944,7 +1944,7 @@ export default class Matrix {
 				// Rのi列目を内積で計算する
 				for(let j = 0; j < col; j++) {
 					for(let k = 0; k < len; k++) {
-						R[j][col] = R[j][col].add(Q[k][j].mul(A[k][col]));
+						R[j][col] = R[j][col].add(A[k][col].dot(Q[k][j]));
 					}
 				}
 				for(let j = 0; j < col; j++) {
@@ -2105,12 +2105,12 @@ export default class Matrix {
 		const x2 = M2.matrix_array;
 		const dim = dimension ? dimension : 1;
 		if(M1.isScalar() && M2.isScalar()) {
-			return new Matrix(x1.scalar.mul(x2.scalar));
+			return new Matrix(M1.scalar.dot(M2.scalar));
 		}
 		if(M1.isVector() && M2.isVector()) {
 			let sum = Complex.ZERO;
 			for(let i = 0; i < M1.length; i++) {
-				sum = sum.add(x1.get(i).mul(x2.get(i)));
+				sum = sum.add(M1.get(i).dot(M2.get(i)));
 			}
 			return new Matrix(sum);
 		}
@@ -2123,7 +2123,7 @@ export default class Matrix {
 			for(let col = 0; col < M1.column_length; col++) {
 				let sum = Complex.ZERO;
 				for(let row = 0; row < M1.row_length; row++) {
-					sum = sum.add(x1[row][col].mul(x2[row][col]));
+					sum = sum.add(x1[row][col].dot(x2[row][col]));
 				}
 				y[0][col] = sum;
 			}
@@ -2134,7 +2134,7 @@ export default class Matrix {
 			for(let row = 0; row < M1.row_length; row++) {
 				let sum = Complex.ZERO;
 				for(let col = 0; col < M1.column_length; col++) {
-					sum = sum.add(x1[row][col].mul(x2[row][col]));
+					sum = sum.add(x1[row][col].dot(x2[row][col]));
 				}
 				y[row] = [sum];
 			}

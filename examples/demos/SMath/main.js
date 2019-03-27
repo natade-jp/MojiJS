@@ -6,6 +6,7 @@ const Matrix = SMath.Matrix;
 const _ = Matrix.createConstMatrix;
 
 const testQR = function(text) {
+	Log.println("qr");
 	const A = _(text);
 	Log.println(A);
 	const QR = A.qr();
@@ -128,11 +129,15 @@ const main = function() {
 	Log.println("get");
 	Log.println(_("[1 2 3; 4 5 6]").get(1, 1));
 
-	// 26 44
-	// 17; 53
+	// -4 - 7i
 	Log.println("dot");
-	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]"));
-	Log.println(_("[1 2;3 4]").dot("[5 6;7 8]", 2));
+	Log.println(_("1 + 2j").dot("2 - 3j"));
+
+	// 21 +  5i  12 + 32i
+	// 12 +  5i; 21 + 32i
+	Log.println("dot");
+	Log.println(_("[1 2;3j 4]").dot("[5j 6;7j 8j]"));
+	Log.println(_("[1 2;3j 4]").dot("[5j 6;7j 8j]", 2));
 
 	// QR分解
 	testQR("[1 2 3;4 5 6;7 8 9]");

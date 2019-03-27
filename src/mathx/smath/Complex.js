@@ -283,6 +283,31 @@ export default class Complex {
 	}
 	
 	/**
+	 * A.dot(B) = A・B = A * conj(B)
+	 * @param {Object} number 
+	 * @returns {Complex}
+	 */
+	dot(number) {
+		const x = new Complex(number);
+		if((this._im === 0) && (x._im === 0)) {
+			x._re = this._re * x._re;
+			return x;
+		}
+		else if((this._re === 0) && (x._re === 0)) {
+			x._re = this._im * x._im;
+			x._im = 0;
+			return x;
+		}
+		else {
+			const re = this._re * x._re + this._im * x._im;
+			const im = - this._im * x._re + this._re * x._im;
+			x._re = re;
+			x._im = im;
+			return x;
+		}
+	}
+	
+	/**
 	 * A.div(B) = A / B
 	 * @param {Object} number 
 	 * @returns {Complex}
@@ -339,7 +364,7 @@ export default class Complex {
 		}
 		return Complex.ONE.div(this);
 	}
-	
+
 	/**
 	 * A.sign() は長さを1にします -100 なら -1 にします
 	 * @returns {Complex}
