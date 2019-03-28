@@ -1235,7 +1235,7 @@ export default class Matrix {
 			//ピポットの選択
 			{
 				// k列目で最も大きな行を取得(k列目から調べる)
-				const row_num = M._max_row_number(k, k);
+				const row_num = M._max_row_number(k, k).index;
 				//交換を行う
 				M._exchange_row(k, row_num);
 			}
@@ -1685,6 +1685,73 @@ export default class Matrix {
 	// ----------------------
 
 	/**
+	 * 行列を時計回りに回転させます。ミュータブルです。
+	 * 内部処理用
+	 * @param {Number} count 回転する回数
+	 * @returns {Matrix} 自分自身を返します。
+	 */
+	_rot90(count) {
+		let rot_type = 1;
+		if(arguments.length === 1) {
+			rot_type = ((count % 4) + 4) % 4;
+		}
+		if(rot_type === 0) {
+			return this;
+		}
+		// バックアップ
+		const x = [];
+		for(let i = 0; i < this.row_length; i++) {
+			x[i] = [];
+			for(let j = 0; j < this.column_length; j++) {
+				x[i][j] = this.matrix_array[i][j];
+			}
+		}
+		const y = this.matrix_array;
+		if(rot_type === 1) {
+			// 90度回転
+			y.splice(this.column_length);
+			for(let col = 0; col < this.column_length; col++) {
+				if(col < this.row_length) {
+					y[col].splice(this.row_length);
+				}
+				else {
+					y[col] = [];
+				}
+				for(let row = 0; row < this.row_length; row++) {
+					y[col][row] = x[this.row_length - row - 1][col];
+				}
+			}
+		}
+		else if(rot_type === 2) {
+			// 180度回転
+			for(let row = 0; row < this.row_length; row++) {
+				for(let col = 0; col < this.column_length; col++) {
+					y[row][col] = x[this.row_length - row - 1][this.column_length - col - 1];
+				}
+			}
+		}
+		else if(rot_type === 3) {
+			// 270度回転
+			y.splice(this.column_length);
+			for(let col = 0; col < this.column_length; col++) {
+				if(col < this.row_length) {
+					y[col].splice(this.row_length);
+				}
+				else {
+					y[col] = [];
+				}
+				for(let row = 0; row < this.row_length; row++) {
+					y[col][row] = x[row][this.column_length - col - 1];
+				}
+			}
+		}
+		this.row_length = y.length;
+		this.column_length = y[0].length;
+		this._clearCash();
+		return this;
+	}
+
+	/**
 	 * 行列を拡張します。ミュータブルです。
 	 * 拡張した場合は、0を初期値にします。
 	 * 内部処理用
@@ -1859,7 +1926,10 @@ export default class Matrix {
 				row_index = row;
 			}
 		}
-		return row_index;
+		return {
+			index : row_index,
+			max : row_max
+		};
 	}
 
 	/**
@@ -2227,6 +2297,72 @@ export default class Matrix {
 	}
 
 	/**
+	 * （工事中）
+	 * A.lup() = P'*L*U = A となる P,L,Uを解く
+	 * @returns {Object}
+	 */
+	lup() {
+		const test = function() {
+		//	Log.println(_("[1 2 3 3;4 5 6 6;7 8 9 2]").lup());
+		//	Log.println(_("[1 4 2;3 5 1;2 4 2;1 0 9]").lup());
+		//	Log.println(_("[1 4 2;3 5 1;0 0 0;1 0 9]").lup());
+		//	Log.println(_("[1 2 3;4 5 6;7 8 9]").lup());
+		//	Log.println(_("[1 2;3 4;5 6]").lup());
+		};
+		console.log(this.toString());
+		const L = Matrix.zeros(this.row_length);
+		const U = new Matrix(this);
+		const P = Matrix.eye(this.row_length);
+		const l = L.matrix_array;
+		const u = U.matrix_array;
+		// ガウスの消去法で連立1次方程式の未知数を求める
+		//前進消去
+		for(let k = 0; k < this.column_length; k++) {
+			// ピポットの選択
+			let pivot;
+			{
+				// k列目で最も大きな行を取得(k列目から調べる)
+				const max_row_number = U._max_row_number(k, k);
+				pivot = max_row_number.index;
+				if(max_row_number.max === 0.0) {
+					continue;
+				}
+				//交換を行う
+				console.log("pivot " + k + " " + pivot);
+				if(k !== pivot) {
+				//	L._exchange_row(k, pivot);
+					U._exchange_row(k, pivot);
+					P._exchange_row(k, pivot);
+				}
+			}
+			// 消去
+			for(let row = k + 1;row < this.row_length; row++) {
+				const temp = u[row][k].div(u[k][k]);
+				console.log(k + " " + row + " " + temp.toString());
+				l[this.row_length - row + k][k] = temp;
+				//lの値だけ行交換が必要？
+				for(let col = k; col < this.column_length; col++)
+				{
+					u[row][col] = u[row][col].sub(u[k][col].mul(temp));
+				}
+			}
+			console.log(L.toString());
+			console.log(U.toString());
+			console.log(P.toString());
+		}
+		L._resize(this.row_length, Math.min(this.row_length, this.column_length));
+		U._resize(Math.min(this.row_length, this.column_length), this.column_length);
+		// L の対角線に1を代入
+		L._each(function(num, row, col) {
+			return row === col ? Complex.ONE : num;
+		});
+		console.log(L.toString());
+		console.log(U.toString());
+		console.log(P.toString());
+		console.log(P.T().mul(L).mul(U).toString());
+	}
+
+	/**
 	 * A.linsolve(B) = Ax = B となる xを解く
 	 * @param {Object} number 
 	 * @returns {Matrix}
@@ -2252,7 +2388,7 @@ export default class Matrix {
 			//ピポットの選択
 			{
 				// k列目で最も大きな行を取得(k列目から調べる)
-				const row_num = M._max_row_number(k, k);
+				const row_num = M._max_row_number(k, k).index;
 				//交換を行う
 				M._exchange_row(k, row_num);
 			}

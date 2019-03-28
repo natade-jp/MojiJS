@@ -569,6 +569,9 @@ export default class Complex {
 	 * @returns {Complex}
 	 */
 	conj() {
+		if(this._im === 0) {
+			return this;
+		}
 		// 共役複素数
 		return new Complex([this._re, -this._im]);
 	}
