@@ -5,6 +5,17 @@ const SMath = Senko.MathX.SMath;
 const Matrix = SMath.Matrix;
 const _ = Matrix.createConstMatrix;
 
+const testLUP = function(text) {
+	Log.println("lup");
+	const A = _(text);
+	Log.println(A);
+	const LUP = A.lup();
+	Log.println(LUP.L.toString());
+	Log.println(LUP.U.toString());
+	Log.println(LUP.P.toString());
+	Log.println(LUP.P.T().mul(LUP.L).mul(LUP.U).toString());
+};
+
 const testQR = function(text) {
 	Log.println("qr");
 	const A = _(text);
@@ -13,7 +24,6 @@ const testQR = function(text) {
 	Log.println(QR.Q);
 	Log.println(QR.R);
 	Log.println(QR.Q.mul(QR.R));
-//	Log.println(QR.Q.mul(QR.Q.T()));
 };
 
 const main = function() {
@@ -146,6 +156,13 @@ const main = function() {
 	testQR("[1 2; 3 4; 5 6]");
 	testQR("[1 2 3;4 5 6]");
 	
+	// LUP分解
+	testLUP("[1 2 3 3;4 5 6 6;7 8 9 2]");
+	testLUP("[1 4 2;3 5 1;2 4 2;1 0 9]");
+	testLUP("[1 4 2;3 5 1;0 0 0;1 0 9]");
+	testLUP("[1 2 3;4 5 6;7 8 9]");
+	testLUP("[1 2;3 4;5 6]");
+		
 };
 
 main();

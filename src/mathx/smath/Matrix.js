@@ -2297,19 +2297,10 @@ export default class Matrix {
 	}
 
 	/**
-	 * （工事中）
 	 * A.lup() = P'*L*U = A となる P,L,Uを解く
 	 * @returns {Object}
 	 */
 	lup() {
-		const test = function() {
-		//	Log.println(_("[1 2 3 3;4 5 6 6;7 8 9 2]").lup());
-		//	Log.println(_("[1 4 2;3 5 1;2 4 2;1 0 9]").lup());
-		//	Log.println(_("[1 4 2;3 5 1;0 0 0;1 0 9]").lup());
-		//	Log.println(_("[1 2 3;4 5 6;7 8 9]").lup());
-		//	Log.println(_("[1 2;3 4;5 6]").lup());
-		};
-		console.log(this.toString());
 		const L = Matrix.zeros(this.row_length);
 		const U = new Matrix(this);
 		const P = Matrix.eye(this.row_length);
@@ -2328,9 +2319,8 @@ export default class Matrix {
 					continue;
 				}
 				//交換を行う
-				console.log("pivot " + k + " " + pivot);
 				if(k !== pivot) {
-				//	L._exchange_row(k, pivot);
+					L._exchange_row(k, pivot);
 					U._exchange_row(k, pivot);
 					P._exchange_row(k, pivot);
 				}
@@ -2338,17 +2328,13 @@ export default class Matrix {
 			// 消去
 			for(let row = k + 1;row < this.row_length; row++) {
 				const temp = u[row][k].div(u[k][k]);
-				console.log(k + " " + row + " " + temp.toString());
-				l[this.row_length - row + k][k] = temp;
+				l[row][k] = temp;
 				//lの値だけ行交換が必要？
 				for(let col = k; col < this.column_length; col++)
 				{
 					u[row][col] = u[row][col].sub(u[k][col].mul(temp));
 				}
 			}
-			console.log(L.toString());
-			console.log(U.toString());
-			console.log(P.toString());
 		}
 		L._resize(this.row_length, Math.min(this.row_length, this.column_length));
 		U._resize(Math.min(this.row_length, this.column_length), this.column_length);
@@ -2356,10 +2342,11 @@ export default class Matrix {
 		L._each(function(num, row, col) {
 			return row === col ? Complex.ONE : num;
 		});
-		console.log(L.toString());
-		console.log(U.toString());
-		console.log(P.toString());
-		console.log(P.T().mul(L).mul(U).toString());
+		return {
+			L : L,
+			U : U,
+			P : P
+		};
 	}
 
 	/**
