@@ -112,7 +112,12 @@ const main = function() {
 	// -1.0000 -0.5000  0.5000
 	Log.println("inv");
 	Log.println(_("[1 1 -1; -2 0 1; 0 2 1]").inv());
-
+	
+	// -1.3333 -0.3333  0.6667
+	// 1.0833  0.3333 -0.4167
+	Log.println("pinv");
+	Log.println(_("[1 2;3 4;5 6]").pinv());
+	
 	//-1.0000  4.0000
 	// 0.0000  2.0000
 	Log.println("div");

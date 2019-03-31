@@ -919,9 +919,6 @@ export default class Matrix {
 	 * @returns {Boolean}
 	 */
 	isDiagonal(epsilon) {
-		if(!this.isSquare()) {
-			return false;
-		}
 		let is_diagonal = true;
 		const tolerance = epsilon ? epsilon : 1.0e-10;
 		this._each(function(num, row, col){
@@ -1215,8 +1212,9 @@ export default class Matrix {
 		}
 		if(this.isDiagonal()) {
 			// 対角行列の場合は、対角成分のみ逆数をとる
-			const y = new Matrix(this);
-			for(let i = 0; i < y.row_length; i++) {
+			const y = this.T();
+			const size = Math.min(y.row_length, y.column_length);
+			for(let i = 0; i < size; i++) {
 				y.matrix_array[i][i] = y.matrix_array[i][i].inv();
 			}
 			return y;
@@ -1295,16 +1293,15 @@ export default class Matrix {
 			return new Matrix(y);
 		}
 		if(M2.row_length === M2.column_length) {
+			// ランク落ちしているか確認していないため注意
+			// 本来ランク落ちしている場合は、ここでpinvを使用した方法に切り替えるなどする必要がある。
 			return this.mul(M2.inv());
 		}
 		if(M1.column_length !== M2.column_length) {
 			throw "Matrix size does not match";
 		}
 		
-		// 疑似逆行列を使用するとよいと思われる
-		// return this.mul(M2.pinv());
-		// 未実装なのでエラー
-		throw "Unimplemented";
+		throw "warning";
 	}
 
 	/**
@@ -2770,12 +2767,6 @@ export default class Matrix {
 			throw "Unimplemented";
 		}
 		const rank = this.rank();
-		/*
-		if(rank !== this.column_length) {
-			// 後に使用するQR関数が使用できないので非対応
-			throw "Unimplemented";
-		}
-		*/
 		// SVD分解
 		// 参考：Gilbert Strang (2007). Computational Science and Engineering.
 		const VD = this.T().mul(this).eig();
@@ -2801,6 +2792,32 @@ export default class Matrix {
 			S : sigma,
 			V : VD.V
 		};
+	}
+
+	/**
+	 * A.pinv() 疑似逆行列を求める
+	 * @returns {Matrix}
+	 */
+	pinv() {
+		const USV = this.svd();
+		const U = USV.U;
+		const S = USV.S;
+		const V = USV.V;
+		const sing = Matrix.createMatrixDoEachCalculation(function(row, col) {
+			if(row === col) {
+				const x = S.matrix_array[row][row];
+				if(x.isZero()) {
+					return Complex.ZERO;
+				}
+				else {
+					return x.inv();
+				}
+			}
+			else {
+				return Complex.ZERO;
+			}
+		}, this.column_length, this.row_length);
+		return V.mul(sing).mul(U.T());
 	}
 
 }
