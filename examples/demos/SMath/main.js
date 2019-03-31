@@ -10,10 +10,10 @@ const testLUP = function(text) {
 	const A = _(text);
 	Log.println(A);
 	const LUP = A.lup();
-	Log.println(LUP.L.toString());
-	Log.println(LUP.U.toString());
-	Log.println(LUP.P.toString());
-	Log.println(LUP.P.T().mul(LUP.L).mul(LUP.U).toString());
+	Log.println(LUP.L);
+	Log.println(LUP.U);
+	Log.println(LUP.P);
+	Log.println(LUP.P.T().mul(LUP.L).mul(LUP.U));
 };
 
 const testQR = function(text) {
@@ -24,6 +24,37 @@ const testQR = function(text) {
 	Log.println(QR.Q);
 	Log.println(QR.R);
 	Log.println(QR.Q.mul(QR.R));
+};
+
+const testTRI = function(text) {
+	Log.println("tridiagonalize");
+	const A = _(text);
+	Log.println(A);
+	const VD = A.tridiagonalize();
+	Log.println(VD.P);
+	Log.println(VD.H);
+	Log.println(VD.P.mul(VD.H).mul(VD.P.T()));
+};
+
+const testEIG = function(text) {
+	Log.println("eig");
+	const A = _(text);
+	Log.println(A);
+	const VD = A.eig();
+	Log.println(VD.V);
+	Log.println(VD.D);
+	Log.println(VD.V.mul(VD.D).mul(VD.V.T()));
+};
+
+const testSVD = function(text) {
+	Log.println("svd");
+	const A = _(text);
+	Log.println(A);
+	const USV = A.svd();
+	Log.println(USV.U);
+	Log.println(USV.S);
+	Log.println(USV.V);
+	Log.println(USV.U.mul(USV.S).mul(USV.V.T()));
 };
 
 const main = function() {
@@ -140,14 +171,14 @@ const main = function() {
 	Log.println(_("[1 2 3; 4 5 6]").get(1, 1));
 
 	// -4 - 7i
-	Log.println("dot");
-	Log.println(_("1 + 2j").dot("2 - 3j"));
+	Log.println("inner");
+	Log.println(_("1 + 2j").inner("2 - 3j"));
 
 	// 21 +  5i  12 + 32i
 	// 12 +  5i; 21 + 32i
-	Log.println("dot");
-	Log.println(_("[1 2;3j 4]").dot("[5j 6;7j 8j]"));
-	Log.println(_("[1 2;3j 4]").dot("[5j 6;7j 8j]", 2));
+	Log.println("inner");
+	Log.println(_("[1 2;3j 4]").inner("[5j 6;7j 8j]"));
+	Log.println(_("[1 2;3j 4]").inner("[5j 6;7j 8j]", 2));
 
 	// QR分解
 	testQR("[1 2 3;4 5 6;7 8 9]");
@@ -162,7 +193,19 @@ const main = function() {
 	testLUP("[1 4 2;3 5 1;0 0 0;1 0 9]");
 	testLUP("[1 2 3;4 5 6;7 8 9]");
 	testLUP("[1 2;3 4;5 6]");
+
+	// 対称行列の三重対角化
+	testTRI("[1 1 1 1;1 2 2 2;1 2 3 3;1 2 3 4]");
 		
+	// 対称行列の固有値分解
+	testEIG("[1 1 1 1;1 2 2 2;1 2 3 3;1 2 3 4]");
+
+	// 特異値分解
+	testSVD("[2 1 3 4;3 2 5 2; 3 4 1 -1; -1 -3 1 3]");
+	testSVD("[1 2 3;4 5 6;7 8 9]");
+	testSVD("[1 2 3;4 5 6]");
+	testSVD("[1 2;3 4;5 6]");
+	
 };
 
 main();
