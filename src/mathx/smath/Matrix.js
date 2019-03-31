@@ -1677,6 +1677,26 @@ export default class Matrix {
 		});
 	}
 
+	/**
+	 * 各項に fix()
+	 * @returns {Matrix}
+	 */
+	fix() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.fix();
+		});
+	}
+
+	/**
+	 * 各項に fract()
+	 * @returns {Matrix}
+	 */
+	fract() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.fract();
+		});
+	}
+
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 	// 行列の計算でよく使用する処理。
 	// メソッド内部の処理を記述する際に使用している。
@@ -2645,7 +2665,6 @@ export default class Matrix {
 		}
 
 		// QR法により固有値を求める
-
 		let is_error = false;
 		const tolerance = 1.0e-10;
 		const PH = this.tridiagonalize();
@@ -2824,11 +2843,146 @@ export default class Matrix {
 	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
-	// statics 統計計算用
+	// statistics 統計計算用
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 
 	// TODO 平均や分散など統計でよく利用するものを作る
 
+	/**
+	 * x.gammaln() = gammaln(x) 対数ガンマ関数 
+	 * @returns {Matrix}
+	 */
+	gammaln() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.gammaln();
+		});
+	}
+
+	/**
+	 * x.gamma() = gamma(x) ガンマ関数 
+	 * @returns {Matrix}
+	 */
+	gamma() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.gamma();
+		});
+	}
+
+	/**
+	 * a.beta(b) = beta(a, b) ベータ関数
+	 * @param {Object} b
+	 * @returns {Matrix}
+	 */
+	beta(b) {
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.beta(b_);
+		});
+	}
+	
+	/**
+	 * x.factorial() = factorial(x), x! 階乗関数
+	 * @returns {Matrix}
+	 */
+	factorial() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.factorial();
+		});
+	}
+	
+	/**
+	 * n.nchoosek(k) = nchoosek(n, k), nCk 二項係数またはすべての組合わせ
+	 * @param {Object} k
+	 * @returns {Matrix}
+	 */
+	nchoosek(k) {
+		const k_ = Matrix.createConstMatrix(k).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.nchoosek(k_);
+		});
+	}
+	
+	/**
+	 * x.betainc(z, w, tail) = betainc(x, z, w, tail) 不完全ベータ関数
+	 * @param {Object} z
+	 * @param {Object} w
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @returns {Matrix}
+	 */
+	betainc(z, w, tail) {
+		const z_ = Matrix.createConstMatrix(z).scalar;
+		const w_ = Matrix.createConstMatrix(w).scalar;
+		const tail_ = arguments.length === 2 ? tail : "lower";
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betainc(z_, w_, tail_);
+		});
+	}
+
+	/**
+	 * x.betacdf(a, b) = betacdf(x, a, b) 不完全ベータ関数の累積分布関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Matrix}
+	 */
+	betacdf(a, b) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betacdf(a_, b_);
+		});
+	}
+
+	/**
+	 * x.betapdf(a, b) = betapdf(x, a, b) 不完全ベータ関数の確率密度関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Matrix}
+	 */
+	betapdf(a, b) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betapdf(a_, b_);
+		});
+	}
+
+	/**
+	 * x.betainv(a, b) = betainv(x, a, b) 不完全ベータ関数の確率密度関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Matrix}
+	 */
+	betainv(a, b) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betainv(a_, b_);
+		});
+	}
+
+	/**
+	 * x.gammainc(a, tail) = gammainc(x, a, tail) 不完全ガンマ関数
+	 * @param {Object} a
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @returns {Matrix}
+	 */
+	gammainc(a, tail) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const tail_ = arguments.length === 1 ? tail : "lower";
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.gammainc(a_, tail_);
+		});
+	}
+
+	/**
+	 * x.erf() = erf(x) 誤差関数
+	 * @returns {Matrix}
+	 */
+	erf() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.erf();
+		});
+	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 	// signal 信号処理用
