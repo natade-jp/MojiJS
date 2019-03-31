@@ -39,5 +39,7 @@ data.push(createData("SenkoText", "./src/SenkoText.js", "./build/SenkoText.modul
 data.push(createData("SenkoText", "./src/SenkoText.js", "./build/SenkoText.umd.js", false, true));
 data.push(createData("SenkoS3", "./src/SenkoS3.js", "./build/SenkoS3.module.js", true, true));
 data.push(createData("SenkoS3", "./src/SenkoS3.js", "./build/SenkoS3.umd.js", false, true));
+data.push(createData("SenkoMath", "./src/SenkoMath.js", "./build/SenkoMath.module.js", true, true));
+data.push(createData("SenkoMath", "./src/SenkoMath.js", "./build/SenkoMath.umd.js", false, true));
 
 export default data;

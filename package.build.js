@@ -59,7 +59,9 @@ const target_file = [
 	"./build/SenkoText.umd.js",
 	"./build/SenkoText.module.js",
 	"./build/SenkoS3.umd.js",
-	"./build/SenkoS3.module.js"
+	"./build/SenkoS3.module.js",
+	"./build/SenkoMath.umd.js",
+	"./build/SenkoMath.module.js"
 ];
 
 // ヘッダ追加
@@ -79,6 +81,10 @@ saveTextFile(
 saveTextFile(
 	"./examples/libs/SenkoS3.js",
 	"import SenkoS3 from \"../../build/SenkoS3.module.js\";export default SenkoS3;"
+);
+saveTextFile(
+	"./examples/libs/SenkoMath.js",
+	"import SenkoMath from \"../../build/SenkoMath.module.js\";export default SenkoMath;"
 );
 
 // その他のファイルをコピー

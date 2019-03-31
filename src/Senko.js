@@ -14,7 +14,6 @@ import File from "./basic/File.js";
 import HashMap from "./basic/HashMap.js";
 import Format from "./basic/Format.js";
 import Log from "./basic/Log.js";
-import MathX from "./mathx/MathX.js";
 
 import Device from "./device/Device.js";
 import ImageProcessing from "./graphics/ImageProcessing.js";
@@ -29,7 +28,6 @@ Senko.File = File;
 Senko.HashMap = HashMap;
 Senko.format = Format.format;
 Senko.Log = Log;
-Senko.MathX = MathX;
 Senko.Device = Device;
 Senko.ImageProcessing = ImageProcessing;
 Senko.SComponent = SComponent;

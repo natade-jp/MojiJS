@@ -22,6 +22,11 @@ saveTextFile(
 	"./examples/libs/SenkoS3.js",
 	"import SenkoS3 from \"../../src/SenkoS3.js\";export default SenkoS3;"
 );
+saveTextFile(
+	"./examples/libs/SenkoMath.js",
+	"import SenkoMath from \"../../src/SenkoMath.js\";export default SenkoMath;"
+);
+
 
 // その他のファイルをコピー
 copy("./src/gui/SComponent.css", "./build/SComponent.css");
