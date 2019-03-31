@@ -11,6 +11,280 @@
 import Complex from "./Complex.js";
 import Random from "../basic/Random.js";
 
+class MatrixTool {
+
+	/**
+	 * 対称行列の三重対角化する（実数計算専用）
+	 */
+	static tridiagonalize(A) {
+
+		const a = A.getNumberMatrixArray();
+		const tolerance = 1.0e-10;
+		
+		/**
+		 * 内積をとる
+		 * @param {Number} x1
+		 * @param {Number} x2
+		 * @param {Number} index_offset オフセット(この値から行う)(任意)
+		 * @param {Number} index_max 最大(この値は含めない)(任意)
+		 * @returns {Complex} 
+		 */
+		const innerproduct = function(x1, x2, index_offset, index_max) {
+			let y = 0;
+			const ioffset = index_offset ? index_offset : 0;
+			const imax = index_max ? index_max : x1.length;
+			for(let i = ioffset; i < imax; i++) {
+				y += x1[i] * x2[i];
+			}
+			return y;
+		};
+
+		/**
+		 * ハウスホルダー変換
+		 * @param {Array} x ハウスホルダー変換したいベクトル
+		 * @param {Number} index_offset オフセット(この値から行う)(任意)
+		 * @param {Number} index_max 最大(この値は含めない)(任意)
+		 * @returns {Object} 
+		 */
+		const house = function(x, index_offset, index_max) {
+			const ioffset = index_offset ? index_offset : 0;
+			const imax = index_max ? index_max : x.length;
+			// xの内積の平方根（ノルム）を計算
+			let y1 = Math.sqrt(innerproduct(x, x, ioffset, imax));
+			const v = [];
+			if(Math.abs(y1) >= tolerance) {
+				if(x[ioffset] < 0) {
+					y1 = - y1;
+				}
+				let t;
+				for(let i = ioffset, j = 0; i < imax; i++, j++) {
+					if(i === ioffset) {
+						v[j] = x[i] + y1;
+						t = 1.0 / Math.sqrt(v[j] * y1);
+						v[j] = v[j] * t;
+					}
+					else {
+						v[j] = x[i] * t;
+					}
+				}
+			}
+			return {
+				y1: - y1,	// 鏡像の1番目の要素(y2,y3,...は0)
+				v : v		// 直行する単位ベクトル vT*v = 2
+			};
+		};
+
+		const n = a.length;
+		const d = []; // 対角成分
+		const e = []; // 隣の成分
+
+		// 参考：奥村晴彦 (1991). C言語による最新アルゴリズム事典.
+		// 3重対角化の成分を取得する
+		{
+			for(let k = 0; k < n - 2; k++) {
+				const v = a[k];
+				d[k] = v[k];
+				{
+					const H = house(v, k + 1, n);
+					e[k] = H.y1;
+					for(let i = 0; i < H.v.length; i++) {
+						v[k + 1 + i] = H.v[i];
+					}
+				}
+				if(Math.abs(e[k]) < tolerance) {
+					continue;
+				}
+				for(let i = k + 1; i < n; i++) {
+					let s = 0;
+					for(let j = k + 1; j < i; j++) {
+						s += a[j][i] * v[j];
+					}
+					for(let j = i; j < n; j++) {
+						s += a[i][j] * v[j];
+					}
+					d[i] = s;
+				}
+				const t = innerproduct(v, d, k + 1, n) / 2.0;
+				for(let i = n - 1; i > k; i--) {
+					const p = v[i];
+					const q = d[i] - (t * p);
+					d[i] = q;
+					for(let j = i; j < n; j++) {
+						const r = p * d[j] + q * v[j];
+						a[i][j] = a[i][j] - r;
+					}
+				}
+			}
+			if(n >= 2) {
+				d[n - 2] = a[n - 2][n - 2];
+				e[n - 2] = a[n - 2][n - 1];
+			}
+			if(n >= 1) {
+				d[n - 1] = a[n - 1][n - 1];
+			}
+		}
+
+		//変換P行列を求める
+		for(let k = n - 1; k >= 0; k--) {
+			const v = a[k];
+			if(k < n - 2) {
+				for(let i = k + 1; i < n; i++) {
+					const w = a[i];
+					const t = innerproduct(v, w, k + 1, n);
+					for(let j = k + 1; j < n; j++) {
+						w[j] -= t * v[j];
+					}
+				}
+			}
+			for(let i = 0; i < n; i++) {
+				v[i] = 0.0;
+			}
+			v[k] = 1.0;
+		}
+
+		// d と e の配列を使って、三重対角行列を作成する
+		const H = Matrix.createMatrixDoEachCalculation(function(row, col) {
+			if(row === col) {
+				return new Complex(d[row]);
+			}
+			else if(Math.abs(row - col) === 1) {
+				return new Complex(e[((row + col) * 0.5) | 0]);
+			}
+			else {
+				return Complex.ZERO;
+			}
+		}, n, n);
+
+		return {
+			P : (new Matrix(a)).T(),
+			H : H
+		};
+	}
+
+	/**
+	 * 対称行列の固有値分解する（実数計算専用）
+	 */
+	static eig(A) {
+
+		// QR法により固有値を求める
+		let is_error = false;
+		const tolerance = 1.0e-10;
+		const PH = A.tridiagonalize();
+		const a = PH.P.getNumberMatrixArray();
+		const h = PH.H.getNumberMatrixArray();
+		const n = A.row_length;
+
+		// 成分の抽出
+		const d = []; // 対角成分
+		const e = []; // 隣の成分
+		for(let i = 0; i < n; i++) {
+			d[i] = h[i][i];
+			e[i] = (i === 0) ? 0.0 : h[i][i - 1];
+		}
+
+		// 参考：奥村晴彦 (1991). C言語による最新アルゴリズム事典.
+		const MAX_ITER = 100;
+		for(let h = n - 1; h > 0; h--) {
+			let j = h;
+			for(j = h;j >= 1; j--) {
+				if(Math.abs(e[j]) <= (tolerance * (Math.abs(d[j - 1]) + Math.abs(d[j])))) {
+					break;
+				}
+			}
+			if(j == h) {
+				continue;
+			}
+			let iter = 0;
+			while(true) {
+				iter++;
+				if(iter > MAX_ITER) {
+					is_error = true;
+					break;
+				}
+				let w = (d[h - 1] - d[h]) / 2.0;
+				let t = e[h] * e[h];
+				let s = Math.sqrt(w * w + t);
+				if(w < 0) {
+					s = - s;
+				}
+				let x = d[j] - d[h] + (t / (w + s));
+				let y = e[j + 1];
+				for(let k = j; k < h; k++) {
+					let c, s;
+					if(Math.abs(x) >= Math.abs(y)) {
+						t = - y / x;
+						c = 1.0 / Math.sqrt(t * t + 1);
+						s = t * c;
+					}
+					else {
+						t = - x / y;
+						s = 1.0 / Math.sqrt(t * t + 1);
+						c = t * s;
+					}
+					w = d[k] - d[k + 1];
+					t = (w * s + 2.0 * c * e[k + 1]) * s;
+					d[k] -= t;
+					d[k + 1] += t;
+					if(k > j) {
+						e[k] = c * e[k] - s * y;
+					}
+					e[k + 1] += s * (c * w - 2.0 * s * e[k + 1]);
+					for(let i = 0; i < n; i++) {
+						x = a[i][k];
+						y = a[i][k + 1];
+						a[i][k    ] = c * x - s * y;
+						a[i][k + 1] = s * x + c * y;
+					}
+					if(k < h - 1) {
+						x = e[k + 1];
+						y = -s * e[k + 2];
+						e[k + 2] *= c;
+					}
+				}
+				if(Math.abs(e[h]) <= tolerance * (Math.abs(d[h - 1]) + Math.abs(d[h]))) {
+					break;
+				}
+			}
+			if(is_error) {
+				break;
+			}
+		}
+
+		// ソート
+		const vd_sort = function(V, d) {
+			const len = d.length;
+			const sortdata = [];
+			for(let i = 0; i < len; i++) {
+				sortdata[i] = {
+					sigma : d[i],
+					index : i
+				};
+			}
+			const compare = function(a, b){
+				if(a === b) {
+					return 0;
+				}
+				return (a < b ? -1 : 1);
+			};
+			sortdata.sort(compare);
+			const MOVE = Matrix.zeros(len);
+			const ND = Matrix.zeros(len);
+			for(let i = 0; i < len; i++) {
+				ND.matrix_array[i][i] = new Complex(sortdata[i].sigma);
+				MOVE.matrix_array[i][sortdata[i].index] = Complex.ONE;
+			}
+			return {
+				V : V.mul(MOVE),
+				D : ND
+			};
+		};
+		const VD = vd_sort(new Matrix(a), d);
+		return VD;
+	}
+
+}
+
+
 const ConstructorTool = {
 
 	match2 : function(text, regexp) {
@@ -434,6 +708,21 @@ export default class Matrix {
 		return true;
 	}
 
+	/**
+	 * 行列の実数配列を作成して返す
+	 * @returns {Array} 行列の実数配列を返します
+	 */
+	getNumberMatrixArray() {
+		const y = [];
+		for(let i = 0; i < this.row_length; i++) {
+			y[i] = [];
+			for(let j = 0; j < this.column_length; j++) {
+				y[i][j] = this.matrix_array[i][j].real;
+			}
+		}
+		return y;
+	}
+	
 	/**
 	 * 引数から行列を作成する（作成が不要の場合はnewしない）
 	 * @param {Object} number 
@@ -2506,147 +2795,7 @@ export default class Matrix {
 		if(this.isComplex()) {
 			throw "not Real Matrix";
 		}
-
-		/**
-		 * 内積をとる
-		 * @param {Array} x1
-		 * @param {Array} x2
-		 * @param {Number} index_offset オフセット(この値から行う)(任意)
-		 * @param {Number} index_max 最大(この値は含めない)(任意)
-		 * @returns {Complex} 
-		 */
-		const innerproduct = function(x1, x2, index_offset, index_max) {
-			let y = Complex.ZERO;
-			const ioffset = index_offset ? index_offset : 0;
-			const imax = index_max ? index_max : x1.length;
-			for(let i = ioffset; i < imax; i++) {
-				y = y.add(x1[i].dot(x2[i]));
-			}
-			return y;
-		};
-
-		/**
-		 * ハウスホルダー変換
-		 * @param {Array} x ハウスホルダー変換したいベクトル
-		 * @param {Number} index_offset オフセット(この値から行う)(任意)
-		 * @param {Number} index_max 最大(この値は含めない)(任意)
-		 * @returns {Object} 
-		 */
-		const house = function(x, index_offset, index_max) {
-			const ioffset = index_offset ? index_offset : 0;
-			const imax = index_max ? index_max : x.length;
-			// xの内積の平方根（ノルム）を計算
-			let y1 = innerproduct(x, x, ioffset, imax).sqrt();
-			const v = [];
-			if(!y1.isZero()) {
-				if(x[ioffset].isNegative()) {
-					y1 = y1.negate();
-				}
-				let t;
-				for(let i = ioffset, j = 0; i < imax; i++, j++) {
-					if(i === ioffset) {
-						v[j] = x[i].add(y1);
-						t = v[j].mul(y1).sqrt().inv();
-						v[j] = v[j].mul(t);
-					}
-					else {
-						v[j] = x[i].mul(t);
-					}
-				}
-			}
-			return {
-				y1: y1.negate(),	// 鏡像の1番目の要素(y2,y3,...は0)
-				v : v				// 直行する単位ベクトル vT*v = 2
-			};
-		};
-
-		const A = new Matrix(this);
-		const a = A.matrix_array;
-		const n = A.row_length;
-		const d = []; // 対角成分
-		const e = []; // 隣の成分
-
-		// 参考：奥村晴彦 (1991). C言語による最新アルゴリズム事典.
-		// 3重対角化の成分を取得する
-		{
-			for(let k = 0; k < n - 2; k++) {
-				const v = a[k];
-				d[k] = v[k];
-				{
-					const H = house(v, k + 1, n);
-					e[k] = H.y1;
-					for(let i = 0; i < H.v.length; i++) {
-						v[k + 1 + i] = H.v[i];
-					}
-				}
-				if(e[k].isZero()) {
-					continue;
-				}
-				for(let i = k + 1; i < n; i++) {
-					let s = Complex.ZERO;
-					for(let j = k + 1; j < i; j++) {
-						s = s.add(a[j][i].mul(v[j]));
-					}
-					for(let j = i; j < n; j++) {
-						s = s.add(a[i][j].mul(v[j]));
-					}
-					d[i] = s;
-				}
-				const t = innerproduct(v, d, k + 1, n).div(Complex.TWO);
-				for(let i = n - 1; i > k; i--) {
-					const p = v[i];
-					const q = d[i].sub(t.mul(p));
-					d[i] = q;
-					for(let j = i; j < n; j++) {
-						const r = p.mul(d[j]).add(q.mul(v[j]));
-						a[i][j] = a[i][j].sub(r);
-					}
-				}
-			}
-			if(n >= 2) {
-				d[n - 2] = a[n - 2][n - 2];
-				e[n - 2] = a[n - 2][n - 1];
-			}
-			if(n >= 1) {
-				d[n - 1] = a[n - 1][n - 1];
-			}
-		}
-
-		//変換P行列を求める
-		for(let k = n - 1; k >= 0; k--) {
-			const v = a[k];
-			if(k < n - 2) {
-				for(let i = k + 1; i < n; i++) {
-					const w = a[i];
-					const t = innerproduct(v, w, k + 1, n);
-					for(let j = k + 1; j < n; j++) {
-						w[j] = w[j].sub(t.mul(v[j]));
-					}
-				}
-			}
-			for(let i = 0; i < n; i++) {
-				v[i] = Complex.ZERO;
-			}
-			v[k] = Complex.ONE;
-		}
-
-		// d と e の配列を使って、三重対角行列を作成する
-		const H = Matrix.createMatrixDoEachCalculation(function(row, col) {
-			if(row === col) {
-				return d[row];
-			}
-			else if(Math.abs(row - col) === 1) {
-				return e[((row + col) * 0.5) | 0];
-			}
-			else {
-				return Complex.ZERO;
-			}
-		}, this.row_length, this.row_length);
-
-		return {
-			P : A.T(),
-			H : H
-		};
+		return MatrixTool.tridiagonalize(this);
 	}
 
 	/**
@@ -2663,120 +2812,7 @@ export default class Matrix {
 		if(this.isComplex()) {
 			throw "not Real Matrix";
 		}
-
-		// QR法により固有値を求める
-		let is_error = false;
-		const tolerance = 1.0e-10;
-		const PH = this.tridiagonalize();
-		const A = PH.P;
-		const a = A.matrix_array;
-		const H = PH.H;
-		const h = H.matrix_array;
-		const n = this.row_length;
-
-		// 成分の抽出
-		const d = []; // 対角成分
-		const e = []; // 隣の成分
-		for(let i = 0; i < n; i++) {
-			d[i] = h[i][i];
-			e[i] = (i === 0) ? Complex.ZERO : h[i][i - 1];
-		}
-
-		// 参考：奥村晴彦 (1991). C言語による最新アルゴリズム事典.
-		const MAX_ITER = 100;
-		for(let h = n - 1; h > 0; h--) {
-			let j = h;
-			for(j = h;j >= 1; j--) {
-				if(e[j].norm <= (tolerance * (d[j - 1].norm + d[j].norm))) {
-					break;
-				}
-			}
-			if(j == h) {
-				continue;
-			}
-			let iter = 0;
-			while(true) {
-				iter++;
-				if(iter > MAX_ITER) {
-					is_error = true;
-					break;
-				}
-				let w = (d[h - 1].sub(d[h])).div(Complex.TWO);
-				let t = e[h].mul(e[h]);
-				let s = w.mul(w).add(t).sqrt();
-				if(w.isNegative()) {
-					s = s.negate();
-				}
-				let x = d[j].sub(d[h]).add(t.div(w.add(s)));
-				let y = e[j + 1];
-				for(let k = j; k < h; k++) {
-					let c, s;
-					if(x.norm >= y.norm) {
-						t = y.negate().div(x);
-						c = t.mul(t).add(Complex.ONE).sqrt().inv();
-						s = t.mul(c);
-					}
-					else {
-						t = x.negate().div(y);
-						s = t.mul(t).add(Complex.ONE).sqrt().inv();
-						c = t.mul(s);
-					}
-					w = d[k].sub(d[k + 1]);
-					t = (w.mul(s).add(Complex.TWO.mul(c).mul(e[k + 1]))).mul(s);
-					d[k] = d[k].sub(t);
-					d[k + 1] = d[k + 1].add(t);
-					if(k > j) {
-						e[k] = c.mul(e[k]).sub(s.mul(y));
-					}
-					e[k + 1] = e[k + 1].add(s.mul(c.mul(w).sub(Complex.TWO.mul(s).mul(e[k + 1]))));
-					for(let i = 0; i < n; i++) {
-						x = a[i][k];
-						y = a[i][k + 1];
-						a[i][k    ] = c.mul(x).sub(s.mul(y));
-						a[i][k + 1] = s.mul(x).add(c.mul(y));
-					}
-					if(k < h - 1) {
-						x = e[k + 1];
-						y = s.negate().mul(e[k + 2]);
-						e[k + 2] = e[k + 2].mul(c);
-					}
-				}
-				if(e[h].norm <= tolerance * (d[h - 1].norm + d[h].norm)) {
-					break;
-				}
-			}
-			if(is_error) {
-				break;
-			}
-		}
-
-		// ソート
-		const vd_sort = function(V, d) {
-			const len = d.length;
-			const sortdata = [];
-			for(let i = 0; i < len; i++) {
-				sortdata[i] = {
-					sigma : d[i],
-					index : i
-				};
-			}
-			const compare = function(a, b){
-				return a.sigma.compareTo(b.sigma);
-			};
-			sortdata.sort(compare);
-			const MOVE = Matrix.zeros(len);
-			const ND = Matrix.zeros(len);
-			for(let i = 0; i < len; i++) {
-				ND.matrix_array[i][i] = sortdata[i].sigma;
-				MOVE.matrix_array[i][sortdata[i].index] = Complex.ONE;
-			}
-			return {
-				V : V.mul(MOVE),
-				D : ND
-			};
-		};
-		const VD = vd_sort(A, d);
-		return VD;
+		return MatrixTool.eig(this);
 	}
 
 	/**
