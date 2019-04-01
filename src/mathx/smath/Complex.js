@@ -373,12 +373,107 @@ class Statistics {
 	 * @return {Number}
 	 */
 	static erf(x) {
-		if(x >= 0) {
-			return (Statistics.p_gamma(x * x, 0.5, Math.log(Math.PI) * 0.5));
+		return (Statistics.p_gamma(x * x, 0.5, Math.log(Math.PI) * 0.5) * (x >= 0 ? 1.0 : -1.0));
+	}
+
+	/**
+	 * erfc(x) 相補誤差関数
+	 * @param {Number} x
+	 * @return {Number}
+	 */
+	static erfc(x) {
+		return 1.0 - Statistics.erf(x);
+	}
+
+	/**
+	 * tcdf(x) スチューデントのt分布の累積分布関数
+	 * @param {Number} x
+	 * @param {Number} nu 自由度
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @return {Number}
+	 */
+	static tcdf(x, nu, tail) {
+		if(tail === "lower") {
+			const y = (x * x) / (nu + x * x) ;
+			const p = Statistics.betainc( y, 0.5, nu * 0.5 ) * (x < 0 ? -1 : 1);
+			return 0.5 * (1 + p);
+		}
+		else if(tail === "upper") {
+			return 1.0 - Statistics.tcdf(x, nu);
+		}
+		else if(arguments.length === 2) {
+			// 引数を省略した場合
+			return Statistics.tcdf(x, nu, "lower");
 		}
 		else {
-			return (- Statistics.p_gamma(x * x, 0.5, Math.log(Math.PI) * 0.5));
+			throw "tcdf unsupported argument [" + tail + "]";
 		}
+	}
+
+	/**
+	 * tinv(p, nu) スチューデントのt逆累積分布関数
+	 * @param {Number} p 確率
+	 * @param {Number} nu 自由度
+	 * @return {Number}
+	 */
+	static tinv(p, nu) {
+		if(p <= 0) {
+			return Number.NEGATIVE_INFINITY;
+		}
+		else if(p >= 1) {
+			return Number.POSITIVE_INFINITY;
+		}
+		else if(p < 0.5) {
+			const y = Statistics.betainv(2.0 * p, 0.5 * nu, 0.5);
+			return - Math.sqrt(nu / y - nu);
+		}
+		else {
+			const y = Statistics.betainv(2.0 * (1.0 - p), 0.5 * nu, 0.5);
+			return Math.sqrt(nu / y - nu);
+		}
+	}
+
+	/**
+	 * etdist(x, nu, tails) スチューデントのt分布のパーセンテージを返す
+	 * @param {Number} x
+	 * @param {Number} nu 自由度
+	 * @param {Number} tails 尾部(1...片側、2...両側)
+	 * @return {Number}
+	 */
+	static etdist(x, nu, tails) {
+		return Statistics.tcdf(x, nu, "upper") *tails;
+	}
+
+	/**
+	 * etinv(p, nu) スチューデントのt分布のt値を、確率と自由度から求める
+	 * @param {Number} p 確率
+	 * @param {Number} nu 自由度
+	 * @return {Number}
+	 */
+	static etinv(p, nu) {
+		return Statistics.tinv( 1.0 - p * 0.5, nu);
+	}
+
+	/**
+	 * fcdf(x, v1, v2) F累積分布関数
+	 * @param {Number} x 
+	 * @param {Number} v1 分子の自由度
+	 * @param {Number} v2 分母の自由度
+	 * @return {Number}
+	 */
+	static fcdf(x, v1, v2) {
+		return Statistics.betacdf( v1 * x / (v1 * x + v2), v1 * 0.5, v2 * 0.5 );
+	}
+
+	/**
+	 * finv(x, v1, v2) F逆累積分布関数
+	 * @param {Number} p
+	 * @param {Number} v1 分子の自由度
+	 * @param {Number} v2 分母の自由度
+	 * @return {Number}
+	 */
+	static finv(p, v1, v2) {
+		return (1.0 / Statistics.betainv( 1.0 - p, v2 * 0.5, v1 * 0.5 ) - 1.0) * v2 / v1;
 	}
 
 }
@@ -1223,8 +1318,8 @@ export default class Complex {
 	
 	/**
 	 * x.betainc(z, w, tail) = betainc(x, z, w, tail) 不完全ベータ関数
-	 * @param {Number} z
-	 * @param {Number} w
+	 * @param {Object} z
+	 * @param {Object} w
 	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Complex}
 	 */
@@ -1241,8 +1336,8 @@ export default class Complex {
 
 	/**
 	 * x.betacdf(a, b) = betacdf(x, a, b) 不完全ベータ関数の累積分布関数
-	 * @param {Number} a
-	 * @param {Number} b
+	 * @param {Object} a
+	 * @param {Object} b
 	 * @returns {Complex}
 	 */
 	betacdf(a, b) {
@@ -1257,8 +1352,8 @@ export default class Complex {
 	
 	/**
 	 * x.betacdf(a, b) = betapdf(x, a, b) 不完全ベータ関数の確率密度関数
-	 * @param {Number} a
-	 * @param {Number} b
+	 * @param {Object} a
+	 * @param {Object} b
 	 * @returns {Complex}
 	 */
 	betapdf(a, b) {
@@ -1273,8 +1368,8 @@ export default class Complex {
 
 	/**
 	 * x.betainv(a, b) = betainv(x, a, b) 不完全ベータ関数の確率密度関数の逆関数
-	 * @param {Number} a
-	 * @param {Number} b
+	 * @param {Object} a
+	 * @param {Object} b
 	 * @returns {Complex}
 	 */
 	betainv(a, b) {
@@ -1289,7 +1384,7 @@ export default class Complex {
 	
 	/**
 	 * x.gammainc(a, tail) = gammainc(x, a, tail) 不完全ガンマ関数
-	 * @param {Number} a
+	 * @param {Object} a
 	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Complex}
 	 */
@@ -1313,6 +1408,80 @@ export default class Complex {
 			throw "erf don't support complex numbers.";
 		}
 		return new Complex(Statistics.erf(x._re));
+	}
+
+	/**
+	 * x.erfc() = erfc(x) 相補誤差関数
+	 * @returns {Complex}
+	 */
+	erfc() {
+		const x = this;
+		if(x.isComplex()) {
+			throw "erf don't support complex numbers.";
+		}
+		return new Complex(Statistics.erfc(x._re));
+	}
+
+	/**
+	 * x.tcdf(nu, tail) = tcdf(x, nu, tail) スチューデントのt分布の累積分布関数
+	 * @param {Object} nu 自由度
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @returns {Complex}
+	 */
+	tcdf(nu, tail) {
+		const x_ = this;
+		const nu_ = Complex.createConstComplex(nu);
+		if(x_.isComplex() || nu_.isComplex()) {
+			throw "tcdf don't support complex numbers.";
+		}
+		const tail_ = arguments.length === 2 ? tail : "lower";
+		return new Complex(Statistics.tcdf(x_._re, nu_._re, tail_));
+	}
+
+	/**
+	 * p.tinv(nu) = tinv(p, nu) スチューデントのt逆累積分布関数
+	 * @param {Object} nu 自由度
+	 * @returns {Complex}
+	 */
+	tinv(nu) {
+		const p_ = this;
+		const nu_ = Complex.createConstComplex(nu);
+		if(p_.isComplex() || nu_.isComplex()) {
+			throw "tinv don't support complex numbers.";
+		}
+		return new Complex(Statistics.tinv(p_._re, nu_._re));
+	}
+
+	/**
+	 * x.tcdf(v1, v2) = tcdf(x, v1, v2) F累積分布関数
+	 * @param {Object} v1 分子の自由度
+	 * @param {Object} v2 分母の自由度
+	 * @returns {Complex}
+	 */
+	fcdf(v1, v2) {
+		const x_ = this;
+		const v1_ = Complex.createConstComplex(v1);
+		const v2_ = Complex.createConstComplex(v2);
+		if(x_.isComplex() || v1_.isComplex() || v2_.isComplex()) {
+			throw "fcdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.fcdf(x_._re, v1_._re, v2_._re));
+	}
+
+	/**
+	 * x.finv(v1, v2) = finv(x, v1, v2) F逆累積分布関数
+	 * @param {Object} v1 分子の自由度
+	 * @param {Object} v2 分母の自由度
+	 * @returns {Complex}
+	 */
+	finv(v1, v2) {
+		const x_ = this;
+		const v1_ = Complex.createConstComplex(v1);
+		const v2_ = Complex.createConstComplex(v2);
+		if(x_.isComplex() || v1_.isComplex() || v2_.isComplex()) {
+			throw "finv don't support complex numbers.";
+		}
+		return new Complex(Statistics.finv(x_._re, v1_._re, v2_._re));
 	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆

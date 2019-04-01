@@ -3020,6 +3020,70 @@ export default class Matrix {
 		});
 	}
 
+	/**
+	 * x.erfc() = erfc(x) 相補誤差関数
+	 * @returns {Matrix}
+	 */
+	erfc() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.erfc();
+		});
+	}
+	
+	/**
+	 * x.tcdf(nu, tail) = tcdf(x, nu, tail) スチューデントのt分布の累積分布関数
+	 * @param {Object} nu 自由度
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @returns {Matrix}
+	 */
+	tcdf(nu, tail) {
+		const nu_ = Matrix.createConstMatrix(nu).scalar;
+		const tail_ = arguments.length === 1 ? tail : "lower";
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.tcdf(nu_, tail_);
+		});
+	}
+
+	/**
+	 * p.tinv(nu) = tinv(p, nu) スチューデントのt逆累積分布関数
+	 * @param {Object} nu 自由度
+	 * @returns {Matrix}
+	 */
+	tinv(nu) {
+		const nu_ = Matrix.createConstMatrix(nu).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.tinv(nu_);
+		});
+	}
+	
+	/**
+	 * x.tcdf(v1, v2) = tcdf(x, v1, v2) F累積分布関数
+	 * @param {Object} v1 分子の自由度
+	 * @param {Object} v2 分母の自由度
+	 * @returns {Matrix}
+	 */
+	fcdf(v1, v2) {
+		const v1_ = Matrix.createConstMatrix(v1).scalar;
+		const v2_ = Matrix.createConstMatrix(v2).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.fcdf(v1_, v2_);
+		});
+	}
+
+	/**
+	 * x.finv(v1, v2) = finv(x, v1, v2) F逆累積分布関数
+	 * @param {Object} v1 分子の自由度
+	 * @param {Object} v2 分母の自由度
+	 * @returns {Complex}
+	 */
+	finv(v1, v2) {
+		const v1_ = Matrix.createConstMatrix(v1).scalar;
+		const v2_ = Matrix.createConstMatrix(v2).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.finv(v1_, v2_);
+		});
+	}
+
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 	// signal 信号処理用
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
