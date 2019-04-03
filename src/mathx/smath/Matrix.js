@@ -823,6 +823,39 @@ export default class Matrix {
 		return this.clone()._each(eachfunc);
 	}
 
+	/**
+	 * 列優先でベクトルに対して何か処理を行い、行列を作成します。
+	 * @param {Function} pre メイン処理を行う前の下準備
+	 * @param {Function} main メイン処理
+	 * @param {Function} post メイン処理完了後の処理（戻り値に設定した値をいれる）
+	 * @returns {Matix}
+	 */
+	_column_oriented_1_dimensional_processing(pre, main, post) {
+		let y;
+		if(this.isRow()) {
+			pre(this.matrix_array[0][0], 0, 0);
+			for(let col = 0; col < this.column_length; col++) {
+				main(this.matrix_array[0][col], 0, col);
+			}
+			y = post(this.matrix_array[0][this.column_length - 1], 0, this.column_length - 1);
+			return new Matrix(y);
+		}
+		else {
+			const y = [];
+			y[0] = [];
+			for(let col = 0; col < this.column_length; col++) {
+				pre(this.matrix_array[0][col], 0, col);
+				for(let row = 0; row < this.row_length; row++) {
+					main(this.matrix_array[row][col], row, col);
+				}
+				y[col] = post(this.matrix_array[this.row_length - 1][col], this.row_length - 1, col);
+			}
+			// 行列の場合は結果のデータが横に入ってしまうので、転置させる
+			const Y = new Matrix(y);
+			return Y.isMatrix() ? Y.transpose() : Y;
+		}
+	}
+
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 	// 行列の基本操作、基本情報の取得
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
@@ -1340,28 +1373,19 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	max(epsilon) {
-		if(this.isRow()) {
-			let y = this.matrix_array[0][0];
-			for(let col = 1; col < this.column_length; col++) {
-				if(y.compareTo(this.matrix_array[0][col], epsilon) > 0) {
-					y = this.matrix_array[0][col];
-				}
+		let x;
+		const pre = function(number) {
+			x = number;
+		};
+		const main = function(number) {
+			if(x.compareTo(number, epsilon) > 0) {
+				x = number;
 			}
-			return new Matrix(y);
-		}
-		else {
-			const y = [];
-			y[0] = [];
-			for(let col = 0; col < this.column_length; col++) {
-				y[0][col] = this.matrix_array[0][col];
-				for(let row = 1; row < this.row_length; row++) {
-					if(y[0][col].compareTo(this.matrix_array[row][col], epsilon) > 0) {
-						y[0][col] = this.matrix_array[row][col];
-					}
-				}
-			}
-			return new Matrix(y);
-		}
+		};
+		const post = function() {
+			return x;
+		};
+		return this._column_oriented_1_dimensional_processing(pre, main, post);
 	}
 	
 	/**
@@ -1370,28 +1394,19 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	min(epsilon) {
-		if(this.isRow()) {
-			let y = this.matrix_array[0][0];
-			for(let col = 1; col < this.column_length; col++) {
-				if(y.compareTo(this.matrix_array[0][col], epsilon) < 0) {
-					y = this.matrix_array[0][col];
-				}
+		let x;
+		const pre = function(number) {
+			x = number;
+		};
+		const main = function(number) {
+			if(x.compareTo(number, epsilon) < 0) {
+				x = number;
 			}
-			return new Matrix(y);
-		}
-		else {
-			const y = [];
-			y[0] = [];
-			for(let col = 0; col < this.column_length; col++) {
-				y[0][col] = this.matrix_array[0][col];
-				for(let row = 1; row < this.row_length; row++) {
-					if(y[0][col].compareTo(this.matrix_array[row][col], epsilon) < 0) {
-						y[0][col] = this.matrix_array[row][col];
-					}
-				}
-			}
-			return new Matrix(y);
-		}
+		};
+		const post = function() {
+			return x;
+		};
+		return this._column_oriented_1_dimensional_processing(pre, main, post);
 	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
@@ -3082,6 +3097,95 @@ export default class Matrix {
 		return this.cloneMatrixDoEachCalculation(function(num) {
 			return num.finv(v1_, v2_);
 		});
+	}
+	
+	/**
+	 * A.mean() 相加平均
+	 * @returns {Matix}
+	 */
+	mean() {
+		let x;
+		let count;
+		const pre = function() {
+			x = Complex.ZERO;
+			count = 0;
+		};
+		const main = function(number) {
+			x = x.add(number);
+			count++;
+		};
+		const post = function() {
+			return x.div(count);
+		};
+		return this._column_oriented_1_dimensional_processing(pre, main, post);
+	}
+
+	/**
+	 * A.geomean() 相乗平均／幾何平均
+	 * @returns {Matix}
+	 */
+	geomean() {
+		let x;
+		const pre = function() {
+			x = Number.ONE;
+		};
+		const main = function(number) {
+			x = x.mul(number);
+		};
+		const post = function() {
+			return x.sqrt();
+		};
+		return this._column_oriented_1_dimensional_processing(pre, main, post);
+	}
+
+	/**
+	 * A.var() 分散
+	 * @param {Object} cor 0(不偏分散), 1(標本分散)
+	 * @returns {Matix}
+	 */
+	var(cor) {
+		const M = this.mean();
+		let x;
+		let col = 0;
+		let mean;
+		let count;
+		let correction = arguments.length === 0 ? 0 : Matrix.createConstMatrix(cor).scalar.real;
+		const pre = function() {
+			x = Complex.ZERO;
+			count = 0;
+			if(M.isScalar()) {
+				mean = M.scalar;
+			}
+			else {
+				mean = M.get(col);
+			}
+		};
+		const main = function(number) {
+			x = x.add(number.sub(mean).square());
+			count++;
+		};
+		const post = function() {
+			col++;
+			if(count === 1) {
+				correction = 1;
+			}
+			return x.div(count - 1 + correction);
+		};
+		return this._column_oriented_1_dimensional_processing(pre, main, post);
+	}
+
+	/**
+	 * A.std() 標準偏差
+	 * @param {Object} cor 0(不偏), 1(標本)
+	 * @returns {Matix}
+	 */
+	std(cor) {
+		const correction = arguments.length === 0 ? 0 : Matrix.createConstMatrix(cor).scalar.real;
+		const M = this.var(correction);
+		M._each(function(num) {
+			return num.sqrt();
+		});
+		return M;
 	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆

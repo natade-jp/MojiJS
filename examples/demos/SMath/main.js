@@ -212,6 +212,15 @@ const main = function() {
 	testSVD("[1 2 3;4 5 6]");
 	testSVD("[1 2;3 4;5 6]");
 	
+	Log.println("mean");
+	Log.println(_("[1 2 3 4;4 1 5 0]").mean());
+
+	Log.println("var");
+	Log.println(_("[1 2 3 4;4 1 5 0]").var());
+	
+	Log.println("std");
+	Log.println(_("[1 2 3 4;4 1 5 0]").std());
+	
 };
 
 main();
