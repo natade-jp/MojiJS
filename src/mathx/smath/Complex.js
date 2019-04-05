@@ -428,6 +428,73 @@ class Statistics {
 	}
 
 	/**
+	 * normpdf(x, u, s) 正規分布の確率密度関数
+	 * @param {Number} x
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @return {Number}
+	 */
+	static normpdf(x, u, s) {
+		const u_ = typeof u === "number" ? u : 0.0;
+		const s_ = typeof s === "number" ? s : 1.0;
+		let y = 1.0 / Math.sqrt( 2.0 * Math.PI * s_ * s_ );
+		y *= Math.exp( - (x - u_) * (x - u_) / (2.0 * s_ * s_));
+		return y;
+	}
+
+	/**
+	 * normcdf(x, u, s) 正規分布の累積分布関数
+	 * @param {Number} x
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @return {Number}
+	 */
+	static normcdf(x, u, s) {
+		const u_ = typeof u === "number" ? u : 0.0;
+		const s_ = typeof s === "number" ? s : 1.0;
+		return (1.0 + Statistics.erf( (x - u_) / (s_ * Math.sqrt(2.0)) )) / 2.0;
+	}
+
+	/**
+	 * norminv(p, u, s) 正規分布の累積分布関数の逆関数
+	 * @param {Number} p
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @return {Number}
+	 */
+	static norminv(p, u, s) {
+		if((p < 0.0) || (p > 1.0)) {
+			return Number.NaN;
+		}
+		else if(p == 0.0) {
+			return Number.NEGATIVE_INFINITY;
+		}
+		else if(p == 1.0) {
+			return Number.POSITIVE_INFINITY;
+		}
+		const u_ = typeof u === "number" ? u : 0.0;
+		const s_ = typeof s === "number" ? s : 1.0;
+		const eps = 1.0e-12;
+		// 初期値を決める
+		let y = u_;
+		// 単調増加関数なのでニュートン・ラフソン法で解く
+		// x_n+1 = x_n - f(x) / f'(x)
+		// ここで f(x) は累積分布関数、f'(x) は確率密度関数
+		// a = 累積分関数 → f(x)  = 累積分関数 - a と置く。
+		// aの微分は0なので無関係
+		let delta, y2;
+		for(let i = 0; i < 200; i++) {
+			y2 = y - ((Statistics.normcdf(y, u_, s_) - p) / Statistics.normpdf(y, u_, s_));
+			delta = y2 - y;
+			if(Math.abs(delta) <= eps) {
+				break;
+			}
+			y = y2;
+		}
+		return y;
+	}
+
+	/**
 	 * tpdf(t, k) t分布の確率密度関数
 	 * @param {Number} t 
 	 * @param {Number} v 自由度
@@ -586,7 +653,7 @@ class Statistics {
 }
 
 /*
-test
+//test
 
 // -0.12078223763524543
 console.log(Statistics.gammaln(1.5));
@@ -615,6 +682,12 @@ console.log(Statistics.betainv(0.6, 5, 10));
 // 0.3286267594591274
 console.log(Statistics.erf(0.3));
 
+//0.2896915527614828
+console.log(Statistics.normpdf(0.8));
+// 0.7881446014166031
+console.log(Statistics.normcdf(0.8));
+// 0.8416212335729142
+console.log(Statistics.norminv(0.8));
 // 0.2713125051165461
 console.log(Statistics.tpdf(0.8, 7));
 // 0.7749986502650896
@@ -1625,6 +1698,54 @@ export default class Complex {
 			throw "erfc don't support complex numbers.";
 		}
 		return new Complex(Statistics.erfc(x._re));
+	}
+
+	/**
+	 * x.normpdf(u, s) = normpdf(x, u, s) 正規分布の確率密度関数
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @returns {Complex}
+	 */
+	normpdf(u, s) {
+		const x_ = this;
+		const u_ = arguments.length <= 0 ? Complex.createConstComplex(u) : Complex.ZERO;
+		const s_ = arguments.length <= 1 ? Complex.createConstComplex(s) : Complex.ONE;
+		if(x_.isComplex() || u_.isComplex() || s_.isComplex()) {
+			throw "normpdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.normpdf(x_._re, u_._re, s_._re));
+	}
+
+	/**
+	 * x.normcdf(u, s) = normcdf(x, u, s) 正規分布の累積分布関数
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @returns {Complex}
+	 */
+	normcdf(u, s) {
+		const x_ = this;
+		const u_ = arguments.length <= 0 ? Complex.createConstComplex(u) : Complex.ZERO;
+		const s_ = arguments.length <= 1 ? Complex.createConstComplex(s) : Complex.ONE;
+		if(x_.isComplex() || u_.isComplex() || s_.isComplex()) {
+			throw "normcdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.normcdf(x_._re, u_._re, s_._re));
+	}
+
+	/**
+	 * x.norminv(u, s) = norminv(x, u, s) 正規分布の累積分布関数の逆関数
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @returns {Complex}
+	 */
+	norminv(u, s) {
+		const x_ = this;
+		const u_ = arguments.length <= 0 ? Complex.createConstComplex(u) : Complex.ZERO;
+		const s_ = arguments.length <= 1 ? Complex.createConstComplex(s) : Complex.ONE;
+		if(x_.isComplex() || u_.isComplex() || s_.isComplex()) {
+			throw "norminv don't support complex numbers.";
+		}
+		return new Complex(Statistics.norminv(x_._re, u_._re, s_._re));
 	}
 
 	/**

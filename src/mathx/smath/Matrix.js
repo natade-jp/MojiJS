@@ -3088,6 +3088,48 @@ export default class Matrix {
 	}
 	
 	/**
+	 * x.normpdf(u, s) = normpdf(x, u, s) 正規分布の確率密度関数
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @returns {Matrix}
+	 */
+	normpdf(u, s) {
+		const u_ = arguments.length <= 0 ? Complex.createConstMatrix(u).scalar : Complex.ZERO;
+		const s_ = arguments.length <= 1 ? Complex.createConstMatrix(s).scalar : Complex.ONE;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.normpdf(u_, s_);
+		});
+	}
+
+	/**
+	 * x.normcdf(u, s) = normcdf(x, u, s) 正規分布の累積分布関数
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @returns {Matrix}
+	 */
+	normcdf(u, s) {
+		const u_ = arguments.length <= 0 ? Complex.createConstMatrix(u).scalar : Complex.ZERO;
+		const s_ = arguments.length <= 1 ? Complex.createConstMatrix(s).scalar : Complex.ONE;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.normcdf(u_, s_);
+		});
+	}
+
+	/**
+	 * x.norminv(u, s) = norminv(x, u, s) 正規分布の累積分布関数の逆関数
+	 * @param {Number} u 平均値(デフォルト = 0)
+	 * @param {Number} s 分散(デフォルト = 1)
+	 * @returns {Matrix}
+	 */
+	norminv(u, s) {
+		const u_ = arguments.length <= 0 ? Complex.createConstMatrix(u).scalar : Complex.ZERO;
+		const s_ = arguments.length <= 1 ? Complex.createConstMatrix(s).scalar : Complex.ONE;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.norminv(u_, s_);
+		});
+	}
+
+	/**
 	 * t.tpdf(v) = tpdf(t, v) t分布の確率密度関数
 	 * @param {Object} v 自由度
 	 * @returns {Matrix}
