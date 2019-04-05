@@ -2900,7 +2900,7 @@ export default class Matrix {
 	// TODO 平均や分散など統計でよく利用するものを作る
 
 	/**
-	 * x.gammaln() = gammaln(x) 対数ガンマ関数 
+	 * x.gammaln() = gammaln(x) 対数ガンマ関数
 	 * @returns {Matrix}
 	 */
 	gammaln() {
@@ -2910,7 +2910,7 @@ export default class Matrix {
 	}
 
 	/**
-	 * x.gamma() = gamma(x) ガンマ関数 
+	 * z.gamma() = gamma(z) ガンマ関数
 	 * @returns {Matrix}
 	 */
 	gamma() {
@@ -2920,17 +2920,131 @@ export default class Matrix {
 	}
 
 	/**
-	 * a.beta(b) = beta(a, b) ベータ関数
-	 * @param {Object} b
+	 * x.gammainc(a, tail) = gammainc(x, a, tail) 不完全ガンマ関数
+	 * @param {Object} a
+	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Matrix}
 	 */
-	beta(b) {
-		const b_ = Matrix.createConstMatrix(b).scalar;
+	gammainc(a, tail) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const tail_ = arguments.length === 1 ? tail : "lower";
 		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.beta(b_);
+			return num.gammainc(a_, tail_);
+		});
+	}
+
+	/**
+	 * x.gampdf(k, s) = gampdf(x, k, s) ガンマ分布の確率密度関数
+	 * @param {Object} k 形状母数
+	 * @param {Object} s 尺度母数
+	 * @returns {Matrix}
+	 */
+	gampdf(k, s) {
+		const k_ = Matrix.createConstMatrix(k).scalar;
+		const s_ = Matrix.createConstMatrix(s).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.gampdf(k_, s_);
+		});
+	}
+
+	/**
+	 * x.gamcdf(k, s) = gamcdf(x, k, s) ガンマ分布の確率密度関数
+	 * @param {Object} k 形状母数
+	 * @param {Object} s 尺度母数
+	 * @returns {Matrix}
+	 */
+	gamcdf(k, s) {
+		const k_ = Matrix.createConstMatrix(k).scalar;
+		const s_ = Matrix.createConstMatrix(s).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.gamcdf(k_, s_);
+		});
+	}
+
+	/**
+	 * p.gaminv(k, s) = gaminv(p, k, s) ガンマ分布の累積分布関数の逆関数
+	 * @param {Object} k 形状母数
+	 * @param {Object} s 尺度母数
+	 * @returns {Matrix}
+	 */
+	gaminv(k, s) {
+		const k_ = Matrix.createConstMatrix(k).scalar;
+		const s_ = Matrix.createConstMatrix(s).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.gaminv(k_, s_);
+		});
+	}
+
+	/**
+	 * x.beta(y) = beta(x, y) ベータ関数
+	 * @param {Object} y
+	 * @returns {Matrix}
+	 */
+	beta(y) {
+		const y_ = Matrix.createConstMatrix(y).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.beta(y_);
 		});
 	}
 	
+	/**
+	 * x.betainc(a, b, tail) = betainc(x, a, b, tail) 不完全ベータ関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @returns {Matrix}
+	 */
+	betainc(a, b, tail) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		const tail_ = arguments.length === 2 ? tail : "lower";
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betainc(a_, b_, tail_);
+		});
+	}
+
+	/**
+	 * x.betacdf(a, b) = betacdf(x, a, b) ベータ分布の確率密度関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Matrix}
+	 */
+	betacdf(a, b) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betacdf(a_, b_);
+		});
+	}
+
+	/**
+	 * x.betapdf(a, b) = betapdf(x, a, b) ベータ分布の累積分布関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Matrix}
+	 */
+	betapdf(a, b) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betapdf(a_, b_);
+		});
+	}
+
+	/**
+	 * p.betainv(a, b) = betainv(p, a, b) ベータ分布の累積分布関数の逆関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Matrix}
+	 */
+	betainv(a, b) {
+		const a_ = Matrix.createConstMatrix(a).scalar;
+		const b_ = Matrix.createConstMatrix(b).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.betainv(a_, b_);
+		});
+	}
+
 	/**
 	 * x.factorial() = factorial(x), x! 階乗関数
 	 * @returns {Matrix}
@@ -2954,78 +3068,6 @@ export default class Matrix {
 	}
 	
 	/**
-	 * x.betainc(z, w, tail) = betainc(x, z, w, tail) 不完全ベータ関数
-	 * @param {Object} z
-	 * @param {Object} w
-	 * @param {String} tail lower(デフォルト)/upper
-	 * @returns {Matrix}
-	 */
-	betainc(z, w, tail) {
-		const z_ = Matrix.createConstMatrix(z).scalar;
-		const w_ = Matrix.createConstMatrix(w).scalar;
-		const tail_ = arguments.length === 2 ? tail : "lower";
-		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.betainc(z_, w_, tail_);
-		});
-	}
-
-	/**
-	 * x.betacdf(a, b) = betacdf(x, a, b) 不完全ベータ関数の累積分布関数
-	 * @param {Object} a
-	 * @param {Object} b
-	 * @returns {Matrix}
-	 */
-	betacdf(a, b) {
-		const a_ = Matrix.createConstMatrix(a).scalar;
-		const b_ = Matrix.createConstMatrix(b).scalar;
-		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.betacdf(a_, b_);
-		});
-	}
-
-	/**
-	 * x.betapdf(a, b) = betapdf(x, a, b) 不完全ベータ関数の確率密度関数
-	 * @param {Object} a
-	 * @param {Object} b
-	 * @returns {Matrix}
-	 */
-	betapdf(a, b) {
-		const a_ = Matrix.createConstMatrix(a).scalar;
-		const b_ = Matrix.createConstMatrix(b).scalar;
-		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.betapdf(a_, b_);
-		});
-	}
-
-	/**
-	 * x.betainv(a, b) = betainv(x, a, b) 不完全ベータ関数の確率密度関数
-	 * @param {Object} a
-	 * @param {Object} b
-	 * @returns {Matrix}
-	 */
-	betainv(a, b) {
-		const a_ = Matrix.createConstMatrix(a).scalar;
-		const b_ = Matrix.createConstMatrix(b).scalar;
-		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.betainv(a_, b_);
-		});
-	}
-
-	/**
-	 * x.gammainc(a, tail) = gammainc(x, a, tail) 不完全ガンマ関数
-	 * @param {Object} a
-	 * @param {String} tail lower(デフォルト)/upper
-	 * @returns {Matrix}
-	 */
-	gammainc(a, tail) {
-		const a_ = Matrix.createConstMatrix(a).scalar;
-		const tail_ = arguments.length === 1 ? tail : "lower";
-		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.gammainc(a_, tail_);
-		});
-	}
-
-	/**
 	 * x.erf() = erf(x) 誤差関数
 	 * @returns {Matrix}
 	 */
@@ -3046,56 +3088,118 @@ export default class Matrix {
 	}
 	
 	/**
-	 * x.tcdf(nu, tail) = tcdf(x, nu, tail) スチューデントのt分布の累積分布関数
-	 * @param {Object} nu 自由度
-	 * @param {String} tail lower(デフォルト)/upper
+	 * t.tpdf(v) = tpdf(t, v) t分布の確率密度関数
+	 * @param {Object} v 自由度
 	 * @returns {Matrix}
 	 */
-	tcdf(nu, tail) {
-		const nu_ = Matrix.createConstMatrix(nu).scalar;
-		const tail_ = arguments.length === 1 ? tail : "lower";
+	tpdf(v) {
+		const v_ = Matrix.createConstMatrix(v).scalar;
 		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.tcdf(nu_, tail_);
+			return num.tpdf(v_);
 		});
 	}
 
 	/**
-	 * p.tinv(nu) = tinv(p, nu) スチューデントのt逆累積分布関数
-	 * @param {Object} nu 自由度
+	 * t.tcdf(v, tail) = tcdf(t, v, tail) t分布の累積分布関数
+	 * @param {Object} v 自由度
+	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Matrix}
 	 */
-	tinv(nu) {
-		const nu_ = Matrix.createConstMatrix(nu).scalar;
+	tcdf(v, tail) {
+		const v_ = Matrix.createConstMatrix(v).scalar;
+		const tail_ = arguments.length === 2 ? tail : "lower";
 		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.tinv(nu_);
+			return num.tcdf(v_, tail_);
+		});
+	}
+
+	/**
+	 * p.tinv(v) = tinv(p, v) t分布の累積分布関数の逆関数
+	 * @param {Object} v 自由度
+	 * @returns {Matrix}
+	 */
+	tinv(v) {
+		const v_ = Matrix.createConstMatrix(v).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.tinv(v_);
+		});
+	}
+
+	/**
+	 * x.chi2pdf(k) = chi2pdf(x, k) カイ二乗分布の確率密度関数
+	 * @param {Object} k 自由度
+	 * @returns {Matrix}
+	 */
+	chi2pdf(k) {
+		const k_ = Matrix.createConstMatrix(k).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.chi2pdf(k_);
+		});
+	}
+
+	/**
+	 * x.chi2cdf(k) = chi2cdf(x, k) カイ二乗分布の累積分布関数
+	 * @param {Object} k 自由度
+	 * @returns {Matrix}
+	 */
+	chi2cdf(k) {
+		const k_ = Matrix.createConstMatrix(k).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.chi2cdf(k_);
 		});
 	}
 	
 	/**
-	 * x.tcdf(v1, v2) = tcdf(x, v1, v2) F累積分布関数
-	 * @param {Object} v1 分子の自由度
-	 * @param {Object} v2 分母の自由度
+	 * p.chi2inv(k) = chi2inv(p, k) カイ二乗分布の累積分布関数の逆関数
+	 * @param {Object} k 自由度
 	 * @returns {Matrix}
 	 */
-	fcdf(v1, v2) {
-		const v1_ = Matrix.createConstMatrix(v1).scalar;
-		const v2_ = Matrix.createConstMatrix(v2).scalar;
+	chi2inv(k) {
+		const k_ = Matrix.createConstMatrix(k).scalar;
 		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.fcdf(v1_, v2_);
+			return num.chi2inv(k_);
 		});
 	}
 
 	/**
-	 * x.finv(v1, v2) = finv(x, v1, v2) F逆累積分布関数
-	 * @param {Object} v1 分子の自由度
-	 * @param {Object} v2 分母の自由度
+	 * x.fpdf(d1, d2) = fpdf(x, d1, d2) F分布の確率密度関数
+	 * @param {Object} d1 分子の自由度
+	 * @param {Object} d2 分母の自由度
+	 * @returns {Matrix}
+	 */
+	fpdf(d1, d2) {
+		const d1_ = Matrix.createConstMatrix(d1).scalar;
+		const d2_ = Matrix.createConstMatrix(d2).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.fpdf(d1_, d2_);
+		});
+	}
+
+	/**
+	 * x.fcdf(d1, d2) = fcdf(x, d1, d2) F分布の累積分布関数
+	 * @param {Object} d1 分子の自由度
+	 * @param {Object} d2 分母の自由度
+	 * @returns {Matrix}
+	 */
+	fcdf(d1, d2) {
+		const d1_ = Matrix.createConstMatrix(d1).scalar;
+		const d2_ = Matrix.createConstMatrix(d2).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.fcdf(d1_, d2_);
+		});
+	}
+
+	/**
+	 * p.finv(d1, d2) = finv(p, d1, d2) F分布の累積分布関数の逆関数
+	 * @param {Object} d1 分子の自由度
+	 * @param {Object} d2 分母の自由度
 	 * @returns {Complex}
 	 */
-	finv(v1, v2) {
-		const v1_ = Matrix.createConstMatrix(v1).scalar;
-		const v2_ = Matrix.createConstMatrix(v2).scalar;
+	finv(d1, d2) {
+		const d1_ = Matrix.createConstMatrix(d1).scalar;
+		const d2_ = Matrix.createConstMatrix(d2).scalar;
 		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.finv(v1_, v2_);
+			return num.finv(d1_, d2_);
 		});
 	}
 	

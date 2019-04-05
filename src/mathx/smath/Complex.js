@@ -23,64 +23,39 @@ class Statistics {
 	static gammaln(x) {
 		// 参考：奥村,"C言語による最新アルゴリズム事典",p30,技術評論社,1991
 		const LOG_2PI = Math.log(2.0 * Math.PI);
-		//いくつで近似するか(10で十分よいが一応16までやってみた)
-		const N = 16;
 		//ベルヌーイ数
 		//http://fr.wikipedia.org/wiki/Nombre_de_Bernoulli
-		const B2 =  1.0 / 6.0;
-		const B4 = -1.0 / 30.0;
-		const B6 =  1.0 / 42.0;
-		const B8 = -1.0 / 30.0;
-		const B10 =  5.0 / 66.0;
-		const B12 = -691.0 / 2730.0;
-		const B14 =  7.0 / 6.0;
-		const B16 = -3617.0 / 510.0;
-		const B18 = 43867.0 / 798.0;
-		const B20 = -174611.0 / 330.0;
-		const B22 = 854513.0 / 138.0;
-		const B24 = -236364091.0 / 2730.0;
-		const B26 = 8553103.0 / 6.0;
-		const B28 = -23749461029.0 / 870.0;
-		const B30 = 8615841276005.0 / 14322.0;
-		const B32 = -7709321041217.0 / 510.0;
-		let v, y;
-		v = 1;
-		while(x < N) {
+		const K2 = ( 1.0 / 6.0)					/ (2 * 1);
+		const K4 = (-1.0 / 30.0)				/ (4 * 3);
+		const K6 = ( 1.0 / 42.0)				/ (6 * 5);
+		const K8 = (-1.0 / 30.0)				/ (8 * 7);
+		const K10 = ( 5.0 / 66.0)				/ (10 * 9);
+		const K12 = (-691.0 / 2730.0)			/ (12 * 11);
+		const K14 = ( 7.0 / 6.0)				/ (14 * 13);
+		const K16 = (-3617.0 / 510.0)			/ (16 * 15);
+		const K18 = (43867.0 / 798.0)			/ (18 * 17);
+		const K20 = (-174611.0 / 330.0)			/ (20 * 19);
+		const K22 = (854513.0 / 138.0)			/ (22 * 21);
+		const K24 = (-236364091.0 / 2730.0)		/ (24 * 23);
+		const K26 = (8553103.0 / 6.0)			/ (26 * 25);
+		const K28 = (-23749461029.0 / 870.0)	/ (28 * 27);
+		const K30 = (8615841276005.0 / 14322.0)	/ (30 * 29);
+		const K32 = (-7709321041217.0 / 510.0)	/ (32 * 31);
+		const LIST = [
+			K32, K30, K28, K26, K24, K22, K20, K18,
+			K16, K14, K12, K10, K8, K6, K4, K2
+		];
+		let v = 1;
+		while(x < LIST.length) {
 			v *= x;
 			x++;
 		}
 		const w = 1 / (x * x);
-		y = (B32 / (32.0 * 31.0));
-		y *= w;
-		y += (B30 / (30.0 * 29.0));
-		y *= w;
-		y += (B28 / (28.0 * 27.0));
-		y *= w;
-		y += (B26 / (26.0 * 25.0));
-		y *= w;
-		y += (B24 / (24.0 * 23.0));
-		y *= w;
-		y += (B22 / (22.0 * 21.0));
-		y *= w;
-		y += (B20 / (20.0 * 19.0));
-		y *= w;
-		y += (B18 / (18.0 * 17.0));
-		y *= w;
-		y += (B16 / (16.0 * 15.0));
-		y *= w;
-		y += (B14 / (14.0 * 13.0));
-		y *= w;
-		y += (B12 / (12.0 * 11.0));
-		y *= w;
-		y += (B10 / (10.0 * 9.0));
-		y *= w;
-		y += (B8 / (8.0 * 7.0));
-		y *= w;
-		y += (B6 / (6.0 * 5.0));
-		y *= w;
-		y += (B4 / (4.0 * 3.0));
-		y *= w;
-		y += (B2 / (2.0 * 1.0));
+		let y = LIST[0];
+		for(let i = 1; i < LIST.length; i++) {
+			y *= w;
+			y += LIST[i];
+		}
 		y /= x;
 		y += 0.5 * LOG_2PI;
 		y += - Math.log(v) - x + (x - 0.5) * Math.log(x);
@@ -88,16 +63,162 @@ class Statistics {
 	}
 
 	/**
-	 * gamma(x) ガンマ関数
+	 * q_gamma(x, a, gammaln_a) 不完全ガンマ関数 上側
 	 * @param {Number} x
+	 * @param {Number} a
+	 * @param {Number} gammaln_a
+	 * @return {Number}
+	 */
+	static q_gamma(x, a, gammaln_a) {
+		let k;
+		let result, w, temp, previous;
+		// Laguerreの多項式
+		let la = 1.0, lb = 1.0 + x - a;
+		if(x < 1.0 + a) {
+			return (1 - Statistics.p_gamma(x, a, gammaln_a));
+		}
+		w = Math.exp(a * Math.log(x) - x - gammaln_a);
+		result = w / lb;
+		for(k = 2; k < 1000; k++) {
+			temp = ((k - 1.0 - a) * (lb - la) + (k + x) * lb) / k;
+			la = lb;
+			lb = temp;
+			w *= (k - 1.0 - a) / k;
+			temp = w / (la * lb);
+			previous = result;
+			result += temp;
+			if(result == previous) {
+				return(result);
+			}
+		}
+		return Number.NaN;
+	}
+
+	/**
+	 * p_gamma(x, a, gammaln_a) 不完全ガンマ関数 下側
+	 * @param {Number} x
+	 * @param {Number} a
+	 * @param {Number} gammaln_a
+	 * @return {Number}
+	 */
+	static p_gamma(x, a, gammaln_a) {
+		// 参考：奥村,"C言語による最新アルゴリズム事典",p227,技術評論社,1991
+		let k;
+		let result, term, previous;
+		if(x >= 1.0 + a) {
+			return (1.0 - Statistics.q_gamma(x, a, gammaln_a));
+		}
+		if(x === 0.0) {
+			return 0.0;
+		}
+		result = term = Math.exp(a * Math.log(x) - x - gammaln_a) / a;
+		for(k = 1; k < 1000; k++) {
+			term *= x / (a + k);
+			previous = result;
+			result += term;
+			if(result == previous) {
+				return result;
+			}
+		}
+		return Number.NaN;
+	}
+
+	/**
+	 * gamma(z) ガンマ関数
+	 * @param {Number} z
 	 * @returns {Number}
 	 */
-	static gamma(x) {
+	static gamma(z) {
 		// 参考：奥村,"C言語による最新アルゴリズム事典",p30,技術評論社,1991
-		if(x < 0) {
-			return (Math.PI / (Math.sin(Math.PI * x) * Math.exp(Statistics.gammaln(1.0 - x))));
+		if(z < 0) {
+			return (Math.PI / (Math.sin(Math.PI * z) * Math.exp(Statistics.gammaln(1.0 - z))));
 		}
-		return Math.exp(Statistics.gammaln(x));
+		return Math.exp(Statistics.gammaln(z));
+	}
+
+	/**
+	 * gammainc(x, a, tail) 不完全ガンマ関数
+	 * @param {Number} x
+	 * @param {Number} a
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @return {Number}
+	 */
+	static gammainc(x, a, tail) {
+		if(tail === "lower") {
+			return Statistics.p_gamma(x, a, Statistics.gammaln(a));
+		}
+		else if(tail === "upper") {
+			return Statistics.q_gamma(x, a, Statistics.gammaln(a));
+		}
+		else if(arguments.length === 2) {
+			// 引数を省略した場合
+			return Statistics.gammainc(x, a, "lower");
+		}
+		else {
+			throw "gammainc unsupported argument [" + tail + "]";
+		}
+	}
+	
+	/**
+	 * gampdf(x, k, s) ガンマ分布の確率密度関数
+	 * @param {Number} x
+	 * @param {Number} k 形状母数
+	 * @param {Number} s 尺度母数
+	 * @return {Number}
+	 */
+	static gampdf(x, k, s) {
+		let y = 1.0 / (Statistics.gamma(k) * Math.pow(s, k));
+		y *= Math.pow( x, k - 1);
+		y *= Math.exp( - x / s );
+		return y;
+	}
+
+	/**
+	 * gamcdf(x, k, s) ガンマ分布の累積分布関数
+	 * @param {Number} x
+	 * @param {Number} k 形状母数
+	 * @param {Number} s 尺度母数
+	 * @return {Number}
+	 */
+	static gamcdf(x, k, s) {
+		return Statistics.gammainc(x / s, k);
+	}
+	
+	/**
+	 * gaminv(p, k, s) ガンマ分布の累積分布関数の逆関数
+	 * @param {Number} p
+	 * @param {Number} k 形状母数
+	 * @param {Number} s 尺度母数
+	 * @return {Number}
+	 */
+	static gaminv(p, k, s) {
+		if((p < 0.0) || (p > 1.0)) {
+			return Number.NaN;
+		}
+		else if(p == 0.0) {
+			return 0.0;
+		}
+		else if(p == 1.0) {
+			return Number.POSITIVE_INFINITY;
+		}
+		const eps = 1.0e-12;
+		// 初期値を決める
+		let y = k * s;
+		// 単調増加関数なのでニュートン・ラフソン法で解く
+		// x_n+1 = x_n - f(x) / f'(x)
+		// ここで f(x) は累積分布関数、f'(x) は確率密度関数
+		// a = 累積分関数 → f(x)  = 累積分関数 - a と置く。
+		// aの微分は0なので無関係
+		let delta, y2;
+		for(let i = 0; i < 100; i++) {
+			y2 = y - ((Statistics.gamcdf(y, k, s) - p) / Statistics.gampdf(y, k, s));
+			delta = y2 - y;
+			if(Math.abs(delta) <= eps) {
+				break;
+			}
+			y = y2;
+		}
+		return y;
 	}
 
 	/**
@@ -112,31 +233,6 @@ class Statistics {
 	}
 	
 	/**
-	 * factorial(x) = x! 階乗関数
-	 * @param {Number} x
-	 * @returns {Number}
-	 */
-	static factorial(x) {
-		const y = Statistics.gamma(x + 1.0);
-		if((x | 0) === x) {
-			return Math.round(y);
-		}
-		else {
-			return y;
-		}
-	}
-
-	/**
-	 * nchoosek(n, k) = nCk 二項係数またはすべての組合わせ
-	 * @param {Number} n
-	 * @param {Number} k
-	 * @return {Number} nCk
-	 */
-	static nchoosek(n, k) {
-		return (Math.round(Statistics.factorial(n) / (Statistics.factorial(n - k) * Statistics.factorial(k))));
-	}
-
-	/**
 	 * p_beta(x, a, b) 不完全ベータ関数 下側
 	 * @param {Number} x
 	 * @param {Number} a
@@ -144,6 +240,7 @@ class Statistics {
 	 * @return {Number}
 	 */
 	static p_beta(x, a, b) {
+		// 参考：奥村,"C言語による最新アルゴリズム事典",p231,技術評論社,1991
 		let k;
 		let result, term, previous;
 		if(a <= 0.0) {
@@ -153,7 +250,7 @@ class Statistics {
 			if(x < 1.0) {
 				return 0.0;
 			}
-			if(x === 1.0) {
+			else if(x === 1.0) {
 				return 1.0;
 			}
 			else {
@@ -198,23 +295,23 @@ class Statistics {
 	}
 
 	/**
-	 * betainc(x, z, w, tail) 不完全ベータ関数
+	 * betainc(x, a, b, tail) 不完全ベータ関数
 	 * @param {Number} x
-	 * @param {Number} z
-	 * @param {Number} w
+	 * @param {Number} a
+	 * @param {Number} b
 	 * @param tail {String} lower(デフォルト)/upper
 	 * @return {Number}
 	 */
-	static betainc(x, z, w, tail) {
+	static betainc(x, a, b, tail) {
 		if(tail === "lower") {
-			return Statistics.p_beta(x, z, w);
+			return Statistics.p_beta(x, a, b);
 		}
 		else if(tail === "upper") {
-			return Statistics.q_beta(x, z, w);
+			return Statistics.q_beta(x, a, b);
 		}
 		else if(arguments.length === 3) {
 			// 引数を省略した場合
-			return Statistics.betainc(x, z, w, "lower");
+			return Statistics.betainc(x, a, b, "lower");
 		}
 		else {
 			throw "betainc unsupported argument [" + tail + "]";
@@ -222,18 +319,7 @@ class Statistics {
 	}
 	
 	/**
-	 * betacdf(x, a, b) 不完全ベータ関数の累積分布関数
-	 * @param {Number} x
-	 * @param {Number} a
-	 * @param {Number} b
-	 * @return {Number}
-	 */
-	static betacdf(x, a, b) {
-		return Statistics.betainc(x, a, b);
-	}
-
-	/**
-	 * betapdf(x, a, b) 不完全ベータ関数の確率密度関数
+	 * betapdf(x, a, b) ベータ分布の確率密度関数
 	 * @param {Number} x
 	 * @param {Number} a
 	 * @param {Number} b
@@ -243,22 +329,34 @@ class Statistics {
 		//	return(Math.exp((a - 1) * Math.log(x) + (b - 1) * Math.log(1 - x)) / Statistics.beta(a,  b));
 		return (Math.pow(x, a - 1) * Math.pow(1 - x, b - 1) / Statistics.beta(a,  b));
 	}
-	
+
 	/**
-	 * betainv(x, a, b) 不完全ベータ関数の確率密度関数の逆関数
+	 * betacdf(x, a, b) ベータ分布の累積分布関数
 	 * @param {Number} x
 	 * @param {Number} a
 	 * @param {Number} b
 	 * @return {Number}
 	 */
-	static betainv(x, a, b) {
-		if((x < 0.0) || (x > 1.0)) {
+	static betacdf(x, a, b) {
+		return Statistics.betainc(x, a, b);
+	}
+	
+	/**
+	 * betainv(p, a, b) ベータ分布の累積分布関数の逆関数
+	 * @param {Number} p
+	 * @param {Number} a
+	 * @param {Number} b
+	 * @return {Number}
+	 */
+	static betainv(p, a, b) {
+		if((p < 0.0) || (p > 1.0)) {
 			return Number.NaN;
 		}
-		if((x == 1.0) && (a > 0.0) && (b > 0.0)) {
+		else if((p == 1.0) && (a > 0.0) && (b > 0.0)) {
 			return 1.0;
 		}
 		const eps = 1.0e-14;
+		// 初期値を決める
 		let y;
 		if(b == 0) {
 			y = 1.0 - eps;
@@ -269,15 +367,17 @@ class Statistics {
 		else {
 			y = a / (a + b);
 		}
-		let d = 1.0, y2;
-		for(let i = 0;(i < 10000) || (Math.abs(d) > eps); i++) {
-			d = (Statistics.betacdf(y, a, b) - x) / Statistics.betapdf(y, a, b);
-			y2 = y - d;
-			if(y2 < eps) {
-				y2 = y * 0.1;
-			}
-			else if(y2 > 1.0 - eps) {
-				y2 = 1.0 - (1.0 - y) * 0.1;
+		// 単調増加関数なのでニュートン・ラフソン法で解く
+		// x_n+1 = x_n - f(x) / f'(x)
+		// ここで f(x) は累積分布関数、f'(x) は確率密度関数
+		// a = 累積分関数 → f(x)  = 累積分関数 - a と置く。
+		// aの微分は0なので無関係
+		let delta, y2;
+		for(let i = 0; i < 100; i++) {
+			y2 = y - ((Statistics.betacdf(y, a, b) - p) / Statistics.betapdf(y, a, b));
+			delta = y2 - y;
+			if(Math.abs(delta) <= eps) {
+				break;
 			}
 			y = y2;
 		}
@@ -285,88 +385,30 @@ class Statistics {
 	}
 
 	/**
-	 * p_gamma(x, a, gammaln_a) 不完全ガンマ関数 下側
-	 * @param {Number} x
-	 * @param {Number} a
-	 * @param {Number} gammaln_a
-	 * @return {Number}
+	 * factorial(n) = n! 階乗関数
+	 * @param {Number} n
+	 * @returns {Number}
 	 */
-	static p_gamma(x, a, gammaln_a) {
-		let k;
-		let result, term, previous;
-		if(x >= 1.0 + a) {
-			return (1.0 - Statistics.q_gamma(x, a, gammaln_a));
-		}
-		if(x === 0.0) {
-			return 0.0;
-		}
-		result = term = Math.exp(a * Math.log(x) - x - gammaln_a) / a;
-		for(k = 1; k < 1000; k++) {
-			term *= x / (a + k);
-			previous = result;
-			result += term;
-			if(result == previous) {
-				return result;
-			}
-		}
-		return Number.NaN;
-	}
-
-	/**
-	 * q_gamma(x, a, gammaln_a) 不完全ガンマ関数 上側
-	 * @param {Number} x
-	 * @param {Number} a
-	 * @param {Number} gammaln_a
-	 * @return {Number}
-	 */
-	static q_gamma(x, a, gammaln_a) {
-		let k;
-		let result, w, temp, previous;
-		// Laguerreの多項式
-		let la = 1.0, lb = 1.0 + x - a;
-		if(x < 1.0 + a) {
-			return (1 - Statistics.p_gamma(x, a, gammaln_a));
-		}
-		w = Math.exp(a * Math.log(x) - x - gammaln_a);
-		result = w / lb;
-		for(k = 2; k < 1000; k++) {
-			temp = ((k - 1.0 - a) * (lb - la) + (k + x) * lb) / k;
-			la = lb;
-			lb = temp;
-			w *= (k - 1.0 - a) / k;
-			temp = w / (la * lb);
-			previous = result;
-			result += temp;
-			if(result == previous) {
-				return(result);
-			}
-		}
-		return Number.NaN;
-	}
-
-	/**
-	 * gammainc(x, a, tail) 不完全ガンマ関数
-	 * @param {Number} x
-	 * @param {Number} a
-	 * @param {String} tail lower(デフォルト)/upper
-	 * @return {Number}
-	 */
-	static gammainc(x, a, tail) {
-		if(tail === "lower") {
-			return Statistics.p_gamma(x, a, Statistics.gammaln(a));
-		}
-		else if(tail === "upper") {
-			return Statistics.q_gamma(x, a, Statistics.gammaln(a));
-		}
-		else if(arguments.length === 2) {
-			// 引数を省略した場合
-			return Statistics.gammainc(x, a, "lower");
+	static factorial(n) {
+		const y = Statistics.gamma(n + 1.0);
+		if((n | 0) === n) {
+			return Math.round(y);
 		}
 		else {
-			throw "gammainc unsupported argument [" + tail + "]";
+			return y;
 		}
 	}
-	
+
+	/**
+	 * nchoosek(n, k) = nCk 二項係数またはすべての組合わせ
+	 * @param {Number} n
+	 * @param {Number} k
+	 * @return {Number} nCk
+	 */
+	static nchoosek(n, k) {
+		return (Math.round(Statistics.factorial(n) / (Statistics.factorial(n - k) * Statistics.factorial(k))));
+	}
+
 	/**
 	 * erf(x) 誤差関数
 	 * @param {Number} x
@@ -386,24 +428,36 @@ class Statistics {
 	}
 
 	/**
-	 * tcdf(x) スチューデントのt分布の累積分布関数
-	 * @param {Number} x
-	 * @param {Number} nu 自由度
+	 * tpdf(t, k) t分布の確率密度関数
+	 * @param {Number} t 
+	 * @param {Number} v 自由度
+	 * @return {Number}
+	 */
+	static tpdf(t, v) {
+		let y = 1.0 / (Math.sqrt(v) * Statistics.beta(0.5, v * 0.5));
+		y *= Math.pow( 1 + t * t / v, - (v + 1) * 0.5);
+		return y;
+	}
+
+	/**
+	 * tcdf(t) t分布の累積分布関数
+	 * @param {Number} t
+	 * @param {Number} v 自由度
 	 * @param {String} tail lower(デフォルト)/upper
 	 * @return {Number}
 	 */
-	static tcdf(x, nu, tail) {
+	static tcdf(t, v, tail) {
 		if(tail === "lower") {
-			const y = (x * x) / (nu + x * x) ;
-			const p = Statistics.betainc( y, 0.5, nu * 0.5 ) * (x < 0 ? -1 : 1);
+			const y = (t * t) / (v + t * t) ;
+			const p = Statistics.betainc( y, 0.5, v * 0.5 ) * (t < 0 ? -1 : 1);
 			return 0.5 * (1 + p);
 		}
 		else if(tail === "upper") {
-			return 1.0 - Statistics.tcdf(x, nu);
+			return 1.0 - Statistics.tcdf(t, v);
 		}
 		else if(arguments.length === 2) {
 			// 引数を省略した場合
-			return Statistics.tcdf(x, nu, "lower");
+			return Statistics.tcdf(t, v, "lower");
 		}
 		else {
 			throw "tcdf unsupported argument [" + tail + "]";
@@ -411,30 +465,33 @@ class Statistics {
 	}
 
 	/**
-	 * tinv(p, nu) スチューデントのt逆累積分布関数
+	 * tinv(p, v) t分布の累積分布関数の逆関数
 	 * @param {Number} p 確率
-	 * @param {Number} nu 自由度
+	 * @param {Number} v 自由度
 	 * @return {Number}
 	 */
-	static tinv(p, nu) {
-		if(p <= 0) {
+	static tinv(p, v) {
+		if((p < 0) || (p > 1)) {
+			return Number.NaN;
+		}
+		if(p == 0) {
 			return Number.NEGATIVE_INFINITY;
 		}
-		else if(p >= 1) {
+		else if(p == 1) {
 			return Number.POSITIVE_INFINITY;
 		}
 		else if(p < 0.5) {
-			const y = Statistics.betainv(2.0 * p, 0.5 * nu, 0.5);
-			return - Math.sqrt(nu / y - nu);
+			const y = Statistics.betainv(2.0 * p, 0.5 * v, 0.5);
+			return - Math.sqrt(v / y - v);
 		}
 		else {
-			const y = Statistics.betainv(2.0 * (1.0 - p), 0.5 * nu, 0.5);
-			return Math.sqrt(nu / y - nu);
+			const y = Statistics.betainv(2.0 * (1.0 - p), 0.5 * v, 0.5);
+			return Math.sqrt(v / y - v);
 		}
 	}
 
 	/**
-	 * etdist(x, nu, tails) スチューデントのt分布のパーセンテージを返す
+	 * etdist(x, nu, tails) t分布のパーセンテージを返す
 	 * @param {Number} x
 	 * @param {Number} nu 自由度
 	 * @param {Number} tails 尾部(1...片側、2...両側)
@@ -445,38 +502,138 @@ class Statistics {
 	}
 
 	/**
-	 * etinv(p, nu) スチューデントのt分布のt値を、確率と自由度から求める
+	 * etinv(p, nu) t分布のt値を、確率と自由度から求める
 	 * @param {Number} p 確率
 	 * @param {Number} nu 自由度
 	 * @return {Number}
 	 */
 	static etinv(p, nu) {
-		return Statistics.tinv( 1.0 - p * 0.5, nu);
+		return Statistics.tinv( 1.0 - p / 2.0, nu);
 	}
 
 	/**
-	 * fcdf(x, v1, v2) F累積分布関数
+	 * chi2pdf(x, v) カイ二乗分布の確率密度関数
 	 * @param {Number} x 
-	 * @param {Number} v1 分子の自由度
-	 * @param {Number} v2 分母の自由度
+	 * @param {Number} k 自由度
 	 * @return {Number}
 	 */
-	static fcdf(x, v1, v2) {
-		return Statistics.betacdf( v1 * x / (v1 * x + v2), v1 * 0.5, v2 * 0.5 );
+	static chi2pdf(x, k) {
+		if(x <= 0.0) {
+			return 0;
+		}
+		let y = Math.pow(x, k / 2.0 - 1.0) * Math.exp( - x / 2.0 );
+		y /= Math.pow(2, k / 2.0) * Statistics.gamma( k / 2.0);
+		return y;
 	}
 
 	/**
-	 * finv(x, v1, v2) F逆累積分布関数
-	 * @param {Number} p
-	 * @param {Number} v1 分子の自由度
-	 * @param {Number} v2 分母の自由度
+	 * chi2cdf(x, v) カイ二乗分布の累積分布関数
+	 * @param {Number} x 
+	 * @param {Number} k 自由度
 	 * @return {Number}
 	 */
-	static finv(p, v1, v2) {
-		return (1.0 / Statistics.betainv( 1.0 - p, v2 * 0.5, v1 * 0.5 ) - 1.0) * v2 / v1;
+	static chi2cdf(x, k) {
+		return Statistics.gammainc(x / 2.0, k / 2.0);
+	}
+
+	/**
+	 * chi2inv(p, v) カイ二乗分布の逆累積分布関数
+	 * @param {Number} p 確率
+	 * @param {Number} k 自由度
+	 * @return {Number}
+	 */
+	static chi2inv(p, k) {
+		return Statistics.gaminv(p, k / 2.0, 2);
+	}
+
+	/**
+	 * fpdf(x, d1, d2) F分布の確率密度関数
+	 * @param {Number} x 
+	 * @param {Number} d1 分子の自由度
+	 * @param {Number} d2 分母の自由度
+	 * @return {Number}
+	 */
+	static fpdf(x, d1, d2) {
+		let y = 1.0;
+		y *= Math.pow( (d1 * x) / (d1 * x + d2) , d1 / 2.0);
+		y *= Math.pow( 1.0 - ((d1 * x) / (d1 * x + d2)), d2 / 2.0);
+		y /= x * Statistics.beta(d1 / 2.0, d2 / 2.0);
+		return y;
+	}
+
+	/**
+	 * fcdf(x, d1, d2) F分布の累積分布関数
+	 * @param {Number} x 
+	 * @param {Number} d1 分子の自由度
+	 * @param {Number} d2 分母の自由度
+	 * @return {Number}
+	 */
+	static fcdf(x, d1, d2) {
+		return Statistics.betacdf( d1 * x / (d1 * x + d2), d1 / 2.0, d2 / 2.0 );
+	}
+
+	/**
+	 * finv(p, d1, d2) F分布の累積分布関数の逆関数
+	 * @param {Number} p 確率
+	 * @param {Number} d1 分子の自由度
+	 * @param {Number} d2 分母の自由度
+	 * @return {Number}
+	 */
+	static finv(p, d1, d2) {
+		return (1.0 / Statistics.betainv( 1.0 - p, d2 / 2.0, d1 / 2.0 ) - 1.0) * d2 / d1;
 	}
 
 }
+
+/*
+test
+
+// -0.12078223763524543
+console.log(Statistics.gammaln(1.5));
+// 0.8862269254527578
+console.log(Statistics.gamma(1.5));
+// 0.034141584125708564
+console.log(Statistics.gammainc(0.7, 3));
+// 0.02265533286799037
+console.log(Statistics.gampdf(10, 7, 3));
+// 0.054134113294645195
+console.log(Statistics.gamcdf(10, 7, 3));
+// 24.333147920078357
+console.log(Statistics.gaminv(0.7, 7, 3));
+
+// 1.570796326794883
+console.log(Statistics.beta(0.5, 1.5));
+// 0.9824904585216
+console.log(Statistics.betainc(0.6, 5, 10));
+// 0.3400783626239994
+console.log(Statistics.betapdf(0.6, 5, 10));
+// 0.9824904585216
+console.log(Statistics.betacdf(0.6, 5, 10));
+// 0.3573724870841673
+console.log(Statistics.betainv(0.6, 5, 10));
+
+// 0.3286267594591274
+console.log(Statistics.erf(0.3));
+
+// 0.2713125051165461
+console.log(Statistics.tpdf(0.8, 7));
+// 0.7749986502650896
+console.log(Statistics.tcdf(0.8, 7));
+// 0.8960296443137515
+console.log(Statistics.tinv(0.8, 7));
+// 0.05534766632274616
+console.log(Statistics.chi2pdf(2, 7));
+// 0.04015963126989858
+console.log(Statistics.chi2cdf(2, 7));
+// 8.383430828608336
+console.log(Statistics.chi2inv(0.7, 7));
+// 0.17142030504271438
+console.log(Statistics.fpdf(0.7, 0.6, 0.8));
+// 0.5005807484277708
+console.log(Statistics.fcdf(0.7, 0.6, 0.8));
+// 3.8856206694367055
+console.log(Statistics.finv(0.7, 0.6, 0.8));
+*/
 
 const random_class = new Random();
 
@@ -1113,7 +1270,7 @@ export default class Complex {
 		if(this.isReal() && this.isNotNegative()) {
 			return new Complex(Math.log(this._re));
 		}
-		// 複素対数関数
+		// 負の値が入っているか、もともと複素数が入っている場合は、複素対数関数
 		return new Complex([Math.log(this.norm), this.angle]);
 	}
 
@@ -1267,7 +1424,7 @@ export default class Complex {
 	}
 	
 	/**
-	 * x.gamma() = gamma(x) ガンマ関数 
+	 * z.gamma() = gamma(z) ガンマ関数 
 	 * @returns {Complex}
 	 */
 	gamma() {
@@ -1276,23 +1433,153 @@ export default class Complex {
 		}
 		return new Complex(Statistics.gamma(this._re));
 	}
-
+	
 	/**
-	 * a.beta(b) = beta(a, b) ベータ関数
-	 * @param {Object} b
+	 * x.gammainc(a, tail) = gammainc(x, a, tail) 不完全ガンマ関数
+	 * @param {Object} a
+	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Complex}
 	 */
-	beta(b) {
-		const x = this;
-		const y = Complex.createConstComplex(b);
-		if(x.isComplex() || y.isComplex()) {
-			throw "beta don't support complex numbers.";
+	gammainc(a, tail) {
+		const x_ = this;
+		const a_ = Complex.createConstComplex(a);
+		if(x_.isComplex() || a_.isComplex()) {
+			throw "gammainc don't support complex numbers.";
 		}
-		return new Complex(Statistics.beta(x._re, y._re));
+		const tail_ = arguments.length === 2 ? tail : "lower";
+		return new Complex(Statistics.gammainc(x_._re, a_._re, tail_));
 	}
 
 	/**
-	 * x.factorial() = factorial(x), x! 階乗関数
+	 * x.gampdf(k, s) = gampdf(x, k, s) ガンマ分布の確率密度関数
+	 * @param {Object} k 形状母数
+	 * @param {Object} s 尺度母数
+	 * @returns {Complex}
+	 */
+	gampdf(k, s) {
+		const x_ = this;
+		const k_ = Complex.createConstComplex(k);
+		const s_ = Complex.createConstComplex(s);
+		if(x_.isComplex() || k_.isComplex() || s_.isComplex()) {
+			throw "gampdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.gampdf(x_._re, k_._re, s_._re));
+	}
+
+	/**
+	 * x.gamcdf(k, s) = gamcdf(x, k, s) ガンマ分布の確率密度関数
+	 * @param {Object} k 形状母数
+	 * @param {Object} s 尺度母数
+	 * @returns {Complex}
+	 */
+	gamcdf(k, s) {
+		const x_ = this;
+		const k_ = Complex.createConstComplex(k);
+		const s_ = Complex.createConstComplex(s);
+		if(x_.isComplex() || k_.isComplex() || s_.isComplex()) {
+			throw "gamcdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.gamcdf(x_._re, k_._re, s_._re));
+	}
+
+	/**
+	 * p.gaminv(k, s) = gaminv(p, k, s) ガンマ分布の累積分布関数の逆関数
+	 * @param {Object} k 形状母数
+	 * @param {Object} s 尺度母数
+	 * @returns {Complex}
+	 */
+	gaminv(k, s) {
+		const p_ = this;
+		const k_ = Complex.createConstComplex(k);
+		const s_ = Complex.createConstComplex(s);
+		if(p_.isComplex() || k_.isComplex() || s_.isComplex()) {
+			throw "gaminv don't support complex numbers.";
+		}
+		return new Complex(Statistics.gaminv(p_._re, k_._re, s_._re));
+	}
+
+	/**
+	 * x.beta(y) = beta(x, y) ベータ関数
+	 * @param {Object} y
+	 * @returns {Complex}
+	 */
+	beta(y) {
+		const x_ = this;
+		const y_ = Complex.createConstComplex(y);
+		if(x_.isComplex() || y_.isComplex()) {
+			throw "beta don't support complex numbers.";
+		}
+		return new Complex(Statistics.beta(x_._re, y_._re));
+	}
+
+	/**
+	 * x.betainc(a, b, tail) = betainc(x, a, b, tail) 不完全ベータ関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @param {String} tail lower(デフォルト)/upper
+	 * @returns {Complex}
+	 */
+	betainc(a, b, tail) {
+		const x_ = this;
+		const a_ = Complex.createConstComplex(a);
+		const b_ = Complex.createConstComplex(b);
+		if(x_.isComplex() || a_.isComplex() || b_.isComplex()) {
+			throw "betainc don't support complex numbers.";
+		}
+		const tail_ = arguments.length === 2 ? tail : "lower";
+		return new Complex(Statistics.betainc(x_._re, a_._re, b_._re, tail_));
+	}
+
+	/**
+	 * x.betapdf(a, b) = betapdf(x, a, b) ベータ分布の確率密度関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Complex}
+	 */
+	betapdf(a, b) {
+		const x_ = this;
+		const a_ = Complex.createConstComplex(a);
+		const b_ = Complex.createConstComplex(b);
+		if(x_.isComplex() || a_.isComplex() || b_.isComplex()) {
+			throw "betapdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.betapdf(x_._re, a_._re, b_._re));
+	}
+
+	/**
+	 * x.betacdf(a, b) = betacdf(x, a, b) ベータ分布の累積分布関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Complex}
+	 */
+	betacdf(a, b) {
+		const x_ = this;
+		const a_ = Complex.createConstComplex(a);
+		const b_ = Complex.createConstComplex(b);
+		if(x_.isComplex() || a_.isComplex() || b_.isComplex()) {
+			throw "betacdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.betacdf(x_._re, a_._re, b_._re));
+	}
+
+	/**
+	 * p.betainv(a, b) = betainv(p, a, b) ベータ分布の累積分布関数の逆関数
+	 * @param {Object} a
+	 * @param {Object} b
+	 * @returns {Complex}
+	 */
+	betainv(a, b) {
+		const p_ = this;
+		const a_ = Complex.createConstComplex(a);
+		const b_ = Complex.createConstComplex(b);
+		if(p_.isComplex() || a_.isComplex() || b_.isComplex()) {
+			throw "betainv don't support complex numbers.";
+		}
+		return new Complex(Statistics.betainv(p_._re, a_._re, b_._re));
+	}
+
+	/**
+	 * n.factorial() = factorial(n), n! 階乗関数
 	 * @returns {Complex}
 	 */
 	factorial() {
@@ -1317,88 +1604,6 @@ export default class Complex {
 	}
 	
 	/**
-	 * x.betainc(z, w, tail) = betainc(x, z, w, tail) 不完全ベータ関数
-	 * @param {Object} z
-	 * @param {Object} w
-	 * @param {String} tail lower(デフォルト)/upper
-	 * @returns {Complex}
-	 */
-	betainc(z, w, tail) {
-		const x_ = this;
-		const z_ = Complex.createConstComplex(z);
-		const w_ = Complex.createConstComplex(w);
-		if(x_.isComplex() || z_.isComplex() || w_.isComplex()) {
-			throw "betainc don't support complex numbers.";
-		}
-		const tail_ = arguments.length === 2 ? tail : "lower";
-		return new Complex(Statistics.betainc(x_._re, z_._re, w_._re, tail_));
-	}
-
-	/**
-	 * x.betacdf(a, b) = betacdf(x, a, b) 不完全ベータ関数の累積分布関数
-	 * @param {Object} a
-	 * @param {Object} b
-	 * @returns {Complex}
-	 */
-	betacdf(a, b) {
-		const x_ = this;
-		const a_ = Complex.createConstComplex(a);
-		const b_ = Complex.createConstComplex(b);
-		if(x_.isComplex() || a_.isComplex() || b_.isComplex()) {
-			throw "betacdf don't support complex numbers.";
-		}
-		return new Complex(Statistics.betacdf(x_._re, a_._re, b_._re));
-	}
-	
-	/**
-	 * x.betacdf(a, b) = betapdf(x, a, b) 不完全ベータ関数の確率密度関数
-	 * @param {Object} a
-	 * @param {Object} b
-	 * @returns {Complex}
-	 */
-	betapdf(a, b) {
-		const x_ = this;
-		const a_ = Complex.createConstComplex(a);
-		const b_ = Complex.createConstComplex(b);
-		if(x_.isComplex() || a_.isComplex() || b_.isComplex()) {
-			throw "betapdf don't support complex numbers.";
-		}
-		return new Complex(Statistics.betapdf(x_._re, a_._re, b_._re));
-	}
-
-	/**
-	 * x.betainv(a, b) = betainv(x, a, b) 不完全ベータ関数の確率密度関数の逆関数
-	 * @param {Object} a
-	 * @param {Object} b
-	 * @returns {Complex}
-	 */
-	betainv(a, b) {
-		const x_ = this;
-		const a_ = Complex.createConstComplex(a);
-		const b_ = Complex.createConstComplex(b);
-		if(x_.isComplex() || a_.isComplex() || b_.isComplex()) {
-			throw "betainv don't support complex numbers.";
-		}
-		return new Complex(Statistics.betainv(x_._re, a_._re, b_._re));
-	}
-	
-	/**
-	 * x.gammainc(a, tail) = gammainc(x, a, tail) 不完全ガンマ関数
-	 * @param {Object} a
-	 * @param {String} tail lower(デフォルト)/upper
-	 * @returns {Complex}
-	 */
-	gammainc(a, tail) {
-		const x_ = this;
-		const a_ = Complex.createConstComplex(a);
-		if(x_.isComplex() || a_.isComplex()) {
-			throw "gammainc don't support complex numbers.";
-		}
-		const tail_ = arguments.length === 2 ? tail : "lower";
-		return new Complex(Statistics.gammainc(x_._re, a_._re, tail_));
-	}
-
-	/**
 	 * x.erf() = erf(x) 誤差関数
 	 * @returns {Complex}
 	 */
@@ -1417,71 +1622,143 @@ export default class Complex {
 	erfc() {
 		const x = this;
 		if(x.isComplex()) {
-			throw "erf don't support complex numbers.";
+			throw "erfc don't support complex numbers.";
 		}
 		return new Complex(Statistics.erfc(x._re));
 	}
 
 	/**
-	 * x.tcdf(nu, tail) = tcdf(x, nu, tail) スチューデントのt分布の累積分布関数
-	 * @param {Object} nu 自由度
+	 * t.tpdf(v) = tpdf(t, v) t分布の確率密度関数
+	 * @param {Object} v 自由度
+	 * @returns {Complex}
+	 */
+	tpdf(v) {
+		const t_ = this;
+		const v_ = Complex.createConstComplex(v);
+		if(t_.isComplex() || v_.isComplex()) {
+			throw "tpdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.tpdf(t_._re, v_._re));
+	}
+
+	/**
+	 * t.tcdf(v, tail) = tcdf(t, v, tail) t分布の累積分布関数
+	 * @param {Object} v 自由度
 	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Complex}
 	 */
-	tcdf(nu, tail) {
-		const x_ = this;
-		const nu_ = Complex.createConstComplex(nu);
-		if(x_.isComplex() || nu_.isComplex()) {
+	tcdf(v, tail) {
+		const t_ = this;
+		const v_ = Complex.createConstComplex(v);
+		if(t_.isComplex() || v_.isComplex()) {
 			throw "tcdf don't support complex numbers.";
 		}
 		const tail_ = arguments.length === 2 ? tail : "lower";
-		return new Complex(Statistics.tcdf(x_._re, nu_._re, tail_));
+		return new Complex(Statistics.tcdf(t_._re, v_._re, tail_));
 	}
 
 	/**
-	 * p.tinv(nu) = tinv(p, nu) スチューデントのt逆累積分布関数
-	 * @param {Object} nu 自由度
+	 * p.tinv(v) = tinv(p, v) t分布の累積分布関数の逆関数
+	 * @param {Object} v 自由度
 	 * @returns {Complex}
 	 */
-	tinv(nu) {
+	tinv(v) {
 		const p_ = this;
-		const nu_ = Complex.createConstComplex(nu);
-		if(p_.isComplex() || nu_.isComplex()) {
+		const v_ = Complex.createConstComplex(v);
+		if(p_.isComplex() || v_.isComplex()) {
 			throw "tinv don't support complex numbers.";
 		}
-		return new Complex(Statistics.tinv(p_._re, nu_._re));
+		return new Complex(Statistics.tinv(p_._re, v_._re));
 	}
 
 	/**
-	 * x.tcdf(v1, v2) = tcdf(x, v1, v2) F累積分布関数
-	 * @param {Object} v1 分子の自由度
-	 * @param {Object} v2 分母の自由度
+	 * x.chi2pdf(k) = chi2pdf(x, k) カイ二乗分布の確率密度関数
+	 * @param {Object} k 自由度
 	 * @returns {Complex}
 	 */
-	fcdf(v1, v2) {
+	chi2pdf(k) {
 		const x_ = this;
-		const v1_ = Complex.createConstComplex(v1);
-		const v2_ = Complex.createConstComplex(v2);
-		if(x_.isComplex() || v1_.isComplex() || v2_.isComplex()) {
+		const k_ = Complex.createConstComplex(k);
+		if(x_.isComplex() || k_.isComplex()) {
+			throw "chi2pdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.chi2pdf(x_._re, k_._re));
+	}
+
+	/**
+	 * x.chi2cdf(k) = chi2cdf(x, k) カイ二乗分布の累積分布関数
+	 * @param {Object} k 自由度
+	 * @returns {Complex}
+	 */
+	chi2cdf(k) {
+		const x_ = this;
+		const k_ = Complex.createConstComplex(k);
+		if(x_.isComplex() || k_.isComplex()) {
+			throw "chi2cdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.chi2cdf(x_._re, k_._re));
+	}
+
+	/**
+	 * p.chi2inv(k) = chi2inv(p, k) カイ二乗分布の累積分布関数の逆関数
+	 * @param {Object} k 自由度
+	 * @returns {Complex}
+	 */
+	chi2inv(k) {
+		const p_ = this;
+		const k_ = Complex.createConstComplex(k);
+		if(p_.isComplex() || k_.isComplex()) {
+			throw "chi2inv don't support complex numbers.";
+		}
+		return new Complex(Statistics.chi2inv(p_._re, k_._re));
+	}
+
+	/**
+	 * x.fpdf(d1, d2) = fpdf(x, d1, d2) F分布の確率密度関数
+	 * @param {Object} d1 分子の自由度
+	 * @param {Object} d2 分母の自由度
+	 * @returns {Complex}
+	 */
+	fpdf(d1, d2) {
+		const x_ = this;
+		const d1_ = Complex.createConstComplex(d1);
+		const d2_ = Complex.createConstComplex(d2);
+		if(x_.isComplex() || d1_.isComplex() || d2_.isComplex()) {
+			throw "fpdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.fpdf(x_._re, d1_._re, d2_._re));
+	}
+
+	/**
+	 * x.fcdf(d1, d2) = fcdf(x, d1, d2) F分布の累積分布関数
+	 * @param {Object} d1 分子の自由度
+	 * @param {Object} d2 分母の自由度
+	 * @returns {Complex}
+	 */
+	fcdf(d1, d2) {
+		const x_ = this;
+		const d1_ = Complex.createConstComplex(d1);
+		const d2_ = Complex.createConstComplex(d2);
+		if(x_.isComplex() || d1_.isComplex() || d2_.isComplex()) {
 			throw "fcdf don't support complex numbers.";
 		}
-		return new Complex(Statistics.fcdf(x_._re, v1_._re, v2_._re));
+		return new Complex(Statistics.fcdf(x_._re, d1_._re, d2_._re));
 	}
 
 	/**
-	 * x.finv(v1, v2) = finv(x, v1, v2) F逆累積分布関数
-	 * @param {Object} v1 分子の自由度
-	 * @param {Object} v2 分母の自由度
+	 * p.finv(d1, d2) = finv(p, d1, d2) F分布の累積分布関数の逆関数
+	 * @param {Object} d1 分子の自由度
+	 * @param {Object} d2 分母の自由度
 	 * @returns {Complex}
 	 */
-	finv(v1, v2) {
-		const x_ = this;
-		const v1_ = Complex.createConstComplex(v1);
-		const v2_ = Complex.createConstComplex(v2);
-		if(x_.isComplex() || v1_.isComplex() || v2_.isComplex()) {
+	finv(d1, d2) {
+		const p_ = this;
+		const d1_ = Complex.createConstComplex(d1);
+		const d2_ = Complex.createConstComplex(d2);
+		if(p_.isComplex() || d1_.isComplex() || d2_.isComplex()) {
 			throw "finv don't support complex numbers.";
 		}
-		return new Complex(Statistics.finv(x_._re, v1_._re, v2_._re));
+		return new Complex(Statistics.finv(p_._re, d1_._re, d2_._re));
 	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆

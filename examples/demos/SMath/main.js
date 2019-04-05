@@ -221,6 +221,20 @@ const main = function() {
 	Log.println("std");
 	Log.println(_("[1 2 3 4;4 1 5 0]").std());
 	
+	// gammaln 0.1521
+	Log.println("gammaln");
+	Log.println(_(0.8).gammaln());
+
+	// tcdf 0.7589
+	Log.println("tcdf");
+	Log.println(_(0.8).tcdf(3));
+
+	// tinv 0.9785
+	Log.println("tinv");
+	Log.println(_(0.8).tinv(3));
+
+
+
 };
 
 main();
