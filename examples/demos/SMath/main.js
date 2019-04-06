@@ -221,6 +221,15 @@ const main = function() {
 	Log.println("std");
 	Log.println(_("[1 2 3 4;4 1 5 0]").std());
 	
+	Log.println("cov");
+	Log.println(_("[1 2 3 4;4 1 5 0]").cov());
+
+	Log.println("normalize");
+	Log.println(_("[1 2 3 4 4 1 5 0]").normalize());
+
+	Log.println("corrcoef");
+	Log.println(_("[2 1 3 4;3 2 5 2; 3 4 1 -1; -1 -3 1 3]").corrcoef());
+
 	// gammaln 0.1521
 	Log.println("gammaln");
 	Log.println(_(0.8).gammaln());
@@ -232,8 +241,6 @@ const main = function() {
 	// tinv 0.9785
 	Log.println("tinv");
 	Log.println(_(0.8).tinv(3));
-
-
 
 };
 

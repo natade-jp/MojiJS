@@ -1421,8 +1421,7 @@ export default class Matrix {
 	add(number) {
 		const M1 = this;
 		const M2 = Matrix.createConstMatrix(number);
-		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
-			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+		if((M1.row_length !== M2.row_length) && (M1.column_length !== M2.column_length)) {
 			throw "Matrix size does not match";
 		}
 		const x1 = M1.matrix_array;
@@ -1442,8 +1441,7 @@ export default class Matrix {
 	sub(number) {
 		const M1 = this;
 		const M2 = Matrix.createConstMatrix(number);
-		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
-			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+		if((M1.row_length !== M2.row_length) && (M1.column_length !== M2.column_length)) {
 			throw "Matrix size does not match";
 		}
 		const x1 = M1.matrix_array;
@@ -1616,8 +1614,7 @@ export default class Matrix {
 	nmul(number) {
 		const M1 = this;
 		const M2 = Matrix.createConstMatrix(number);
-		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
-			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+		if((M1.row_length !== M2.row_length) && (M1.column_length !== M2.column_length)) {
 			throw "Matrix size does not match";
 		}
 		const x1 = M1.matrix_array;
@@ -1637,8 +1634,7 @@ export default class Matrix {
 	ndiv(number) {
 		const M1 = this;
 		const M2 = Matrix.createConstMatrix(number);
-		if(	((M1.row_length % M2.row_length) === 0 || (M2.row_length % M1.row_length) === 0) &&
-			((M1.column_length % M2.column_length) === 0 || (M2.column_length % M1.column_length) === 0) ) {
+		if((M1.row_length !== M2.row_length) && (M1.column_length !== M2.column_length)) {
 			throw "Matrix size does not match";
 		}
 		const x1 = M1.matrix_array;
@@ -2654,8 +2650,7 @@ export default class Matrix {
 				const temp = u[row][k].div(u[k][k]);
 				l[row][k] = temp;
 				//lの値だけ行交換が必要？
-				for(let col = k; col < this.column_length; col++)
-				{
+				for(let col = k; col < this.column_length; col++) {
 					u[row][col] = u[row][col].sub(u[k][col].mul(temp));
 				}
 			}
@@ -2713,8 +2708,7 @@ export default class Matrix {
 			//消去
 			for(let row = k + 1;row < len; row++) {
 				const temp = long_matrix_array[row][k];
-				for(let col = k; col < long_length; col++)
-				{
+				for(let col = k; col < long_length; col++) {
 					long_matrix_array[row][col] = long_matrix_array[row][col].sub(long_matrix_array[k][col].mul(temp));
 				}
 			}
@@ -3305,7 +3299,8 @@ export default class Matrix {
 			}
 		};
 		const main = function(number) {
-			x = x.add(number.sub(mean).square());
+			const a = number.sub(mean);
+			x = x.add(a.dot(a));
 			count++;
 		};
 		const post = function() {
@@ -3331,6 +3326,61 @@ export default class Matrix {
 		});
 		return M;
 	}
+
+	/**
+	 * A.cov() 共分散行列
+	 * @param {Object} cor 0(不偏分散), 1(標本分散)
+	 * @returns {Matix}
+	 */
+	cov(cor) {
+		let correction = arguments.length === 0 ? 0 : Matrix.createConstMatrix(cor).scalar.real;
+		if(this.isVector()) {
+			return this.var(correction);
+		}
+		correction = this.row_length === 1 ? 1 : correction;
+		const x = this.matrix_array;
+		const mean = this.mean().matrix_array[0];
+		// 上三角行列、対角行列
+		const y = [];
+		for(let a = 0; a < this.column_length; a++) {
+			const a_mean = mean[a];
+			y[a] = [];
+			for(let b = a; b < this.column_length; b++) {
+				const b_mean = mean[b];
+				let sum = Complex.ZERO;
+				for(let row = 0; row < this.row_length; row++) {
+					sum = sum.add((x[row][a].sub(a_mean)).dot(x[row][b].sub(b_mean)));
+				}
+				y[a][b] = sum.div(this.row_length - 1 + correction);
+			}
+		}
+		// 下三角行列を作る
+		for(let row = 1; row < y[0].length; row++) {
+			for(let col = 0; col < row; col++) {
+				y[row][col] = y[col][row];
+			}
+		}
+		return new Matrix(y);
+	}
+
+	/**
+	 * A.normalize() サンプルを平均値0、標準偏差1にノーマライズ
+	 * @returns {Matix}
+	 */
+	normalize() {
+		const mean_zero = this.sub(this.mean());
+		const std_one = mean_zero.ndiv(mean_zero.std());
+		return std_one;
+	}
+
+	/**
+	 * A.corrcoef() 相関行列
+	 * @returns {Matix}
+	 */
+	corrcoef() {
+		return this.normalize().cov();
+	}
+
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 	// signal 信号処理用
