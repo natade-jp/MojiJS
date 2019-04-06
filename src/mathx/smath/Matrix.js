@@ -3142,16 +3142,14 @@ export default class Matrix {
 	}
 
 	/**
-	 * t.tcdf(v, tail) = tcdf(t, v, tail) t分布の累積分布関数
+	 * t.tcdf(v) = tcdf(t, v) t分布の累積分布関数
 	 * @param {Object} v 自由度
-	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Matrix}
 	 */
-	tcdf(v, tail) {
+	tcdf(v) {
 		const v_ = Matrix.createConstMatrix(v).scalar;
-		const tail_ = arguments.length === 2 ? tail : "lower";
 		return this.cloneMatrixDoEachCalculation(function(num) {
-			return num.tcdf(v_, tail_);
+			return num.tcdf(v_);
 		});
 	}
 

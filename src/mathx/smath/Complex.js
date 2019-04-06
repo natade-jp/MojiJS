@@ -299,7 +299,7 @@ class Statistics {
 	 * @param {Number} x
 	 * @param {Number} a
 	 * @param {Number} b
-	 * @param tail {String} lower(デフォルト)/upper
+	 * @param {String} tail {String} lower(デフォルト)/upper
 	 * @return {Number}
 	 */
 	static betainc(x, a, b, tail) {
@@ -510,25 +510,12 @@ class Statistics {
 	 * tcdf(t) t分布の累積分布関数
 	 * @param {Number} t
 	 * @param {Number} v 自由度
-	 * @param {String} tail lower(デフォルト)/upper
 	 * @return {Number}
 	 */
-	static tcdf(t, v, tail) {
-		if(tail === "lower") {
-			const y = (t * t) / (v + t * t) ;
-			const p = Statistics.betainc( y, 0.5, v * 0.5 ) * (t < 0 ? -1 : 1);
-			return 0.5 * (1 + p);
-		}
-		else if(tail === "upper") {
-			return 1.0 - Statistics.tcdf(t, v);
-		}
-		else if(arguments.length === 2) {
-			// 引数を省略した場合
-			return Statistics.tcdf(t, v, "lower");
-		}
-		else {
-			throw "tcdf unsupported argument [" + tail + "]";
-		}
+	static tcdf(t, v) {
+		const y = (t * t) / (v + t * t) ;
+		const p = Statistics.betainc( y, 0.5, v * 0.5 ) * (t < 0 ? -1 : 1);
+		return 0.5 * (1 + p);
 	}
 
 	/**
@@ -565,7 +552,7 @@ class Statistics {
 	 * @return {Number}
 	 */
 	static etdist(x, nu, tails) {
-		return Statistics.tcdf(x, nu, "upper") *tails;
+		return (1.0 - Statistics.tcdf(x, nu)) * tails;
 	}
 
 	/**
@@ -1763,19 +1750,17 @@ export default class Complex {
 	}
 
 	/**
-	 * t.tcdf(v, tail) = tcdf(t, v, tail) t分布の累積分布関数
+	 * t.tcdf(v) = tcdf(t, v) t分布の累積分布関数
 	 * @param {Object} v 自由度
-	 * @param {String} tail lower(デフォルト)/upper
 	 * @returns {Complex}
 	 */
-	tcdf(v, tail) {
+	tcdf(v) {
 		const t_ = this;
 		const v_ = Complex.createConstComplex(v);
 		if(t_.isComplex() || v_.isComplex()) {
 			throw "tcdf don't support complex numbers.";
 		}
-		const tail_ = arguments.length === 2 ? tail : "lower";
-		return new Complex(Statistics.tcdf(t_._re, v_._re, tail_));
+		return new Complex(Statistics.tcdf(t_._re, v_._re));
 	}
 
 	/**
