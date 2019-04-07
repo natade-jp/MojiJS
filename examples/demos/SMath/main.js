@@ -172,9 +172,13 @@ const main = function() {
 	Log.println(_("[1 2 3 4 5 6]").length);
 	Log.println(_("[1;2;3;4;5;6]").length);
 
+	// 9.508032000695723
+	Log.println("norm");
+	Log.println(_("[1 2 3; 4 5 6]").norm());
+
 	// 5
-	Log.println("get");
-	Log.println(_("[1 2 3; 4 5 6]").get(1, 1));
+	Log.println("getComplex");
+	Log.println(_("[1 2 3; 4 5 6]").getComplex(1, 1));
 
 	// -4 - 7i
 	Log.println("inner");

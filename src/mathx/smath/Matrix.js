@@ -479,6 +479,13 @@ export default class Matrix {
 	
 	/**
 	 * 複素行列 (immutable)
+	 * 引数は次のタイプをとれます
+	 * ・4 				整数や実数
+	 * ・"1 + j"		文字列で複素数をわたす
+	 * ・[1,2]			1次元配列
+	 * ・[[1,2],[3,4]]	行列
+	 * ・["1+j", "2+j"]	複素数を含んだ行列
+	 * ・"[1 1:0.5:3]"		MATLAB/Octave/Scilab互換
 	 * @param {Object} number 行列データ( "1 + j", [1 , 1] など)
 	 */
 	constructor(number) {
@@ -724,6 +731,21 @@ export default class Matrix {
 	}
 	
 	/**
+	 * 行列のComplex配列を作成して返す
+	 * @returns {Array} 行列のComplex配列を返します
+	 */
+	getComplexMatrixArray() {
+		const y = [];
+		for(let i = 0; i < this.row_length; i++) {
+			y[i] = [];
+			for(let j = 0; j < this.column_length; j++) {
+				y[i][j] = this.matrix_array[i][j];
+			}
+		}
+		return y;
+	}
+	
+	/**
 	 * 引数から行列を作成する（作成が不要の場合はnewしない）
 	 * @param {Object} number 
 	 * @returns {Matrix}
@@ -856,6 +878,81 @@ export default class Matrix {
 		}
 	}
 
+	/**
+	 * 行列（ベクトル）内の指定した箇所の値をComplex型で返します。
+	 * @param {Object} arg1 位置／ベクトルの場合は何番目のベクトルか
+	 * @param {Object} arg2 列番号（行番号と列番号で指定する場合（任意））
+	 * @returns {Complex} 
+	 */
+	getComplex(arg1, arg2) {
+		let arg1_data = null;
+		let arg2_data = null;
+		{
+			if(typeof arg1 === "string" || arg1 instanceof String) {
+				arg1_data = new Matrix(arg1);
+			}
+			else {
+				arg1_data = arg1;
+			}
+		}
+		if(arguments.length === 2) {
+			if(typeof arg2 === "string" || arg2 instanceof String) {
+				arg2_data = new Matrix(arg2);
+			}
+			else {
+				arg2_data = arg2;
+			}
+		}
+		const get_scalar = function(x) {
+			let y;
+			let is_scalar = false;
+			if(typeof arg1 === "number" || arg1 instanceof Number) {
+				y = Math.round(x);
+				is_scalar = true;
+			}
+			else if(arg1 instanceof Complex)  {
+				y = Math.round(x.real);
+				is_scalar = true;
+			}
+			else if((arg1 instanceof Matrix) && arg1.isScalar()) {
+				y = Math.round(x.scalar.real);
+				is_scalar = true;
+			}
+			return {
+				number : y,
+				is_scalar : is_scalar
+			};
+		};
+		let is_scalar = true;
+		let arg1_scalar = null;
+		let arg2_scalar = null;
+		if(arguments.length === 1) {
+			arg1_scalar = get_scalar(arg1_data);
+			is_scalar &= arg1_scalar.is_scalar;
+		}
+		else if(arguments.length === 2) {
+			arg1_scalar = get_scalar(arg1_data);
+			is_scalar &= arg1_scalar.is_scalar;
+			arg2_scalar = get_scalar(arg2_data);
+			is_scalar &= arg2_scalar.is_scalar;
+		}
+		// 1つのみ指定した場合
+		if(is_scalar) {
+			if(this.isRow()) {
+				return this.matrix_array[0][arg1_scalar.number];
+			}
+			else if(this.isColumn()) {
+				return this.matrix_array[arg1_scalar.number][0];
+			}
+			else {
+				return this.matrix_array[arg1_scalar.number][arg2_scalar.number];
+			}
+		}
+		else {
+			throw "getComplex not scalar : " + this;
+		}
+	}
+
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 	// 行列の基本操作、基本情報の取得
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
@@ -935,87 +1032,7 @@ export default class Matrix {
 			}
 			return Math.sqrt(sum);
 		}
-		// 行列の2ノルムは未実装
-		// max(svd(X))
-		throw "norm2";
-	}
-
-	/**
-	 * 作成中
-	 * @param {Number} arg1 位置／行番号／ベクトルの場合は何番目のベクトルか
-	 * @param {Number} arg2 列番号（行番号と列番号でした場合（任意））
-	 * @returns {Object} 1つを指定した場合はComplex, 2つ以上指定した場合はMatrix
-	 */
-	get(arg1, arg2) {
-		let arg1_data = null;
-		let arg2_data = null;
-		
-		{
-			if(typeof arg1 === "string" || arg1 instanceof String) {
-				arg1_data = new Matrix(arg1);
-			}
-			else {
-				arg1_data = arg1;
-			}
-		}
-		if(arguments.length === 2) {
-			if(typeof arg2 === "string" || arg2 instanceof String) {
-				arg2_data = new Matrix(arg2);
-			}
-			else {
-				arg2_data = arg2;
-			}
-		}
-
-		const get_scalar = function(x) {
-			let y;
-			let is_scalar = false;
-			if(typeof arg1 === "number" || arg1 instanceof Number) {
-				y = Math.round(x);
-				is_scalar = true;
-			}
-			else if(arg1 instanceof Complex)  {
-				y = Math.round(x.real);
-				is_scalar = true;
-			}
-			else if((arg1 instanceof Matrix) && arg1.isScalar()) {
-				y = Math.round(x.scalar.real);
-				is_scalar = true;
-			}
-			return {
-				number : y,
-				is_scalar : is_scalar
-			};
-		};
-
-		let is_scalar = true;
-		let arg1_scalar = null;
-		let arg2_scalar = null;
-
-		if(arguments.length === 1) {
-			arg1_scalar = get_scalar(arg1_data);
-			is_scalar &= arg1_scalar.is_scalar;
-		}
-		else if(arguments.length === 2) {
-			arg1_scalar = get_scalar(arg1_data);
-			is_scalar &= arg1_scalar.is_scalar;
-			arg2_scalar = get_scalar(arg2_data);
-			is_scalar &= arg2_scalar.is_scalar;
-		}
-
-		if(is_scalar) {
-			if(this.isRow()) {
-				return this.matrix_array[0][arg1_scalar.number];
-			}
-			else if(this.isColumn()) {
-				return this.matrix_array[arg1_scalar.number][0];
-			}
-			else {
-				return this.matrix_array[arg1_scalar.number][arg2_scalar.number];
-			}
-		}
-		
-		return null;
+		return this.svd().S.diag().max().scalar.real;
 	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
@@ -1115,6 +1132,35 @@ export default class Matrix {
 		return Matrix.createMatrixDoEachCalculation(function() {
 			return Complex.randn();
 		}, dimension, column_length);
+	}
+
+	/**
+	 * 行列なら対角成分を列ベクトルとして抽出、ベクトルなら対角成分を持つ行列を作成
+	 * @returns {Matrix}
+	 */
+	diag() {
+		if(this.isVector()) {
+			// 行列を作成
+			const M = this;
+			return Matrix.createMatrixDoEachCalculation(function(row, col) {
+				if(row === col) {
+					return M.getComplex(row);
+				}
+				else {
+					return Complex.ZERO;
+				}
+			}, this.length);
+		}
+		else {
+			// 列ベクトルを作成
+			const len = Math.min(this.row_length, this.column_length);
+			const y = [];
+			for(let i = 0; i < len; i++) {
+				y[i] = [];
+				y[i][0] = this.matrix_array[i][i];
+			}
+			return new Matrix(y);
+		}
 	}
 
 	// TODO 行列の結合がほしい
@@ -1356,7 +1402,6 @@ export default class Matrix {
 		}
 		return true;
 	}
-
 
 	/**
 	 * A.size() = [row_length column_length] 行列のサイズを取得
@@ -2474,7 +2519,7 @@ export default class Matrix {
 			// 一般化ベクトルpノルム
 			let sum = 0.0;
 			for(let i = 0; i < this.length; i++) {
-				sum = Math.pow(this.get(i).norm, p);
+				sum = Math.pow(this.getComplex(i).norm, p);
 			}
 			return Math.pow(sum, 1.0 / p);
 		}
@@ -2500,7 +2545,7 @@ export default class Matrix {
 		if(M1.isVector() && M2.isVector()) {
 			let sum = Complex.ZERO;
 			for(let i = 0; i < M1.length; i++) {
-				sum = sum.add(M1.get(i).dot(M2.get(i)));
+				sum = sum.add(M1.getComplex(i).dot(M2.getComplex(i)));
 			}
 			return new Matrix(sum);
 		}
@@ -2840,7 +2885,7 @@ export default class Matrix {
 		const sigma = Matrix.zeros(this.row_length, this.column_length);
 		sigma._each(function(num, row, col) {
 			if((row === col) && (row < rank)) {
-				return VD.D.get(row, row).sqrt();
+				return VD.D.getComplex(row, row).sqrt();
 			}
 		});
 		const sing = Matrix.createMatrixDoEachCalculation(function(row, col) {
@@ -3295,7 +3340,7 @@ export default class Matrix {
 				mean = M.scalar;
 			}
 			else {
-				mean = M.get(col);
+				mean = M.getComplex(col);
 			}
 		};
 		const main = function(number) {
