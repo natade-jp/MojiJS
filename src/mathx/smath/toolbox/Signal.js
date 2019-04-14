@@ -40,16 +40,14 @@ class FFT {
 		this.bit_size = Math.round(Math.log(this.size)/Math.log(2));
 		this.is_fast = (1 << this.bit_size) === this.size;
 		this.bitrv = null;
-		this.fft_re = [];
-		this.fft_im = [];
-		const cos_table = [];
-		const sin_table = [];
+		this.fft_re = new Array(this.size);
+		this.fft_im = new Array(this.size);
 		{
 			const delta = - 2.0 * Math.PI / this.size;
 			let err = 0.0;
 			for(let n = 0, x = 0; n < this.size; n++) {
-				cos_table[n] = Math.cos(x);
-				sin_table[n] = Math.sin(x);
+				this.fft_re[n] = Math.cos(x);
+				this.fft_im[n] = Math.sin(x);
 				// カハンの加算アルゴリズム
 				const y = delta + err;
 				const t = x + y;
@@ -59,19 +57,6 @@ class FFT {
 		}
 		if(this.is_fast) {
 			this.bitrv = FFT.create_bit_reverse_table(this.bit_size);
-			for(let i = 0, N = 2; i < this.bit_size; i++, N<<=1) {
-				const delta = this.size / N;
-				this.fft_re[i] = [];
-				this.fft_im[i] = [];
-				for(let n = 0, x = 0; n < N; n++, x+= delta) {
-					this.fft_re[i][n] = cos_table[x];
-					this.fft_im[i][n] = sin_table[x];
-				}
-			}
-		}
-		else {
-			this.fft_re = cos_table;
-			this.fft_im = sin_table;
 		}
 	}
 
@@ -109,12 +94,12 @@ class FFT {
 				let blocklength = this.size / 2;
 				let pointlength = 2;
 				let re, im;
-				for(let stage = 0;stage < this.bit_size; stage++) {
+				for(let delta = 1 << (this.bit_size - 1); delta > 0; delta >>= 1) {
 					for(let blocks = 0;blocks < blocklength; blocks++) {
 						let i = blocks * pointlength;
-						for(let point = 0;point < center; point++, i++) {
-							re = f_re[i + center] * this.fft_re[stage][point] - f_im[i + center] * this.fft_im[stage][point];
-							im = f_im[i + center] * this.fft_re[stage][point] + f_re[i + center] * this.fft_im[stage][point];
+						for(let point = 0, x = 0;point < center; point++, i++, x += delta) {
+							re = f_re[i + center] * this.fft_re[x] - f_im[i + center] * this.fft_im[x];
+							im = f_im[i + center] * this.fft_re[x] + f_re[i + center] * this.fft_im[x];
 							f_re[i + center] = f_re[i] - re;
 							f_im[i + center] = f_im[i] - im;
 							f_re[i] += re;
@@ -166,12 +151,12 @@ class FFT {
 				let blocklength = this.size / 2;
 				let pointlength = 2;
 				let re, im;
-				for(let stage = 0;stage < this.bit_size; stage++) {
+				for(let delta = 1 << (this.bit_size - 1); delta > 0; delta >>= 1) {
 					for(let blocks = 0;blocks < blocklength; blocks++) {
 						let i = blocks * pointlength;
-						for(let point = 0;point < center; point++, i++) {
-							re = f_re[i + center] * this.fft_re[stage][point] + f_im[i + center] * this.fft_im[stage][point];
-							im = f_im[i + center] * this.fft_re[stage][point] - f_re[i + center] * this.fft_im[stage][point];
+						for(let point = 0, x = 0;point < center; point++, i++, x += delta) {
+							re = f_re[i + center] * this.fft_re[x] + f_im[i + center] * this.fft_im[x];
+							im = f_im[i + center] * this.fft_re[x] - f_re[i + center] * this.fft_im[x];
 							f_re[i + center] = f_re[i] - re;
 							f_im[i + center] = f_im[i] - im;
 							f_re[i] += re;

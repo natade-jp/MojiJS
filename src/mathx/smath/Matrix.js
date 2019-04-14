@@ -887,7 +887,7 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	_column_oriented_2_dimensional_processing(pre, main, post) {
-		let y = new Array(this.row_length);
+		const y = new Array(this.row_length);
 		{
 			// 行ごとに処理を行う
 			for(let row = 0; row < this.row_length; row++) {
