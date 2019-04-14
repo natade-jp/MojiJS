@@ -250,6 +250,10 @@ const main = function() {
 	Log.println(_("[1+j 2-3j -3 -4]").fft());
 	Log.println(_("[1+j 2-3j -3 -4]").fft().ifft());
 
+	Log.println("dct");
+	Log.println(_("[1 2 30 100]").dct());
+	Log.println(_("[1 2 30 100]").dct().idct());
+
 };
 
 main();

@@ -3508,7 +3508,6 @@ export default class Matrix {
 		let real;
 		let imag;
 		let i;
-		// カハンの加算アルゴリズム
 		const pre = function(number, row, col, length) {
 			real = new Array(length);
 			imag = new Array(length);
@@ -3538,7 +3537,6 @@ export default class Matrix {
 		let real;
 		let imag;
 		let i;
-		// カハンの加算アルゴリズム
 		const pre = function(number, row, col, length) {
 			real = new Array(length);
 			imag = new Array(length);
@@ -3560,6 +3558,58 @@ export default class Matrix {
 		return this._column_oriented_2_dimensional_processing(pre, main, post);
 	}
 
+	/**
+	 * A.dct() DCT-II (DCT)
+	 * @returns {Matix}
+	 */
+	dct() {
+		let real;
+		let i;
+		const pre = function(number, row, col, length) {
+			real = new Array(length);
+			i = 0;
+		};
+		const main = function(number) {
+			real[i] = number.real;
+			i++;
+		};
+		const post = function() {
+			const result = Signal.dct(real);
+			const y = new Array(i);
+			for(let j = 0; j < i; j++) {
+				y[j] = new Complex(result[j]);
+			}
+			return y;
+		};
+		return this._column_oriented_2_dimensional_processing(pre, main, post);
+	}
+
+	/**
+	 * A.ifft() DCT-III (IDCT)
+	 * @returns {Matix}
+	 */
+	idct() {
+		let real;
+		let i;
+		// カハンの加算アルゴリズム
+		const pre = function(number, row, col, length) {
+			real = new Array(length);
+			i = 0;
+		};
+		const main = function(number) {
+			real[i] = number.real;
+			i++;
+		};
+		const post = function() {
+			const result = Signal.idct(real);
+			const y = new Array(i);
+			for(let j = 0; j < i; j++) {
+				y[j] = new Complex(result[j]);
+			}
+			return y;
+		};
+		return this._column_oriented_2_dimensional_processing(pre, main, post);
+	}
 
 
 }

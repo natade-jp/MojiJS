@@ -231,6 +231,70 @@ class Chash {
 
 const fft_chash = new Chash(4, FFT);
 
+class DCT {
+	constructor(size) {
+		this.size = size;
+		this.dct_size = size * 2;
+		this.dct_re = new Array(this.dct_size);
+		this.dct_im = new Array(this.dct_size);
+		this.idct_re = new Array(this.dct_size);
+		this.idct_im = new Array(this.dct_size);
+		{
+			const x_0 = 1.0 / Math.sqrt(this.size);
+			const x_n = x_0 * Math.sqrt(2);
+			for(let i = 0; i < this.size; i++) {
+				const x = - Math.PI * i / this.dct_size;
+				this.dct_re[i] = Math.cos(x) * (i === 0 ? x_0 : x_n);
+				this.dct_im[i] = Math.sin(x) * (i === 0 ? x_0 : x_n);
+			}
+		}
+	}
+	delete() {
+		delete this.size;
+		delete this.dct_size;
+		delete this.dct_re;
+		delete this.dct_im;
+	}
+	/**
+	 * DCT-II
+	 * @param {Array} real 実数部
+	 * @returns {Object}
+	 */
+	dct(real) {
+		const re = new Array(this.dct_size);
+		const im = new Array(this.dct_size);
+		for(let i = 0; i < this.dct_size; i++) {
+			re[i] = i < this.size ? real[i] : 0.0;
+			im[i] = 0.0;
+		}
+		const fft = fft_chash.get(this.dct_size).fft(re, im);
+		for(let i = 0; i < this.size; i++) {
+			re[i] = fft.real[i] * this.dct_re[i] - fft.imag[i] * this.dct_im[i];
+		}
+		re.splice(this.size);
+		return re;
+	}
+	/**
+	 * DCT-III (IDCT)
+	 * @param {Array} real 実数部
+	 * @returns {Object}
+	 */
+	idct(real) {
+		const re = new Array(this.dct_size);
+		const im = new Array(this.dct_size);
+		for(let i = 0; i < this.dct_size; i++) {
+			re[i] = i < this.size ? (this.size * 2.0 * real[i] * this.dct_re[i]) : 0.0;
+			im[i] = i < this.size ? (this.size * 2.0 * real[i] * (- this.dct_im[i])) : 0.0;
+		}
+		const ifft = fft_chash.get(this.dct_size).ifft(re, im);
+		ifft.real.splice(this.size);
+		return ifft.real;
+	}
+	
+}
+
+const dct_chash = new Chash(4, DCT);
+
 export default class Signal {
 	
 	/**
@@ -255,9 +319,34 @@ export default class Signal {
 		return obj.ifft(real, imag);
 	}
 
+	/**
+	 * DCT-II (DCT)
+	 * @param {Array} real 実数部
+	 * @returns {Object}
+	 */
+	static dct(real) {
+		const obj = dct_chash.get(real.length);	
+		return obj.dct(real);
+	}
+
+	/**
+	 * DCT-III (IDCT)
+	 * @param {Array} real 実数部
+	 * @returns {Object}
+	 */
+	static idct(real) {
+		const obj = dct_chash.get(real.length);	
+		return obj.idct(real);
+	}
+
 }
 
+
 /*
+const X1 = [1, 2, 30, 100];
+console.log(Signal.dct(X1));
+console.log(Signal.idct(Signal.dct(X1)));
+
 {
 	const X1 = [1];
 	const Y1 = [j];
