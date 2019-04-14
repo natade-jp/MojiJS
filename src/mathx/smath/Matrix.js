@@ -8,6 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Signal from "./toolbox/Signal.js";
 import Complex from "./Complex.js";
 import Random from "../basic/Random.js";
 
@@ -855,7 +856,7 @@ export default class Matrix {
 	_column_oriented_1_dimensional_processing(pre, main, post) {
 		let y;
 		if(this.isRow()) {
-			pre(this.matrix_array[0][0], 0, 0);
+			pre(this.matrix_array[0][0], 0, 0, this.column_length);
 			for(let col = 0; col < this.column_length; col++) {
 				main(this.matrix_array[0][col], 0, col);
 			}
@@ -866,7 +867,7 @@ export default class Matrix {
 			const y = [];
 			y[0] = [];
 			for(let col = 0; col < this.column_length; col++) {
-				pre(this.matrix_array[0][col], 0, col);
+				pre(this.matrix_array[0][col], 0, col, this.row_length);
 				for(let row = 0; row < this.row_length; row++) {
 					main(this.matrix_array[row][col], row, col);
 				}
@@ -876,6 +877,45 @@ export default class Matrix {
 			const Y = new Matrix(y);
 			return Y.isMatrix() ? Y.transpose() : Y;
 		}
+	}
+
+	/**
+	 * 行列に対して、行と列に同一の処理を行い、行列を作成します。
+	 * @param {Function} pre メイン処理を行う前の下準備
+	 * @param {Function} main メイン処理
+	 * @param {Function} post メイン処理完了後の処理（戻り値に設定した値をいれる）
+	 * @returns {Matix}
+	 */
+	_column_oriented_2_dimensional_processing(pre, main, post) {
+		let y = new Array(this.row_length);
+		{
+			// 行ごとに処理を行う
+			for(let row = 0; row < this.row_length; row++) {
+				pre(this.matrix_array[row][0], row, 0, this.column_length);
+				for(let col = 0; col < this.column_length; col++) {
+					main(this.matrix_array[row][col], row, col);
+				}
+				const new_row = post(this.matrix_array[row][this.column_length - 1], 0, this.column_length - 1);
+				y[row] = new Array(this.column_length);
+				for(let col = 0; col < this.column_length; col++) {
+					y[row][col] = new_row[col];
+				}
+			}
+		}
+		{
+			// 列ごとに処理を行う
+			for(let col = 0; col < this.column_length; col++) {
+				pre(y[0][col], 0, col, this.row_length);
+				for(let row = 0; row < this.row_length; row++) {
+					main(y[row][col], row, col);
+				}
+				const new_col = post(y[this.row_length - 1][col], this.row_length - 1, col);
+				for(let row = 0; row < this.row_length; row++) {
+					y[row][col] = new_col[row];
+				}
+			}
+		}
+		return new Matrix(y);
 	}
 
 	/**
@@ -3283,22 +3323,51 @@ export default class Matrix {
 	}
 	
 	/**
+	 * A.sum() 合計
+	 * @returns {Matix}
+	 */
+	sum() {
+		let sum;
+		let delta;
+		// カハンの加算アルゴリズム
+		const pre = function() {
+			sum = Complex.ZERO;
+			delta = Complex.ZERO;
+		};
+		const main = function(number) {
+			const new_number = number.add(delta);
+			const new_sum = sum.add(new_number);
+			delta = new_sum.sub(sum).sub(new_number);
+			sum = new_sum;
+		};
+		const post = function() {
+			return sum;
+		};
+		return this._column_oriented_1_dimensional_processing(pre, main, post);
+	}
+
+	/**
 	 * A.mean() 相加平均
 	 * @returns {Matix}
 	 */
 	mean() {
-		let x;
+		let sum;
+		let delta;
 		let count;
 		const pre = function() {
-			x = Complex.ZERO;
+			sum = Complex.ZERO;
+			delta = Complex.ZERO;
 			count = 0;
 		};
 		const main = function(number) {
-			x = x.add(number);
+			const new_number = number.add(delta);
+			const new_sum = sum.add(new_number);
+			delta = new_sum.sub(sum).sub(new_number);
+			sum = new_sum;
 			count++;
 		};
 		const post = function() {
-			return x.div(count);
+			return sum.div(count);
 		};
 		return this._column_oriented_1_dimensional_processing(pre, main, post);
 	}
@@ -3431,7 +3500,66 @@ export default class Matrix {
 	// signal 信号処理用
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 
-	// TODO FFTなど信号処理でよく利用するものを作る
+	/**
+	 * A.fft() 離散フーリエ変換
+	 * @returns {Matix}
+	 */
+	fft() {
+		let real;
+		let imag;
+		let i;
+		// カハンの加算アルゴリズム
+		const pre = function(number, row, col, length) {
+			real = new Array(length);
+			imag = new Array(length);
+			i = 0;
+		};
+		const main = function(number) {
+			real[i] = number.real;
+			imag[i] = number.imag;
+			i++;
+		};
+		const post = function() {
+			const result = Signal.fft(real, imag);
+			const y = new Array(i);
+			for(let j = 0; j < i; j++) {
+				y[j] = new Complex([result.real[j], result.imag[j]]);
+			}
+			return y;
+		};
+		return this._column_oriented_2_dimensional_processing(pre, main, post);
+	}
+
+	/**
+	 * A.ifft() 逆離散フーリエ変換
+	 * @returns {Matix}
+	 */
+	ifft() {
+		let real;
+		let imag;
+		let i;
+		// カハンの加算アルゴリズム
+		const pre = function(number, row, col, length) {
+			real = new Array(length);
+			imag = new Array(length);
+			i = 0;
+		};
+		const main = function(number) {
+			real[i] = number.real;
+			imag[i] = number.imag;
+			i++;
+		};
+		const post = function() {
+			const result = Signal.ifft(real, imag);
+			const y = new Array(i);
+			for(let j = 0; j < i; j++) {
+				y[j] = new Complex([result.real[j], result.imag[j]]);
+			}
+			return y;
+		};
+		return this._column_oriented_2_dimensional_processing(pre, main, post);
+	}
+
 
 
 }

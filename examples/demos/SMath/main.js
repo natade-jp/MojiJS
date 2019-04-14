@@ -246,6 +246,11 @@ const main = function() {
 	Log.println("tinv");
 	Log.println(_(0.8).tinv(3));
 
+	Log.println("fft");
+	Log.println(_("[1+j 2-3j -3 -4]").fft());
+	Log.println(_("[1+j 2-3j -3 -4]").fft().ifft());
+
 };
 
 main();
+

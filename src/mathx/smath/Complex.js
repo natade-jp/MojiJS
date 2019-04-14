@@ -82,11 +82,11 @@ export default class Complex {
 				ToComplexFromString(obj.toString(), this);
 			}
 			else {
-				throw "Unsupported argument";
+				throw "Complex Unsupported argument";
 			}
 		}
 		else {
-			throw "Many arguments : " + arguments.length;
+			throw "Complex Many arguments : " + arguments.length;
 		}
 	}
 
