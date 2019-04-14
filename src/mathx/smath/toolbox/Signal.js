@@ -93,13 +93,12 @@ class FFT {
 				let center = 1;
 				let blocklength = this.size / 2;
 				let pointlength = 2;
-				let re, im;
 				for(let delta = 1 << (this.bit_size - 1); delta > 0; delta >>= 1) {
-					for(let blocks = 0;blocks < blocklength; blocks++) {
+					for(let blocks = 0; blocks < blocklength; blocks++) {
 						let i = blocks * pointlength;
-						for(let point = 0, x = 0;point < center; point++, i++, x += delta) {
-							re = f_re[i + center] * this.fft_re[x] - f_im[i + center] * this.fft_im[x];
-							im = f_im[i + center] * this.fft_re[x] + f_re[i + center] * this.fft_im[x];
+						for(let point = 0, n = 0; point < center; point++, i++, n += delta) {
+							const re = f_re[i + center] * this.fft_re[n] - f_im[i + center] * this.fft_im[n];
+							const im = f_im[i + center] * this.fft_re[n] + f_re[i + center] * this.fft_im[n];
 							f_re[i + center] = f_re[i] - re;
 							f_im[i + center] = f_im[i] - im;
 							f_re[i] += re;
@@ -116,11 +115,9 @@ class FFT {
 			for(let t = 0; t < this.size; t++) {
 				f_re[t] = 0.0;
 				f_im[t] = 0.0;
-				for(let x = 0; x < this.size; x++) {
-					const e_re = this.fft_re[(x * t) % this.size];
-					const e_im = this.fft_im[(x * t) % this.size];
-					f_re[t] += real[x] * e_re - imag[x] * e_im;
-					f_im[t] += real[x] * e_im + imag[x] * e_re;
+				for(let x = 0, n = 0; x < this.size; x++, n = (x * t) % this.size) {
+					f_re[t] += real[x] * this.fft_re[n] - imag[x] * this.fft_im[n];
+					f_im[t] += real[x] * this.fft_im[n] + imag[x] * this.fft_re[n];
 				}
 			}
 		}
@@ -152,11 +149,11 @@ class FFT {
 				let pointlength = 2;
 				let re, im;
 				for(let delta = 1 << (this.bit_size - 1); delta > 0; delta >>= 1) {
-					for(let blocks = 0;blocks < blocklength; blocks++) {
+					for(let blocks = 0; blocks < blocklength; blocks++) {
 						let i = blocks * pointlength;
-						for(let point = 0, x = 0;point < center; point++, i++, x += delta) {
-							re = f_re[i + center] * this.fft_re[x] + f_im[i + center] * this.fft_im[x];
-							im = f_im[i + center] * this.fft_re[x] - f_re[i + center] * this.fft_im[x];
+						for(let point = 0, n = 0; point < center; point++, i++, n += delta) {
+							re = f_re[i + center] * this.fft_re[n] + f_im[i + center] * this.fft_im[n];
+							im = f_im[i + center] * this.fft_re[n] - f_re[i + center] * this.fft_im[n];
 							f_re[i + center] = f_re[i] - re;
 							f_im[i + center] = f_im[i] - im;
 							f_re[i] += re;
@@ -173,11 +170,9 @@ class FFT {
 			for(let x = 0; x < this.size; x++) {
 				f_re[x] = 0.0;
 				f_im[x] = 0.0;
-				for(let t = 0; t < this.size; t++) {
-					const e_re = this.fft_re[(x * t) % this.size];
-					const e_im = this.fft_im[(x * t) % this.size];
-					f_re[x] += real[t] * e_re + imag[t] * e_im;
-					f_im[x] += - real[t] * e_im + imag[t] * e_re;
+				for(let t = 0, n = 0; t < this.size; t++, n = (x * t) % this.size) {
+					f_re[x] +=   real[t] * this.fft_re[n] + imag[t] * this.fft_im[n];
+					f_im[x] += - real[t] * this.fft_im[n] + imag[t] * this.fft_re[n];
 				}
 			}
 		}
