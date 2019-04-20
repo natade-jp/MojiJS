@@ -856,6 +856,7 @@ export default class Matrix {
 	_column_oriented_1_dimensional_processing(pre, main, post) {
 		let y;
 		if(this.isRow()) {
+			// 1行であれば、その1行に対して処理を行う
 			pre(this.matrix_array[0][0], 0, 0, this.column_length);
 			for(let col = 0; col < this.column_length; col++) {
 				main(this.matrix_array[0][col], 0, col);
@@ -864,6 +865,7 @@ export default class Matrix {
 			return new Matrix(y);
 		}
 		else {
+			// 1列、行列であれば、列ごとに処理を行う
 			const y = [];
 			y[0] = [];
 			for(let col = 0; col < this.column_length; col++) {
@@ -871,11 +873,18 @@ export default class Matrix {
 				for(let row = 0; row < this.row_length; row++) {
 					main(this.matrix_array[row][col], row, col);
 				}
-				y[col] = post(this.matrix_array[this.row_length - 1][col], this.row_length - 1, col);
+				// 結果が列であれば、列を代入、1つの値のみであれば、その値のみ代入する。
+				const y_col = post(this.matrix_array[this.row_length - 1][col], this.row_length - 1, col);
+				if(y_col instanceof Array) {
+					for(let row = 0; row < y_col.row_length; row++) {
+						y[row][col] = y_col[row];
+					}
+				}
+				else {
+					y[0][col] = y_col;
+				}
 			}
-			// 行列の場合は結果のデータが横に入ってしまうので、転置させる
-			const Y = new Matrix(y);
-			return Y.isMatrix() ? Y.transpose() : Y;
+			return new Matrix(y);
 		}
 	}
 
@@ -895,22 +904,18 @@ export default class Matrix {
 				for(let col = 0; col < this.column_length; col++) {
 					main(this.matrix_array[row][col], row, col);
 				}
-				const new_row = post(this.matrix_array[row][this.column_length - 1], 0, this.column_length - 1);
-				y[row] = new Array(this.column_length);
-				for(let col = 0; col < this.column_length; col++) {
-					y[row][col] = new_row[col];
-				}
+				y[row] = post(this.matrix_array[row][this.column_length - 1], 0, this.column_length - 1);
 			}
 		}
 		{
 			// 列ごとに処理を行う
-			for(let col = 0; col < this.column_length; col++) {
-				pre(y[0][col], 0, col, this.row_length);
-				for(let row = 0; row < this.row_length; row++) {
+			for(let col = 0; col < y[0].length; col++) {
+				pre(y[0][col], 0, col, y[0].length);
+				for(let row = 0; row < y.length; row++) {
 					main(y[row][col], row, col);
 				}
-				const new_col = post(y[this.row_length - 1][col], this.row_length - 1, col);
-				for(let row = 0; row < this.row_length; row++) {
+				const new_col = post(y[y.length - 1][col], y.length - 1, col);
+				for(let row = 0; row < new_col.length; row++) {
 					y[row][col] = new_col[row];
 				}
 			}
@@ -3504,7 +3509,7 @@ export default class Matrix {
 	 * A.fft() 離散フーリエ変換
 	 * @returns {Matix}
 	 */
-	fft() {
+	fft(is_2_dimensions = false) {
 		let real;
 		let imag;
 		let i;
@@ -3526,14 +3531,14 @@ export default class Matrix {
 			}
 			return y;
 		};
-		return this._column_oriented_2_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
 	}
 
 	/**
 	 * A.ifft() 逆離散フーリエ変換
 	 * @returns {Matix}
 	 */
-	ifft() {
+	ifft(is_2_dimensions = false) {
 		let real;
 		let imag;
 		let i;
@@ -3555,14 +3560,14 @@ export default class Matrix {
 			}
 			return y;
 		};
-		return this._column_oriented_2_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
 	}
 
 	/**
 	 * A.dct() DCT-II (DCT)
 	 * @returns {Matix}
 	 */
-	dct() {
+	dct(is_2_dimensions = false) {
 		let real;
 		let i;
 		const pre = function(number, row, col, length) {
@@ -3581,14 +3586,14 @@ export default class Matrix {
 			}
 			return y;
 		};
-		return this._column_oriented_2_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
 	}
 
 	/**
 	 * A.ifft() DCT-III (IDCT)
 	 * @returns {Matix}
 	 */
-	idct() {
+	idct(is_2_dimensions = false) {
 		let real;
 		let i;
 		// カハンの加算アルゴリズム
@@ -3608,8 +3613,39 @@ export default class Matrix {
 			}
 			return y;
 		};
-		return this._column_oriented_2_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
 	}
 
+	/**
+	 * A.fft2() 2次元の離散フーリエ変換
+	 * @returns {Matix}
+	 */
+	fft2() {
+		return this.fft(true);
+	}
+
+	/**
+	 * A.ifft2() 2次元の逆離散フーリエ変換
+	 * @returns {Matix}
+	 */
+	ifft2() {
+		return this.ifft(true);
+	}
+
+	/**
+	 * A.dct2() 2次元のDCT変換
+	 * @returns {Matix}
+	 */
+	dct2() {
+		return this.dct2(true);
+	}
+
+	/**
+	 * A.idct2() 2次元の逆DCT変換
+	 * @returns {Matix}
+	 */
+	idct2() {
+		return this.idct(true);
+	}
 
 }
