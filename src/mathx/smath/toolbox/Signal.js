@@ -235,10 +235,8 @@ class DCT {
 	constructor(size) {
 		this.size = size;
 		this.dct_size = size * 2;
-		this.dct_re = new Array(this.dct_size);
-		this.dct_im = new Array(this.dct_size);
-		this.idct_re = new Array(this.dct_size);
-		this.idct_im = new Array(this.dct_size);
+		this.dct_re = new Array(this.size);
+		this.dct_im = new Array(this.size);
 		{
 			const x_0 = 1.0 / Math.sqrt(this.size);
 			const x_n = x_0 * Math.sqrt(2);
@@ -255,6 +253,7 @@ class DCT {
 		delete this.dct_re;
 		delete this.dct_im;
 	}
+
 	/**
 	 * DCT-II
 	 * @param {Array} real 実数部
@@ -274,6 +273,7 @@ class DCT {
 		re.splice(this.size);
 		return re;
 	}
+
 	/**
 	 * DCT-III (IDCT)
 	 * @param {Array} real 実数部
@@ -282,9 +282,10 @@ class DCT {
 	idct(real) {
 		const re = new Array(this.dct_size);
 		const im = new Array(this.dct_size);
+		const denormlize = this.size * 2.0;
 		for(let i = 0; i < this.dct_size; i++) {
-			re[i] = i < this.size ? (this.size * 2.0 * real[i] * this.dct_re[i]) : 0.0;
-			im[i] = i < this.size ? (this.size * 2.0 * real[i] * (- this.dct_im[i])) : 0.0;
+			re[i] = i < this.size ? (denormlize * real[i] *    this.dct_re[i])  : 0.0;
+			im[i] = i < this.size ? (denormlize * real[i] * (- this.dct_im[i])) : 0.0;
 		}
 		const ifft = fft_chash.get(this.dct_size).ifft(re, im);
 		ifft.real.splice(this.size);
@@ -341,7 +342,14 @@ export default class Signal {
 
 }
 
+/*
+const X1 = [1, 2, 30, 100];
+console.log(Signal.dct(X1));
+console.log(Signal.idct(Signal.dct(X1)));
 
+console.log(Signal.mdct(X1));
+console.log(Signal.imdct(Signal.mdct(X1)));
+*/
 /*
 const X1 = [1, 2, 30, 100];
 console.log(Signal.dct(X1));
