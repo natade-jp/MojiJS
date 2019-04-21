@@ -3254,6 +3254,32 @@ export default class Matrix {
 	}
 
 	/**
+	 * t.tdist(v, tails) = tdist(t, v, tails) 尾部が指定可能なt分布の累積分布関数
+	 * @param {Object} v 自由度
+	 * @param {Object} tails 尾部(1...片側、2...両側)
+	 * @returns {Matrix}
+	 */
+	tdist(v, tails) {
+		const v_ = Matrix.createConstMatrix(v).scalar;
+		const tails_ = Matrix.createConstMatrix(tails).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.tdist(v_, tails_);
+		});
+	}
+
+	/**
+	 * p.tinv2(v) = tinv2(p, v) 両側検定時のt分布の累積分布関数
+	 * @param {Object} v 自由度
+	 * @returns {Matrix}
+	 */
+	tinv2(v) {
+		const v_ = Matrix.createConstMatrix(v).scalar;
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.tinv2(v_);
+		});
+	}
+
+	/**
 	 * x.chi2pdf(k) = chi2pdf(x, k) カイ二乗分布の確率密度関数
 	 * @param {Object} k 自由度
 	 * @returns {Matrix}

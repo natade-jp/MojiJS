@@ -543,24 +543,24 @@ export default class Statistics {
 	}
 
 	/**
-	 * etdist(x, nu, tails) t分布のパーセンテージを返す
+	 * tdist(x, v, tails) 尾部が指定可能なt分布の累積分布関数
 	 * @param {Number} x
-	 * @param {Number} nu 自由度
+	 * @param {Number} v 自由度
 	 * @param {Number} tails 尾部(1...片側、2...両側)
 	 * @return {Number}
 	 */
-	static etdist(x, nu, tails) {
-		return (1.0 - Statistics.tcdf(x, nu)) * tails;
+	static tdist(x, v, tails) {
+		return (1.0 - Statistics.tcdf(x, v)) * tails;
 	}
 
 	/**
-	 * etinv(p, nu) t分布のt値を、確率と自由度から求める
+	 * einv2(p, v) 両側検定時のt分布の累積分布関数
 	 * @param {Number} p 確率
-	 * @param {Number} nu 自由度
+	 * @param {Number} v 自由度
 	 * @return {Number}
 	 */
-	static etinv(p, nu) {
-		return Statistics.tinv( 1.0 - p / 2.0, nu);
+	static tinv2(p, v) {
+		return - Statistics.tinv( p * 0.5, v);
 	}
 
 	/**

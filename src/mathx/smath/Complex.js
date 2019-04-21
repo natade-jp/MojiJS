@@ -1052,20 +1052,6 @@ export default class Complex {
 	}
 
 	/**
-	 * t.tpdf(v) = tpdf(t, v) t分布の確率密度関数
-	 * @param {Object} v 自由度
-	 * @returns {Complex}
-	 */
-	tpdf(v) {
-		const t_ = this;
-		const v_ = Complex.createConstComplex(v);
-		if(t_.isComplex() || v_.isComplex()) {
-			throw "tpdf don't support complex numbers.";
-		}
-		return new Complex(Statistics.tpdf(t_._re, v_._re));
-	}
-
-	/**
 	 * t.tcdf(v) = tcdf(t, v) t分布の累積分布関数
 	 * @param {Object} v 自由度
 	 * @returns {Complex}
@@ -1092,6 +1078,48 @@ export default class Complex {
 		}
 		return new Complex(Statistics.tinv(p_._re, v_._re));
 	}
+
+	/**
+	 * t.tdist(v, tails) = tdist(t, v, tails) 尾部が指定可能なt分布の累積分布関数
+	 * @param {Object} v 自由度
+	 * @param {Object} tails 尾部(1...片側、2...両側)
+	 * @returns {Complex}
+	 */
+	tdist(v, tails) {
+		const t_ = this;
+		const v_ = Complex.createConstComplex(v);
+		const tails_ = Complex.createConstComplex(tails);
+		if(t_.isComplex() || v_.isComplex() || tails_.isComplex() ) {
+			throw "tcdf don't support complex numbers.";
+		}
+		return new Complex(Statistics.tdist(t_._re, v_._re, tails_._re));
+	}
+
+	/**
+	 * p.tinv2(v) = tinv2(p, v) 両側検定時のt分布の累積分布関数
+	 * @param {Object} v 自由度
+	 * @returns {Complex}
+	 */
+	tinv2(v) {
+		const p_ = this;
+		const v_ = Complex.createConstComplex(v);
+		if(p_.isComplex() || v_.isComplex()) {
+			throw "tinv don't support complex numbers.";
+		}
+		return new Complex(Statistics.tinv2(p_._re, v_._re));
+	}
+
+	/**
+	 * tdist(x, v, tails) 尾部が指定可能なt分布の累積分布関数
+	 * @param {Number} x
+	 * @param {Number} v 自由度
+	 * @param {Number} tails 尾部(1...片側、2...両側)
+	 * @return {Number}
+	 */
+	static tdist(x, v, tails) {
+		return (1.0 - Statistics.tcdf(x, v)) * tails;
+	}
+
 
 	/**
 	 * x.chi2pdf(k) = chi2pdf(x, k) カイ二乗分布の確率密度関数
