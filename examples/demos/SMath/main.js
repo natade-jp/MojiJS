@@ -117,7 +117,7 @@ const main = function() {
 	// -1.3333 -0.3333  0.6667
 	// 1.0833  0.3333 -0.4167
 	Log.println("pinv");
-	Log.println(_("[1 2;3 4;5 6]").pinv());
+//	Log.println(_("[1 2;3 4;5 6]").pinv());
 	
 	//-1.0000  4.0000
 	// 0.0000  2.0000
@@ -174,7 +174,7 @@ const main = function() {
 
 	// 9.508032000695723
 	Log.println("norm");
-	Log.println(_("[1 2 3; 4 5 6]").norm());
+//	Log.println(_("[1 2 3; 4 5 6]").norm());
 
 	// 5
 	Log.println("getComplex");
@@ -253,6 +253,12 @@ const main = function() {
 	Log.println("dct");
 	Log.println(_("[1 2 30 100]").dct());
 	Log.println(_("[1 2 30 100]").dct().idct());
+
+	Log.println("conv");
+	Log.println(_("[10 20 30 + j]").conv("[1 + j 2 3]"));
+
+	Log.println("xcorr");
+	Log.println(_("[10 20 30 + j]").xcorr("[1 + j 2 3]"));
 
 };
 

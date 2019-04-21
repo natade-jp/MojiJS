@@ -340,7 +340,297 @@ export default class Signal {
 		return obj.idct(real);
 	}
 
+	/**
+	 * パワースペクトル密度
+	 * @param {Array} real 実数部
+	 * @param {Array} imag 虚数部
+	 * @returns {Object}
+	 */
+	static powerfft(real, imag) {
+		const size = real.length;
+		const X = Signal.fft(real, imag);
+		const power = new Array(size);
+		for(let i = 0; i < size; i++) {
+			power[i] = X.real[i] * X.real[i] + X.imag[i] * X.imag[i];
+		}
+		return power;
+	}
+
+	/**
+	 * 畳み込み積分、多項式乗算
+	 * @param {Array} x1_real 実数部
+	 * @param {Array} x1_imag 虚数部
+	 * @param {Array} x2_real 実数部
+	 * @param {Array} x2_imag 虚数部
+	 * @returns {Object}
+	 */
+	static conv(x1_real, x1_imag, x2_real, x2_imag) {
+		let is_self = false;
+		if(x1_real.length === x2_real.length) {
+			is_self = true;
+			for(let i = 0; i < x1_real.length;i++) {
+				if((x1_real[i] !== x2_real[i]) || (x1_imag[i] !== x2_imag[i])) {
+					is_self = false;
+					break;
+				}
+			}
+		}
+		const size = x1_real.length;
+		const N2 = size * 2;
+		const bit_size = Math.round(Math.log(size)/Math.log(2));
+		const is_fast = (1 << bit_size) === size;
+		if(is_fast) {
+			// FFTを用いた手法へ切り替え
+			// 周波数空間上では掛け算になる
+			if(is_self) {
+				const size = x1_real.length;
+				const real = new Array(N2);
+				const imag = new Array(N2);
+				for(let i = 0; i < N2; i++) {
+					real[i] = i < size ? x1_real[i] : 0.0;
+					imag[i] = i < size ? x1_imag[i] : 0.0;
+				}
+				const X = Signal.fft(real, imag);
+				for(let i = 0; i < N2; i++) {
+					real[i] = X.real[i] * X.real[i] - X.imag[i] * X.imag[i];
+					imag[i] = X.real[i] * X.imag[i] + X.imag[i] * X.real[i];
+				}
+				const x = Signal.ifft(real, imag);
+				x.real.splice(N2 - 1);
+				x.imag.splice(N2 - 1);
+				return x;
+			}
+			else if(x1_real.length === x2_real.length) {
+				const size = x1_real.length;
+				const real1 = new Array(N2);
+				const imag1 = new Array(N2);
+				const real2 = new Array(N2);
+				const imag2 = new Array(N2);
+				for(let i = 0; i < N2; i++) {
+					real1[i] = i < size ? x1_real[i] : 0.0;
+					imag1[i] = i < size ? x1_imag[i] : 0.0;
+					real2[i] = i < size ? x2_real[i] : 0.0;
+					imag2[i] = i < size ? x2_imag[i] : 0.0;
+				}
+				const F = Signal.fft(real1, imag1);
+				const G = Signal.fft(real2, imag2);
+				const real = new Array(N2);
+				const imag = new Array(N2);
+				for(let i = 0; i < N2; i++) {
+					real[i] = F.real[i] * G.real[i] - F.imag[i] * G.imag[i];
+					imag[i] = F.real[i] * G.imag[i] + F.imag[i] * G.real[i];
+				}
+				const fg = Signal.ifft(real, imag);
+				fg.real.splice(N2 - 1);
+				fg.imag.splice(N2 - 1);
+				return fg;
+			}
+		}
+		let is_real_number = true;
+		{
+			{
+				for(let i = 0; i < x1_imag.length; i++) {
+					if(x1_imag[i] !== 0) {
+						is_real_number = false;
+						break;
+					}
+				}
+			}
+			if(is_real_number) {
+				for(let i = 0; i < x2_imag.length; i++) {
+					if(x2_imag[i] !== 0) {
+						is_real_number = false;
+						break;
+					}
+				}
+			}
+		}
+		{
+			// まじめに計算する
+			const real = new Array(x1_real.length + x2_real.length - 1);
+			const imag = new Array(x1_real.length + x2_real.length - 1);
+			for(let i = 0; i < real.length; i++) {
+				real[i] = 0;
+				imag[i] = 0;
+			}
+			if(is_real_number) {
+				// スライドさせていく
+				// AAAA
+				//  BBBB
+				//   CCCC
+				for(let y = 0; y < x2_real.length; y++) {
+					for(let x = 0; x < x1_real.length; x++) {
+						real[y + x] += x1_real[x] * x2_real[y];
+					}
+				}
+			}
+			else {
+				for(let y = 0; y < x2_real.length; y++) {
+					for(let x = 0; x < x1_real.length; x++) {
+						real[y + x] += x1_real[x] * x2_real[y] - x1_imag[x] * x2_imag[y];
+						imag[y + x] += x1_real[x] * x2_imag[y] + x1_imag[x] * x2_real[y];
+					}
+				}
+			}
+			return {
+				real : real,
+				imag : imag
+			};
+		}
+	}
+
+	/**
+	 * 自己相関関数、相互相関関数
+	 * @param {Array} x1_real 実数部
+	 * @param {Array} x1_imag 虚数部
+	 * @param {Array} x2_real 実数部
+	 * @param {Array} x2_imag 虚数部
+	 * @returns {Object}
+	 */
+	static xcorr(x1_real, x1_imag, x2_real, x2_imag) {
+		let is_self = false;
+		if(x1_real.length === x2_real.length) {
+			is_self = true;
+			for(let i = 0; i < x1_real.length;i++) {
+				if((x1_real[i] !== x2_real[i]) || (x1_imag[i] !== x2_imag[i])) {
+					is_self = false;
+					break;
+				}
+			}
+		}
+		if(x1_real.length === x2_real.length) {
+			const size = x1_real.length;
+			const N2 = size * 2;
+			const bit_size = Math.round(Math.log(size)/Math.log(2));
+			const is_fast = (1 << bit_size) === size;
+			if(is_fast) {
+				let fg = null;
+				if(is_self) {
+					const real = new Array(N2);
+					const imag = new Array(N2);
+					for(let i = 0; i < N2; i++) {
+						real[i] = i < size ? x1_real[i] : 0.0;
+						imag[i] = i < size ? x1_imag[i] : 0.0;
+					}
+					// パワースペクトル密度は、自己相関のフーリエ変換のため、
+					// パワースペクトル密度の逆変換で求められる。
+					const power = Signal.powerfft(real, imag);
+					fg = Signal.ifft(power, imag);
+					// シフト
+					real.pop();
+					imag.pop();
+					for(let i = 0, j = size + 1 ; i < real.length; i++, j++) {
+						if(N2 <= j) {
+							j = 0;
+						}
+						real[i] = fg.real[j];
+						imag[i] = fg.imag[j];
+					}
+					return {
+						real : real,
+						imag : imag
+					};
+				}
+				else {
+					const f_real = new Array(N2);
+					const f_imag = new Array(N2);
+					const g_real = new Array(N2);
+					const g_imag = new Array(N2);
+					// gの順序を反転かつ共役複素数にする
+					for(let i = 0; i < N2; i++) {
+						f_real[i] = i < size ?   x1_real[i] : 0.0;
+						f_imag[i] = i < size ?   x1_imag[i] : 0.0;
+						g_real[i] = i < size ?   x2_real[size - i - 1] : 0.0;
+						g_imag[i] = i < size ? - x2_imag[size - i - 1] : 0.0;
+					}
+					// 畳み込み掛け算
+					const F = Signal.fft(f_real, f_imag);
+					const G = Signal.fft(g_real, g_imag);
+					const real = new Array(N2);
+					const imag = new Array(N2);
+					for(let i = 0; i < N2; i++) {
+						real[i] = F.real[i] * G.real[i] - F.imag[i] * G.imag[i];
+						imag[i] = F.real[i] * G.imag[i] + F.imag[i] * G.real[i];
+					}
+					fg = Signal.ifft(real, imag);
+					fg.real.splice(N2 - 1);
+					fg.imag.splice(N2 - 1);
+					return fg;
+				}
+			}
+		}
+		let is_real_number = true;
+		{
+			{
+				for(let i = 0; i < x1_imag.length; i++) {
+					if(x1_imag[i] !== 0) {
+						is_real_number = false;
+						break;
+					}
+				}
+			}
+			if(is_real_number) {
+				for(let i = 0; i < x2_imag.length; i++) {
+					if(x2_imag[i] !== 0) {
+						is_real_number = false;
+						break;
+					}
+				}
+			}
+		}
+		if(is_self) {
+			const size = x1_real.length;
+			const N2 = size * 2;
+			// 自己相関関数
+			if(is_real_number) {
+				const fg = new Array(size);
+				for(let m = 0; m < size; m++) {
+					fg[m] = 0;
+					const tmax = size - m;
+					for(let t = 0; t < tmax; t++) {
+						fg[m] += x1_real[t] * x2_real[t + m];
+					}
+				}
+				// 半分の値は同一なので折り返す
+				const real = new Array(N2 - 1);
+				const imag = new Array(N2 - 1);
+				for(let i = 0, j = size - 1 ; i < size; i++, j--) {
+					real[i] = fg[j];
+					real[size + i - 1] = fg[i];
+				}
+				for(let i = 0; i < imag.length; i++) {
+					imag[i] = 0.0;
+				}
+				return {
+					real : real,
+					imag : imag
+				};
+			}
+		}
+		// 2つの信号の長さが違う、又は2の累乗の長さではない別のデータの場合は通常計算
+		{
+			const g_real = new Array(x2_real.length);
+			const g_imag = new Array(x2_real.length);
+			// gの順序を反転かつ共役複素数にする
+			for(let i = 0; i < x2_real.length; i++) {
+				g_real[i] =   x2_real[x2_real.length - i - 1];
+				g_imag[i] = - x2_imag[x2_real.length - i - 1];
+			}
+			return Signal.conv(x1_real, x1_imag, g_real, g_imag);
+		}
+	}
+
 }
+
+/*
+const A = [1,2,3,4,5];
+const B = [0,0,3,0,0];
+const C = [5,6,7,8,9];
+
+console.log(Signal.conv(A,B,A,B));
+console.log(Signal.conv(A,B,C,B));
+console.log(Signal.xcorr(A,B,C,B));
+*/
 
 /*
 const X1 = [1, 2, 30, 100];

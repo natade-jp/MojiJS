@@ -424,8 +424,8 @@ const ConstructorTool = {
 
 	toMatrixFromStringForArrayETC : function(text) {
 		// 行ごとを抽出して
-		const matrix_array = [];
 		const rows = text.split(";");
+		const matrix_array = new Array(rows.length);
 		for(let row_count = 0; row_count < rows.length; row_count++) {
 			// 各行の文字を解析
 			matrix_array[row_count] = ConstructorTool.toArrayFromString(rows[row_count]);
@@ -495,9 +495,9 @@ export default class Matrix {
 		if(arguments.length === 1) {
 			const y = number;
 			if(y instanceof Matrix) {
-				matrix_array = [];
+				matrix_array = new Array(y.row_length);
 				for(let i = 0; i < y.row_length; i++) {
-					matrix_array[i] = [];
+					matrix_array[i] = new Array(y.column_length);
 					for(let j = 0; j < y.column_length; j++) {
 						matrix_array[i][j] = y.matrix_array[i][j];
 					}
@@ -512,7 +512,7 @@ export default class Matrix {
 					const row = y[row_count];
 					// 毎行ごと調査
 					if(row instanceof Array) {
-						const rows_array = [];
+						const rows_array = new Array(row.length);
 						for(let col_count = 0; col_count < row.length; col_count++) {
 							const column = row[col_count];
 							if(column instanceof Complex) {
@@ -531,9 +531,9 @@ export default class Matrix {
 						matrix_array[row_count] = rows_array;
 					}
 					else {
-						// 1行の行列を定義する
+						// 1行のみの宣言の場合は、中の配列を行ベクトルとして定義する
 						if(row_count === 0) {
-							matrix_array[0] = [];
+							matrix_array[0] = new Array(y.length);
 						}
 						if(row instanceof Complex) {
 							matrix_array[0][row_count] = row;
@@ -721,9 +721,9 @@ export default class Matrix {
 	 * @returns {Array} 行列の実数配列を返します
 	 */
 	getNumberMatrixArray() {
-		const y = [];
+		const y = new Array(this.row_length);
 		for(let i = 0; i < this.row_length; i++) {
-			y[i] = [];
+			y[i] = new Array(this.column_length);
 			for(let j = 0; j < this.column_length; j++) {
 				y[i][j] = this.matrix_array[i][j].real;
 			}
@@ -736,9 +736,9 @@ export default class Matrix {
 	 * @returns {Array} 行列のComplex配列を返します
 	 */
 	getComplexMatrixArray() {
-		const y = [];
+		const y = new Array(this.row_length);
 		for(let i = 0; i < this.row_length; i++) {
-			y[i] = [];
+			y[i] = new Array(this.column_length);
 			for(let j = 0; j < this.column_length; j++) {
 				y[i][j] = this.matrix_array[i][j];
 			}
@@ -813,11 +813,11 @@ export default class Matrix {
 		if((arguments.length === 0) || (arguments.length > 3)) {
 			throw "IllegalArgumentException";
 		}
-		const y = [];
 		const y_row_length = dimension;
 		const y_column_length = column_length ? column_length : dimension;
+		const y = new Array(y_row_length);
 		for(let row = 0; row < y_row_length; row++) {
-			y[row] = [];
+			y[row] = new Array(y_column_length);
 			for(let col = 0; col < y_column_length; col++) {
 				const ret = eachfunc(row, col);
 				if(ret === undefined) {
@@ -867,7 +867,7 @@ export default class Matrix {
 		else {
 			// 1列、行列であれば、列ごとに処理を行う
 			const y = [];
-			y[0] = [];
+			y[0] = new Array(this.column_length);
 			for(let col = 0; col < this.column_length; col++) {
 				pre(this.matrix_array[0][col], 0, col, this.row_length);
 				for(let row = 0; row < this.row_length; row++) {
@@ -1199,9 +1199,9 @@ export default class Matrix {
 		else {
 			// 列ベクトルを作成
 			const len = Math.min(this.row_length, this.column_length);
-			const y = [];
+			const y = new Array(len);
 			for(let i = 0; i < len; i++) {
-				y[i] = [];
+				y[i] = new Array(1);
 				y[i][0] = this.matrix_array[i][i];
 			}
 			return new Matrix(y);
@@ -1556,10 +1556,10 @@ export default class Matrix {
 		if(M1.isScalar() && M2.isScalar()) {
 			return new Matrix(x1.scalar.mul(x2.scalar));
 		}
-		const y = [];
 		if(M1.isScalar()) {
+			const y = new Array(M2.row_length);
 			for(let row = 0; row < M2.row_length; row++) {
-				y[row] = [];
+				y[row] = new Array(M2.column_length);
 				for(let col = 0; col < M2.column_length; col++) {
 					y[row][col] = M1.scalar.mul(x2[row][col]);
 				}
@@ -1567,8 +1567,9 @@ export default class Matrix {
 			return new Matrix(y);
 		}
 		else if(M2.isScalar()) {
+			const y = new Array(M1.row_length);
 			for(let row = 0; row < M1.row_length; row++) {
-				y[row] = [];
+				y[row] = new Array(M1.column_length);
 				for(let col = 0; col < M1.column_length; col++) {
 					y[row][col] = x1[row][col].mul(M2.scalar);
 				}
@@ -1578,17 +1579,20 @@ export default class Matrix {
 		if(M1.column_length !== M2.row_length) {
 			throw "Matrix size does not match";
 		}
-		for(let row = 0; row < M1.row_length; row++) {
-			y[row] = [];
-			for(let col = 0; col < M2.column_length; col++) {
-				let sum = Complex.ZERO;
-				for(let i = 0; i < M1.column_length; i++) {
-					sum = sum.add(x1[row][i].mul(x2[i][col]));
+		{
+			const y = new Array(M1.row_length);
+			for(let row = 0; row < M1.row_length; row++) {
+				y[row] = new Array(M2.column_length);
+				for(let col = 0; col < M2.column_length; col++) {
+					let sum = Complex.ZERO;
+					for(let i = 0; i < M1.column_length; i++) {
+						sum = sum.add(x1[row][i].mul(x2[i][col]));
+					}
+					y[row][col] = sum;
 				}
-				y[row][col] = sum;
 			}
+			return new Matrix(y);
 		}
-		return new Matrix(y);
 	}
 
 	/**
@@ -1649,10 +1653,10 @@ export default class Matrix {
 			}
 		}
 
-		const y = [];
+		const y = new Array(len);
 		//右の列を抜き取る
 		for(let row = 0; row < len; row++) {
-			y[row] = [];
+			y[row] = new Array(len);
 			for(let col = 0; col < len; col++) {
 				y[row][col] = long_matrix_array[row][len + col];
 			}
@@ -1674,10 +1678,10 @@ export default class Matrix {
 		if(M1.isScalar() && M2.isScalar()) {
 			return new Matrix(x1.scalar.div(x2.scalar));
 		}
-		const y = [];
 		if(M2.isScalar()) {
+			const y = new Array(M1.row_length);
 			for(let row = 0; row < M1.row_length; row++) {
-				y[row] = [];
+				y[row] = new Array(M1.column_length);
 				for(let col = 0; col < M1.column_length; col++) {
 					y[row][col] = x1[row][col].div(M2.scalar);
 				}
@@ -2109,9 +2113,9 @@ export default class Matrix {
 			return this;
 		}
 		// バックアップ
-		const x = [];
+		const x = new Array(this.row_length);
 		for(let i = 0; i < this.row_length; i++) {
-			x[i] = [];
+			x[i] = new Array(this.column_length);
 			for(let j = 0; j < this.column_length; j++) {
 				x[i][j] = this.matrix_array[i][j];
 			}
@@ -2125,7 +2129,7 @@ export default class Matrix {
 					y[col].splice(this.row_length);
 				}
 				else {
-					y[col] = [];
+					y[col] = new Array(this.row_length);
 				}
 				for(let row = 0; row < this.row_length; row++) {
 					y[col][row] = x[this.row_length - row - 1][col];
@@ -2148,7 +2152,7 @@ export default class Matrix {
 					y[col].splice(this.row_length);
 				}
 				else {
-					y[col] = [];
+					y[col] = new Array(this.row_length);
 				}
 				for(let row = 0; row < this.row_length; row++) {
 					y[col][row] = x[row][this.column_length - col - 1];
@@ -2182,7 +2186,7 @@ export default class Matrix {
 		// 大きくなった行と列に対してゼロで埋める
 		for(let row = 0; row < row_max; row++) {
 			if(row >= this.row_length) {
-				y[row] = [];
+				y[row] = new Array(col_max);
 			}
 			for(let col = 0; col < col_max; col++) {
 				if((row >= this.row_length) || (col >= this.column_length)) {
@@ -2353,7 +2357,7 @@ export default class Matrix {
 		const m = M.matrix_array;
 		const tolerance = epsilon ? epsilon : 1.0e-10;
 		// 確認する行番号（ここから終わった行は削除していく）
-		const row_index_array = [];
+		const row_index_array = new Array(this.row_length);
 		for(let i = 0; i < this.row_length; i++) {
 			row_index_array[i] = i;
 		}
@@ -2412,7 +2416,7 @@ export default class Matrix {
 		const Q = Q_Matrix.matrix_array;
 		const R = R_Matrix.matrix_array;
 		const non_orthogonalized = [];
-		const a = [];
+		const a = new Array(len);
 		
 		for(let col = 0; col < len; col++) {
 			// i列目を抽出
@@ -2513,10 +2517,10 @@ export default class Matrix {
 			return null;
 		}
 		// 作成した列を切り出す
-		const y = [];
+		const y = new Array(add_vectors);
 		const q = orthogonal_matrix.Q.matrix_array;
 		for(let row = 0; row < add_vectors; row++) {
-			y[row] = [];
+			y[row] = new Array(this.column_length);
 			for(let col = 0; col < this.column_length; col++) {
 				y[row][col] = q[col][this.column_length - add_vectors + row];
 			}
@@ -2598,8 +2602,8 @@ export default class Matrix {
 			throw "Matrix size does not match";
 		}
 		if(dim === 1) {
-			const y = [];
-			y[0] = [];
+			const y = new Array(1);
+			y[0] = new Array(M1.column_length);
 			for(let col = 0; col < M1.column_length; col++) {
 				let sum = Complex.ZERO;
 				for(let row = 0; row < M1.row_length; row++) {
@@ -2610,7 +2614,7 @@ export default class Matrix {
 			return new Matrix(y);
 		}
 		else if(dim === 2) {
-			const y = [];
+			const y = new Array(M1.row_length);
 			for(let row = 0; row < M1.row_length; row++) {
 				let sum = Complex.ZERO;
 				for(let col = 0; col < M1.column_length; col++) {
@@ -2639,9 +2643,9 @@ export default class Matrix {
 	 * @returns {Matrix}
 	 */
 	transpose() {
-		const y = [];
+		const y = new Array(this.column_length);
 		for(let col = 0; col < this.column_length; col++) {
-			y[col] = [];
+			y[col] = new Array(this.row_length);
 			for(let row = 0; row < this.row_length; row++) {
 				y[col][row] = this.matrix_array[row][col];
 			}
@@ -2804,7 +2808,7 @@ export default class Matrix {
 			}
 		}
 		//後退代入
-		const y = [];
+		const y = new Array(len);
 		y[len - 1] = long_matrix_array[len - 1][len].div(long_matrix_array[len - 1][len - 1]);
 		for(let row = len - 2; row >= 0; row--) {
 			y[row] = long_matrix_array[row][long_length - 1];
@@ -2813,7 +2817,7 @@ export default class Matrix {
 			}
 			y[row] = y[row].div(long_matrix_array[row][row]);
 		}
-		const y2 = [];
+		const y2 = new Array(this.row_length);
 		for(let row = 0; row < this.row_length; row++) {
 			y2[row] = [y[row]];
 		}
@@ -3460,10 +3464,10 @@ export default class Matrix {
 		const x = this.matrix_array;
 		const mean = this.mean().matrix_array[0];
 		// 上三角行列、対角行列
-		const y = [];
+		const y = new Array(this.column_length);
 		for(let a = 0; a < this.column_length; a++) {
 			const a_mean = mean[a];
-			y[a] = [];
+			y[a] = new Array(this.column_length);
 			for(let b = a; b < this.column_length; b++) {
 				const b_mean = mean[b];
 				let sum = Complex.ZERO;
@@ -3564,10 +3568,42 @@ export default class Matrix {
 	}
 
 	/**
+	 * A.powerfft() パワースペクトル密度
+	 * @returns {Matix}
+	 */
+	powerfft() {
+		let real;
+		let imag;
+		let i;
+		const pre = function(number, row, col, length) {
+			real = new Array(length);
+			imag = new Array(length);
+			i = 0;
+		};
+		const main = function(number) {
+			real[i] = number.real;
+			imag[i] = number.imag;
+			i++;
+		};
+		const post = function() {
+			const result = Signal.powerfft(real, imag);
+			const y = new Array(i);
+			for(let j = 0; j < i; j++) {
+				y[j] = new Complex(result[j]);
+			}
+			return y;
+		};
+		return this._column_oriented_1_dimensional_processing(pre, main, post);
+	}
+
+	/**
 	 * A.dct() DCT-II (DCT)
 	 * @returns {Matix}
 	 */
 	dct(is_2_dimensions = false) {
+		if(this.isComplex()) {
+			throw "dct don't support complex numbers.";
+		}
 		let real;
 		let i;
 		const pre = function(number, row, col, length) {
@@ -3590,13 +3626,15 @@ export default class Matrix {
 	}
 
 	/**
-	 * A.ifft() DCT-III (IDCT)
+	 * A.idct() DCT-III (IDCT)
 	 * @returns {Matix}
 	 */
 	idct(is_2_dimensions = false) {
+		if(this.isComplex()) {
+			throw "idct don't support complex numbers.";
+		}
 		let real;
 		let i;
-		// カハンの加算アルゴリズム
 		const pre = function(number, row, col, length) {
 			real = new Array(length);
 			i = 0;
@@ -3646,6 +3684,105 @@ export default class Matrix {
 	 */
 	idct2() {
 		return this.idct(true);
+	}
+
+	/**
+	 * A.conv(B) = conv(A, B) 畳み込み積分、多項式乗算
+	 * @param {Object} number
+	 * @returns {Matix}
+	 */
+	conv(number) {
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(number);
+		if(M1.isMatrix() || M2.isMatrix()) {
+			throw "conv don't support matrix numbers.";
+		}
+		const M1_real = new Array(M1.length);
+		const M1_imag = new Array(M1.length);
+		const M2_real = new Array(M2.length);
+		const M2_imag = new Array(M2.length);
+		if(M1.isRow()) {
+			for(let i = 0; i < M1.column_length; i++) {
+				M1_real[i] = M1.matrix_array[0][i].real;
+				M1_imag[i] = M1.matrix_array[0][i].imag;
+			}
+		}
+		else {
+			for(let i = 0; i < M1.row_length; i++) {
+				M1_real[i] = M1.matrix_array[i][0].real;
+				M1_imag[i] = M1.matrix_array[i][0].imag;
+			}
+		}
+		if(M2.isRow()) {
+			for(let i = 0; i < M2.column_length; i++) {
+				M2_real[i] = M2.matrix_array[0][i].real;
+				M2_imag[i] = M2.matrix_array[0][i].imag;
+			}
+		}
+		else {
+			for(let i = 0; i < M2.row_length; i++) {
+				M2_real[i] = M2.matrix_array[i][0].real;
+				M2_imag[i] = M2.matrix_array[i][0].imag;
+			}
+		}
+		const y = Signal.conv(M1_real, M1_imag, M2_real, M2_imag);
+		const m = new Array(y.real.length);
+		for(let i = 0; i < y.real.length; i++) {
+			m[i] = new Complex([y.real[i], y.imag[i]]);
+		}
+		const M = new Matrix([m]);
+		return M2.isRow() ? M : M.transpose();
+	}
+
+	/**
+	 * A.xcorr(B) = xcorr(A, B) 自己相関関数、相互相関関数
+	 * @param {Object} number (任意)
+	 * @returns {Matix}
+	 */
+	xcorr(number) {
+		if(!number) {
+			return this.xcorr(this);
+		}
+		const M1 = this;
+		const M2 = Matrix.createConstMatrix(number);
+		if(M1.isMatrix() || M2.isMatrix()) {
+			throw "conv don't support matrix numbers.";
+		}
+		const M1_real = new Array(M1.length);
+		const M1_imag = new Array(M1.length);
+		const M2_real = new Array(M2.length);
+		const M2_imag = new Array(M2.length);
+		if(M1.isRow()) {
+			for(let i = 0; i < M1.column_length; i++) {
+				M1_real[i] = M1.matrix_array[0][i].real;
+				M1_imag[i] = M1.matrix_array[0][i].imag;
+			}
+		}
+		else {
+			for(let i = 0; i < M1.row_length; i++) {
+				M1_real[i] = M1.matrix_array[i][0].real;
+				M1_imag[i] = M1.matrix_array[i][0].imag;
+			}
+		}
+		if(M2.isRow()) {
+			for(let i = 0; i < M2.column_length; i++) {
+				M2_real[i] = M2.matrix_array[0][i].real;
+				M2_imag[i] = M2.matrix_array[0][i].imag;
+			}
+		}
+		else {
+			for(let i = 0; i < M2.row_length; i++) {
+				M2_real[i] = M2.matrix_array[i][0].real;
+				M2_imag[i] = M2.matrix_array[i][0].imag;
+			}
+		}
+		const y = Signal.xcorr(M1_real, M1_imag, M2_real, M2_imag);
+		const m = new Array(y.real.length);
+		for(let i = 0; i < y.real.length; i++) {
+			m[i] = new Complex([y.real[i], y.imag[i]]);
+		}
+		const M = new Matrix([m]);
+		return M1.isRow() ? M : M.transpose();
 	}
 
 }
