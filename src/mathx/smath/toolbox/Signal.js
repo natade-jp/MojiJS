@@ -112,12 +112,26 @@ class FFT {
 			}
 		}
 		else {
-			for(let t = 0; t < this.size; t++) {
-				f_re[t] = 0.0;
-				f_im[t] = 0.0;
-				for(let x = 0, n = 0; x < this.size; x++, n = (x * t) % this.size) {
-					f_re[t] += real[x] * this.fft_re[n] - imag[x] * this.fft_im[n];
-					f_im[t] += real[x] * this.fft_im[n] + imag[x] * this.fft_re[n];
+			if(!Signal.isContainsZero(imag)) {
+				// 実数部分のみのフーリエ変換
+				for(let t = 0; t < this.size; t++) {
+					f_re[t] = 0.0;
+					f_im[t] = 0.0;
+					for(let x = 0, n = 0; x < this.size; x++, n = (x * t) % this.size) {
+						f_re[t] += real[x] * this.fft_re[n];
+						f_im[t] += real[x] * this.fft_im[n];
+					}
+				}
+			}
+			else {
+				// 実数部分と複素数部分のフーリエ変換
+				for(let t = 0; t < this.size; t++) {
+					f_re[t] = 0.0;
+					f_im[t] = 0.0;
+					for(let x = 0, n = 0; x < this.size; x++, n = (x * t) % this.size) {
+						f_re[t] += real[x] * this.fft_re[n] - imag[x] * this.fft_im[n];
+						f_im[t] += real[x] * this.fft_im[n] + imag[x] * this.fft_re[n];
+					}
 				}
 			}
 		}
@@ -167,12 +181,26 @@ class FFT {
 			}
 		}
 		else {
-			for(let x = 0; x < this.size; x++) {
-				f_re[x] = 0.0;
-				f_im[x] = 0.0;
-				for(let t = 0, n = 0; t < this.size; t++, n = (x * t) % this.size) {
-					f_re[x] +=   real[t] * this.fft_re[n] + imag[t] * this.fft_im[n];
-					f_im[x] += - real[t] * this.fft_im[n] + imag[t] * this.fft_re[n];
+			if(!Signal.isContainsZero(imag)) {
+				// 実数部分のみの逆フーリエ変換
+				for(let x = 0; x < this.size; x++) {
+					f_re[x] = 0.0;
+					f_im[x] = 0.0;
+					for(let t = 0, n = 0; t < this.size; t++, n = (x * t) % this.size) {
+						f_re[x] +=   real[t] * this.fft_re[n];
+						f_im[x] += - real[t] * this.fft_im[n];
+					}
+				}
+			}
+			else {
+				// 実数部分と複素数部分の逆フーリエ変換
+				for(let x = 0; x < this.size; x++) {
+					f_re[x] = 0.0;
+					f_im[x] = 0.0;
+					for(let t = 0, n = 0; t < this.size; t++, n = (x * t) % this.size) {
+						f_re[x] +=   real[t] * this.fft_re[n] + imag[t] * this.fft_im[n];
+						f_im[x] += - real[t] * this.fft_im[n] + imag[t] * this.fft_re[n];
+					}
 				}
 			}
 		}
@@ -298,6 +326,32 @@ const dct_chash = new Chash(4, DCT);
 
 export default class Signal {
 	
+	/**
+	 * 0が含まれるか
+	 * @param {Array} x
+	 * @return {Boolean}
+	 */
+	static isContainsZero(x) {
+		for(let i = 0; i < x.length; i++) {
+			if(x[i] !== 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * sinc関数 sinc(x)=sin(x)/x
+	 * @param {Number} x
+	 * @return {Number}
+	 */
+	static sinc(x) {
+		if(x === 0.0) {
+			return 1.0;
+		}
+		return Math.sin(x) / x;
+	}
+
 	/**
 	 * 離散フーリエ変換
 	 * @param {Array} real 実数部
@@ -426,24 +480,9 @@ export default class Signal {
 				return fg;
 			}
 		}
-		let is_real_number = true;
-		{
-			{
-				for(let i = 0; i < x1_imag.length; i++) {
-					if(x1_imag[i] !== 0) {
-						is_real_number = false;
-						break;
-					}
-				}
-			}
-			if(is_real_number) {
-				for(let i = 0; i < x2_imag.length; i++) {
-					if(x2_imag[i] !== 0) {
-						is_real_number = false;
-						break;
-					}
-				}
-			}
+		let is_real_number = !Signal.isContainsZero(x1_imag);
+		if(is_real_number) {
+			is_real_number = !Signal.isContainsZero(x2_imag);
 		}
 		{
 			// まじめに計算する
@@ -454,6 +493,7 @@ export default class Signal {
 				imag[i] = 0;
 			}
 			if(is_real_number) {
+				// 実数部分のみの畳み込み積分
 				// スライドさせていく
 				// AAAA
 				//  BBBB
@@ -465,6 +505,7 @@ export default class Signal {
 				}
 			}
 			else {
+				// 実数部分と複素数部分の畳み込み積分
 				for(let y = 0; y < x2_real.length; y++) {
 					for(let x = 0; x < x1_real.length; x++) {
 						real[y + x] += x1_real[x] * x2_real[y] - x1_imag[x] * x2_imag[y];
@@ -559,29 +600,14 @@ export default class Signal {
 				}
 			}
 		}
-		let is_real_number = true;
-		{
-			{
-				for(let i = 0; i < x1_imag.length; i++) {
-					if(x1_imag[i] !== 0) {
-						is_real_number = false;
-						break;
-					}
-				}
-			}
-			if(is_real_number) {
-				for(let i = 0; i < x2_imag.length; i++) {
-					if(x2_imag[i] !== 0) {
-						is_real_number = false;
-						break;
-					}
-				}
-			}
+		let is_real_number = !Signal.isContainsZero(x1_imag);
+		if(is_real_number) {
+			is_real_number = !Signal.isContainsZero(x2_imag);
 		}
 		if(is_self) {
 			const size = x1_real.length;
 			const N2 = size * 2;
-			// 自己相関関数
+			// 実数の自己相関関数
 			if(is_real_number) {
 				const fg = new Array(size);
 				for(let m = 0; m < size; m++) {
@@ -591,7 +617,7 @@ export default class Signal {
 						fg[m] += x1_real[t] * x2_real[t + m];
 					}
 				}
-				// 半分の値は同一なので折り返す
+				// 半分の値は同一なので折り返して計算を省く
 				const real = new Array(N2 - 1);
 				const imag = new Array(N2 - 1);
 				for(let i = 0, j = size - 1 ; i < size; i++, j--) {
