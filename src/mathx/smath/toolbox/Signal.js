@@ -341,18 +341,6 @@ export default class Signal {
 	}
 
 	/**
-	 * sinc関数 sinc(x)=sin(x)/x
-	 * @param {Number} x
-	 * @return {Number}
-	 */
-	static sinc(x) {
-		if(x === 0.0) {
-			return 1.0;
-		}
-		return Math.sin(x) / x;
-	}
-
-	/**
 	 * 離散フーリエ変換
 	 * @param {Array} real 実数部
 	 * @param {Array} imag 虚数部
@@ -646,7 +634,126 @@ export default class Signal {
 		}
 	}
 
+	/**
+	 * 窓を作成する
+	 * @param {String} name 窓関数の名前
+	 * @param {Number} size 長さ
+	 * @param {boolean} isPeriodic true なら periodic, false なら symmetric
+	 * @returns {Array}
+	 */
+	static window(name, size, isPeriodic) {
+
+		const name_ = name.toLocaleLowerCase();
+		const size_ = size;
+		const window = new Array(size_);
+		
+		const sinc = function(x) {
+			return x === 0.0 ? 1.0 : Math.sin(x) / x;
+		};
+
+		const normalzie = function(y) {
+			if(isPeriodic) {
+				return (y / size_ * (Math.PI * 2.0));
+			}
+			else {
+				return (y / (size_ - 1) * (Math.PI * 2.0));
+			}
+		};
+
+		const setBlackmanWindow = function( alpha0, alpha1, alpha2, alpha3, alpha4) {
+			for(let i = 0; i < size_; i++) {
+				window[i]  = alpha0;
+				window[i] -= alpha1 * Math.cos(1.0 * normalzie(i));
+				window[i] += alpha2 * Math.cos(2.0 * normalzie(i));
+				window[i] -= alpha3 * Math.cos(3.0 * normalzie(i));
+				window[i] += alpha4 * Math.cos(4.0 * normalzie(i));
+			}
+		};
+
+		switch(name_) {
+			// rect 矩形窓(rectangular window)
+			case "rectangle":
+				setBlackmanWindow(1.0, 0.0, 0.0, 0.0, 0.0);
+				break;
+
+			// hann ハン窓・ハニング窓(hann/hanning window)
+			case "hann":
+				setBlackmanWindow(0.5, 0.5, 0.0, 0.0, 0.0);
+				break;
+
+			// hamming ハミング窓(hamming window)
+			case "hamming":
+				setBlackmanWindow(0.54, 0.46, 0.0, 0.0, 0.0);
+				break;
+
+			// blackman ブラックマン窓(Blackman window)
+			case "blackman":
+				setBlackmanWindow(0.42, 0.50, 0.08, 0.0, 0.0);
+				break;
+
+			// blackmanharris Blackman-Harris window
+			case "blackmanharris":
+				setBlackmanWindow(0.35875, 0.48829, 0.14128, 0.01168, 0);
+				break;
+
+			// blackmannuttall Blackman-Nuttall window
+			case "blackmannuttall":
+				setBlackmanWindow(0.3635819, 0.4891775, 0.1365995, 0.0106411, 0.0);
+				break;
+
+			// flattop Flat top window
+			case "flattop":
+				setBlackmanWindow(1.0, 1.93, 1.29, 0.388, 0.032);
+				break;
+
+			// lanczos Lanczos window
+			case "lanczos":
+				for(let i = 0; i < size_; i++) {
+					window[i]  = sinc(normalzie(i) - 1.0);
+				}
+				break;
+
+			// Half cycle sine window(MDCT窓)
+			case "sin":
+				for(let i = 0; i < size_; i++) {
+					window[i]  = Math.sin(normalzie(i) * 0.5);
+				}
+				break;
+
+			// Vorbis window(MDCT窓)
+			case "vorbis":
+				for(let i = 0; i < size_; i++) {
+					const x = Math.sin(normalzie(i) * 0.5);
+					window[i]  = Math.sin(Math.PI * 0.5 * x * x);
+				}
+				break;
+		}
+
+		return window;
+	}
+
+	/**
+	 * ハニング窓
+	 * @param {Number} size 長さ
+	 * @param {boolean} isPeriodic true なら periodic, false なら symmetric
+	 * @returns {Array}
+	 */
+	static hann(size, isPeriodic) {
+		return Signal.window("hann", size, isPeriodic);
+	}
+	
+	/**
+	 * ハミング窓を作成
+	 * @param {Number} size 長さ
+	 * @param {boolean} isPeriodic true なら periodic, false なら symmetric
+	 * @returns {Array}
+	 */
+	static hamming(size, isPeriodic) {
+		return Signal.window("hamming", size, isPeriodic);
+	}
+	
 }
+
 
 /*
 const A = [1,2,3,4,5];

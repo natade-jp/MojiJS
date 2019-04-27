@@ -494,6 +494,7 @@ export default class Matrix {
 		let is_check_string = false;
 		if(arguments.length === 1) {
 			const y = number;
+			// 行列型なら中身をディープコピーする
 			if(y instanceof Matrix) {
 				matrix_array = new Array(y.row_length);
 				for(let i = 0; i < y.row_length; i++) {
@@ -503,67 +504,81 @@ export default class Matrix {
 					}
 				}
 			}
+			// 複素数型なら1要素の行列
 			else if(y instanceof Complex) {
 				matrix_array = [[y]];
 			}
+			// 行列の場合は中身を解析していく
 			else if(y instanceof Array) {
 				matrix_array = [];
 				for(let row_count = 0; row_count < y.length; row_count++) {
-					const row = y[row_count];
 					// 毎行ごと調査
+					const row = y[row_count];
+					// 各行の要素が配列の場合は、配列内配列のため再度for文で調べていく
 					if(row instanceof Array) {
 						const rows_array = new Array(row.length);
+						// 1行を調査する
 						for(let col_count = 0; col_count < row.length; col_count++) {
 							const column = row[col_count];
+							// 1要素が複素数ならそのまま代入
 							if(column instanceof Complex) {
 								rows_array[col_count] = column;
 							}
+							// 1要素が行列なら、中身を抽出して代入
 							else if(column instanceof Matrix) {
 								if(!column.isScalar()) {
 									throw "Matrix in matrix";
 								}
 								rows_array[col_count] = column.scalar;
 							}
+							// それ以外の場合は、複素数クラスのコンストラクタに判断させる
 							else {
 								rows_array[col_count] = new Complex(column);
 							}
 						}
 						matrix_array[row_count] = rows_array;
 					}
+					// 1つの値のみ宣言の場合は、中の配列を行ベクトルとして定義する
 					else {
-						// 1行のみの宣言の場合は、中の配列を行ベクトルとして定義する
+						// 行ベクトルの初期化
 						if(row_count === 0) {
 							matrix_array[0] = new Array(y.length);
 						}
+						// 1要素が複素数ならそのまま代入
 						if(row instanceof Complex) {
 							matrix_array[0][row_count] = row;
 						}
+						// 1要素が行列なら、中身を抽出して代入
 						else if(row instanceof Matrix) {
 							if(!row.isScalar()) {
 								throw "Matrix in matrix";
 							}
 							matrix_array[0][row_count] = row.scalar;
 						}
+						// それ以外の場合は、複素数クラスのコンストラクタに判断させる
 						else {
 							matrix_array[0][row_count] = new Complex(row);
 						}
 					}
 				}
 			}
+			// 文字列の場合は、文字列解析を行う
 			else if(typeof y === "string" || y instanceof String) {
 				is_check_string = true;
 				matrix_array = ConstructorTool.toMatrixFromString(y);
 			}
+			// 文字列変換できる場合は返還後に、文字列解析を行う
 			else if(y instanceof Object && y.toString) {
 				is_check_string = true;
 				matrix_array = ConstructorTool.toMatrixFromString(y.toString());
 			}
+			// 単純なビルトインの数値など
 			else {
 				matrix_array = [[new Complex(y)]];
 			}
 		}
 		else {
-			throw "Many arguments : " + arguments.length;
+			throw "Matrix : Many arguments [" + arguments.length + "]";
 		}
 		if(is_check_string) {
 			// 文字列データの解析の場合、":" データが紛れていないかを確認する。
@@ -848,79 +863,70 @@ export default class Matrix {
 
 	/**
 	 * 列優先でベクトルに対して何か処理を行い、行列を作成します。
-	 * @param {Function} pre メイン処理を行う前の下準備
-	 * @param {Function} main メイン処理
-	 * @param {Function} post メイン処理完了後の処理（戻り値に設定した値をいれる）
+	 * @param {Function} array_function 複素数が入った配列に対して一律に行う処理
 	 * @returns {Matix}
 	 */
-	_column_oriented_1_dimensional_processing(pre, main, post) {
-		let y;
+	__column_oriented_1_dimensional_processing(array_function) {
 		if(this.isRow()) {
 			// 1行であれば、その1行に対して処理を行う
-			pre(this.matrix_array[0][0], 0, 0, this.column_length);
+			const row_array = new Array(this.row_length);
 			for(let col = 0; col < this.column_length; col++) {
-				main(this.matrix_array[0][col], 0, col);
+				row_array[col] = this.matrix_array[0][col];
 			}
-			y = post(this.matrix_array[0][this.column_length - 1], 0, this.column_length - 1);
-			return new Matrix(y);
+			return new Matrix(array_function(row_array));
 		}
 		else {
+			const y = new Matrix(0);
+			y._resize(1, this.column_length);
 			// 1列、行列であれば、列ごとに処理を行う
-			const y = [];
-			y[0] = new Array(this.column_length);
 			for(let col = 0; col < this.column_length; col++) {
-				pre(this.matrix_array[0][col], 0, col, this.row_length);
+				const col_array = new Array(this.row_length);
 				for(let row = 0; row < this.row_length; row++) {
-					main(this.matrix_array[row][col], row, col);
+					col_array[row] = this.matrix_array[row][col];
 				}
-				// 結果が列であれば、列を代入、1つの値のみであれば、その値のみ代入する。
-				const y_col = post(this.matrix_array[this.row_length - 1][col], this.row_length - 1, col);
-				if(y_col instanceof Array) {
-					for(let row = 0; row < y_col.row_length; row++) {
-						y[row][col] = y_col[row];
-					}
-				}
-				else {
-					y[0][col] = y_col;
+				const col_output = array_function(col_array);
+				y._resize(Math.max(y.row_length, col_output.length), y.column_length);
+				for(let row = 0; row < col_output.length; row++) {
+					y.matrix_array[row][col] = col_output[row];
 				}
 			}
-			return new Matrix(y);
+			return y;
 		}
 	}
 
 	/**
 	 * 行列に対して、行と列に同一の処理を行い、行列を作成します。
-	 * @param {Function} pre メイン処理を行う前の下準備
-	 * @param {Function} main メイン処理
-	 * @param {Function} post メイン処理完了後の処理（戻り値に設定した値をいれる）
+	 * @param {Function} array_function 複素数が入った配列に対して一律に行う処理
 	 * @returns {Matix}
 	 */
-	_column_oriented_2_dimensional_processing(pre, main, post) {
-		const y = new Array(this.row_length);
-		{
-			// 行ごとに処理を行う
-			for(let row = 0; row < this.row_length; row++) {
-				pre(this.matrix_array[row][0], row, 0, this.column_length);
-				for(let col = 0; col < this.column_length; col++) {
-					main(this.matrix_array[row][col], row, col);
-				}
-				y[row] = post(this.matrix_array[row][this.column_length - 1], 0, this.column_length - 1);
+	__column_oriented_2_dimensional_processing(array_function) {
+		const y = new Matrix(0);
+		// 行ごとに処理を行う
+		y._resize(this.row_length, 1);
+		for(let row = 0; row < this.row_length; row++) {
+			const row_array = new Array(this.row_length);
+			for(let col = 0; col < this.column_length; col++) {
+				row_array[col] = this.matrix_array[0][col];
+			}
+			const row_output = array_function(row_array);
+			y._resize(y.row_length, Math.max(y.column_length, row_output.length));
+			for(let col = 0; col < row_output.length; col++) {
+				y.matrix_array[row][col] = row_output[col];
 			}
 		}
-		{
-			// 列ごとに処理を行う
-			for(let col = 0; col < y[0].length; col++) {
-				pre(y[0][col], 0, col, y[0].length);
-				for(let row = 0; row < y.length; row++) {
-					main(y[row][col], row, col);
-				}
-				const new_col = post(y[y.length - 1][col], y.length - 1, col);
-				for(let row = 0; row < new_col.length; row++) {
-					y[row][col] = new_col[row];
-				}
+		// 列ごとに処理を行う
+		for(let col = 0; col < y.column_length; col++) {
+			const col_array = new Array(y.row_length);
+			for(let row = 0; row < y.row_length; row++) {
+				col_array[row] = y.matrix_array[row][col];
+			}
+			const col_output = array_function(col_array);
+			y._resize(Math.max(y.row_length, col_output.length), y.column_length);
+			for(let row = 0; row < col_output.length; row++) {
+				y.matrix_array[row][col] = col_output[row];
 			}
 		}
-		return new Matrix(y);
+		return y;
 	}
 
 	/**
@@ -1463,19 +1469,16 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	max(epsilon) {
-		let x;
-		const pre = function(number) {
-			x = number;
-		};
-		const main = function(number) {
-			if(x.compareTo(number, epsilon) > 0) {
-				x = number;
+		const main = function(data) {
+			let x = data[0];
+			for(let i = 1; i < data.length; i++) {
+				if(x.compareTo(data[i], epsilon) > 0) {
+					x = data[i];
+				}
 			}
+			return [x];
 		};
-		const post = function() {
-			return x;
-		};
-		return this._column_oriented_1_dimensional_processing(pre, main, post);
+		return this.__column_oriented_1_dimensional_processing(main);
 	}
 	
 	/**
@@ -1484,19 +1487,16 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	min(epsilon) {
-		let x;
-		const pre = function(number) {
-			x = number;
-		};
-		const main = function(number) {
-			if(x.compareTo(number, epsilon) < 0) {
-				x = number;
+		const main = function(data) {
+			let x = data[0];
+			for(let i = 1; i < data.length; i++) {
+				if(x.compareTo(data[i], epsilon) < 0) {
+					x = data[i];
+				}
 			}
+			return [x];
 		};
-		const post = function() {
-			return x;
-		};
-		return this._column_oriented_1_dimensional_processing(pre, main, post);
+		return this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
@@ -3362,23 +3362,19 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	sum() {
-		let sum;
-		let delta;
-		// カハンの加算アルゴリズム
-		const pre = function() {
-			sum = Complex.ZERO;
-			delta = Complex.ZERO;
+		const main = function(data) {
+			// カハンの加算アルゴリズム
+			let sum = Complex.ZERO;
+			let delta = Complex.ZERO;
+			for(let i = 0; i < data.length; i++) {
+				const new_number = data[i].add(delta);
+				const new_sum = sum.add(new_number);
+				delta = new_sum.sub(sum).sub(new_number);
+				sum = new_sum;
+			}
+			return [sum];
 		};
-		const main = function(number) {
-			const new_number = number.add(delta);
-			const new_sum = sum.add(new_number);
-			delta = new_sum.sub(sum).sub(new_number);
-			sum = new_sum;
-		};
-		const post = function() {
-			return sum;
-		};
-		return this._column_oriented_1_dimensional_processing(pre, main, post);
+		return this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3386,25 +3382,19 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	mean() {
-		let sum;
-		let delta;
-		let count;
-		const pre = function() {
-			sum = Complex.ZERO;
-			delta = Complex.ZERO;
-			count = 0;
+		const main = function(data) {
+			// カハンの加算アルゴリズム
+			let sum = Complex.ZERO;
+			let delta = Complex.ZERO;
+			for(let i = 0; i < data.length; i++) {
+				const new_number = data[i].add(delta);
+				const new_sum = sum.add(new_number);
+				delta = new_sum.sub(sum).sub(new_number);
+				sum = new_sum;
+			}
+			return [sum.div(data.length)];
 		};
-		const main = function(number) {
-			const new_number = number.add(delta);
-			const new_sum = sum.add(new_number);
-			delta = new_sum.sub(sum).sub(new_number);
-			sum = new_sum;
-			count++;
-		};
-		const post = function() {
-			return sum.div(count);
-		};
-		return this._column_oriented_1_dimensional_processing(pre, main, post);
+		return this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3412,17 +3402,14 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	geomean() {
-		let x;
-		const pre = function() {
-			x = Number.ONE;
-		};
-		const main = function(number) {
-			x = x.mul(number);
-		};
-		const post = function() {
-			return x.sqrt();
-		};
-		return this._column_oriented_1_dimensional_processing(pre, main, post);
+		const main = function(data) {
+			let x = Complex.ONE;
+			for(let i = 0; i < data.length; i++) {
+				x = x.mul(data[i]);
+			}
+			return [x.sqrt()];
+		}
+		return this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3432,34 +3419,29 @@ export default class Matrix {
 	 */
 	var(cor) {
 		const M = this.mean();
-		let x;
 		let col = 0;
-		let mean;
-		let count;
-		let correction = arguments.length === 0 ? 0 : Matrix.createConstMatrix(cor).scalar.real;
-		const pre = function() {
-			x = Complex.ZERO;
-			count = 0;
+		const correction = arguments.length === 0 ? 0 : Matrix.createConstMatrix(cor).scalar.real;
+		const main = function(data) {
+			let mean;
 			if(M.isScalar()) {
 				mean = M.scalar;
 			}
 			else {
-				mean = M.getComplex(col);
+				mean = M.getComplex(col++);
+			}
+			let x = Complex.ZERO;
+			for(let i = 0; i < data.length; i++) {
+				const a = data[i].sub(mean);
+				x = x.add(a.dot(a));
+			}
+			if(data.length === 1) {
+				return [x.div(data.length)];
+			}
+			else {
+				return [x.div(data.length - 1 + correction)];
 			}
 		};
-		const main = function(number) {
-			const a = number.sub(mean);
-			x = x.add(a.dot(a));
-			count++;
-		};
-		const post = function() {
-			col++;
-			if(count === 1) {
-				correction = 1;
-			}
-			return x.div(count - 1 + correction);
-		};
-		return this._column_oriented_1_dimensional_processing(pre, main, post);
+		return this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3536,32 +3518,35 @@ export default class Matrix {
 	// ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆
 
 	/**
+	 * 各項に sinc()
+	 * @returns {Matrix}
+	 */
+	sinc() {
+		return this.cloneMatrixDoEachCalculation(function(num) {
+			return num.sinc();
+		});
+	}
+
+	/**
 	 * A.fft() 離散フーリエ変換
 	 * @returns {Matix}
 	 */
 	fft(is_2_dimensions = false) {
-		let real;
-		let imag;
-		let i;
-		const pre = function(number, row, col, length) {
-			real = new Array(length);
-			imag = new Array(length);
-			i = 0;
-		};
-		const main = function(number) {
-			real[i] = number.real;
-			imag[i] = number.imag;
-			i++;
-		};
-		const post = function() {
+		const main = function(data) {
+			const real = new Array(data.length);
+			const imag = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				real[i] = data[i].real;
+				imag[i] = data[i].imag;
+			}
 			const result = Signal.fft(real, imag);
-			const y = new Array(i);
-			for(let j = 0; j < i; j++) {
-				y[j] = new Complex([result.real[j], result.imag[j]]);
+			const y = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				y[i] = new Complex([result.real[i], result.imag[i]]);
 			}
 			return y;
 		};
-		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this.__column_oriented_2_dimensional_processing(main) : this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3569,28 +3554,21 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	ifft(is_2_dimensions = false) {
-		let real;
-		let imag;
-		let i;
-		const pre = function(number, row, col, length) {
-			real = new Array(length);
-			imag = new Array(length);
-			i = 0;
-		};
-		const main = function(number) {
-			real[i] = number.real;
-			imag[i] = number.imag;
-			i++;
-		};
-		const post = function() {
+		const main = function(data) {
+			const real = new Array(data.length);
+			const imag = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				real[i] = data[i].real;
+				imag[i] = data[i].imag;
+			}
 			const result = Signal.ifft(real, imag);
-			const y = new Array(i);
-			for(let j = 0; j < i; j++) {
-				y[j] = new Complex([result.real[j], result.imag[j]]);
+			const y = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				y[i] = new Complex([result.real[i], result.imag[i]]);
 			}
 			return y;
 		};
-		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this.__column_oriented_2_dimensional_processing(main) : this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3598,28 +3576,21 @@ export default class Matrix {
 	 * @returns {Matix}
 	 */
 	powerfft() {
-		let real;
-		let imag;
-		let i;
-		const pre = function(number, row, col, length) {
-			real = new Array(length);
-			imag = new Array(length);
-			i = 0;
-		};
-		const main = function(number) {
-			real[i] = number.real;
-			imag[i] = number.imag;
-			i++;
-		};
-		const post = function() {
+		const main = function(data) {
+			const real = new Array(data.length);
+			const imag = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				real[i] = data[i].real;
+				imag[i] = data[i].imag;
+			}
 			const result = Signal.powerfft(real, imag);
-			const y = new Array(i);
-			for(let j = 0; j < i; j++) {
-				y[j] = new Complex(result[j]);
+			const y = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				y[i] = new Complex([result.real[i], result.imag[i]]);
 			}
 			return y;
 		};
-		return this._column_oriented_1_dimensional_processing(pre, main, post);
+		return this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3630,25 +3601,19 @@ export default class Matrix {
 		if(this.isComplex()) {
 			throw "dct don't support complex numbers.";
 		}
-		let real;
-		let i;
-		const pre = function(number, row, col, length) {
-			real = new Array(length);
-			i = 0;
-		};
-		const main = function(number) {
-			real[i] = number.real;
-			i++;
-		};
-		const post = function() {
+		const main = function(data) {
+			const real = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				real[i] = data[i].real;
+			}
 			const result = Signal.dct(real);
-			const y = new Array(i);
-			for(let j = 0; j < i; j++) {
-				y[j] = new Complex(result[j]);
+			const y = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				y[i] = new Complex(result[i]);
 			}
 			return y;
 		};
-		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this.__column_oriented_2_dimensional_processing(main) : this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3659,25 +3624,19 @@ export default class Matrix {
 		if(this.isComplex()) {
 			throw "idct don't support complex numbers.";
 		}
-		let real;
-		let i;
-		const pre = function(number, row, col, length) {
-			real = new Array(length);
-			i = 0;
-		};
-		const main = function(number) {
-			real[i] = number.real;
-			i++;
-		};
-		const post = function() {
+		const main = function(data) {
+			const real = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				real[i] = data[i].real;
+			}
 			const result = Signal.idct(real);
-			const y = new Array(i);
-			for(let j = 0; j < i; j++) {
-				y[j] = new Complex(result[j]);
+			const y = new Array(data.length);
+			for(let i = 0; i < data.length; i++) {
+				y[i] = new Complex(result[i]);
 			}
 			return y;
 		};
-		return is_2_dimensions ? this._column_oriented_2_dimensional_processing(pre, main, post) : this._column_oriented_1_dimensional_processing(pre, main, post);
+		return is_2_dimensions ? this.__column_oriented_2_dimensional_processing(main) : this.__column_oriented_1_dimensional_processing(main);
 	}
 
 	/**
@@ -3810,5 +3769,39 @@ export default class Matrix {
 		const M = new Matrix([m]);
 		return M1.isRow() ? M : M.transpose();
 	}
+
+	/**
+	 * 窓を作成する
+	 * @param {String} name 窓関数の名前
+	 * @param {Object} size 長さ
+	 * @param {boolean} isPeriodic true なら periodic, false なら symmetric
+	 * @returns {Matrix} 列ベクトル
+	 */
+	static window(name, size, isPeriodic) {
+		const size_ = Matrix.createConstMatrix(size).scalar.real;
+		const y = Signal.window(name, size_, isPeriodic);
+		return (new Matrix(y)).transpose();
+	}
+
+	/**
+	 * ハニング窓
+	 * @param {Number} size 長さ
+	 * @param {boolean} isPeriodic true なら periodic, false なら symmetric
+	 * @returns {Matrix} 列ベクトル
+	 */
+	static hann(size, isPeriodic) {
+		return Matrix.window("hann", size, isPeriodic);
+	}
+	
+	/**
+	 * ハミング窓を作成
+	 * @param {Number} size 長さ
+	 * @param {boolean} isPeriodic true なら periodic, false なら symmetric
+	 * @returns {Matrix} 列ベクトル
+	 */
+	static hamming(size, isPeriodic) {
+		return Matrix.window("hamming", size, isPeriodic);
+	}
+	
 
 }

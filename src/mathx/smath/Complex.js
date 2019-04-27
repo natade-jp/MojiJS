@@ -741,6 +741,24 @@ export default class Complex {
 	}
 	
 	// ----------------------
+	// 信号処理系
+	// ----------------------
+	
+	/**
+	 * A.sinc() = sinc(A)
+	 * @returns {Complex}
+	 */
+	sinc() {
+		if(this.isReal()) {
+			if(this._re === 0) {
+				return(new Complex(1.0));
+			}
+			return new Complex(Math.sin(this._re) / this._re);
+		}
+		return new Complex( this.sin().div(this) );
+	}
+
+	// ----------------------
 	// 丸め
 	// ----------------------
 	
