@@ -1,0 +1,1 @@
+﻿import SenkoMath from "../../build/SenkoMath.module.mjs";export default SenkoMath;

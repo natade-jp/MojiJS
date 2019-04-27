@@ -1,0 +1,1 @@
+﻿import SenkoText from "../../build/SenkoText.module.mjs";export default SenkoText;

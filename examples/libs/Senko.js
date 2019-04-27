@@ -1,1 +1,0 @@
-﻿import Senko from "../../build/Senko.module.js";export default Senko;

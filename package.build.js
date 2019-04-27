@@ -55,13 +55,13 @@ exec("npm run rollup");
 // 先頭に著作権表記をするターゲット
 const target_file = [
 	"./build/Senko.umd.js",
-	"./build/Senko.module.js",
+	"./build/Senko.module.mjs",
 	"./build/SenkoText.umd.js",
-	"./build/SenkoText.module.js",
+	"./build/SenkoText.module.mjs",
 	"./build/SenkoS3.umd.js",
-	"./build/SenkoS3.module.js",
+	"./build/SenkoS3.module.mjs",
 	"./build/SenkoMath.umd.js",
-	"./build/SenkoMath.module.js"
+	"./build/SenkoMath.module.mjs"
 ];
 
 // ヘッダ追加
@@ -71,20 +71,20 @@ for(const key in target_file) {
 
 // サンプルファイルはbuild内のデータと関連付ける
 saveTextFile(
-	"./examples/libs/Senko.js",
-	"import Senko from \"../../build/Senko.module.js\";export default Senko;"
+	"./examples/libs/Senko.mjs",
+	"import Senko from \"../../build/Senko.module.mjs\";export default Senko;"
 );
 saveTextFile(
-	"./examples/libs/SenkoText.js",
-	"import SenkoText from \"../../build/SenkoText.module.js\";export default SenkoText;"
+	"./examples/libs/SenkoText.mjs",
+	"import SenkoText from \"../../build/SenkoText.module.mjs\";export default SenkoText;"
 );
 saveTextFile(
-	"./examples/libs/SenkoS3.js",
-	"import SenkoS3 from \"../../build/SenkoS3.module.js\";export default SenkoS3;"
+	"./examples/libs/SenkoS3.mjs",
+	"import SenkoS3 from \"../../build/SenkoS3.module.mjs\";export default SenkoS3;"
 );
 saveTextFile(
-	"./examples/libs/SenkoMath.js",
-	"import SenkoMath from \"../../build/SenkoMath.module.js\";export default SenkoMath;"
+	"./examples/libs/SenkoMath.mjs",
+	"import SenkoMath from \"../../build/SenkoMath.module.mjs\";export default SenkoMath;"
 );
 
 // その他のファイルをコピー

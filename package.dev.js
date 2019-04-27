@@ -11,20 +11,20 @@ const saveTextFile = function(filename, text) {
 
 // サンプルファイルは直接関連付ける
 saveTextFile(
-	"./examples/libs/Senko.js",
-	"import Senko from \"../../src/Senko.js\";export default Senko;"
+	"./examples/libs/Senko.mjs",
+	"import Senko from \"../../src/Senko.mjs\";export default Senko;"
 );
 saveTextFile(
-	"./examples/libs/SenkoText.js",
-	"import SenkoText from \"../../src/SenkoText.js\";export default SenkoText;"
+	"./examples/libs/SenkoText.mjs",
+	"import SenkoText from \"../../src/SenkoText.mjs\";export default SenkoText;"
 );
 saveTextFile(
-	"./examples/libs/SenkoS3.js",
-	"import SenkoS3 from \"../../src/SenkoS3.js\";export default SenkoS3;"
+	"./examples/libs/SenkoS3.mjs",
+	"import SenkoS3 from \"../../src/SenkoS3.mjs\";export default SenkoS3;"
 );
 saveTextFile(
-	"./examples/libs/SenkoMath.js",
-	"import SenkoMath from \"../../src/SenkoMath.js\";export default SenkoMath;"
+	"./examples/libs/SenkoMath.mjs",
+	"import SenkoMath from \"../../src/SenkoMath.mjs\";export default SenkoMath;"
 );
 
 

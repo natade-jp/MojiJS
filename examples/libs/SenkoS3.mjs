@@ -1,0 +1,1 @@
+﻿import SenkoS3 from "../../build/SenkoS3.module.mjs";export default SenkoS3;
