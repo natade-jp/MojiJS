@@ -27,16 +27,16 @@ const main = function() {
 	Log.println(s2.add(s2));
 	
 	Log.println("subtract");
-	Log.println(s1.subtract(s1));
-	Log.println(s1.subtract(s2));
-	Log.println(s2.subtract(s1));
-	Log.println(s2.subtract(s2));
+	Log.println(s1.sub(s1));
+	Log.println(s1.sub(s2));
+	Log.println(s2.sub(s1));
+	Log.println(s2.sub(s2));
 	
 	Log.println("multiply");
-	Log.println(s1.multiply(s2));
+	Log.println(s1.mul(s2));
 	
 	Log.println("divide");
-	Log.println(s1.divide(s2));
+	Log.println(s1.div(s2));
 	
 	s1 = new BigInteger("-1234567890123456789012345678901234567890");
 	s2 = new BigInteger("123456789012345678901");
@@ -45,10 +45,10 @@ const main = function() {
 	Log.println(s1.divideAndRemainder(s2)[0] + " ... " + s1.divideAndRemainder(s2)[1]);
 	
 	Log.println("remainder");
-	Log.println(s1.divide(s2) + " ... " + s1.remainder(s2));
+	Log.println(s1.div(s2) + " ... " + s1.rem(s2));
 	
 	Log.println("mod");
-	Log.println(s1.divide(s2) + " ... " + s1.mod(s2));
+	Log.println(s1.div(s2) + " ... " + s1.mod(s2));
 	
 	Log.println("////////////////////////////////");
 	

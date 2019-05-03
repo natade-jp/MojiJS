@@ -10,15 +10,160 @@
 
 import Random from "./Random.mjs";
 
+class IntegerTool {
+
+	static string_to_binary_number(text, radix) {
+		// 下の変換をすることで、2進数での変換時に内部のforの繰り返す回数が減る
+		// v0.03 出来る限りまとめてn進数変換する
+		const max_num = 0x3FFFFFFF;
+		const keta = Math.floor( Math.log(max_num) / Math.log(radix) );
+		const calcradix = Math.round(Math.pow(radix, keta));
+		let x = [];
+		const y = [];
+		const len = Math.ceil(text.length / keta);
+		let offset = text.length;
+		for(let i = 0; i < len; i++ ) {
+			offset -= keta;
+			if(offset >= 0) {
+				x[i] = parseInt(text.substring(offset, offset + keta), radix);
+			}
+			else {
+				x[i] = parseInt(text.substring(0, offset + keta), radix);
+			}
+		}
+		radix = calcradix;
+		// v0.03ここまで
+		// 2で割っていくアルゴリズムで2進数に変換する
+		while(x.length !==  0) {
+			// 2で割っていく
+			// 隣の桁でたcarryはradix進数をかけて桁上げしてる
+			let carry = 0;
+			for(let i = x.length - 1; i >= 0; i--) {
+				const a = x[i] + carry * radix;
+				x[i]  = a >>> 1;
+				carry = a & 1;
+			}
+			// 1余るかどうかをテストする
+			y[y.length] = carry;
+			// xが0になっている部分は削除していく
+			if(x[x.length - 1] === 0) {
+				x.pop();
+			}
+		}
+		// メモリ節約のため1つの変数（16ビット）に収めるだけ収めていく
+		x = [];
+		for(let i = 0; i < y.length; i++) {
+			x[i >>> 4] |= y[i] << (i & 0xF);
+		}
+		return x;
+	}
+
+	static number_to_binary_number(x) {
+		if(x > 0xFFFFFFFF) {
+			return IntegerTool.string_to_binary_number(x.toFixed(), 10);
+		}
+		const y = [];
+		while(x !==  0) {
+			y[y.length] = x & 1;
+			x >>>= 1;
+		}
+		x = [];
+		for(let i = 0; i < y.length; i++) {
+			x[i >>> 4] |= y[i] << (i & 0xF);
+		}
+		return x;
+	}
+
+	static binary_number_to_string(binary, radix) {
+		const add = function(x1, x2, y) {
+			const size = x1.length;
+			let carry = 0;
+			for(let i = 0; i < size; i++) {
+				y[i] = x1[i] + ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
+				if(y[i] >= radix) {
+					carry = 1;
+					y[i] -= radix;
+				}
+				else {
+					carry = 0;
+				}
+			}
+			if(carry === 1) {
+				y[size] = 1;
+			}
+		};
+		const y = [0];
+		const t = [1];
+		for(let i = 0;i < binary.length;i++) {
+			for(let j = 0; j < 16; j++) {
+				if((binary[i] >>> j) & 1) {
+					add(t, y, y);
+				}
+				add(t, t, t);
+			}
+		}
+		return y;
+	}
+
+	static ToBigIntegerFromString(text, number) {
+		let x = text.replace(/\s/g, "").toLowerCase();
+		let buff = x.match(/^[-+]+/);
+
+		let element     = [];
+		let sign        = 1;
+
+		if(buff !== null) {
+			buff = buff[0];
+			x = x.substring(buff.length, x.length);
+			if(buff.indexOf("-") !== -1) {
+				sign = -1;
+			}
+		}
+		if(number) {
+			element = IntegerTool.string_to_binary_number(x, number);
+		}
+		else if(/^0x/.test(x)) {
+			element = IntegerTool.string_to_binary_number(x.substring(2, x.length), 16);
+		}
+		else if(/^0b/.test(x)) {
+			element = IntegerTool.string_to_binary_number(x.substring(2, x.length), 2);
+		}
+		else if(/^0/.test(x)) {
+			element = IntegerTool.string_to_binary_number(x.substring(1, x.length), 8);
+		}
+		else {
+			element = IntegerTool.string_to_binary_number(x, 10);
+		}
+		// "0"の場合がある為
+		if((element.length === 1)&&(element[0] === 0)) {
+			element = [];
+		}
+
+		return {
+			element : element,
+			sign : sign
+		};
+	}
+}
+
+
 // 内部では1変数内の中の16ビットごとに管理
 // 2変数で16ビット*16ビットで32ビットを表す
+// this.element	...	16ビットごとに管理
+// this.sign	...	負なら-1、正なら1、ゼロなら0
+//
+// 本クラスはイミュータブルです。
+// 内部の「_」から始まるメソッドは内部計算用で非公開です。またミュータブルです。
 
 export default class BigInteger {
 
+	/**
+	 * 多倍長整数演算クラス (immutable)
+	 */
 	constructor() {
 		this.element     = [];
 		this.sign        = 0;
-		if((arguments.length === 2) && (typeof Random !== "undefined") && (arguments[1] instanceof Random)) {
+		if((arguments.length === 2) && (arguments[1] instanceof Random)) {
 			this.sign = 1;
 			const len = arguments[0];
 			const random = arguments[1];
@@ -74,37 +219,26 @@ export default class BigInteger {
 					this.sign = -1;
 					x = -x;
 				}
-				this.element = this._number_to_binary_number(x);
+				this.element = IntegerTool.number_to_binary_number(x);
 			}
 			else if((typeof obj === "string")||(obj instanceof String)) {
-				let x = arguments[0].replace(/\s/g, "").toLowerCase();
-				let buff = x.match(/^[-+]+/);
-				if(buff !==  null) {
-					buff = buff[0];
-					x = x.substring(buff.length, x.length);
-					if(buff.indexOf("-") !==  -1) {
-						this.sign = -1;
-					}
-				}
-				if(arguments.length === 2) {
-					this.element = this._string_to_binary_number(x, arguments[1]);
-				}
-				else if(/^0x/.test(x)) {
-					this.element = this._string_to_binary_number(x.substring(2, x.length), 16);
-				}
-				else if(/^0b/.test(x)) {
-					this.element = this._string_to_binary_number(x.substring(2, x.length), 2);
-				}
-				else if(/^0/.test(x)) {
-					this.element = this._string_to_binary_number(x.substring(1, x.length), 8);
+				let x = null;
+				if(arguments.length === 1) {
+					x = IntegerTool.ToBigIntegerFromString(obj);
 				}
 				else {
-					this.element = this._string_to_binary_number(x, 10);
+					x = IntegerTool.ToBigIntegerFromString(obj, arguments[1]);
 				}
-				// "0"の場合がある為
-				if((this.element.length === 1)&&(this.element[0] === 0)) {
-					this.element = [];
-				}
+				this.element = x.element;
+				this.sign = x.sign;
+			}
+			else if(obj instanceof Object && obj.toString) {
+				const x = IntegerTool.ToBigIntegerFromString(obj.toString());
+				this.element = x.element;
+				this.sign = x.sign;
+			}
+			else {
+				throw "BigInteger Unsupported argument " + obj;
 			}
 		}
 	}
@@ -148,7 +282,7 @@ export default class BigInteger {
 		}
 		zeros = zeros.join("");
 		// v0.03ここまで
-		const x = this._binary_number_to_string(this.element, calcradix);
+		const x = IntegerTool.binary_number_to_string(this.element, calcradix);
 		const y = [];
 		let z = "";
 		if(this.signum() < 0) {
@@ -224,6 +358,18 @@ export default class BigInteger {
 		y.element = this.element.slice(0);
 		y.sign    = this.sign;
 		return y;
+	}
+
+	isNegative() {
+		return this.sign < 0;
+	}
+
+	isZero() {
+		return this.sign === 0;
+	}
+	
+	isPositive() {
+		return this.sign > 0;
 	}
 
 	getLowestSetBit() {
@@ -416,99 +562,6 @@ export default class BigInteger {
 
 	andNot(val) {
 		return(this.clone()._andNot(val));
-	}
-
-	_number_to_binary_number(x) {
-		if(x > 0xFFFFFFFF) {
-			return(this._string_to_binary_number(x.toFixed(), 10));
-		}
-		const y = [];
-		while(x !==  0) {
-			y[y.length] = x & 1;
-			x >>>= 1;
-		}
-		x = [];
-		for(let i = 0; i < y.length; i++) {
-			x[i >>> 4] |= y[i] << (i & 0xF);
-		}
-		return x;
-	}
-
-	_string_to_binary_number(text, radix) {
-		// 下の変換をすることで、2進数での変換時に内部のforの繰り返す回数が減る
-		// v0.03 出来る限りまとめてn進数変換する
-		const max_num = 0x3FFFFFFF;
-		const keta = Math.floor( Math.log(max_num) / Math.log(radix) );
-		const calcradix = Math.round(Math.pow(radix, keta));
-		let x = [];
-		const y = [];
-		const len = Math.ceil(text.length / keta);
-		let offset = text.length;
-		for(let i = 0; i < len; i++ ) {
-			offset -= keta;
-			if(offset >= 0) {
-				x[i] = parseInt(text.substring(offset, offset + keta), radix);
-			}
-			else {
-				x[i] = parseInt(text.substring(0, offset + keta), radix);
-			}
-		}
-		radix = calcradix;
-		// v0.03ここまで
-		// 2で割っていくアルゴリズムで2進数に変換する
-		while(x.length !==  0) {
-			// 2で割っていく
-			// 隣の桁でたcarryはradix進数をかけて桁上げしてる
-			let carry = 0;
-			for(let i = x.length - 1; i >= 0; i--) {
-				const a = x[i] + carry * radix;
-				x[i]  = a >>> 1;
-				carry = a & 1;
-			}
-			// 1余るかどうかをテストする
-			y[y.length] = carry;
-			// xが0になっている部分は削除していく
-			if(x[x.length - 1] === 0) {
-				x.pop();
-			}
-		}
-		// メモリ節約のため1つの変数（16ビット）に収めるだけ収めていく
-		x = [];
-		for(let i = 0; i < y.length; i++) {
-			x[i >>> 4] |= y[i] << (i & 0xF);
-		}
-		return x;
-	}
-
-	_binary_number_to_string(binary, radix) {
-		const add = function(x1, x2, y) {
-			const size = x1.length;
-			let carry = 0;
-			for(let i = 0; i < size; i++) {
-				y[i] = x1[i] + ((x2.length >= (i + 1)) ? x2[i] : 0) + carry;
-				if(y[i] >= radix) {
-					carry = 1;
-					y[i] -= radix;
-				}
-				else {
-					carry = 0;
-				}
-			}
-			if(carry === 1) {
-				y[size] = 1;
-			}
-		};
-		const y = [0];
-		const t = [1];
-		for(let i = 0;i < binary.length;i++) {
-			for(let j = 0; j < 16; j++) {
-				if((binary[i] >>> j) & 1) {
-					add(t, y, y);
-				}
-				add(t, t, t);
-			}
-		}
-		return y;
 	}
 
 	_memory_allocation(n) {
@@ -831,6 +884,10 @@ export default class BigInteger {
 		return this.clone()._subtract(val);
 	}
 
+	sub(val) {
+		return this.subtract(val);
+	}
+
 	_multiply(val) {
 		const x = this.multiply(val);
 		this.element = x.element;
@@ -897,6 +954,10 @@ export default class BigInteger {
 		return out;
 	}
 
+	mul(val) {
+		return this.multiply(val);
+	}
+
 	_divideAndRemainder(val) {
 		if(!(val instanceof BigInteger)) {
 			val = new BigInteger(val);
@@ -954,12 +1015,20 @@ export default class BigInteger {
 		return this.clone()._divide(val);
 	}
 
+	div(val) {
+		return this.divide(val);
+	}
+
 	_remainder(val) {
 		return this._divideAndRemainder(val)[1];
 	}
 
 	remainder(val) {
 		return this.clone()._remainder(val);
+	}
+
+	rem(val) {
+		return this.remainder(val);
 	}
 
 	_mod(val) {

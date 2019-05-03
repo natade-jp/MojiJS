@@ -507,6 +507,10 @@ export default class BigDecimal {
 		}
 	}
 
+	sub(...args) {
+		return BigDecimal.subtract.apply(this, args);
+	}
+
 	multiply(multiplicand, mc) {
 		if(arguments.length === 1) {
 			mc = MathContext.UNLIMITED;
@@ -523,6 +527,10 @@ export default class BigDecimal {
 		// 0.1 * 0.01 = 0.001
 		const newscale	= src._scale + tgt._scale;
 		return new BigDecimal(newinteger, newscale, mc);
+	}
+
+	mul(...args) {
+		return BigDecimal.multiply.apply(this, args);
 	}
 
 	divideToIntegralValue(divisor, mc) {
@@ -633,6 +641,17 @@ export default class BigDecimal {
 		return output;
 	}
 
+	rem(...args) {
+		return BigDecimal.divideAndRemainder.apply(this, args)[1];
+	}
+
+	mod(...args) {
+		const x = BigDecimal.divideAndRemainder.apply(this, args)[1];
+		if(x.compareTo(BigDecimal.ZERO) < 0) {
+			return x.add(args[0]);
+		}
+	}
+
 	divide(divisor, p1, p2) {
 		if(!(divisor instanceof BigDecimal)) {
 			throw "not BigDecimal";
@@ -723,6 +742,10 @@ export default class BigDecimal {
 		}
 		all_result = all_result.round(mc);
 		return all_result;
+	}
+
+	div(...args) {
+		return BigDecimal.divide.apply(this, args);
 	}
 
 	toBigInteger() {
