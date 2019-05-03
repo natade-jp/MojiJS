@@ -15,7 +15,7 @@
 	"license": "MIT",
 	"author": "natade",
 	"main": "./build/Senko.umd.js",
-	"module": "./build/Senko.module.js",
+	"module": "./build/Senko.module.mjs",
 	"repository": {
 		"type" : "git",
 		"url" : "https://github.com/natade-jp/SenkoJS"
