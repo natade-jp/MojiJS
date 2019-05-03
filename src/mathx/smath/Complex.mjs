@@ -15,8 +15,8 @@ const random_class = new Random();
 
 /**
  * 文字列から複素数を解析する
- * @param {String} text 解析したい文字列
- * @param {Complex} that 代入先 
+ * @param {String} text - 解析したい文字列
+ * @param {Complex} that - 代入先 
  * @returns
  */
 const ToComplexFromString = function(text, that) {
@@ -58,7 +58,7 @@ export default class Complex {
 	/**
 	 * 複素数 (immutable)
 	 * 行列で使うためイミュータブルは必ず守ること。
-	 * @param {Object} number 複素数データ( "1 + j", [1 , 1] など)
+	 * @param {Object} number - 複素数データ( "1 + j", [1 , 1] など)
 	 */
 	constructor(number) {
 		if(arguments.length === 1) {
@@ -82,7 +82,7 @@ export default class Complex {
 				ToComplexFromString(obj.toString(), this);
 			}
 			else {
-				throw "Complex Unsupported argument";
+				throw "Complex Unsupported argument " + obj;
 			}
 		}
 		else {
@@ -160,7 +160,7 @@ export default class Complex {
 	/**
 	 * A.equals(B)
 	 * @param {Object} number
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Boolean} A === B
 	 */
 	equals(number, epsilon) {
@@ -336,7 +336,7 @@ export default class Complex {
 
 	/**
 	 * A.mod(B) = A mod B (複素数での計算はできません)
-	 * @param {Object} number 複素数を含まない数値 
+	 * @param {Object} number - 複素数を含まない数値 
 	 * @returns {Complex}
 	 */
 	mod(number) {
@@ -385,7 +385,7 @@ export default class Complex {
 	/**
 	 * A.max(B) = max([A, B])
 	 * @param {Object} number
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Complex}
 	 */
 	max(number, epsilon) {
@@ -401,7 +401,7 @@ export default class Complex {
 	/**
 	 * A.min(B) = min([A, B])
 	 * @param {Object} number
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Complex}
 	 */
 	min(number, epsilon) {
@@ -418,7 +418,7 @@ export default class Complex {
 	 * A.compareTo(B) 今の値Aと、指定した値Bとを比較する
 	 * 戻り値は、IF文で利用できるように、非Complexオブジェクトとなる。
 	 * @param {Object} number
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Number} A < B ? 1 : (A === B ? 0 : -1)（※非Complexオブジェクト）
 	 */
 	compareTo(number, epsilon) {
@@ -440,7 +440,7 @@ export default class Complex {
 	
 	/**
 	 * 整数を判定
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Boolean}
 	 */
 	isInteger(epsilon) {
@@ -450,7 +450,7 @@ export default class Complex {
 
 	/**
 	 * 複素整数を判定
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Boolean}
 	 */
 	isComplexInteger(epsilon) {
@@ -462,7 +462,7 @@ export default class Complex {
 
 	/**
 	 * 0 を判定
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Boolean}
 	 */
 	isZero(epsilon) {
@@ -472,7 +472,7 @@ export default class Complex {
 
 	/**
 	 * 1 を判定
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Boolean}
 	 */
 	isOne(epsilon) {
@@ -482,7 +482,7 @@ export default class Complex {
 
 	/**
 	 * 複素数を判定
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Boolean}
 	 */
 	isComplex(epsilon) {
@@ -492,7 +492,7 @@ export default class Complex {
 	
 	/**
 	 * 実数を判定
-	 * @param {Number} epsilon 誤差（任意）
+	 * @param {Number} [epsilon=Number.EPSILON] - 誤差
 	 * @returns {Boolean}
 	 */
 	isReal(epsilon) {
@@ -723,7 +723,7 @@ export default class Complex {
 
 	/**
 	 * Y.atan2(X) = atan2(Y, X) 複素数のatan2は計算不能
-	 * @param {Object} number 複素数を含まない数値 
+	 * @param {Object} number - 複素数を含まない数値 
 	 * @returns {Complex}
 	 */
 	atan2() {
@@ -831,7 +831,7 @@ export default class Complex {
 	/**
 	 * x.gammainc(a, tail) = gammainc(x, a, tail) 不完全ガンマ関数
 	 * @param {Object} a
-	 * @param {String} tail lower(デフォルト)/upper
+	 * @param {String} [tail="lower"] - lower/upper
 	 * @returns {Complex}
 	 */
 	gammainc(a, tail) {
@@ -846,8 +846,8 @@ export default class Complex {
 
 	/**
 	 * x.gampdf(k, s) = gampdf(x, k, s) ガンマ分布の確率密度関数
-	 * @param {Object} k 形状母数
-	 * @param {Object} s 尺度母数
+	 * @param {Object} k - 形状母数
+	 * @param {Object} s - 尺度母数
 	 * @returns {Complex}
 	 */
 	gampdf(k, s) {
@@ -862,8 +862,8 @@ export default class Complex {
 
 	/**
 	 * x.gamcdf(k, s) = gamcdf(x, k, s) ガンマ分布の確率密度関数
-	 * @param {Object} k 形状母数
-	 * @param {Object} s 尺度母数
+	 * @param {Object} k - 形状母数
+	 * @param {Object} s - 尺度母数
 	 * @returns {Complex}
 	 */
 	gamcdf(k, s) {
@@ -878,8 +878,8 @@ export default class Complex {
 
 	/**
 	 * p.gaminv(k, s) = gaminv(p, k, s) ガンマ分布の累積分布関数の逆関数
-	 * @param {Object} k 形状母数
-	 * @param {Object} s 尺度母数
+	 * @param {Object} k - 形状母数
+	 * @param {Object} s - 尺度母数
 	 * @returns {Complex}
 	 */
 	gaminv(k, s) {
@@ -910,7 +910,7 @@ export default class Complex {
 	 * x.betainc(a, b, tail) = betainc(x, a, b, tail) 不完全ベータ関数
 	 * @param {Object} a
 	 * @param {Object} b
-	 * @param {String} tail lower(デフォルト)/upper
+	 * @param {String} [tail="lower"] lower/upper
 	 * @returns {Complex}
 	 */
 	betainc(a, b, tail) {
@@ -1023,8 +1023,8 @@ export default class Complex {
 
 	/**
 	 * x.normpdf(u, s) = normpdf(x, u, s) 正規分布の確率密度関数
-	 * @param {Number} u 平均値(デフォルト = 0)
-	 * @param {Number} s 分散(デフォルト = 1)
+	 * @param {Number} [u=0.0] - 平均値
+	 * @param {Number} [s=1.0] - 分散
 	 * @returns {Complex}
 	 */
 	normpdf(u, s) {
@@ -1039,8 +1039,8 @@ export default class Complex {
 
 	/**
 	 * x.normcdf(u, s) = normcdf(x, u, s) 正規分布の累積分布関数
-	 * @param {Number} u 平均値(デフォルト = 0)
-	 * @param {Number} s 分散(デフォルト = 1)
+	 * @param {Number} [u=0.0] - 平均値
+	 * @param {Number} [s=1.0] - 分散
 	 * @returns {Complex}
 	 */
 	normcdf(u, s) {
@@ -1055,8 +1055,8 @@ export default class Complex {
 
 	/**
 	 * x.norminv(u, s) = norminv(x, u, s) 正規分布の累積分布関数の逆関数
-	 * @param {Number} u 平均値(デフォルト = 0)
-	 * @param {Number} s 分散(デフォルト = 1)
+	 * @param {Number} [u=0.0] - 平均値
+	 * @param {Number} [s=1.0] - 分散
 	 * @returns {Complex}
 	 */
 	norminv(u, s) {
@@ -1071,7 +1071,7 @@ export default class Complex {
 
 	/**
 	 * t.tcdf(v) = tcdf(t, v) t分布の累積分布関数
-	 * @param {Object} v 自由度
+	 * @param {Object} v - 自由度
 	 * @returns {Complex}
 	 */
 	tcdf(v) {
@@ -1085,7 +1085,7 @@ export default class Complex {
 
 	/**
 	 * p.tinv(v) = tinv(p, v) t分布の累積分布関数の逆関数
-	 * @param {Object} v 自由度
+	 * @param {Object} v - 自由度
 	 * @returns {Complex}
 	 */
 	tinv(v) {
@@ -1099,8 +1099,8 @@ export default class Complex {
 
 	/**
 	 * t.tdist(v, tails) = tdist(t, v, tails) 尾部が指定可能なt分布の累積分布関数
-	 * @param {Object} v 自由度
-	 * @param {Object} tails 尾部(1...片側、2...両側)
+	 * @param {Object} v - 自由度
+	 * @param {Object} tails - 尾部(1...片側、2...両側)
 	 * @returns {Complex}
 	 */
 	tdist(v, tails) {
@@ -1115,7 +1115,7 @@ export default class Complex {
 
 	/**
 	 * p.tinv2(v) = tinv2(p, v) 両側検定時のt分布の累積分布関数
-	 * @param {Object} v 自由度
+	 * @param {Object} v - 自由度
 	 * @returns {Complex}
 	 */
 	tinv2(v) {
@@ -1128,20 +1128,8 @@ export default class Complex {
 	}
 
 	/**
-	 * tdist(x, v, tails) 尾部が指定可能なt分布の累積分布関数
-	 * @param {Number} x
-	 * @param {Number} v 自由度
-	 * @param {Number} tails 尾部(1...片側、2...両側)
-	 * @return {Number}
-	 */
-	static tdist(x, v, tails) {
-		return (1.0 - Statistics.tcdf(x, v)) * tails;
-	}
-
-
-	/**
 	 * x.chi2pdf(k) = chi2pdf(x, k) カイ二乗分布の確率密度関数
-	 * @param {Object} k 自由度
+	 * @param {Object} k - 自由度
 	 * @returns {Complex}
 	 */
 	chi2pdf(k) {
@@ -1155,7 +1143,7 @@ export default class Complex {
 
 	/**
 	 * x.chi2cdf(k) = chi2cdf(x, k) カイ二乗分布の累積分布関数
-	 * @param {Object} k 自由度
+	 * @param {Object} k - 自由度
 	 * @returns {Complex}
 	 */
 	chi2cdf(k) {
@@ -1169,7 +1157,7 @@ export default class Complex {
 
 	/**
 	 * p.chi2inv(k) = chi2inv(p, k) カイ二乗分布の累積分布関数の逆関数
-	 * @param {Object} k 自由度
+	 * @param {Object} k - 自由度
 	 * @returns {Complex}
 	 */
 	chi2inv(k) {
@@ -1183,8 +1171,8 @@ export default class Complex {
 
 	/**
 	 * x.fpdf(d1, d2) = fpdf(x, d1, d2) F分布の確率密度関数
-	 * @param {Object} d1 分子の自由度
-	 * @param {Object} d2 分母の自由度
+	 * @param {Object} d1 - 分子の自由度
+	 * @param {Object} d2 - 分母の自由度
 	 * @returns {Complex}
 	 */
 	fpdf(d1, d2) {
@@ -1199,8 +1187,8 @@ export default class Complex {
 
 	/**
 	 * x.fcdf(d1, d2) = fcdf(x, d1, d2) F分布の累積分布関数
-	 * @param {Object} d1 分子の自由度
-	 * @param {Object} d2 分母の自由度
+	 * @param {Object} d1 - 分子の自由度
+	 * @param {Object} d2 - 分母の自由度
 	 * @returns {Complex}
 	 */
 	fcdf(d1, d2) {
@@ -1215,8 +1203,8 @@ export default class Complex {
 
 	/**
 	 * p.finv(d1, d2) = finv(p, d1, d2) F分布の累積分布関数の逆関数
-	 * @param {Object} d1 分子の自由度
-	 * @param {Object} d2 分母の自由度
+	 * @param {Object} d1 - 分子の自由度
+	 * @param {Object} d2 - 分母の自由度
 	 * @returns {Complex}
 	 */
 	finv(d1, d2) {
