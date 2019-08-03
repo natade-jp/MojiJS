@@ -16,7 +16,10 @@ import Japanese from "./language/Japanese.js";
 import CharacterAnalyser from "./tools/CharacterAnalyser.js";
 import StringComparator from "./tools/StringComparator.js";
 
-const Text = {
+/**
+ * 日本語を扱うための様々な機能を提供します
+ */
+const jptext = {
 	
 	Unicode : Unicode,
 	isHighSurrogateAt : Unicode.isHighSurrogateAt,
@@ -101,4 +104,4 @@ const Text = {
 	
 };
 
-export default Text;
+export default jptext;
