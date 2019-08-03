@@ -1,14 +1,12 @@
 {
 	"name": "senko.js",
 	"version": "0.1.0",
-	"description": "The collection of javascirpt library such as GUI, numerical calculation, 3DCG etc.",
+	"description": "The collection of javascirpt library such as GUI, 3DCG etc.",
 	"keywords" : [
 		"senko",
 		"senko.js",
 		"gui",
 		"sprintf",
-		"biginteger",
-		"bigdecimal",
 		"image-processing",
 		"3d"
 	],
@@ -27,8 +25,7 @@
 	},
 	"scripts": {
 		"dev": "node ./package.dev.js",
-		"build": "node ./package.build.js",
-		"rollup": "rollup -c rollup.config.js"
+		"build": "node ./package.build.js"
 	},
 	"devDependencies": {
 		"rollup": "^0.67.0",

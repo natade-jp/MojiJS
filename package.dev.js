@@ -22,10 +22,6 @@ saveTextFile(
 	"./examples/libs/SenkoS3.mjs",
 	"import SenkoS3 from \"../../src/SenkoS3.mjs\";export default SenkoS3;"
 );
-saveTextFile(
-	"./examples/libs/SenkoMath.mjs",
-	"import SenkoMath from \"../../src/SenkoMath.mjs\";export default SenkoMath;"
-);
 
 
 // その他のファイルをコピー

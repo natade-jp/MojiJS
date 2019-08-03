@@ -50,7 +50,7 @@ const addHeader = function(filename) {
 };
 
 // rollup
-exec("npm run rollup");
+exec("npx rollup -c rollup.config.js");
 
 // 先頭に著作権表記をするターゲット
 const target_file = [
@@ -59,9 +59,7 @@ const target_file = [
 	"./build/SenkoText.umd.js",
 	"./build/SenkoText.module.mjs",
 	"./build/SenkoS3.umd.js",
-	"./build/SenkoS3.module.mjs",
-	"./build/SenkoMath.umd.js",
-	"./build/SenkoMath.module.mjs"
+	"./build/SenkoS3.module.mjs"
 ];
 
 // ヘッダ追加
@@ -81,10 +79,6 @@ saveTextFile(
 saveTextFile(
 	"./examples/libs/SenkoS3.mjs",
 	"import SenkoS3 from \"../../build/SenkoS3.module.mjs\";export default SenkoS3;"
-);
-saveTextFile(
-	"./examples/libs/SenkoMath.mjs",
-	"import SenkoMath from \"../../build/SenkoMath.module.mjs\";export default SenkoMath;"
 );
 
 // その他のファイルをコピー
