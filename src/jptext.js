@@ -62,7 +62,6 @@ const Text = {
 	fromCP932Array : CP932.fromCP932Array,
 	getWidthForCP932 : CP932.getWidthForCP932,
 	cutTextForCP932 : CP932.cutTextForCP932,
-	toKuTen : CP932.toKuTen,
 
 	SJIS2004 : SJIS2004,
 	toSJIS2004FromUnicode : SJIS2004.toSJIS2004FromUnicode,

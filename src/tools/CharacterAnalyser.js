@@ -13,16 +13,84 @@ import SJIS from "../encode/SJIS.js";
 import CP932 from "../encode/CP932.js";
 import SJIS2004 from "../encode/SJIS2004.js";
 
+/**
+ * 制御文字マップ
+ * @type {Object<number, string>}
+ */
+let control_charcter_map = null;
+
+/**
+ * 1981年より前に常用漢字とされているか
+ * @type {Object<number, number>}
+ */
+let joyokanji_before_1981_map = null;
+
+/**
+ * 1981年時点で追加された常用漢字か
+ * @type {Object<number, number>}
+ */
+let joyokanji_add_1981_map = null;
+
+/**
+ * 2010年時点で追加された常用漢字か
+ * @type {Object<number, number>}
+ */
+let joyokanji_add_2010_map = null;
+
+/**
+ * 2010年時点で削除された常用漢字か
+ * @type {Object<number, number>}
+ */
+let joyokanji_delete_2010_map = null;
+
+/**
+ * 2017年時点で常用漢字でかつ人名用漢字か
+ * @type {Object<number, number>}
+ */
+let jinmeiyokanji_joyokanji_isetai_2017_map = null;
+
+/**
+ * 2017年時点で常用漢字でないが人名用漢字か（異性体なし）
+ * @type {Object<number, number>}
+ */
+let jinmeiyokanji_notjoyokanji_2017_map = null;
+
+/**
+ * 2017年時点で異性体がある人名漢字
+ * @type {Object<number, number>}
+ */
+let jinmeiyokanji_notjoyokanji_isetai_2017_map = null;
+
+/**
+ * コードポイントからUnicodeのブロック名に変換する
+ * @type {function(number): string}
+ */
+let to_block_name_from_unicode = null;
+
+/**
+ * 調査用マップを作成するクラス
+ */
 class CHAR_MAP {
-    
+	
+	/**
+	 * 初期化
+	 */
 	static init() {
 		if(CHAR_MAP.is_initmap) {
 			return;
 		}
 		CHAR_MAP.is_initmap = true;
 
+		/**
+		 * 文字列から、UTF32の存在マップを作成
+		 * @param {string} string_data 
+		 * @returns {Object<number, number>}
+		 */
 		const createMap = function(string_data) {
 			const utf32_array = Unicode.toUTF32Array(string_data);
+			/**
+			 * @type {Object<number, number>}
+			 */
 			const map = {};
 			for(const key in utf32_array) {
 				map[utf32_array[key]] = 1;
@@ -83,7 +151,7 @@ class CHAR_MAP {
 			map += "欄吏利里理痢裏履離陸立律略柳流留粒隆硫旅虜慮了両良料涼猟陵量僚領寮療糧力緑林厘倫";
 			map += "輪隣臨涙累塁類令礼冷励例鈴零霊隷齢麗暦歴列劣烈裂恋連廉練錬炉路露老労郎朗浪廊楼漏";
 			map += "六録論和話賄惑湾腕";
-			CHAR_MAP.joyokanji_before_1981_map = createMap(map);
+			joyokanji_before_1981_map = createMap(map);
 		}
 
 		{
@@ -91,7 +159,7 @@ class CHAR_MAP {
 			map += "猿凹渦靴稼拐涯垣殻潟喝褐缶頑挟矯襟隅渓蛍嫌洪溝昆崎皿桟傘肢遮蛇酌汁塾尚宵縄壌唇甚";
 			map += "据杉斉逝仙栓挿曹槽藻駄濯棚挑眺釣塚漬亭偵泥搭棟洞凸屯把覇漠肌鉢披扉猫頻瓶雰塀泡俸";
 			map += "褒朴僕堀磨抹岬妄厄癒悠羅竜戻枠";
-			CHAR_MAP.joyokanji_add_1981_map = createMap(map);
+			joyokanji_add_1981_map = createMap(map);
 		}
 
 		{
@@ -101,13 +169,13 @@ class CHAR_MAP {
 			map += "斬恣摯餌鹿嫉腫呪袖羞蹴憧拭尻芯腎須裾凄醒脊戚煎羨腺詮箋膳狙遡曽爽痩踪捉遜汰唾堆戴";
 			map += "誰旦綻緻酎貼嘲捗椎爪鶴諦溺塡妬賭藤瞳栃頓貪丼那奈梨謎鍋匂虹捻罵剝箸氾汎阪斑眉膝肘";
 			map += "阜訃蔽餅璧蔑哺蜂貌頰睦勃昧枕蜜冥麺冶弥闇喩湧妖瘍沃拉辣藍璃慄侶瞭瑠呂賂弄籠麓脇";
-			CHAR_MAP.joyokanji_add_2010_map = createMap(map);
+			joyokanji_add_2010_map = createMap(map);
 		}
 
 		{
 			let map = "";
 			map += "勺錘銑脹匁";
-			CHAR_MAP.joyokanji_delete_2010_map = createMap(map);
+			joyokanji_delete_2010_map = createMap(map);
 		}
 		
 		// 参考
@@ -127,7 +195,7 @@ class CHAR_MAP {
 			map += "盃杯賣売梅梅髮髪拔抜繁繁晚晩卑卑祕秘碑碑賓賓敏敏冨富侮侮福福拂払佛仏勉勉步歩峯峰";
 			map += "墨墨飜翻每毎萬万默黙埜野彌弥藥薬與与搖揺樣様謠謡來来賴頼覽覧欄欄龍竜虜虜凉涼綠緑";
 			map += "淚涙壘塁類類禮礼曆暦歷歴練練鍊錬郞郎朗朗廊廊錄録";
-			CHAR_MAP.jinmeiyokanji_joyokanji_isetai_2017_map = createMap(map);
+			jinmeiyokanji_joyokanji_isetai_2017_map = createMap(map);
 		}
 
 		{
@@ -148,16 +216,16 @@ class CHAR_MAP {
 			map += "蹄蹟輔輯輿轟辰辻迂迄辿迪迦這逞逗逢遁遼邑祁郁鄭酉醇醐醍醬釉釘釧銑鋒鋸錘錐錆錫鍬鎧";
 			map += "閃閏閤阿陀隈隼雀雁雛雫霞靖鞄鞍鞘鞠鞭頁頌頗顚颯饗馨馴馳駕駿驍魁魯鮎鯉鯛鰯鱒鱗鳩鳶";
 			map += "鳳鴨鴻鵜鵬鷗鷲鷺鷹麒麟麿黎黛鼎";
-			CHAR_MAP.jinmeiyokanji_notjoyokanji_2017_map = createMap(map);
+			jinmeiyokanji_notjoyokanji_2017_map = createMap(map);
 		}
 
 		{
 			let map = "";
 			map += "亙亘凛凜堯尭巖巌晄晃檜桧槇槙渚渚猪猪琢琢禰祢祐祐禱祷祿禄禎禎穰穣萠萌遙遥";
-			CHAR_MAP.jinmeiyokanji_notjoyokanji_isetai_2017_map = createMap(map);
+			jinmeiyokanji_notjoyokanji_isetai_2017_map = createMap(map);
 		}
 
-		CHAR_MAP.control_charcter_map = {
+		control_charcter_map = {
 			0: "NUL", 1: "SOH", 2: "STX", 3: "ETX", 4: "EOT", 5: "ENQ", 6: "ACK", 7: "BEL",
 			8: "BS", 9: "HT", 10: "LF", 11: "VT", 12: "FF", 13: "CR", 14: "SO", 15: "SI",
 			16: "DLE", 17: "DC1", 18: "DC2", 19: "DC3", 20: "DC4", 21: "NAK", 22: "SYN", 23: "ETB",
@@ -232,7 +300,7 @@ class CHAR_MAP {
 			0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF, 0x2FA1F
 		];
 
-		CHAR_MAP.to_block_name_from_unicode = function(unicode_codepoint) {
+		to_block_name_from_unicode = function(unicode_codepoint) {
 			for(let i = 0; i < unicode_blockname_array.length; i++) {
 				if(unicode_codepoint <= unicode_blockaddress_array[i]) {
 					return unicode_blockname_array[i];
@@ -243,61 +311,96 @@ class CHAR_MAP {
 
 	}
 
+	/**
+	 * コードポイントからUnicodeのブロック名に変換する
+	 * @param {number} unicode_codepoint 
+	 * @returns {string}
+	 */
 	static toBlockNameFromUnicode(unicode_codepoint) {
 		CHAR_MAP.init();
-		return CHAR_MAP.to_block_name_from_unicode(unicode_codepoint);
+		return to_block_name_from_unicode(unicode_codepoint);
 	}
 
+	/**
+	 * 変換用マップ
+	 */
 	static get CONTROL_CHARCTER() {
 		CHAR_MAP.init();
-		return CHAR_MAP.control_charcter_map;
+		return control_charcter_map;
 	}
 
+	/**
+	 * チェック用マップ
+	 */
 	static get JOYOJANJI_BEFORE_1981() {
 		CHAR_MAP.init();
-		return CHAR_MAP.joyokanji_before_1981_map;
+		return joyokanji_before_1981_map;
 	}
 	
+	/**
+	 * チェック用マップ
+	 */
 	static get JOYOKANJI_ADD_1981() {
 		CHAR_MAP.init();
-		return CHAR_MAP.joyokanji_add_1981_map;
+		return joyokanji_add_1981_map;
 	}
 	
+	/**
+	 * チェック用マップ
+	 */
 	static get JOYOKANJI_ADD_2010() {
 		CHAR_MAP.init();
-		return CHAR_MAP.joyokanji_add_2010_map;
+		return joyokanji_add_2010_map;
 	}
 	
+	/**
+	 * チェック用マップ
+	 */
 	static get JOYOKANJI_DELETE_2010() {
 		CHAR_MAP.init();
-		return CHAR_MAP.joyokanji_delete_2010_map;
+		return joyokanji_delete_2010_map;
 	}
 	
+	/**
+	 * チェック用マップ
+	 */
 	static get JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
 		CHAR_MAP.init();
-		return CHAR_MAP.jinmeiyokanji_joyokanji_isetai_2017_map;
+		return jinmeiyokanji_joyokanji_isetai_2017_map;
 	}
 	
+	/**
+	 * チェック用マップ
+	 */
 	static get JINMEIYOKANJI_NOTJOYOKANJI_2017() {
 		CHAR_MAP.init();
-		return CHAR_MAP.jinmeiyokanji_notjoyokanji_2017_map;
+		return jinmeiyokanji_notjoyokanji_2017_map;
 	}
 	
+	/**
+	 * チェック用マップ
+	 */
 	static get JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
 		CHAR_MAP.init();
-		return CHAR_MAP.jinmeiyokanji_notjoyokanji_isetai_2017_map;
+		return jinmeiyokanji_notjoyokanji_isetai_2017_map;
 	}
 	
 }
 
+/**
+ * マップを初期化した否か
+ */
 CHAR_MAP.is_initmap = false;
 
+/**
+ * 文字の解析用クラス
+ */
 class Character {
 	
 	/**
 	 * 指定したコードポイントが制御文字であれば、制御文字の名前を返す
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {String} 制御文字名、違う場合は null 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {String} 制御文字名、違う場合は null 
 	 */
 	static getControlCharcterName(unicode_codepoint) {
 		const control_charcter_map = CHAR_MAP.CONTROL_CHARCTER;
@@ -307,8 +410,8 @@ class Character {
 	
 	/**
 	 * 指定したコードポイントの漢字は1981年より前に常用漢字とされているか判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanjiBefore1981(unicode_codepoint) {
 		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
@@ -317,8 +420,8 @@ class Character {
 
 	/**
 	 * 指定したコードポイントの漢字は1981年時点で常用漢字かを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji1981(unicode_codepoint) {
 		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
@@ -328,8 +431,8 @@ class Character {
 
 	/**
 	 * 指定したコードポイントの漢字は2010年時点で常用漢字かを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji2010(unicode_codepoint) {
 		const joyokanji_add_2010_map = CHAR_MAP.JOYOKANJI_ADD_2010;
@@ -343,8 +446,8 @@ class Character {
 
 	/**
 	 * 指定したコードポイントの漢字は2017年時点で人名漢字でのみ存在するかを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isOnlyJinmeiyoKanji2017(unicode_codepoint) {
 		if(Character.isJoyoKanji2010(unicode_codepoint)) {
@@ -360,8 +463,8 @@ class Character {
 
 	/**
 	 * 指定したコードポイントの漢字は2017年時点で人名漢字で許可されているかを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isJinmeiyoKanji2017(unicode_codepoint) {
 		return Character.isJoyoKanji2010(unicode_codepoint) || Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
@@ -369,8 +472,8 @@ class Character {
 
 	/**
 	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で常用漢字かを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji(unicode_codepoint) {
 		return Character.isJoyoKanji2010(unicode_codepoint);
@@ -378,8 +481,8 @@ class Character {
 	
 	/**
 	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字でのみ存在するかを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isOnlyJinmeiyoKanji(unicode_codepoint) {
 		return Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
@@ -387,8 +490,8 @@ class Character {
 
 	/**
 	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字で許可されているかを判定する
-	 * @param {Number} unicode_codepoint Unicodeのコードポイント
-	 * @param {boolean} 判定結果 
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
 	 */
 	static isJinmeiyoKanji(unicode_codepoint) {
 		return Character.isJinmeiyoKanji2017(unicode_codepoint);
@@ -396,12 +499,15 @@ class Character {
 
 }
 
+/**
+ * 文字の解析用クラス
+ */
 export default class CharacterAnalyser {
 
 	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
-	 * @param {Number} unicode_codepoint UTF-32 のコードポイント
-	 * @param {Object} 文字の情報がつまったオブジェクト 
+	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
+	 * @returns {Object} 文字の情報がつまったオブジェクト
 	 */
 	static getCharacterAnalysisData(unicode_codepoint) {
 
@@ -509,7 +615,7 @@ export default class CharacterAnalyser {
 		// 外字
 		info.is_gaiji = /Private Use Area/.test(info.blockname);
 		// 他に外字チェック
-		info.is_gaiji |= (0xF0000 <= unicode_codepoint) && (unicode_codepoint <= 0x10FFFF);
+		info.is_gaiji = info.is_gaiji || ((0xF0000 <= unicode_codepoint) && (unicode_codepoint <= 0x10FFFF));
 		
 		return data;
 	}

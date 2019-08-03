@@ -13,7 +13,7 @@ import Unicode from "../encode/Unicode.js";
 
 /**
  * 文字列の揺れを除去し正規化します。
- * @param {String} string_data 正規化したいテキスト
+ * @param {String} string_data - 正規化したいテキスト
  * @returns {String} 正規化後のテキスト
  */
 const toNormalizeString = function(string_data) {
@@ -33,7 +33,7 @@ const toNormalizeString = function(string_data) {
 
 /**
  * ASCIIコードが半角数値かどうかを判定する
- * @param {Integer} string_number ASCIIコード
+ * @param {number} string_number - ASCIIコード
  * @returns {Boolean} 数値ならTRUE
  */
 const isNumberAscii = function(string_number) {
@@ -44,9 +44,9 @@ const isNumberAscii = function(string_number) {
 
 /**
  * ASCIIコード配列の中で指定した位置から数値が何バイト続くか
- * @param {Array} string_number_array ASCIIコードの配列
- * @param {Integer} offset どの位置から調べるか
- * @returns {Integer} 数値ならTRUE
+ * @param {Array<number>} string_number_array - ASCIIコードの配列
+ * @param {number} offset - どの位置から調べるか
+ * @returns {number} 数値ならTRUE
  */
 const getNumberAsciiLength = function(string_number_array, offset) {
 	for(let i = offset; i < string_number_array.length; i++) {
@@ -59,13 +59,13 @@ const getNumberAsciiLength = function(string_number_array, offset) {
 
 /**
  * ASCIIコード配列の中の指定した位置にある数値データ同士をCompareする
- * @param {Array} t1 ASCIIコードの配列（比較元）
- * @param {Integer} t1off どの位置から調べるか
- * @param {Integer} t1size 調べるサイズ
- * @param {Array} t2 ASCIIコードの配列（比較先）
- * @param {Integer} t2off どの位置から調べるか
- * @param {Integer} t2size 調べるサイズ
- * @returns {Integer} Compare結果
+ * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
+ * @param {number} t1off - どの位置から調べるか
+ * @param {number} t1size - 調べるサイズ
+ * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
+ * @param {number} t2off - どの位置から調べるか
+ * @param {number} t2size - 調べるサイズ
+ * @returns {number} Compare結果
  */
 const compareNumber = function(t1, t1off, t1size, t2, t2off, t2size) {
 	const ASCII_0 = 0x30;
@@ -123,9 +123,9 @@ const compareNumber = function(t1, t1off, t1size, t2, t2off, t2size) {
 
 /**
  * ASCIIコード配列の同士をCompareする
- * @param {Array} t1 ASCIIコードの配列（比較元）
- * @param {Array} t2 ASCIIコードの配列（比較先）
- * @returns {Integer} Compare結果
+ * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
+ * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
+ * @returns {number} Compare結果
  */
 const compareText = function(t1, t2) {
 	const l1 = t1.length;
@@ -201,13 +201,17 @@ const compareText = function(t1, t2) {
 	return 0;
 };
 
+/**
+ * 日本語の文字列比較用の関数
+ * - sortの引数で利用できます
+ */
 const StringComparator = {
 
 	/**
 	 * 2つの文字列を比較する
-	 * @param {String} a 
-	 * @param {String} b 
-	 * @returns {Integer} Compare結果
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
 	 */
 	DEFAULT : function(a, b) {
 		if(a === b) {
@@ -221,9 +225,9 @@ const StringComparator = {
 
 	/**
 	 * 2つの文字列を自然順に比較を行う（自然順ソート（Natural Sort）用）
-	 * @param {String} a 
-	 * @param {String} b 
-	 * @returns {Integer} Compare結果
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
 	 */
 	NATURAL : function(a, b) {
 		if((typeof a === typeof b) && (typeof a === "string")) {

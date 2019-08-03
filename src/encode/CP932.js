@@ -10,17 +10,29 @@
 
 import SJIS from "./SJIS.js";
 
+/**
+ * CP932, Windows-31J の変換マップ作成用クラス
+ */
 class CP932MAP {
 
+	/**
+	 * 変換マップを初期化
+	 */
 	static init() {
 		if(CP932MAP.is_initmap) {
 			return;
 		}
 		CP932MAP.is_initmap = true;
 			
-		// WideCharToMultiByte の動作を参考に作成したマップ
-		// メモ：今回は使っていないが、以下の文献も参考になるかもしれません。
-		// ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+		/**
+		 * 変換マップ
+		 * 
+		 * 
+		 * 参考：WideCharToMultiByte
+		 * メモ：今回は使っていないが、以下の文献も参考になるかもしれません。
+		 * ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+		 * @type {Object<number, number>}
+		 */
 		const cp932_to_unicode_map = {
 			0x01: 0x01, 0x02: 0x02, 0x03: 0x03, 0x04: 0x04, 0x05: 0x05, 0x06: 0x06, 0x07: 0x07, 0x08: 0x08,
 			0x09: 0x09, 0x0a: 0x0a, 0x0b: 0x0b, 0x0c: 0x0c, 0x0d: 0x0d, 0x0e: 0x0e, 0x0f: 0x0f, 0x10: 0x10,
@@ -1250,6 +1262,10 @@ class CP932MAP {
 			0xfc48: 0x9d6b, 0xfc49: 0xfa2d, 0xfc4a: 0x9e19, 0xfc4b: 0x9ed1
 		};
 
+		/**
+		 * 重複された CP932 のコード
+		 * @type {Array<number>}
+		 */
 		const duplicate_map_array = [
 			0x8790, 0x8791, 0x8792, 0x8795, 0x8796, 0x8797, 0x879a, 0x879b, 0x879c, 0xed40, 0xed41, 0xed42, 0xed43, 0xed44, 0xed45, 0xed46,
 			0xed47, 0xed48, 0xed49, 0xed4a, 0xed4b, 0xed4c, 0xed4d, 0xed4e, 0xed4f, 0xed50, 0xed51, 0xed52, 0xed53, 0xed54, 0xed55, 0xed56,
@@ -1278,7 +1294,14 @@ class CP932MAP {
 			0xfa4b, 0xfa4c, 0xfa4d, 0xfa4e, 0xfa4f, 0xfa50, 0xfa51, 0xfa52, 0xfa53, 0xfa54, 0xfa58, 0xfa59, 0xfa5a, 0xfa5b
 		];
 
+		/**
+		 * @type {Object<number, number>}
+		 */
 		const duplicate_map = {};
+		
+		/**
+		 * @type {Object<number, number>}
+		 */
 		const unicode_to_cp932_map = {};
 
 		for(const key in duplicate_map_array) {
@@ -1293,7 +1316,7 @@ class CP932MAP {
 				continue;
 			}
 			const x = cp932_to_unicode_map[key];
-			unicode_to_cp932_map[x] = key;
+			unicode_to_cp932_map[x] = parseInt(key, 10);
 		}
 
 		// 逆引きの注意点
@@ -1321,26 +1344,49 @@ class CP932MAP {
 		CP932MAP.unicode_to_cp932_map = unicode_to_cp932_map;
 	}
 
+	/**
+	 * @returns {Object<number, number>}
+	 */
 	static get CP932_TO_UNICODE() {
 		CP932MAP.init();
 		return CP932MAP.cp932_to_unicode_map;
 	}
 	
+	/**
+	 * @returns {Object<number, number>}
+	 */
 	static get UNICODE_TO_CP932() {
 		CP932MAP.init();
 		return CP932MAP.unicode_to_cp932_map;
 	}
 }
 
+/**
+ * 変換マップを初期化したかどうか
+ * @type {boolean}
+ */
 CP932MAP.is_initmap = false;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
 CP932MAP.cp932_to_unicode_map = null;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
 CP932MAP.unicode_to_cp932_map = null;
 
+/**
+ * CP932, Windows-31J を扱うクラス
+ */
 export default class CP932 {
 
 	/**
 	 * Unicode のコードから CP932 のコードへ変換します。
-	 * @param {Number} unicode_codepoint Unicode のコードポイント
+	 * @param {Number} unicode_codepoint - Unicode のコードポイント
 	 * @returns {Number} CP932 のコードポイント (存在しない場合は undefined)
 	 */
 	static toCP932FromUnicode(unicode_codepoint) {
@@ -1349,7 +1395,7 @@ export default class CP932 {
 
 	/**
 	 * CP932 のコードから Unicode のコードへ変換します。
-	 * @param {Number} cp932_codepoint CP932 のコードポイント
+	 * @param {Number} cp932_codepoint - CP932 のコードポイント
 	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
 	 */
 	static toUnicodeFromCP932(cp932_codepoint) {
@@ -1358,8 +1404,8 @@ export default class CP932 {
 	
 	/**
 	 * 文字列を CP932 の配列へ変換します。
-	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} CP932 のデータが入った配列
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} CP932 のデータが入った配列
 	 */
 	static toCP932Array(text) {
 		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
@@ -1367,8 +1413,8 @@ export default class CP932 {
 
 	/**
 	 * 文字列を CP932 のバイナリ配列へ変換します。
-	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} CP932 のデータが入ったバイナリ配列
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
 	 */
 	static toCP932ArrayBinary(text) {
 		return SJIS.toSJISArrayBinary(text, CP932MAP.UNICODE_TO_CP932);
@@ -1376,7 +1422,7 @@ export default class CP932 {
 
 	/**
 	 * CP932 の配列から文字列へ戻します。
-	 * @param {Array} cp932 変換したいテキスト
+	 * @param {Array<number>} cp932 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromCP932Array(cp932) {
@@ -1387,7 +1433,7 @@ export default class CP932 {
 	 * 指定したテキストの横幅を CP932 の換算で計算します。
 	 * つまり半角を1、全角を2としてカウントします。
 	 * なお、 CP932 の範囲にない文字は2としてカウントします。
-	 * @param {String} text カウントしたいテキスト
+	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
 	static getWidthForCP932(text) {
@@ -1397,9 +1443,9 @@ export default class CP932 {
 	/**
 	 * 指定したテキストの横幅を CP932 の換算した場合に、
 	 * 単位は見た目の位置となります。
-	 * @param {String} text 切り出したいテキスト
-	 * @param {Number} offset 切り出し位置
-	 * @param {Number} size 切り出す長さ
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
 	 * @returns {String} 切り出したテキスト
 	 */
 	static cutTextForCP932(text, offset, size) {

@@ -10,17 +10,29 @@
 
 import SJIS from "./SJIS.js";
 
+/**
+ * Shift_JIS-2004 の変換マップ作成用クラス
+ */
 class SJIS2004MAP {
     
+	/**
+	 * 変換マップを初期化
+	 */
 	static init() {
 		if(SJIS2004MAP.is_initmap) {
 			return;
 		}
 		SJIS2004MAP.is_initmap = true;
 
-		// 参考
-		// JIS X 0213 - Wikipedia (2019/1/1)
-		// https://ja.wikipedia.org/wiki/JIS_X_0213
+		/**
+		 * 変換マップ
+		 * - 2文字に変換される場合もあるので注意
+		 * 
+		 * 
+		 * 参考：JIS X 0213 - Wikipedia (2019/1/1)
+		 * https://ja.wikipedia.org/wiki/JIS_X_0213
+		 * @type {Object<number, number|Array<number>>}
+		 */
 		const sjis2004_to_unicode_map = {
 			// ASCII コード部分は CP932 を参考
 			0x00: 0x00, 
@@ -1457,11 +1469,15 @@ class SJIS2004MAP {
 			0xfcf4: 0x2a6b2
 		};
 
-		// 全角用の文字がある場合は、全角へ変換できるようにする
-		// 以下のリストは、上記のマッピングデータのUnicodeのコードポイントが0x100未満のデータを抜き出して
-		// 全角になっていない部分をCP932を参考に直したものです。
-		// メモ：今回は使っていませんが、以下の文献も参考になるかもしれません。
-		// ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+		/**
+		 * 全角用の文字がある場合は、全角へ変換できるようにする。
+		 * 以下のリストは、上記のマッピングデータのUnicodeのコードポイントが0x100未満のデータを抜き出して、
+		 * 全角になっていない部分をCP932を参考に直したものです。
+		 * 
+		 * メモ：今回は使っていませんが、以下の文献も参考になるかもしれません。
+		 * ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+		 * @type {Object<number, number>}
+		 */
 		const sjis2004_to_unicode_map_2 = {
 			0x8143: 0xff0c, 0x8144: 0xff0e, 0x8146: 0xff1a, 0x8147: 0xff1b, 0x8148: 0xff1f, 0x8149: 0xff01, 0x814c: 0x00b4, 0x814d: 0xff40, 
 			0x814e: 0x00a8, 0x814f: 0xff3e, 0x8151: 0xff3f, 0x815e: 0xff0f, 0x815f: 0xff3c, 0x8162: 0xff5c, 0x8169: 0xff08, 0x816a: 0xff09, 
@@ -1478,6 +1494,7 @@ class SJIS2004MAP {
 			0x8291: 0xff51, 0x8292: 0xff52, 0x8293: 0xff53, 0x8294: 0xff54, 0x8295: 0xff55, 0x8296: 0xff56, 0x8297: 0xff57, 0x8298: 0xff58, 
 			0x8299: 0xff59, 0x829a: 0xff5a
 		};
+
 		// 「sjis2004_to_unicode_map_2」の中の特殊な文字について
 		// 一部CP932とShift_JIS-2004とでコードが一致していない文字がある
 		// 全角,CP932,Shift_JIS-2004,半角Unicode,全角Unicode
@@ -1491,18 +1508,22 @@ class SJIS2004MAP {
 			sjis2004_to_unicode_map[key] = sjis2004_to_unicode_map_2[key];
 		}
 
-		// 逆引きマップ作成。重複がある場合は、小さい数値を優先させる。
+		/**
+		 * 逆引きマップ作成。重複がある場合は、小さい数値を優先させる。
+		 * @type {Object<number, number>}
+		 */
 		const unicode_to_sjis2004_map = {};
 		for(const key in sjis2004_to_unicode_map) {
 			const x = sjis2004_to_unicode_map[key];
+			const key_num = parseInt(key, 10);
 			if(!(x instanceof Array)) {
 				if(unicode_to_sjis2004_map[x]) {
-					if(x > key) {
-						unicode_to_sjis2004_map[x] = key;
+					if(x > key_num) {
+						unicode_to_sjis2004_map[x] = key_num;
 					}
 				}
 				else {
-					unicode_to_sjis2004_map[x] = key;
+					unicode_to_sjis2004_map[x] = key_num;
 				}
 			}
 		}
@@ -1514,26 +1535,49 @@ class SJIS2004MAP {
 		SJIS2004MAP.unicode_to_sjis2004_map = unicode_to_sjis2004_map;
 	}
 	
+	/**
+	 * @returns {Object<number, number|Array<number>>}
+	 */
 	static get SJIS2004_TO_UNICODE() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.sjis2004_to_unicode_map;
 	}
 	
+	/**
+	 * @returns {Object<number, number>}
+	 */
 	static get UNICODE_TO_SJIS2004() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.unicode_to_sjis2004_map;
 	}
 }
 
+/**
+ * 変換マップを初期化したかどうか
+ * @type {boolean}
+ */
 SJIS2004MAP.is_initmap = false;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number|Array<number>>}
+ */
 SJIS2004MAP.sjis2004_to_unicode_map = null;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
 SJIS2004MAP.unicode_to_sjis2004_map = null;
 
+/**
+ * Shift_JIS-2004 を扱うクラス
+ */
 export default class SJIS2004 {
 	
 	/**
 	 * Unicode のコードから Shift_JIS-2004 のコードへ変換します。
-	 * @param {Number} unicode_codepoint Unicode のコードポイント
+	 * @param {Number} unicode_codepoint - Unicode のコードポイント
 	 * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
 	 */
 	static toSJIS2004FromUnicode(unicode_codepoint) {
@@ -1542,8 +1586,8 @@ export default class SJIS2004 {
 
 	/**
 	 * Shift_JIS-2004 のコードから Unicode のコードへ変換します。
-	 * @param {Number} sjis2004_codepoint Shift_JIS-2004 のコードポイント
-	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
+	 * @param {Number} sjis2004_codepoint - Shift_JIS-2004 のコードポイント
+	 * @returns {number|Array<number>} Unicode のコードポイント (存在しない場合は undefined)
 	 */
 	static toUnicodeFromSJIS2004(sjis2004_codepoint) {
 		return SJIS2004MAP.SJIS2004_TO_UNICODE[sjis2004_codepoint];
@@ -1551,8 +1595,8 @@ export default class SJIS2004 {
 	
 	/**
 	 * 文字列を Shift_JIS-2004 の配列へ変換します。
-	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} Shift_JIS-2004 のデータが入った配列
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} Shift_JIS-2004 のデータが入った配列
 	 */
 	static toSJIS2004Array(text) {
 		return SJIS.toSJISArray(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
@@ -1560,8 +1604,8 @@ export default class SJIS2004 {
 
 	/**
 	 * 文字列を Shift_JIS-2004 のバイナリ配列へ変換します。
-	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} Shift_JIS-2004 のデータが入ったバイナリ配列
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
 	 */
 	static toSJIS2004ArrayBinary(text) {
 		return SJIS.toSJISArrayBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
@@ -1569,7 +1613,7 @@ export default class SJIS2004 {
 
 	/**
 	 * Shift_JIS-2004 の配列から文字列へ戻します。
-	 * @param {Array} sjis2004 変換したいテキスト
+	 * @param {Array<number>} sjis2004 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromSJIS2004Array(sjis2004) {
@@ -1580,7 +1624,7 @@ export default class SJIS2004 {
 	 * 指定したテキストの横幅を Shift_JIS-2004 の換算で計算します。
 	 * つまり半角を1、全角を2としてカウントします。
 	 * なお、 Shift_JIS-2004 の範囲にない文字は2としてカウントします。
-	 * @param {String} text カウントしたいテキスト
+	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
 	static getWidthForSJIS2004(text) {
@@ -1590,9 +1634,9 @@ export default class SJIS2004 {
 	/**
 	 * 指定したテキストの横幅を Shift_JIS-2004 の換算した場合に、
 	 * 単位は見た目の位置となります。
-	 * @param {String} text 切り出したいテキスト
-	 * @param {Number} offset 切り出し位置
-	 * @param {Number} size 切り出す長さ
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
 	 * @returns {String} 切り出したテキスト
 	 */
 	static cutTextForSJIS2004(text, offset, size) {

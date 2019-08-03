@@ -8,12 +8,15 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * Unicode を扱うクラス
+ */
 export default class Unicode {
 
 	/**
 	 * サロゲートペアの上位
-	 * @param {String} text 対象テキスト
-	 * @param {Number} index インデックス
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
 	 * @returns {Boolean} 確認結果
 	 */
 	static isHighSurrogateAt(text, index) {
@@ -23,8 +26,8 @@ export default class Unicode {
 
 	/**
 	 * サロゲートペアの下位
-	 * @param {String} text 対象テキスト
-	 * @param {Number} index インデックス
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
 	 * @returns {Boolean} 確認結果
 	 */
 	static isLowSurrogateAt(text, index) {
@@ -34,8 +37,8 @@ export default class Unicode {
 	
 	/**
 	 * サロゲートペアか
-	 * @param {String} text 対象テキスト
-	 * @param {Number} index インデックス
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
 	 * @returns {Boolean} 確認結果
 	 */
 	static isSurrogatePairAt(text, index) {
@@ -45,8 +48,8 @@ export default class Unicode {
 	
 	/**
 	 * サロゲートペア対応のコードポイント取得
-	 * @param {String} text 対象テキスト
-	 * @param {Number} index インデックス
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
 	 * @returns {Number} コードポイント
 	 */
 	static codePointAt(text, index) {
@@ -62,8 +65,8 @@ export default class Unicode {
 
 	/**
 	 * インデックスの前にあるコードポイント
-	 * @param {String} text 対象テキスト
-	 * @param {Number} index インデックス
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
 	 * @returns {Number} コードポイント
 	 */
 	static codePointBefore(text, index) {
@@ -77,9 +80,9 @@ export default class Unicode {
 
 	/**
 	 * コードポイント換算で文字列数を調査する
-	 * @param {String} text 対象テキスト
-	 * @param {Number} beginIndex 最初のインデックス（省略可）
-	 * @param {Number} endIndex 最後のインデックス（ここは含めない）（省略可）
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} beginIndex - 最初のインデックス（省略可）
+	 * @param {Number} endIndex - 最後のインデックス（ここは含めない）（省略可）
 	 * @returns {Number} 文字数
 	 */
 	static codePointCount(text, beginIndex, endIndex) {
@@ -101,9 +104,9 @@ export default class Unicode {
 
 	/**
 	 * コードポイント換算で文字列配列の位置を計算
-	 * @param {String} text 対象テキスト
-	 * @param {Number} index オフセット
-	 * @param {Number} codePointOffset ずらすコードポイント数
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - オフセット
+	 * @param {Number} codePointOffset - ずらすコードポイント数
 	 * @returns {Number} ずらしたインデックス
 	 */
 	static offsetByCodePoints(text, index, codePointOffset) {
@@ -135,21 +138,26 @@ export default class Unicode {
 				}
 			}
 		}
-		return false;
+		throw "error offsetByCodePoints";
 	}
 
 	/**
 	 * コードポイントの数値データを文字列へ変換します
-	 * @param {Array} text 変換したいテキスト
+	 * @param {...number|Array<number>} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromCodePoint() {
+		/**
+		 * @type {Array<number>}
+		 */
 		let codepoint_array = [];
 		if(arguments[0].length) {
 			codepoint_array = arguments[0];
 		}
 		else {
-			codepoint_array = arguments;
+			for(let i = 0;i < arguments.length;i++) {
+				codepoint_array = arguments[i];
+			}
 		}
 		const text = [];
 		for(let i = 0;i < codepoint_array.length;i++) {
@@ -169,8 +177,8 @@ export default class Unicode {
 
 	/**
 	 * 文字列をUTF32(コードポイント)の配列へ変換します。
-	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} UTF32(コードポイント)のデータが入った配列
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列
 	 */
 	static toUTF32Array(text) {
 		const utf32 = [];
@@ -182,7 +190,7 @@ export default class Unicode {
 
 	/**
 	 * UTF32の配列から文字列へ戻します。
-	 * @param {Array} utf32 変換したいテキスト
+	 * @param {Array<number>} utf32 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromUTF32Array(utf32) {
@@ -191,8 +199,8 @@ export default class Unicode {
 
 	/**
 	 * 文字列をUTF16の配列へ変換します。
-	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} UTF16のデータが入った配列
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF16のデータが入った配列
 	 */
 	static toUTF16Array(text) {
 		const utf16 = [];
@@ -204,7 +212,7 @@ export default class Unicode {
 
 	/**
 	 * UTF16の配列から文字列へ戻します。
-	 * @param {Array} utf16 変換したいテキスト
+	 * @param {Array<number>} utf16 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromUTF16Array(utf16) {
@@ -217,8 +225,8 @@ export default class Unicode {
 
 	/**
 	 * 文字列をUTF8の配列へ変換します。
-	 * @param {String} text 変換したいテキスト
-	 * @returns {Array} UTF8のデータが入った配列
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF8のデータが入った配列
 	 */
 	static toUTF8Array(text) {
 		const utf32 = Unicode.toUTF32Array(text);
@@ -270,7 +278,7 @@ export default class Unicode {
 
 	/**
 	 * UTF8の配列から文字列へ戻します。
-	 * @param {Array} utf8 変換したいテキスト
+	 * @param {Array<number>} utf8 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromUTF8Array(utf8) {
@@ -311,9 +319,9 @@ export default class Unicode {
 	/**
 	 * 指定したテキストを切り出します。
 	 * 単位は文字数となります。
-	 * @param {String} text 切り出したいテキスト
-	 * @param {Number} offset 切り出し位置
-	 * @param {Number} size 切り出す長さ
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
 	 * @returns {String} 切り出したテキスト
 	 */
 	static cutTextForCodePoint(text, offset, size) {

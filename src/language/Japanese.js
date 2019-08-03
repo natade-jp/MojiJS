@@ -8,14 +8,20 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+/**
+ * 日本語を扱うクラス
+ */
 export default class Japanese {
 
 	/**
 	 * カタカナをひらがなにします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHiragana(text) {
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) - 0x0060));
 		};
@@ -24,10 +30,13 @@ export default class Japanese {
 
 	/**
 	 * ひらがなをカタカナにします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toKatakana(text) {
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) + 0x0060));
 		};
@@ -36,7 +45,7 @@ export default class Japanese {
 	
 	/**
 	 * スペースを半角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHalfWidthSpace(text) {
@@ -45,7 +54,7 @@ export default class Japanese {
 	
 	/**
 	 * スペースを全角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toFullWidthSpace(text) {
@@ -54,7 +63,7 @@ export default class Japanese {
 	
 	/**
 	 * 英数記号を半角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHalfWidthAsciiCode(text) {
@@ -62,16 +71,19 @@ export default class Japanese {
 		out = out.replace(/\u3000/g, "\u0020");				//全角スペース
 		out = out.replace(/[\u2018-\u201B]/g, "\u0027");	//シングルクォーテーション
 		out = out.replace(/[\u201C-\u201F]/g, "\u0022");	//ダブルクォーテーション
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
-			ch = ch.charCodeAt(0);
-			return (String.fromCharCode(ch - 0xFEE0));
+			const code = ch.charCodeAt(0);
+			return (String.fromCharCode(code - 0xFEE0));
 		};
 		return (out.replace(/[\uFF01-\uFF5E]/g, func));
 	}
 	
 	/**
 	 * 英数記号を全角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toFullWidthAsciiCode(text) {
@@ -79,19 +91,25 @@ export default class Japanese {
 		out = out.replace(/\u0020/g, "\u3000");	//全角スペース
 		out = out.replace(/\u0022/g, "\u201D");	//ダブルクォーテーション
 		out = out.replace(/\u0027/g, "\u2019");	//アポストロフィー
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
-			ch = ch.charCodeAt(0);
-			return (String.fromCharCode(ch + 0xFEE0));
+			const code = ch.charCodeAt(0);
+			return (String.fromCharCode(code + 0xFEE0));
 		};
 		return (out.replace(/[\u0020-\u007E]/g, func));
 	}
 	
 	/**
 	 * 英語を半角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHalfWidthAlphabet(text) {
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
 			return (String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
 		};
@@ -100,10 +118,13 @@ export default class Japanese {
 	
 	/**
 	 * 英語を全角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toFullWidthAlphabet(text) {
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
 			return (String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
 		};
@@ -112,10 +133,13 @@ export default class Japanese {
 	
 	/**
 	 * 数値を半角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHalfWidthNumber(text) {
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
 		};
@@ -124,10 +148,13 @@ export default class Japanese {
 	
 	/**
 	 * 数値を全角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toFullWidthNumber(text) {
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
 		};
@@ -136,10 +163,13 @@ export default class Japanese {
 	
 	/**
 	 * カタカナを半角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHalfWidthKana(text) {
+		/**
+		 * @type {Object<number, string>}
+		 */
 		const map = {
 			0x3001	:	"\uFF64"	,	//	､
 			0x3002	:	"\uFF61"	,	//	。	｡
@@ -240,6 +270,9 @@ export default class Japanese {
 			0x30FB	:	"\uFF65"	,	//	・	･
 			0x30FC	:	"\uFF70"		//	ー	ｰ
 		};
+		/**
+		 * @param {string} ch 
+		 */
 		const func = function(ch) {
 			if(ch.length === 1) {
 				return(map[ch.charCodeAt(0)]);
@@ -253,10 +286,13 @@ export default class Japanese {
 
 	/**
 	 * カタカナを全角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toFullWidthKana(text) {
+		/**
+		 * @type {Object<number, number>}
+		 */
 		const map = {
 			0xFF61	:	0x3002	,	//	。	｡
 			0xFF62	:	0x300C	,	//	「	｢
@@ -322,6 +358,9 @@ export default class Japanese {
 			0xFF9E	:	0x309B	,	//	゛	ﾞ
 			0xFF9F	:	0x309C		//	゜	ﾟ
 		};
+		/**
+		 * @param {string} str 
+		 */
 		const func = function(str) {
 			if(str.length === 1) {
 				return (String.fromCharCode(map[str.charCodeAt(0)]));
@@ -357,7 +396,7 @@ export default class Japanese {
 	
 	/**
 	 * 半角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHalfWidth(text) {
@@ -366,7 +405,7 @@ export default class Japanese {
 	
 	/**
 	 * 全角にします。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toFullWidth(text) {
@@ -375,10 +414,14 @@ export default class Japanese {
 
 	/**
 	 * ローマ字からひらがなに変換します。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toHiraganaFromRomaji(text) {
+		/**
+		 * ローマ字から変換マップ
+		 * @type {Object<string, string>}
+		 */
 		const map = {
 			"a" : "あ" ,
 			"i" : "い" ,
@@ -525,6 +568,10 @@ export default class Japanese {
 			"?" : "？" ,
 			"!" : "！"
 		};
+		/**
+		 * ya, yi, yu, ye, yo
+		 * @type {Object<string, string>}
+		 */
 		const y_komoji_map = {
 			"a" : "ゃ",
 			"i" : "ぃ",
@@ -532,6 +579,9 @@ export default class Japanese {
 			"e" : "ぇ",
 			"o" : "ょ"
 		};
+		/**
+		 * @param {string} str 
+		 */
 		const func = function(str) {
 			const output = [];
 			let y_komoji = null;
@@ -565,7 +615,7 @@ export default class Japanese {
 
 	/**
 	 * ローマ字からカタカナに変換します。
-	 * @param {String} text 変換したいテキスト
+	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
 	static toKatakanaFromRomaji(text) {

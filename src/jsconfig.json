@@ -1,0 +1,18 @@
+{
+	"buildOnSave": false, // 保存時にビルドしない
+	"compileOnSave": false, // 保存時にコンパイルしない
+	// コンパイルオプション
+	"compilerOptions": {
+		"charset": "utf8", // キャラクタセット
+		"newLine": "LF", // 生成コードの改行コードを指定する
+		"lib": ["es2015", "dom"], // コンパイルに含めるライブラリの指定
+		"module": "es2015", // モジュールの方式
+		"target": "es2015", // 出力する ECMAScript のバージョン
+		"checkJs": true, // JavaScript ファイルの型整合性などをチェック
+		"noImplicitAny": true, // 暗黙的な any をエラーにする
+		"noEmit": true, // emit を作成しない
+	},
+	"exclude": [ // 除外ファイル
+		"node_modules"
+	]
+}
