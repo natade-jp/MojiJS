@@ -1,2 +1,12 @@
-node_modules
-npm-debug.log
+/node_modules/
+/npm-debug.log
+
+/out/
+/docs/ast/
+
+jest.config.js
+.npmrc
+
+.DS_Store
+Thumbs.db
+*.bak
