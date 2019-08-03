@@ -1,7 +1,7 @@
 {
 	"name": "jptext",
 	"version": "0.1.0",
-	"description": "test",
+	"description": "Useful tools for Japanese character code.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
 		"type": "git",
