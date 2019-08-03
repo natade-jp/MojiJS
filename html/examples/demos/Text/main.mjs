@@ -1,12 +1,11 @@
-﻿import Senko from "../../libs/Senko.mjs";
-import SenkoText from "../../libs/SenkoText.mjs";
+﻿
+import Log from "../../libs/Log.module.js";
+import jptext from "../../libs/jptext.js";
 
-const Log = Senko.Log;
-const Text = SenkoText;
-const Japanese = Text.Japanese;
-const Unicode = Text.Unicode;
-const CP932 = Text.CP932;
-const CharacterAnalyser = Text.CharacterAnalyser;
+const Japanese = jptext.Japanese;
+const Unicode = jptext.Unicode;
+const CP932 = jptext.CP932;
+const CharacterAnalyser = jptext.CharacterAnalyser;
 
 const testJapanese = function() {
 

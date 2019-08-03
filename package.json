@@ -2,26 +2,45 @@
 	"name": "jptext",
 	"version": "0.1.0",
 	"description": "test",
-	"keywords" : [
-		"senko"
-	],
-	"license": "MIT",
-	"author": "natade",
-	"main": "./build/Senko.umd.js",
-	"module": "./build/Senko.module.mjs",
+	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
-		"type" : "git",
-		"url" : "https://github.com/natade-jp/jptext"
+		"type": "git",
+		"url": "https://github.com/natade-jp/jptext.git"
 	},
+	"license": "MIT",
+	"main":"./build/konpeito.umd.js",
+	"module":"./build/konpeito.module.mjs",
+	"keywords": [
+		"cp932",
+		"shift_jis",
+		"sjis",
+		"shift_jis2004",
+		"sjis2004",
+		"unicode"
+	],
 	"directories": {
-		"src": "src",
-		"build": "build",
-		"example": "examples"
+		"src": "./src",
+		"build": "./build"
 	},
 	"scripts": {
-		"dev": "node ./package.dev.js",
-		"build": "node ./package.build.js"
+		"dev": "node ./scripts/package.dev.js",
+		"build": "node ./scripts/package.build.js"
 	},
+	"jest": {
+		"verbose": true,
+		"rootDir": "./src",
+		"moduleFileExtensions": [
+			"js",
+			"mjs"
+		],
+		"testMatch": [
+			"**/__tests__/**/*.?(m)js?(x)",
+			"**/?(*.)(spec|test).?(m)js?(x)"
+		],
+		"transform": {
+			"^.+\\.(js|mjs)$": "babel-jest"
+		}
+	}
 	"devDependencies": {
 		"rollup": "^0.67.0",
 		"rollup-plugin-buble": "^0.19.4",
