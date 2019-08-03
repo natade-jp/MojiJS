@@ -1,5 +1,5 @@
 ﻿/**
- * The script is part of SenkoJS.
+ * The script is part of jptext.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -8,10 +8,10 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import Unicode from "../encode/Unicode.mjs";
-import SJIS from "../encode/SJIS.mjs";
-import CP932 from "../encode/CP932.mjs";
-import SJIS2004 from "../encode/SJIS2004.mjs";
+import Unicode from "../encode/Unicode.js";
+import SJIS from "../encode/SJIS.js";
+import CP932 from "../encode/CP932.js";
+import SJIS2004 from "../encode/SJIS2004.js";
 
 class CHAR_MAP {
     

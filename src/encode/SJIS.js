@@ -1,5 +1,5 @@
 ﻿/**
- * The script is part of SenkoJS.
+ * The script is part of jptext.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -8,7 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import Unicode from "./Unicode.mjs";
+import Unicode from "./Unicode.js";
 
 export default class SJIS {
 

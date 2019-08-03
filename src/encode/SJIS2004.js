@@ -1,5 +1,5 @@
 ﻿/**
- * The script is part of SenkoJS.
+ * The script is part of jptext.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -8,8 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import Unicode from "./Unicode.mjs";
-import SJIS from "./SJIS.mjs";
+import SJIS from "./SJIS.js";
 
 class SJIS2004MAP {
     

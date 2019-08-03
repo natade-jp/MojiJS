@@ -1,5 +1,5 @@
 ﻿/**
- * The script is part of SenkoJS.
+ * The script is part of jptext.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -8,14 +8,13 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import Unicode from "./encode/Unicode.mjs";
-import SJIS from "./encode/SJIS.mjs";
-import CP932 from "./encode/CP932.mjs";
-import SJIS2004 from "./encode/SJIS2004.mjs";
-import Japanese from "./language/Japanese.mjs";
-import Programming from "./language/Programming.mjs";
-import CharacterAnalyser from "./tools/CharacterAnalyser.mjs";
-import StringComparator from "./tools/StringComparator.mjs";
+import Unicode from "./encode/Unicode.js";
+import SJIS from "./encode/SJIS.js";
+import CP932 from "./encode/CP932.js";
+import SJIS2004 from "./encode/SJIS2004.js";
+import Japanese from "./language/Japanese.js";
+import CharacterAnalyser from "./tools/CharacterAnalyser.js";
+import StringComparator from "./tools/StringComparator.js";
 
 const Text = {
 	
@@ -92,9 +91,6 @@ const Text = {
 	toHiraganaFromRomaji : Japanese.toHiraganaFromRomaji,
 	toKatakanaFromRomaji : Japanese.toKatakanaFromRomaji,
 
-	Programming : Programming,
-	removeComment : Programming.removeComment,
-	
 	CharacterAnalyser : CharacterAnalyser,
 	getCharacterAnalysisData : CharacterAnalyser.getCharacterAnalysisData,
 	StringComparator : StringComparator,

@@ -1,5 +1,5 @@
 ﻿/**
- * The script is part of SenkoJS.
+ * The script is part of jptext.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

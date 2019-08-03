@@ -1,1 +1,1 @@
-﻿import SenkoText from "../../build/SenkoText.module.mjs";export default SenkoText;
+import jptext from "../../../build/jptext.module.min.mjs";export default jptext;

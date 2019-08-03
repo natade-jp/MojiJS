@@ -26,8 +26,6 @@ File.exec("npx rollup -c \"./scripts/rollup.config.js\"");
 
 // 先頭に著作権表記をするターゲット
 const target_file = [
-	"./build/jptext.umd.js",
-	"./build/jptext.module.mjs"
 	"./build/jptext.umd.min.js",
 	"./build/jptext.module.min.mjs"
 ];

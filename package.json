@@ -8,8 +8,8 @@
 		"url": "https://github.com/natade-jp/jptext.git"
 	},
 	"license": "MIT",
-	"main":"./build/konpeito.umd.js",
-	"module":"./build/konpeito.module.mjs",
+	"main": "./build/jptext.umd.js",
+	"module": "./build/jptext.module.mjs",
 	"keywords": [
 		"cp932",
 		"shift_jis",
@@ -40,7 +40,7 @@
 		"transform": {
 			"^.+\\.(js|mjs)$": "babel-jest"
 		}
-	}
+	},
 	"devDependencies": {
 		"rollup": "^0.67.0",
 		"rollup-plugin-buble": "^0.19.4",

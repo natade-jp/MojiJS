@@ -1,5 +1,5 @@
 /**
- * The script is part of SenkoJS.
+ * The script is part of jptext.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)
@@ -8,8 +8,8 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
-import Japanese from "../language/Japanese.mjs";
-import Unicode from "../encode/Unicode.mjs";
+import Japanese from "../language/Japanese.js";
+import Unicode from "../encode/Unicode.js";
 
 /**
  * 文字列の揺れを除去し正規化します。

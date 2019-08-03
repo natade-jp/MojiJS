@@ -234,27 +234,17 @@ const testStringComparator = function() {
 	a.sort();
 	Log.println(a.join(", "));
 	Log.println("通常文字列ソート");
-	a.sort(Text.COMPARE.DEFAULT);
+	a.sort(jptext.COMPARE.DEFAULT);
 	Log.println(a.join(", "));
 	Log.println("自然順ソート (Natural Sort)");
-	a.sort(Text.COMPARE.NATURAL);
+	a.sort(jptext.COMPARE.NATURAL);
 	Log.println(a.join(", "));
 
 };
 
 const main = function() {
 	
-	let x;
-	
-	Log.println("◆◆Text クラスのサンプル");
-	
-	Log.println("◆コメント除去機能");
-	x = "0000\"1234//5678\"1234//5678\n123456789/*1234\n1234*/56789";
-	Log.println(Text.removeComment(x));
-	x = "0/*000\"1234//5678\"1234*/9";
-	Log.println(Text.removeComment(x));
-	x = "0/1234/5678/9";
-	Log.println(Text.removeComment(x));
+	Log.println("jptest クラスのサンプル");
 
 	testJapanese();
 	testUnicode();
