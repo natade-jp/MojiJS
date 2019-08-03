@@ -1,14 +1,9 @@
 {
-	"name": "senko.js",
+	"name": "jptext",
 	"version": "0.1.0",
-	"description": "The collection of javascirpt library such as GUI, 3DCG etc.",
+	"description": "test",
 	"keywords" : [
-		"senko",
-		"senko.js",
-		"gui",
-		"sprintf",
-		"image-processing",
-		"3d"
+		"senko"
 	],
 	"license": "MIT",
 	"author": "natade",
@@ -16,7 +11,7 @@
 	"module": "./build/Senko.module.mjs",
 	"repository": {
 		"type" : "git",
-		"url" : "https://github.com/natade-jp/SenkoJS"
+		"url" : "https://github.com/natade-jp/jptext"
 	},
 	"directories": {
 		"src": "src",

@@ -54,12 +54,8 @@ exec("npx rollup -c rollup.config.js");
 
 // 先頭に著作権表記をするターゲット
 const target_file = [
-	"./build/Senko.umd.js",
-	"./build/Senko.module.mjs",
 	"./build/SenkoText.umd.js",
 	"./build/SenkoText.module.mjs",
-	"./build/SenkoS3.umd.js",
-	"./build/SenkoS3.module.mjs"
 ];
 
 // ヘッダ追加
@@ -69,16 +65,8 @@ for(const key in target_file) {
 
 // サンプルファイルはbuild内のデータと関連付ける
 saveTextFile(
-	"./examples/libs/Senko.mjs",
-	"import Senko from \"../../build/Senko.module.mjs\";export default Senko;"
-);
-saveTextFile(
 	"./examples/libs/SenkoText.mjs",
 	"import SenkoText from \"../../build/SenkoText.module.mjs\";export default SenkoText;"
-);
-saveTextFile(
-	"./examples/libs/SenkoS3.mjs",
-	"import SenkoS3 from \"../../build/SenkoS3.module.mjs\";export default SenkoS3;"
 );
 
 // その他のファイルをコピー
