@@ -12,6 +12,7 @@ import SJIS from "./SJIS.js";
 
 /**
  * CP932, Windows-31J の変換マップ作成用クラス
+ * @ignore
  */
 class CP932MAP {
 

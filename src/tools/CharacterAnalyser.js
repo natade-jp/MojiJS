@@ -392,6 +392,220 @@ class CHAR_MAP {
  */
 CHAR_MAP.is_initmap = false;
 
+
+/**
+ * 文字のエンコード情報
+ */
+class CharacterEncodeData {
+	constructor() {
+
+		/**
+		 * 区点 コード
+		 * @type {import("../encode/SJIS.js").MenKuTen}
+		 */
+		this.kuten				= null;
+
+		/**
+		 * 面区点 コード
+		 * @type {import("../encode/SJIS.js").MenKuTen}
+		 */
+		this.menkuten			= null;
+
+		/**
+		 * CP932(Windows-31J) コード
+		 * @type {number}
+		 */
+		this.cp932_code		= 0;
+
+		/**
+		 * Shift_JIS-2004 コード
+		 * @type {number}
+		 */
+		this.sjis2004_code	= 0;
+
+		/**
+		 * UTF-8 配列
+		 * @type {Array<number>}
+		 */
+		this.utf8_array = [];
+		
+		/**
+		 * UTF-16 配列
+		 * @type {Array<number>}
+		 */
+		this.utf16_array = [];
+
+		/**
+		 * UTF-32 配列
+		 * @type {Array<number>}
+		 */
+		this.utf32_array = [];
+
+		/**
+		 * CP932(Windows-31J) バイト配列
+		 * @type {Array<number>}
+		 */
+		this.cp932_array = [];
+
+		/**
+		 * Shift_JIS-2004 コード バイト配列
+		 * @type {Array<number>}
+		 */
+		this.sjis2004_array = [];
+
+		/**
+		 * Shift_JIS バイト配列
+		 * @type {Array<number>}
+		 */
+		this.shift_jis_array = [];
+
+		/**
+		 * ISO-2022-JP バイト配列
+		 * @type {Array<number>}
+		 */
+		this.iso2022jp_array = [];
+
+		/**
+		 * EUC-JP バイト配列
+		 * @type {Array<number>}
+		 */
+		this.eucjp_array = [];
+	}
+}
+
+/**
+ * 文字の種別情報
+ */
+class CharacterTypeData {
+	constructor() {
+		/**
+		 * Shift_JIS に登録された文字
+		 * @type {boolean}
+		 */
+		this.is_regular_sjis	= false;
+
+		/**
+		 * Shift_JIS-2004 に登録された文字
+		 * @type {boolean}
+		 */
+		this.is_regular_sjis2004 = false;
+
+		/**
+		 * 漢字が常用漢字か、人名用漢字かなど
+		 * @type {boolean}
+		 */
+		this.is_joyo_kanji		= false;
+
+		/**
+		 * 人名用漢字
+		 * @type {boolean}
+		 */
+		this.is_jinmeiyo_kanji	= false;
+
+		/**
+		 * Windows-31J(CP932) 外字
+		 * @type {boolean}
+		 */
+		this.is_gaiji_cp932	= false;
+
+		/**
+		 * Windows-31J(CP932) IBM拡張文字
+		 * @type {boolean}
+		 */
+		this.is_IBM_extended_character	= false;
+
+		/**
+		 * Windows-31J(CP932) NEC選定IBM拡張文字
+		 * @type {boolean}
+		 */
+		this.is_NEC_selection_IBM_extended_character	= false;
+
+		/**
+		 * Windows-31J(CP932) NEC特殊文字
+		 * @type {boolean}
+		 */
+		this.is_NEC_special_character	= false;
+
+		/**
+		 * Shift_JIS-2004 を使用して漢字の水準調査
+		 * @type {number} 漢字水準, 1未満だと水準調査失敗
+		 */
+		this.kanji_suijun = -1;
+
+		/**
+		 * Unicode サロゲートペア
+		 * @type {boolean}
+		 */
+		this.is_surrogate_pair	= false;
+
+		/**
+		 * 制御文字名（制御文字ではない場合は null）
+		 * @type {string}
+		 */
+		this.control_name = null;
+
+		/**
+		 * 制御文字
+		 * @type {boolean}
+		 */
+		this.is_control_charcter = false;
+
+		/**
+		 * Unicodeブロック名
+		 * @type {string}
+		 */
+		this.blockname = "";
+
+		/**
+		 * 漢字
+		 * @type {boolean}
+		 */
+		this.is_kanji = false;
+
+		/**
+		 * ひらがな
+		 * @type {boolean}
+		 */
+		this.is_hiragana = false;
+
+		/**
+		 * カタカナ
+		 * @type {boolean}
+		 */
+		this.is_katakana = false;
+
+		/**
+		 * 全角ASCII
+		 * @type {boolean}
+		 */
+		this.is_fullwidth_ascii = false;
+
+		/**
+		 * 半角カタカナ
+		 * @type {boolean}
+		 */
+		this.is_halfwidth_katakana = false;
+
+		/**
+		 * 絵文字
+		 * @type {boolean}
+		 */
+		this.is_emoji = false;
+
+		/**
+		 * 顔文字
+		 * @type {boolean}
+		 */
+		this.is_emoticons = false;
+
+		/**
+		 * 外字
+		 * @type {boolean}
+		 */
+		this.is_gaiji = false;
+	}
+}
+
 /**
  * 文字の解析用クラス
  */
@@ -507,7 +721,7 @@ export default class CharacterAnalyser {
 	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
 	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-	 * @returns {Object} 文字の情報がつまったオブジェクト
+	 * @returns {{encode : CharacterEncodeData, info : CharacterTypeData, character : string, codepoint : number}} 文字の情報がつまったオブジェクト
 	 */
 	static getCharacterAnalysisData(unicode_codepoint) {
 
@@ -521,8 +735,16 @@ export default class CharacterAnalyser {
 
 		// 出力データの箱を用意
 		const data = {};
-		const encode = {};
-		const info = {};
+
+		/**
+		 * @type {CharacterEncodeData}
+		 */
+		const encode = new CharacterEncodeData();
+
+		/**
+		 * @type {CharacterTypeData}
+		 */
+		const info = new CharacterTypeData();
 		data.encode = encode;
 		data.info = info;
 		data.character = Unicode.fromCodePoint(unicode_codepoint);

@@ -12,6 +12,7 @@ import SJIS from "./SJIS.js";
 
 /**
  * Shift_JIS-2004 の変換マップ作成用クラス
+ * @ignore
  */
 class SJIS2004MAP {
     
