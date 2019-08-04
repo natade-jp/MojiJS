@@ -1573,11 +1573,12 @@ SJIS2004MAP.unicode_to_sjis2004_map = null;
 
 /**
  * Shift_JIS-2004 を扱うクラス
+ * @ignore
  */
 export default class SJIS2004 {
 	
 	/**
-	 * Unicode のコードから Shift_JIS-2004 のコードへ変換します。
+	 * Unicode のコードから Shift_JIS-2004 のコードに変換
 	 * @param {Number} unicode_codepoint - Unicode のコードポイント
 	 * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
 	 */
@@ -1586,7 +1587,7 @@ export default class SJIS2004 {
 	}
 
 	/**
-	 * Shift_JIS-2004 のコードから Unicode のコードへ変換します。
+	 * Shift_JIS-2004 のコードから Unicode のコードに変換
 	 * @param {Number} sjis2004_codepoint - Shift_JIS-2004 のコードポイント
 	 * @returns {number|Array<number>} Unicode のコードポイント (存在しない場合は undefined)
 	 */
@@ -1595,7 +1596,7 @@ export default class SJIS2004 {
 	}
 	
 	/**
-	 * 文字列を Shift_JIS-2004 の配列へ変換します。
+	 * 文字列を Shift_JIS-2004 の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入った配列
 	 */
@@ -1604,7 +1605,8 @@ export default class SJIS2004 {
 	}
 
 	/**
-	 * 文字列を Shift_JIS-2004 のバイナリ配列へ変換します。
+	 * 文字列を Shift_JIS-2004 のバイナリ配列に変換
+	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
 	 */
@@ -1613,7 +1615,7 @@ export default class SJIS2004 {
 	}
 
 	/**
-	 * Shift_JIS-2004 の配列から文字列へ戻します。
+	 * Shift_JIS-2004 の配列から文字列に変換
 	 * @param {Array<number>} sjis2004 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -1622,9 +1624,9 @@ export default class SJIS2004 {
 	}
 
 	/**
-	 * 指定したテキストの横幅を Shift_JIS-2004 の換算で計算します。
-	 * つまり半角を1、全角を2としてカウントします。
-	 * なお、 Shift_JIS-2004 の範囲にない文字は2としてカウントします。
+	 * 指定したテキストの横幅を Shift_JIS-2004 で換算でカウント
+	 * - 半角を1、全角を2としてカウント
+	 * - Shift_JIS-2004 の範囲にない文字は2としてカウント
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -1633,8 +1635,7 @@ export default class SJIS2004 {
 	}
 
 	/**
-	 * 指定したテキストの横幅を Shift_JIS-2004 の換算した場合に、
-	 * 単位は見た目の位置となります。
+	 * 指定したテキストの横幅を Shift_JIS-2004 で換算した場合の切り出し
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ

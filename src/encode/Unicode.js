@@ -10,11 +10,12 @@
 
 /**
  * Unicode を扱うクラス
+ * @ignore
  */
 export default class Unicode {
 
 	/**
-	 * サロゲートペアの上位
+	 * 上位のサロゲートペアの判定
 	 * @param {String} text - 対象テキスト
 	 * @param {Number} index - インデックス
 	 * @returns {Boolean} 確認結果
@@ -25,7 +26,7 @@ export default class Unicode {
 	}
 
 	/**
-	 * サロゲートペアの下位
+	 * 下位のサロゲートペアの判定
 	 * @param {String} text - 対象テキスト
 	 * @param {Number} index - インデックス
 	 * @returns {Boolean} 確認結果
@@ -36,7 +37,7 @@ export default class Unicode {
 	}
 	
 	/**
-	 * サロゲートペアか
+	 * サロゲートペアの判定
 	 * @param {String} text - 対象テキスト
 	 * @param {Number} index - インデックス
 	 * @returns {Boolean} 確認結果
@@ -79,17 +80,17 @@ export default class Unicode {
 	}
 
 	/**
-	 * コードポイント換算で文字列数を調査する
+	 * コードポイント換算で文字列数をカウント
 	 * @param {String} text - 対象テキスト
-	 * @param {Number} beginIndex - 最初のインデックス（省略可）
-	 * @param {Number} endIndex - 最後のインデックス（ここは含めない）（省略可）
+	 * @param {Number} [beginIndex=0] - 最初のインデックス（省略可）
+	 * @param {Number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
 	 * @returns {Number} 文字数
 	 */
 	static codePointCount(text, beginIndex, endIndex) {
-		if(arguments.length < 2) {
+		if(beginIndex === undefined) {
 			beginIndex = 0;
 		}
-		if(arguments.length < 3) {
+		if(endIndex === undefined) {
 			endIndex = text.length;
 		}
 		let count = 0;
@@ -142,8 +143,8 @@ export default class Unicode {
 	}
 
 	/**
-	 * コードポイントの数値データを文字列へ変換します
-	 * @param {...number|Array<number>} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
+	 * コードポイントの数値データを文字列に変換
+	 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromCodePoint() {
@@ -176,7 +177,7 @@ export default class Unicode {
 	}
 
 	/**
-	 * 文字列をUTF32(コードポイント)の配列へ変換します。
+	 * 文字列をUTF32(コードポイント)の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列
 	 */
@@ -189,7 +190,7 @@ export default class Unicode {
 	}
 
 	/**
-	 * UTF32の配列から文字列へ戻します。
+	 * UTF32の配列から文字列に変換
 	 * @param {Array<number>} utf32 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -198,7 +199,7 @@ export default class Unicode {
 	}
 
 	/**
-	 * 文字列をUTF16の配列へ変換します。
+	 * 文字列をUTF16の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} UTF16のデータが入った配列
 	 */
@@ -211,7 +212,7 @@ export default class Unicode {
 	}
 
 	/**
-	 * UTF16の配列から文字列へ戻します。
+	 * UTF16の配列から文字列に変換
 	 * @param {Array<number>} utf16 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -224,7 +225,7 @@ export default class Unicode {
 	}
 
 	/**
-	 * 文字列をUTF8の配列へ変換します。
+	 * 文字列をUTF8の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} UTF8のデータが入った配列
 	 */
@@ -277,7 +278,7 @@ export default class Unicode {
 	}
 
 	/**
-	 * UTF8の配列から文字列へ戻します。
+	 * UTF8の配列から文字列に変換
 	 * @param {Array<number>} utf8 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -317,8 +318,8 @@ export default class Unicode {
 	}
 
 	/**
-	 * 指定したテキストを切り出します。
-	 * 単位は文字数となります。
+	 * 指定したテキストを切り出す
+	 * - 単位は文字数
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ

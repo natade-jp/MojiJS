@@ -205,7 +205,7 @@ const compareText = function(t1, t2) {
  * 日本語の文字列比較用の関数
  * - sortの引数で利用できます
  */
-const StringComparator = {
+const Comparator = {
 
 	/**
 	 * 2つの文字列を比較する
@@ -236,9 +236,34 @@ const StringComparator = {
 			return compareText(a_str, b_str);
 		}
 		else {
-			return StringComparator.DEFAULT(a, b);
+			return Comparator.DEFAULT(a, b);
 		}
 	}
 };
 
-export default StringComparator;
+
+/**
+ * 日本語の文字列比較用の関数
+ * - sortの引数で利用できます
+ * @ignore
+ */
+export default class StringComparator {
+
+	/**
+	 * 2つの文字列を比較する関数
+	 * @returns {function(string, string): number}
+	 */
+	static get DEFAULT() {
+		return Comparator.DEFAULT;
+	}
+
+	/**
+	 * 2つの文字列を自然順ソートで比較する関数
+	 * @returns {function(string, string): number}
+	 */
+	static get NATURAL() {
+		return Comparator.NATURAL;
+	}
+
+}
+

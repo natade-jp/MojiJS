@@ -392,11 +392,122 @@ class CHAR_MAP {
  */
 CHAR_MAP.is_initmap = false;
 
+/**
+ * 文字の解析用クラス
+ * @ignore
+ */
+class Character {
+	
+	/**
+	 * 指定したコードポイントが制御文字であれば、制御文字の名前を返す
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {String} 制御文字名、違う場合は null 
+	 */
+	static getControlCharcterName(unicode_codepoint) {
+		const control_charcter_map = CHAR_MAP.CONTROL_CHARCTER;
+		const name = control_charcter_map[unicode_codepoint];
+		return name ? name : null;
+	}
+	
+	/**
+	 * 指定したコードポイントの漢字は1981年より前に常用漢字とされているか判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanjiBefore1981(unicode_codepoint) {
+		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		return !!joyokanji_before_1981_map[unicode_codepoint];
+	}
+
+	/**
+	 * 指定したコードポイントの漢字は1981年時点で常用漢字かを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanji1981(unicode_codepoint) {
+		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_add_1981_map = CHAR_MAP.JOYOKANJI_ADD_1981;
+		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
+	}
+
+	/**
+	 * 指定したコードポイントの漢字は2010年時点で常用漢字かを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanji2010(unicode_codepoint) {
+		const joyokanji_add_2010_map = CHAR_MAP.JOYOKANJI_ADD_2010;
+		const joyokanji_delete_2010_map = CHAR_MAP.JOYOKANJI_DELETE_2010;
+		if(joyokanji_delete_2010_map[unicode_codepoint]) {
+			return false;
+		}
+		const x = Character.isJoyoKanji1981(unicode_codepoint);
+		return x || (!!joyokanji_add_2010_map[unicode_codepoint]);
+	}
+
+	/**
+	 * 指定したコードポイントの漢字は2017年時点で人名漢字でのみ存在するかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isOnlyJinmeiyoKanji2017(unicode_codepoint) {
+		if(Character.isJoyoKanji2010(unicode_codepoint)) {
+			return false;
+		}
+		const jinmeiyokanji_joyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_notjoyokanji_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
+		const jinmeiyokanji_notjoyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
+		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
+				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
+				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);
+	}
+
+	/**
+	 * 指定したコードポイントの漢字は2017年時点で人名漢字で許可されているかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJinmeiyoKanji2017(unicode_codepoint) {
+		return Character.isJoyoKanji2010(unicode_codepoint) || Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
+	}
+
+	/**
+	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で常用漢字かを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanji(unicode_codepoint) {
+		return Character.isJoyoKanji2010(unicode_codepoint);
+	}
+	
+	/**
+	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字でのみ存在するかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isOnlyJinmeiyoKanji(unicode_codepoint) {
+		return Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
+	}
+
+	/**
+	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字で許可されているかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJinmeiyoKanji(unicode_codepoint) {
+		return Character.isJinmeiyoKanji2017(unicode_codepoint);
+	}
+
+}
 
 /**
  * 文字のエンコード情報
  */
-class CharacterEncodeData {
+export class CharacterEncodeData {
+
+	/**
+	 * データ格納用変数の初期化
+	 */
 	constructor() {
 
 		/**
@@ -476,7 +587,11 @@ class CharacterEncodeData {
 /**
  * 文字の種別情報
  */
-class CharacterTypeData {
+export class CharacterTypeData {
+	
+	/**
+	 * データ格納用変数の初期化
+	 */
 	constructor() {
 		/**
 		 * Shift_JIS に登録された文字
@@ -607,121 +722,51 @@ class CharacterTypeData {
 }
 
 /**
- * 文字の解析用クラス
+ * 文字の解析データ情報
  */
-class Character {
+export class CharacterAnalysisData {
+
+	/**
+	 * データ格納用変数の初期化
+	 */
+	constructor() {
 	
-	/**
-	 * 指定したコードポイントが制御文字であれば、制御文字の名前を返す
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {String} 制御文字名、違う場合は null 
-	 */
-	static getControlCharcterName(unicode_codepoint) {
-		const control_charcter_map = CHAR_MAP.CONTROL_CHARCTER;
-		const name = control_charcter_map[unicode_codepoint];
-		return name ? name : null;
-	}
-	
-	/**
-	 * 指定したコードポイントの漢字は1981年より前に常用漢字とされているか判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isJoyoKanjiBefore1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
-		return !!joyokanji_before_1981_map[unicode_codepoint];
-	}
+		/**
+		 * 文字のエンコード情報
+		 * @type {CharacterEncodeData}
+		 */
+		this.encode = new CharacterEncodeData();
 
-	/**
-	 * 指定したコードポイントの漢字は1981年時点で常用漢字かを判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isJoyoKanji1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
-		const joyokanji_add_1981_map = CHAR_MAP.JOYOKANJI_ADD_1981;
-		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
-	}
+		/**
+		 * 文字の種別情報
+		 * @type {CharacterTypeData}
+		 */
+		this.type = new CharacterTypeData();
 
-	/**
-	 * 指定したコードポイントの漢字は2010年時点で常用漢字かを判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isJoyoKanji2010(unicode_codepoint) {
-		const joyokanji_add_2010_map = CHAR_MAP.JOYOKANJI_ADD_2010;
-		const joyokanji_delete_2010_map = CHAR_MAP.JOYOKANJI_DELETE_2010;
-		if(joyokanji_delete_2010_map[unicode_codepoint]) {
-			return false;
-		}
-		const x = Character.isJoyoKanji1981(unicode_codepoint);
-		return x || (!!joyokanji_add_2010_map[unicode_codepoint]);
-	}
+		/**
+		 * 解析した文字
+		 * @type {string}
+		 */
+		this.character = null;
 
-	/**
-	 * 指定したコードポイントの漢字は2017年時点で人名漢字でのみ存在するかを判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isOnlyJinmeiyoKanji2017(unicode_codepoint) {
-		if(Character.isJoyoKanji2010(unicode_codepoint)) {
-			return false;
-		}
-		const jinmeiyokanji_joyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
-		const jinmeiyokanji_notjoyokanji_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
-		const jinmeiyokanji_notjoyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
-		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
-				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
-				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);
+		/**
+		 * 解析した文字のコードポイント
+		 * @type {number}
+		 */
+		this.codepoint = 0;
 	}
-
-	/**
-	 * 指定したコードポイントの漢字は2017年時点で人名漢字で許可されているかを判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isJinmeiyoKanji2017(unicode_codepoint) {
-		return Character.isJoyoKanji2010(unicode_codepoint) || Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
-	}
-
-	/**
-	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で常用漢字かを判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isJoyoKanji(unicode_codepoint) {
-		return Character.isJoyoKanji2010(unicode_codepoint);
-	}
-	
-	/**
-	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字でのみ存在するかを判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isOnlyJinmeiyoKanji(unicode_codepoint) {
-		return Character.isOnlyJinmeiyoKanji2017(unicode_codepoint);
-	}
-
-	/**
-	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字で許可されているかを判定する
-	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-	 * @returns {boolean} 判定結果
-	 */
-	static isJinmeiyoKanji(unicode_codepoint) {
-		return Character.isJinmeiyoKanji2017(unicode_codepoint);
-	}
-
 }
 
 /**
  * 文字の解析用クラス
+ * @ignore
  */
 export default class CharacterAnalyser {
 
 	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
 	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-	 * @returns {{encode : CharacterEncodeData, info : CharacterTypeData, character : string, codepoint : number}} 文字の情報がつまったオブジェクト
+	 * @returns {CharacterAnalysisData} 文字の情報がつまったオブジェクト
 	 */
 	static getCharacterAnalysisData(unicode_codepoint) {
 
@@ -733,20 +778,13 @@ export default class CharacterAnalyser {
 		const is_regular_sjis = cp932code < 0x100 || SJIS.isRegularMenKuten(kuten);
 		const is_regular_sjis2004 = sjis2004code < 0x100 || SJIS.isRegularMenKuten(menkuten);
 
-		// 出力データの箱を用意
-		const data = {};
-
 		/**
-		 * @type {CharacterEncodeData}
+		 * 出力データの箱を用意
+		 * @type {CharacterAnalysisData}
 		 */
-		const encode = new CharacterEncodeData();
-
-		/**
-		 * @type {CharacterTypeData}
-		 */
-		const info = new CharacterTypeData();
-		data.encode = encode;
-		data.info = info;
+		const data = new CharacterAnalysisData();
+		const encode = data.encode;
+		const type = data.type;
 		data.character = Unicode.fromCodePoint(unicode_codepoint);
 		data.codepoint = unicode_codepoint;
 
@@ -758,28 +796,28 @@ export default class CharacterAnalyser {
 		encode.sjis2004_code	= sjis2004code ? sjis2004code : -1;
 
 		// Shift_JIS として許容されるか
-		info.is_regular_sjis	= is_regular_sjis;
-		info.is_regular_sjis2004 = is_regular_sjis2004;
+		type.is_regular_sjis	= is_regular_sjis;
+		type.is_regular_sjis2004 = is_regular_sjis2004;
 
 		// 漢字が常用漢字か、人名用漢字かなど
-		info.is_joyo_kanji		= Character.isJoyoKanji(unicode_codepoint);
-		info.is_jinmeiyo_kanji	= Character.isJinmeiyoKanji(unicode_codepoint);
+		type.is_joyo_kanji		= Character.isJoyoKanji(unicode_codepoint);
+		type.is_jinmeiyo_kanji	= Character.isJinmeiyoKanji(unicode_codepoint);
 
 		// Windows-31J(CP932) に関しての調査 
 		// 外字, IBM拡張文字, NEC選定IBM拡張文字, NEC特殊文字
-		info.is_gaiji_cp932				= cp932code ? (0xf040 <= cp932code) && (cp932code <= 0xf9fc) : false;
-		info.is_IBM_extended_character	= cp932code ? (0xfa40 <= cp932code) && (cp932code <= 0xfc4b) : false;
-		info.is_NEC_selection_IBM_extended_character= cp932code ? (0xed40 <= cp932code) && (cp932code <= 0xeefc) : false;
-		info.is_NEC_special_character	= cp932code ? (0x8740 <= cp932code) && (cp932code <= 0x879C) : false;
+		type.is_gaiji_cp932				= cp932code ? (0xf040 <= cp932code) && (cp932code <= 0xf9fc) : false;
+		type.is_IBM_extended_character	= cp932code ? (0xfa40 <= cp932code) && (cp932code <= 0xfc4b) : false;
+		type.is_NEC_selection_IBM_extended_character= cp932code ? (0xed40 <= cp932code) && (cp932code <= 0xeefc) : false;
+		type.is_NEC_special_character	= cp932code ? (0x8740 <= cp932code) && (cp932code <= 0x879C) : false;
 
 		// Shift_JIS-2004 を使用して漢字の水準調査(ない場合はnullになる)
-		info.kanji_suijun = SJIS.toJISKanjiSuijunFromSJISCode(sjis2004code);
+		type.kanji_suijun = SJIS.toJISKanjiSuijunFromSJISCode(sjis2004code);
 
 		// Unicodeの配列
 		encode.utf8_array = Unicode.toUTF8Array(data.character);
 		encode.utf16_array = Unicode.toUTF16Array(data.character);
 		encode.utf32_array = [unicode_codepoint];
-		info.is_surrogate_pair = encode.utf16_array.length > 1;
+		type.is_surrogate_pair = encode.utf16_array.length > 1;
 
 		// SJIS系の配列
 		encode.cp932_array = cp932code ? ((cp932code >= 0x100) ? [cp932code >> 8, cp932code & 0xff] : [cp932code]) : [];
@@ -819,25 +857,25 @@ export default class CharacterAnalyser {
 		}
 
 		// 制御文字かどうか
-		info.control_name = Character.getControlCharcterName(unicode_codepoint);
-		info.is_control_charcter = info.control_name ? true : false;
+		type.control_name = Character.getControlCharcterName(unicode_codepoint);
+		type.is_control_charcter = type.control_name ? true : false;
 
 		// Unicodeのブロック名
-		info.blockname = CHAR_MAP.toBlockNameFromUnicode(unicode_codepoint);
+		type.blockname = CHAR_MAP.toBlockNameFromUnicode(unicode_codepoint);
 		// ブロック名から判断
-		info.is_kanji = /Ideographs/.test(info.blockname);
-		info.is_hiragana = /Hiragana/.test(info.blockname);
-		info.is_katakana = /Katakana/.test(info.blockname);
-		info.is_fullwidth_ascii = /[\u3000\uFF01-\uFF5E]/.test(data.character);
-		info.is_halfwidth_katakana = /[\uFF61-\uFF9F]/.test(data.character);
+		type.is_kanji = /Ideographs/.test(type.blockname);
+		type.is_hiragana = /Hiragana/.test(type.blockname);
+		type.is_katakana = /Katakana/.test(type.blockname);
+		type.is_fullwidth_ascii = /[\u3000\uFF01-\uFF5E]/.test(data.character);
+		type.is_halfwidth_katakana = /[\uFF61-\uFF9F]/.test(data.character);
 		// 絵文字
-		info.is_emoji = /Pictographs/.test(info.blockname);
+		type.is_emoji = /Pictographs/.test(type.blockname);
 		// 顔文字
-		info.is_emoticons = /Emoticons/.test(info.blockname);
+		type.is_emoticons = /Emoticons/.test(type.blockname);
 		// 外字
-		info.is_gaiji = /Private Use Area/.test(info.blockname);
+		type.is_gaiji = /Private Use Area/.test(type.blockname);
 		// 他に外字チェック
-		info.is_gaiji = info.is_gaiji || ((0xF0000 <= unicode_codepoint) && (unicode_codepoint <= 0x10FFFF));
+		type.is_gaiji = type.is_gaiji || ((0xF0000 <= unicode_codepoint) && (unicode_codepoint <= 0x10FFFF));
 		
 		return data;
 	}

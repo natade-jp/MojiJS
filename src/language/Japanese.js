@@ -10,11 +10,12 @@
 
 /**
  * 日本語を扱うクラス
+ * @ignore
  */
 export default class Japanese {
 
 	/**
-	 * カタカナをひらがなにします。
+	 * カタカナをひらがなに変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -29,7 +30,7 @@ export default class Japanese {
 	}
 
 	/**
-	 * ひらがなをカタカナにします。
+	 * ひらがなをカタカナに変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -44,7 +45,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * スペースを半角にします。
+	 * スペースを半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -53,7 +54,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * スペースを全角にします。
+	 * スペースを全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -62,7 +63,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 英数記号を半角にします。
+	 * 英数記号を半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -82,7 +83,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 英数記号を全角にします。
+	 * 英数記号を全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -102,7 +103,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 英語を半角にします。
+	 * 英語を半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -117,7 +118,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 英語を全角にします。
+	 * 英語を全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -132,7 +133,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 数値を半角にします。
+	 * 数値を半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -147,7 +148,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 数値を全角にします。
+	 * 数値を全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -162,7 +163,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * カタカナを半角にします。
+	 * カタカナを半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -285,7 +286,7 @@ export default class Japanese {
 	}
 
 	/**
-	 * カタカナを全角にします。
+	 * カタカナを全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -395,7 +396,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 半角にします。
+	 * 半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -404,7 +405,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 全角にします。
+	 * 全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -413,7 +414,7 @@ export default class Japanese {
 	}
 
 	/**
-	 * ローマ字からひらがなに変換します。
+	 * ローマ字からひらがなに変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -614,7 +615,7 @@ export default class Japanese {
 	}
 
 	/**
-	 * ローマ字からカタカナに変換します。
+	 * ローマ字からカタカナに変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */

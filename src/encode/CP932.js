@@ -1382,11 +1382,12 @@ CP932MAP.unicode_to_cp932_map = null;
 
 /**
  * CP932, Windows-31J を扱うクラス
+ * @ignore
  */
 export default class CP932 {
 
 	/**
-	 * Unicode のコードから CP932 のコードへ変換します。
+	 * Unicode のコードから CP932 のコードに変換
 	 * @param {Number} unicode_codepoint - Unicode のコードポイント
 	 * @returns {Number} CP932 のコードポイント (存在しない場合は undefined)
 	 */
@@ -1395,7 +1396,7 @@ export default class CP932 {
 	}
 
 	/**
-	 * CP932 のコードから Unicode のコードへ変換します。
+	 * CP932 のコードから Unicode のコードに変換
 	 * @param {Number} cp932_codepoint - CP932 のコードポイント
 	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
 	 */
@@ -1404,7 +1405,7 @@ export default class CP932 {
 	}
 	
 	/**
-	 * 文字列を CP932 の配列へ変換します。
+	 * 文字列を CP932 の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} CP932 のデータが入った配列
 	 */
@@ -1413,7 +1414,8 @@ export default class CP932 {
 	}
 
 	/**
-	 * 文字列を CP932 のバイナリ配列へ変換します。
+	 * 文字列を CP932 のバイナリ配列に変換
+	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
 	 */
@@ -1422,7 +1424,7 @@ export default class CP932 {
 	}
 
 	/**
-	 * CP932 の配列から文字列へ戻します。
+	 * CP932 の配列から文字列に変換
 	 * @param {Array<number>} cp932 - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -1431,9 +1433,9 @@ export default class CP932 {
 	}
 
 	/**
-	 * 指定したテキストの横幅を CP932 の換算で計算します。
-	 * つまり半角を1、全角を2としてカウントします。
-	 * なお、 CP932 の範囲にない文字は2としてカウントします。
+	 * 指定したテキストの横幅を CP932 で換算でカウント
+	 * - 半角を1、全角を2としてカウント
+	 * - CP932 の範囲にない文字は2としてカウント
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -1442,8 +1444,7 @@ export default class CP932 {
 	}
 
 	/**
-	 * 指定したテキストの横幅を CP932 の換算した場合に、
-	 * 単位は見た目の位置となります。
+	 * 指定したテキストの横幅を CP932 で換算した場合の切り出し
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
