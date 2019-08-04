@@ -43,9 +43,9 @@ const createData = function(moduleName, input_name, output_name, isES6, isUglify
 
 const data = [];
 
-data.push(createData("jptext", "./src/jptext.js", "./build/jptext.module.mjs", true, false));
-data.push(createData("jptext", "./src/jptext.js", "./build/jptext.umd.js", false, false));
-data.push(createData("jptext", "./src/jptext.js", "./build/jptext.module.min.mjs", true, true));
-data.push(createData("jptext", "./src/jptext.js", "./build/jptext.umd.min.js", false, true));
+data.push(createData("mojijs", "./src/mojijs.js", "./build/mojijs.module.mjs", true, false));
+data.push(createData("mojijs", "./src/mojijs.js", "./build/mojijs.umd.js", false, false));
+data.push(createData("mojijs", "./src/mojijs.js", "./build/mojijs.module.min.mjs", true, true));
+data.push(createData("mojijs", "./src/mojijs.js", "./build/mojijs.umd.min.js", false, true));
 
 export default data;

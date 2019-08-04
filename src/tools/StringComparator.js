@@ -1,5 +1,5 @@
 /**
- * The script is part of jptext.
+ * The script is part of mojijs.
  * 
  * AUTHOR:
  *  natade (http://twitter.com/natadea)

@@ -1,1 +1,0 @@
-import jptext from "../../../build/jptext.module.min.mjs";export default jptext;

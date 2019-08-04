@@ -1,15 +1,15 @@
 {
-	"name": "jptext",
+	"name": "mojijs",
 	"version": "0.1.0",
 	"description": "Useful tools for Japanese character code.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/natade-jp/jptext.git"
+		"url": "https://github.com/natade-jp/mojijs.git"
 	},
 	"license": "MIT",
-	"main": "./build/jptext.umd.js",
-	"module": "./build/jptext.module.mjs",
+	"main": "./build/mojijs.umd.js",
+	"module": "./build/mojijs.module.mjs",
 	"keywords": [
 		"cp932",
 		"shift_jis",

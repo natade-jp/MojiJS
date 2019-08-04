@@ -1,4 +1,4 @@
-# jptext #
+# mojijs #
 
 ### What ####
 - Useful tools for Japanese character code.

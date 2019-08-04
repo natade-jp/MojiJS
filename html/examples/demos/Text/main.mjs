@@ -1,11 +1,11 @@
 ﻿
 import Log from "../../libs/Log.module.js";
-import jptext from "../../libs/jptext.js";
+import mojijs from "../../libs/mojijs.js";
 
-const Japanese = jptext.Japanese;
-const Unicode = jptext.Unicode;
-const CP932 = jptext.CP932;
-const CharacterAnalyser = jptext.CharacterAnalyser;
+const Japanese = mojijs.Japanese;
+const Unicode = mojijs.Unicode;
+const CP932 = mojijs.CP932;
+const CharacterAnalyser = mojijs.CharacterAnalyser;
 
 const testJapanese = function() {
 
@@ -234,10 +234,10 @@ const testStringComparator = function() {
 	a.sort();
 	Log.println(a.join(", "));
 	Log.println("通常文字列ソート");
-	a.sort(jptext.COMPARE.DEFAULT);
+	a.sort(mojijs.COMPARE.DEFAULT);
 	Log.println(a.join(", "));
 	Log.println("自然順ソート (Natural Sort)");
-	a.sort(jptext.COMPARE.NATURAL);
+	a.sort(mojijs.COMPARE.NATURAL);
 	Log.println(a.join(", "));
 
 };
