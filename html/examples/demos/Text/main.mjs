@@ -125,7 +125,7 @@ const testCharacterAnalyser = function() {
 	Log.println("◆◆CharacterAnalyser クラスのサンプル");
 
 	const analysis = function(moji) {
-		return MojiJS.getCharacterData(MojiJS.codePointAt(moji));
+		return MojiJS.getMojiData(MojiJS.codePointAt(moji));
 	};
 
 	Log.println("◆漢字のチェック1");
