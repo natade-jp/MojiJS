@@ -724,7 +724,7 @@ export class CharacterTypeData {
 /**
  * 文字の解析データ情報
  */
-export class CharacterAnalysisData {
+export class CharacterData {
 
 	/**
 	 * データ格納用変数の初期化
@@ -761,14 +761,14 @@ export class CharacterAnalysisData {
  * 文字の解析用クラス
  * @ignore
  */
-export default class CharacterAnalyser {
+export default class CharacterAnalyzer {
 
 	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
 	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-	 * @returns {CharacterAnalysisData} 文字の情報がつまったオブジェクト
+	 * @returns {CharacterData} 文字の情報がつまったオブジェクト
 	 */
-	static getCharacterAnalysisData(unicode_codepoint) {
+	static getCharacterData(unicode_codepoint) {
 
 		// 基本情報取得
 		const cp932code = CP932.toCP932FromUnicode(unicode_codepoint);
@@ -780,9 +780,9 @@ export default class CharacterAnalyser {
 
 		/**
 		 * 出力データの箱を用意
-		 * @type {CharacterAnalysisData}
+		 * @type {CharacterData}
 		 */
-		const data = new CharacterAnalysisData();
+		const data = new CharacterData();
 		const encode = data.encode;
 		const type = data.type;
 		data.character = Unicode.fromCodePoint(unicode_codepoint);
