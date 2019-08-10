@@ -13,7 +13,7 @@ import SJIS from "./encode/SJIS.js";
 import CP932 from "./encode/CP932.js";
 import SJIS2004 from "./encode/SJIS2004.js";
 import Japanese from "./language/Japanese.js";
-import CharacterAnalyzer, { CharacterData } from "./tools/CharacterAnalyzer.js";
+import CharacterAnalyzer from "./tools/CharacterAnalyzer.js";
 import StringComparator from "./tools/StringComparator.js";
 
 /**
@@ -463,10 +463,10 @@ export default class MojiJS {
 	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
 	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-	 * @returns {CharacterData} 文字の情報がつまったオブジェクト
+	 * @returns {import("./tools/CharacterAnalyzer.js").MojiData} 文字の情報がつまったオブジェクト
 	 */
-	static getCharacterData(unicode_codepoint) {
-		return CharacterAnalyzer.getCharacterData(unicode_codepoint);
+	static getMojiData(unicode_codepoint) {
+		return CharacterAnalyzer.getMojiData(unicode_codepoint);
 	}
 
 	/**

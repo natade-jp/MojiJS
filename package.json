@@ -26,6 +26,7 @@
 		"dev": "node ./scripts/package.dev.js",
 		"build": "node ./scripts/package.build.js",
 		"doc": "node ./scripts/package.doc.js",
+		"dts": "node ./scripts/package.dts.js",
 		"test": "jest",
 		"test_target": "node ./scripts/package.test.js"
 	},
@@ -61,9 +62,15 @@
 		"esdoc-standard-plugin": "^1.0.0",
 		"eslint-plugin-jest": "^22.15.0",
 		"jest": "^24.8.0",
+		"jsdoc": "^3.6.3",
+		"jsdoc-export-default-interop": "^0.3.1",
 		"rollup": "^1.18.0",
 		"rollup-plugin-buble": "^0.19.8",
 		"rollup-plugin-uglify": "^6.0.2",
-		"rollup-plugin-uglify-es": "0.0.1"
+		"rollup-plugin-uglify-es": "0.0.1",
+		"tsd-jsdoc": "^2.3.1"
+	},
+	"dependencies": {
+		"eslint": "^6.1.0"
 	}
 }

@@ -11,11 +11,12 @@ let test_count = 0;
  */
 const testType  = function(text, operator, result) {
 	test_count++;
-	const data = CharacterAnalyzer.getCharacterData(Unicode.codePointAt(text));
+	const data = CharacterAnalyzer.getMojiData(Unicode.codePointAt(text));
+	// @ts-ignore
 	const y = data.type[operator];
 	const testname = operator + " " + test_count;
 	test(testname, () => { expect(y).toBe(result); });
-}
+};
 
 /**
  * @param {string} text
@@ -23,7 +24,7 @@ const testType  = function(text, operator, result) {
  */
 const testKuTen  = function(text, kuten) {
 	test_count++;
-	const data = CharacterAnalyzer.getCharacterData(Unicode.codePointAt(text));
+	const data = CharacterAnalyzer.getMojiData(Unicode.codePointAt(text));
 	/**
 	 * @type {boolean}
 	 */
@@ -36,7 +37,7 @@ const testKuTen  = function(text, kuten) {
 	}
 	const testname = "testKuTen " + test_count;
 	test(testname, () => { expect(result).toBe(true); });
-}
+};
 
 /**
  * @param {string} text
@@ -45,7 +46,7 @@ const testKuTen  = function(text, kuten) {
  */
 const testMenKuTen  = function(text, menkuten, suijun) {
 	test_count++;
-	const data = CharacterAnalyzer.getCharacterData(Unicode.codePointAt(text));
+	const data = CharacterAnalyzer.getMojiData(Unicode.codePointAt(text));
 	/**
 	 * @type {boolean}
 	 */
@@ -61,7 +62,7 @@ const testMenKuTen  = function(text, menkuten, suijun) {
 	}
 	const testname = "testMenKuTen " + test_count;
 	test(testname, () => { expect(result).toBe(true); });
-}
+};
 
 test_count = 0;
 {
