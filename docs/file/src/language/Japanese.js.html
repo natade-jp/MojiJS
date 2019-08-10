@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/language/Japanese.js | MojiJS</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Useful tools for Japanese character code."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="MojiJS"><meta property="twitter:description" content="Useful tools for Japanese character code."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/MojiJS.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/language/Japanese.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&#xFEFF;/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * &#x65E5;&#x672C;&#x8A9E;&#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
+ * @ignore
+ */
+export default class Japanese {
+
+	/**
+	 * &#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3092;&#x3072;&#x3089;&#x304C;&#x306A;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHiragana(text) {
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			return(String.fromCharCode(ch.charCodeAt(0) - 0x0060));
+		};
+		return (text.replace(/[\u30A1-\u30F6]/g, func));
+	}
+
+	/**
+	 * &#x3072;&#x3089;&#x304C;&#x306A;&#x3092;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toKatakana(text) {
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			return(String.fromCharCode(ch.charCodeAt(0) + 0x0060));
+		};
+		return (text.replace(/[\u3041-\u3096]/g, func));
+	}
+	
+	/**
+	 * &#x30B9;&#x30DA;&#x30FC;&#x30B9;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHalfWidthSpace(text) {
+		return (text.replace(/\u3000/g, String.fromCharCode(0x0020)));
+	}
+	
+	/**
+	 * &#x30B9;&#x30DA;&#x30FC;&#x30B9;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toFullWidthSpace(text) {
+		return (text.replace(/\u0020/g, String.fromCharCode(0x3000)));
+	}
+	
+	/**
+	 * &#x82F1;&#x6570;&#x8A18;&#x53F7;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHalfWidthAsciiCode(text) {
+		let out = text;
+		out = out.replace(/\u3000/g, &quot;\u0020&quot;);				//&#x5168;&#x89D2;&#x30B9;&#x30DA;&#x30FC;&#x30B9;
+		out = out.replace(/[\u2018-\u201B]/g, &quot;\u0027&quot;);	//&#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;
+		out = out.replace(/[\u201C-\u201F]/g, &quot;\u0022&quot;);	//&#x30C0;&#x30D6;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			const code = ch.charCodeAt(0);
+			return (String.fromCharCode(code - 0xFEE0));
+		};
+		return (out.replace(/[\uFF01-\uFF5E]/g, func));
+	}
+	
+	/**
+	 * &#x82F1;&#x6570;&#x8A18;&#x53F7;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toFullWidthAsciiCode(text) {
+		let out = text;
+		out = out.replace(/\u0020/g, &quot;\u3000&quot;);	//&#x5168;&#x89D2;&#x30B9;&#x30DA;&#x30FC;&#x30B9;
+		out = out.replace(/\u0022/g, &quot;\u201D&quot;);	//&#x30C0;&#x30D6;&#x30EB;&#x30AF;&#x30A9;&#x30FC;&#x30C6;&#x30FC;&#x30B7;&#x30E7;&#x30F3;
+		out = out.replace(/\u0027/g, &quot;\u2019&quot;);	//&#x30A2;&#x30DD;&#x30B9;&#x30C8;&#x30ED;&#x30D5;&#x30A3;&#x30FC;
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			const code = ch.charCodeAt(0);
+			return (String.fromCharCode(code + 0xFEE0));
+		};
+		return (out.replace(/[\u0020-\u007E]/g, func));
+	}
+	
+	/**
+	 * &#x82F1;&#x8A9E;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHalfWidthAlphabet(text) {
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			return (String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+		};
+		return (text.replace(/[\uFF21-\uFF3A\uFF41-\uFF5A]/g, func));
+	}
+	
+	/**
+	 * &#x82F1;&#x8A9E;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toFullWidthAlphabet(text) {
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			return (String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
+		};
+		return (text.replace(/[A-Za-z]/g, func));
+	}
+	
+	/**
+	 * &#x6570;&#x5024;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHalfWidthNumber(text) {
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			return(String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
+		};
+		return (text.replace(/[\uFF10-\uFF19]/g, func));
+	}
+	
+	/**
+	 * &#x6570;&#x5024;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toFullWidthNumber(text) {
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			return(String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
+		};
+		return (text.replace(/[0-9]/g, func));
+	}
+	
+	/**
+	 * &#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHalfWidthKana(text) {
+		/**
+		 * @type {Object&lt;number, string&gt;}
+		 */
+		const map = {
+			0x3001	:	&quot;\uFF64&quot;	,	//	&#xFF64;
+			0x3002	:	&quot;\uFF61&quot;	,	//	&#x3002;	&#xFF61;
+			0x300C	:	&quot;\uFF62&quot;	,	//	&#x300C;	&#xFF62;
+			0x300D	:	&quot;\uFF63&quot;	,	//	&#x300D;	&#xFF63;
+			0x309B	:	&quot;\uFF9E&quot;	,	//	&#x309B;	&#xFF9E;
+			0x309C	:	&quot;\uFF9F&quot;	,	//	&#x309C;	&#xFF9F;
+			0x30A1	:	&quot;\uFF67&quot;	,	//	&#x30A1;	&#xFF67;
+			0x30A2	:	&quot;\uFF71&quot;	,	//	&#x30A2;	&#xFF71;
+			0x30A3	:	&quot;\uFF68&quot;	,	//	&#x30A3;	&#xFF68;
+			0x30A4	:	&quot;\uFF72&quot;	,	//	&#x30A4;	&#xFF72;
+			0x30A5	:	&quot;\uFF69&quot;	,	//	&#x30A5;	&#xFF69;
+			0x30A6	:	&quot;\uFF73&quot;	,	//	&#x30A6;	&#xFF73;
+			0x30A7	:	&quot;\uFF6A&quot;	,	//	&#x30A7;	&#xFF6A;
+			0x30A8	:	&quot;\uFF74&quot;	,	//	&#x30A8;	&#xFF74;
+			0x30A9	:	&quot;\uFF6B&quot;	,	//	&#x30A9;	&#xFF6B;
+			0x30AA	:	&quot;\uFF75&quot;	,	//	&#x30AA;	&#xFF75;
+			0x30AB	:	&quot;\uFF76&quot;	,	//	&#x30AB;	&#xFF76;
+			0x30AC	:	&quot;\uFF76\uFF9E&quot;	,	//	&#x30AC;	&#xFF76;&#xFF9E;
+			0x30AD	:	&quot;\uFF77&quot;	,	//	&#x30AD;	&#xFF77;
+			0x30AE	:	&quot;\uFF77\uFF9E&quot;	,	//	&#x30AE;	&#xFF77;&#xFF9E;
+			0x30AF	:	&quot;\uFF78&quot;	,	//	&#x30AF;	&#xFF78;
+			0x30B0	:	&quot;\uFF78\uFF9E&quot;	,	//	&#x30B0;	&#xFF78;&#xFF9E;
+			0x30B1	:	&quot;\uFF79&quot;	,	//	&#x30B1;	&#xFF79;
+			0x30B2	:	&quot;\uFF79\uFF9E&quot;	,	//	&#x30B2;	&#xFF79;&#xFF9E;
+			0x30B3	:	&quot;\uFF7A&quot;	,	//	&#x30B3;	&#xFF7A;
+			0x30B4	:	&quot;\uFF7A\uFF9E&quot;	,	//	&#x30B4;	&#xFF7A;&#xFF9E;
+			0x30B5	:	&quot;\uFF7B&quot;	,	//	&#x30B5;	&#xFF7B;
+			0x30B6	:	&quot;\uFF7B\uFF9E&quot;	,	//	&#x30B6;	&#xFF7B;&#xFF9E;
+			0x30B7	:	&quot;\uFF7C&quot;	,	//	&#x30B7;	&#xFF7C;
+			0x30B8	:	&quot;\uFF7C\uFF9E&quot;	,	//	&#x30B8;	&#xFF7C;&#xFF9E;
+			0x30B9	:	&quot;\uFF7D&quot;	,	//	&#x30B9;	&#xFF7D;
+			0x30BA	:	&quot;\uFF7D\uFF9E&quot;	,	//	&#x30BA;	&#xFF7D;&#xFF9E;
+			0x30BB	:	&quot;\uFF7E&quot;	,	//	&#x30BB;	&#xFF7E;
+			0x30BC	:	&quot;\uFF7E\uFF9E&quot;	,	//	&#x30BC;	&#xFF7E;&#xFF9E;
+			0x30BD	:	&quot;\uFF7F&quot;	,	//	&#x30BD;	&#xFF7F;
+			0x30BE	:	&quot;\uFF7F\uFF9E&quot;	,	//	&#x30BE;	&#xFF7F;&#xFF9E;
+			0x30BF	:	&quot;\uFF80&quot;	,	//	&#x30BF;	&#xFF80;
+			0x30C0	:	&quot;\uFF80\uFF9E&quot;	,	//	&#x30C0;	&#xFF80;&#xFF9E;
+			0x30C1	:	&quot;\uFF81&quot;	,	//	&#x30C1;	&#xFF81;
+			0x30C2	:	&quot;\uFF81\uFF9E&quot;	,	//	&#x30C2;	&#xFF81;&#xFF9E;
+			0x30C3	:	&quot;\uFF6F&quot;	,	//	&#x30C3;	&#xFF6F;
+			0x30C4	:	&quot;\uFF82&quot;	,	//	&#x30C4;	&#xFF82;
+			0x30C5	:	&quot;\uFF82\uFF9E&quot;	,	//	&#x30C5;	&#xFF82;&#xFF9E;
+			0x30C6	:	&quot;\uFF83&quot;	,	//	&#x30C6;	&#xFF83;
+			0x30C7	:	&quot;\uFF83\uFF9E&quot;	,	//	&#x30C7;	&#xFF83;&#xFF9E;
+			0x30C8	:	&quot;\uFF84&quot;	,	//	&#x30C8;	&#xFF84;
+			0x30C9	:	&quot;\uFF84\uFF9E&quot;	,	//	&#x30C9;	&#xFF84;&#xFF9E;
+			0x30CA	:	&quot;\uFF85&quot;	,	//	&#x30CA;	&#xFF85;
+			0x30CB	:	&quot;\uFF86&quot;	,	//	&#x30CB;	&#xFF86;
+			0x30CC	:	&quot;\uFF87&quot;	,	//	&#x30CC;	&#xFF87;
+			0x30CD	:	&quot;\uFF88&quot;	,	//	&#x30CD;	&#xFF88;
+			0x30CE	:	&quot;\uFF89&quot;	,	//	&#x30CE;	&#xFF89;
+			0x30CF	:	&quot;\uFF8A&quot;	,	//	&#x30CF;	&#xFF8A;
+			0x30D0	:	&quot;\uFF8A\uFF9E&quot;	,	//	&#x30D0;	&#xFF8A;&#xFF9E;
+			0x30D1	:	&quot;\uFF8A\uFF9F&quot;	,	//	&#x30D1;	&#xFF8A;&#xFF9F;
+			0x30D2	:	&quot;\uFF8B&quot;	,	//	&#x30D2;	&#xFF8B;
+			0x30D3	:	&quot;\uFF8B\uFF9E&quot;	,	//	&#x30D3;	&#xFF8B;&#xFF9E;
+			0x30D4	:	&quot;\uFF8B\uFF9F&quot;	,	//	&#x30D4;	&#xFF8B;&#xFF9F;
+			0x30D5	:	&quot;\uFF8C&quot;	,	//	&#x30D5;	&#xFF8C;
+			0x30D6	:	&quot;\uFF8C\uFF9E&quot;	,	//	&#x30D6;	&#xFF8C;&#xFF9E;
+			0x30D7	:	&quot;\uFF8C\uFF9F&quot;	,	//	&#x30D7;	&#xFF8C;&#xFF9F;
+			0x30D8	:	&quot;\uFF8D&quot;	,	//	&#x30D8;	&#xFF8D;
+			0x30D9	:	&quot;\uFF8D\uFF9E&quot;	,	//	&#x30D9;	&#xFF8D;&#xFF9E;
+			0x30DA	:	&quot;\uFF8D\uFF9F&quot;	,	//	&#x30DA;	&#xFF8D;&#xFF9F;
+			0x30DB	:	&quot;\uFF8E&quot;	,	//	&#x30DB;	&#xFF8E;
+			0x30DC	:	&quot;\uFF8E\uFF9E&quot;	,	//	&#x30DC;	&#xFF8E;&#xFF9E;
+			0x30DD	:	&quot;\uFF8E\uFF9F&quot;	,	//	&#x30DD;	&#xFF8E;&#xFF9F;
+			0x30DE	:	&quot;\uFF8F&quot;	,	//	&#x30DE;	&#xFF8F;
+			0x30DF	:	&quot;\uFF90&quot;	,	//	&#x30DF;	&#xFF90;
+			0x30E0	:	&quot;\uFF91&quot;	,	//	&#x30E0;	&#xFF91;
+			0x30E1	:	&quot;\uFF92&quot;	,	//	&#x30E1;	&#xFF92;
+			0x30E2	:	&quot;\uFF93&quot;	,	//	&#x30E2;	&#xFF93;
+			0x30E3	:	&quot;\uFF6C&quot;	,	//	&#x30E3;	&#xFF6C;
+			0x30E4	:	&quot;\uFF94&quot;	,	//	&#x30E4;	&#xFF94;
+			0x30E5	:	&quot;\uFF6D&quot;	,	//	&#x30E5;	&#xFF6D;
+			0x30E6	:	&quot;\uFF95&quot;	,	//	&#x30E6;	&#xFF95;
+			0x30E7	:	&quot;\uFF6E&quot;	,	//	&#x30E7;	&#xFF6E;
+			0x30E8	:	&quot;\uFF96&quot;	,	//	&#x30E8;	&#xFF96;
+			0x30E9	:	&quot;\uFF97&quot;	,	//	&#x30E9;	&#xFF97;
+			0x30EA	:	&quot;\uFF98&quot;	,	//	&#x30EA;	&#xFF98;
+			0x30EB	:	&quot;\uFF99&quot;	,	//	&#x30EB;	&#xFF99;
+			0x30EC	:	&quot;\uFF9A&quot;	,	//	&#x30EC;	&#xFF9A;
+			0x30ED	:	&quot;\uFF9B&quot;	,	//	&#x30ED;	&#xFF9B;
+			0x30EE	:	&quot;\uFF9C&quot;	,	//	&#x30EE;	&#xFF9C;
+			0x30EF	:	&quot;\uFF9C&quot;	,	//	&#x30EF;	&#xFF9C;
+			0x30F0	:	&quot;\uFF72&quot;	,	//	&#x30F0;	&#xFF72;
+			0x30F1	:	&quot;\uFF74&quot;	,	//	&#x30F1;	&#xFF74;
+			0x30F2	:	&quot;\uFF66&quot;	,	//	&#x30F2;	&#xFF66;
+			0x30F3	:	&quot;\uFF9D&quot;	,	//	&#x30F3;	&#xFF9D;
+			0x30F4	:	&quot;\uFF73\uFF9E&quot;	,	//	&#x30F4;	&#xFF73;&#xFF9E;
+			0x30F5	:	&quot;\uFF76&quot;	,	//	&#x30F5;	&#xFF76;
+			0x30F6	:	&quot;\uFF79&quot;	,	//	&#x30F6;	&#xFF79;
+			0x30F7	:	&quot;\uFF9C\uFF9E&quot;	,	//	&#x30F7;	&#xFF9C;&#xFF9E;
+			0x30F8	:	&quot;\uFF72\uFF9E&quot;	,	//	&#x30F8;	&#xFF72;&#xFF9E;
+			0x30F9	:	&quot;\uFF74\uFF9E&quot;	,	//	&#x30F9;	&#xFF74;&#xFF9E;
+			0x30FA	:	&quot;\uFF66\uFF9E&quot;	,	//	&#x30FA;	&#xFF66;&#xFF9E;
+			0x30FB	:	&quot;\uFF65&quot;	,	//	&#x30FB;	&#xFF65;
+			0x30FC	:	&quot;\uFF70&quot;		//	&#x30FC;	&#xFF70;
+		};
+		/**
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			if(ch.length === 1) {
+				return(map[ch.charCodeAt(0)]);
+			}
+			else {
+				return(map[ch.charCodeAt(0)] + map[ch.charCodeAt(1)]);
+			}
+		};
+		return (text.replace(/[\u3001\u3002\u300C\u300D\u309B\u309C\u30A1-\u30FC][\u309B\u309C]?/g, func));
+	}
+
+	/**
+	 * &#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toFullWidthKana(text) {
+		/**
+		 * @type {Object&lt;number, number&gt;}
+		 */
+		const map = {
+			0xFF61	:	0x3002	,	//	&#x3002;	&#xFF61;
+			0xFF62	:	0x300C	,	//	&#x300C;	&#xFF62;
+			0xFF63	:	0x300D	,	//	&#x300D;	&#xFF63;
+			0xFF64	:	0x3001	,	//	&#xFF64;
+			0xFF65	:	0x30FB	,	//	&#x30FB;	&#xFF65;
+			0xFF66	:	0x30F2	,	//	&#x30F2;	&#xFF66;
+			0xFF67	:	0x30A1	,	//	&#x30A1;	&#xFF67;
+			0xFF68	:	0x30A3	,	//	&#x30A3;	&#xFF68;
+			0xFF69	:	0x30A5	,	//	&#x30A5;	&#xFF69;
+			0xFF6A	:	0x30A7	,	//	&#x30A7;	&#xFF6A;
+			0xFF6B	:	0x30A9	,	//	&#x30A9;	&#xFF6B;
+			0xFF6C	:	0x30E3	,	//	&#x30E3;	&#xFF6C;
+			0xFF6D	:	0x30E5	,	//	&#x30E5;	&#xFF6D;
+			0xFF6E	:	0x30E7	,	//	&#x30E7;	&#xFF6E;
+			0xFF6F	:	0x30C3	,	//	&#x30C3;	&#xFF6F;
+			0xFF70	:	0x30FC	,	//	&#x30FC;	&#xFF70;
+			0xFF71	:	0x30A2	,	//	&#x30A2;	&#xFF71;
+			0xFF72	:	0x30A4	,	//	&#x30A4;	&#xFF72;
+			0xFF73	:	0x30A6	,	//	&#x30A6;	&#xFF73;
+			0xFF74	:	0x30A8	,	//	&#x30A8;	&#xFF74;
+			0xFF75	:	0x30AA	,	//	&#x30AA;	&#xFF75;
+			0xFF76	:	0x30AB	,	//	&#x30AB;	&#xFF76;
+			0xFF77	:	0x30AD	,	//	&#x30AD;	&#xFF77;
+			0xFF78	:	0x30AF	,	//	&#x30AF;	&#xFF78;
+			0xFF79	:	0x30B1	,	//	&#x30B1;	&#xFF79;
+			0xFF7A	:	0x30B3	,	//	&#x30B3;	&#xFF7A;
+			0xFF7B	:	0x30B5	,	//	&#x30B5;	&#xFF7B;
+			0xFF7C	:	0x30B7	,	//	&#x30B7;	&#xFF7C;
+			0xFF7D	:	0x30B9	,	//	&#x30B9;	&#xFF7D;
+			0xFF7E	:	0x30BB	,	//	&#x30BB;	&#xFF7E;
+			0xFF7F	:	0x30BD	,	//	&#x30BD;	&#xFF7F;
+			0xFF80	:	0x30BF	,	//	&#x30BF;	&#xFF80;
+			0xFF81	:	0x30C1	,	//	&#x30C1;	&#xFF81;
+			0xFF82	:	0x30C4	,	//	&#x30C4;	&#xFF82;
+			0xFF83	:	0x30C6	,	//	&#x30C6;	&#xFF83;
+			0xFF84	:	0x30C8	,	//	&#x30C8;	&#xFF84;
+			0xFF85	:	0x30CA	,	//	&#x30CA;	&#xFF85;
+			0xFF86	:	0x30CB	,	//	&#x30CB;	&#xFF86;
+			0xFF87	:	0x30CC	,	//	&#x30CC;	&#xFF87;
+			0xFF88	:	0x30CD	,	//	&#x30CD;	&#xFF88;
+			0xFF89	:	0x30CE	,	//	&#x30CE;	&#xFF89;
+			0xFF8A	:	0x30CF	,	//	&#x30CF;	&#xFF8A;
+			0xFF8B	:	0x30D2	,	//	&#x30D2;	&#xFF8B;
+			0xFF8C	:	0x30D5	,	//	&#x30D5;	&#xFF8C;
+			0xFF8D	:	0x30D8	,	//	&#x30D8;	&#xFF8D;
+			0xFF8E	:	0x30DB	,	//	&#x30DB;	&#xFF8E;
+			0xFF8F	:	0x30DE	,	//	&#x30DE;	&#xFF8F;
+			0xFF90	:	0x30DF	,	//	&#x30DF;	&#xFF90;
+			0xFF91	:	0x30E0	,	//	&#x30E0;	&#xFF91;
+			0xFF92	:	0x30E1	,	//	&#x30E1;	&#xFF92;
+			0xFF93	:	0x30E2	,	//	&#x30E2;	&#xFF93;
+			0xFF94	:	0x30E4	,	//	&#x30E4;	&#xFF94;
+			0xFF95	:	0x30E6	,	//	&#x30E6;	&#xFF95;
+			0xFF96	:	0x30E8	,	//	&#x30E8;	&#xFF96;
+			0xFF97	:	0x30E9	,	//	&#x30E9;	&#xFF97;
+			0xFF98	:	0x30EA	,	//	&#x30EA;	&#xFF98;
+			0xFF99	:	0x30EB	,	//	&#x30EB;	&#xFF99;
+			0xFF9A	:	0x30EC	,	//	&#x30EC;	&#xFF9A;
+			0xFF9B	:	0x30ED	,	//	&#x30ED;	&#xFF9B;
+			0xFF9C	:	0x30EF	,	//	&#x30EF;	&#xFF9C;
+			0xFF9D	:	0x30F3	,	//	&#x30F3;	&#xFF9D;
+			0xFF9E	:	0x309B	,	//	&#x309B;	&#xFF9E;
+			0xFF9F	:	0x309C		//	&#x309C;	&#xFF9F;
+		};
+		/**
+		 * @param {string} str 
+		 */
+		const func = function(str) {
+			if(str.length === 1) {
+				return (String.fromCharCode(map[str.charCodeAt(0)]));
+			}
+			else {
+				const next = str.charCodeAt(1);
+				const ch   = str.charCodeAt(0);
+				if(next === 0xFF9E) {
+					// Shift-JIS&#x306B;&#x306A;&#x3044;&#x6FC1;&#x70B9;&#x306F;&#x7121;&#x8996;
+					// &#x30F4;
+					if (ch === 0xFF73) {
+						return (String.fromCharCode(0x3094));
+					}
+					// &#x30AC;-&#x30C9;&#x3001;&#x30D0;-&#x30DC;
+					else if(
+						((0xFF76 &lt;= ch) &amp;&amp; (ch &lt;= 0xFF84)) ||
+						((0xFF8A &lt;= ch) &amp;&amp; (ch &lt;= 0xFF8E))	) {
+						return (String.fromCharCode(map[ch] + 1));
+					}
+				}
+				// &#x534A;&#x6FC1;&#x70B9;
+				else if(next === 0xFF9F) {
+					// &#x30D1;-&#x30DD;
+					if((0xFF8A &lt;= ch) &amp;&amp; (ch &lt;= 0xFF8E)) {
+						return (String.fromCharCode(map[ch] + 2));
+					}
+				}
+				return (String.fromCharCode(map[ch]) + String.fromCharCode(map[next]));
+			}
+		};
+		return (text.replace(/[\uFF61-\uFF9F][\uFF9E\uFF9F]?/g, func));
+	}
+	
+	/**
+	 * &#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHalfWidth(text) {
+		return Japanese.toHalfWidthKana(Japanese.toHalfWidthAsciiCode(text));
+	}
+	
+	/**
+	 * &#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toFullWidth(text) {
+		return Japanese.toFullWidthKana(Japanese.toFullWidthAsciiCode(text));
+	}
+
+	/**
+	 * &#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x304B;&#x3089;&#x3072;&#x3089;&#x304C;&#x306A;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toHiraganaFromRomaji(text) {
+		/**
+		 * &#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x304B;&#x3089;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
+		 * @type {Object&lt;string, string&gt;}
+		 */
+		const map = {
+			&quot;a&quot; : &quot;&#x3042;&quot; ,
+			&quot;i&quot; : &quot;&#x3044;&quot; ,
+			&quot;u&quot; : &quot;&#x3046;&quot; ,
+			&quot;e&quot; : &quot;&#x3048;&quot; ,
+			&quot;o&quot; : &quot;&#x304A;&quot; ,
+			&quot;ka&quot; : &quot;&#x304B;&quot; ,
+			&quot;ki&quot; : &quot;&#x304D;&quot; ,
+			&quot;ku&quot; : &quot;&#x304F;&quot; ,
+			&quot;ke&quot; : &quot;&#x3051;&quot; ,
+			&quot;ko&quot; : &quot;&#x3053;&quot; ,
+			&quot;ga&quot; : &quot;&#x304C;&quot; ,
+			&quot;gi&quot; : &quot;&#x304E;&quot; ,
+			&quot;gu&quot; : &quot;&#x3050;&quot; ,
+			&quot;ge&quot; : &quot;&#x3052;&quot; ,
+			&quot;go&quot; : &quot;&#x3054;&quot; ,
+			&quot;sa&quot; : &quot;&#x3055;&quot; ,
+			&quot;si&quot; : &quot;&#x3057;&quot; ,
+			&quot;su&quot; : &quot;&#x3059;&quot; ,
+			&quot;se&quot; : &quot;&#x305B;&quot; ,
+			&quot;so&quot; : &quot;&#x305D;&quot; ,
+			&quot;za&quot; : &quot;&#x3056;&quot; ,
+			&quot;zi&quot; : &quot;&#x3058;&quot; ,
+			&quot;zu&quot; : &quot;&#x305A;&quot; ,
+			&quot;ze&quot; : &quot;&#x305C;&quot; ,
+			&quot;zo&quot; : &quot;&#x305E;&quot; ,
+			&quot;ta&quot; : &quot;&#x305F;&quot; ,
+			&quot;ti&quot; : &quot;&#x3061;&quot; ,
+			&quot;tu&quot; : &quot;&#x3064;&quot; ,
+			&quot;te&quot; : &quot;&#x3066;&quot; ,
+			&quot;to&quot; : &quot;&#x3068;&quot; ,
+			&quot;da&quot; : &quot;&#x3060;&quot; ,
+			&quot;di&quot; : &quot;&#x3062;&quot; ,
+			&quot;du&quot; : &quot;&#x3065;&quot; ,
+			&quot;de&quot; : &quot;&#x3067;&quot; ,
+			&quot;do&quot; : &quot;&#x3069;&quot; ,
+			&quot;na&quot; : &quot;&#x306A;&quot; ,
+			&quot;ni&quot; : &quot;&#x306B;&quot; ,
+			&quot;nu&quot; : &quot;&#x306C;&quot; ,
+			&quot;ne&quot; : &quot;&#x306D;&quot; ,
+			&quot;no&quot; : &quot;&#x306E;&quot; ,
+			&quot;ha&quot; : &quot;&#x306F;&quot; ,
+			&quot;hi&quot; : &quot;&#x3072;&quot; ,
+			&quot;hu&quot; : &quot;&#x3075;&quot; ,
+			&quot;he&quot; : &quot;&#x3078;&quot; ,
+			&quot;ho&quot; : &quot;&#x307B;&quot; ,
+			&quot;ba&quot; : &quot;&#x3070;&quot; ,
+			&quot;bi&quot; : &quot;&#x3073;&quot; ,
+			&quot;bu&quot; : &quot;&#x3076;&quot; ,
+			&quot;be&quot; : &quot;&#x3079;&quot; ,
+			&quot;bo&quot; : &quot;&#x307C;&quot; ,
+			&quot;pa&quot; : &quot;&#x3071;&quot; ,
+			&quot;pi&quot; : &quot;&#x3074;&quot; ,
+			&quot;pu&quot; : &quot;&#x3077;&quot; ,
+			&quot;pe&quot; : &quot;&#x307A;&quot; ,
+			&quot;po&quot; : &quot;&#x307D;&quot; ,
+			&quot;ma&quot; : &quot;&#x307E;&quot; ,
+			&quot;mi&quot; : &quot;&#x307F;&quot; ,
+			&quot;mu&quot; : &quot;&#x3080;&quot; ,
+			&quot;me&quot; : &quot;&#x3081;&quot; ,
+			&quot;mo&quot; : &quot;&#x3082;&quot; ,
+			&quot;ya&quot; : &quot;&#x3084;&quot; ,
+			&quot;yi&quot; : &quot;&#x3044;&quot; ,
+			&quot;yu&quot; : &quot;&#x3086;&quot; ,
+			&quot;ye&quot; : &quot;&#x3044;&#x3047;&quot; ,
+			&quot;yo&quot; : &quot;&#x3088;&quot; ,
+			&quot;ra&quot; : &quot;&#x3089;&quot; ,
+			&quot;ri&quot; : &quot;&#x308A;&quot; ,
+			&quot;ru&quot; : &quot;&#x308B;&quot; ,
+			&quot;re&quot; : &quot;&#x308C;&quot; ,
+			&quot;ro&quot; : &quot;&#x308D;&quot; ,
+			&quot;wa&quot; : &quot;&#x308F;&quot; ,
+			&quot;wi&quot; : &quot;&#x3046;&#x3043;&quot; ,
+			&quot;wu&quot; : &quot;&#x3046;&quot; ,
+			&quot;we&quot; : &quot;&#x3046;&#x3047;&quot; ,
+			&quot;wo&quot; : &quot;&#x3092;&quot; ,
+			&quot;la&quot; : &quot;&#x3041;&quot; ,
+			&quot;li&quot; : &quot;&#x3043;&quot; ,
+			&quot;lu&quot; : &quot;&#x3045;&quot; ,
+			&quot;le&quot; : &quot;&#x3047;&quot; ,
+			&quot;lo&quot; : &quot;&#x3049;&quot; ,
+			&quot;lya&quot; : &quot;&#x3083;&quot; ,
+			&quot;lyi&quot; : &quot;&#x3043;&quot; ,
+			&quot;lyu&quot; : &quot;&#x3085;&quot; ,
+			&quot;lye&quot; : &quot;&#x3047;&quot; ,
+			&quot;lyo&quot; : &quot;&#x3087;&quot; ,
+			&quot;ltu&quot; : &quot;&#x3063;&quot; ,
+			&quot;ltsu&quot; : &quot;&#x3063;&quot; ,
+			&quot;xa&quot; : &quot;&#x3041;&quot; ,
+			&quot;xi&quot; : &quot;&#x3043;&quot; ,
+			&quot;xu&quot; : &quot;&#x3045;&quot; ,
+			&quot;xe&quot; : &quot;&#x3047;&quot; ,
+			&quot;xo&quot; : &quot;&#x3049;&quot; ,
+			&quot;xya&quot; : &quot;&#x3083;&quot; ,
+			&quot;xyi&quot; : &quot;&#x3043;&quot; ,
+			&quot;xyu&quot; : &quot;&#x3085;&quot; ,
+			&quot;xye&quot; : &quot;&#x3047;&quot; ,
+			&quot;xyo&quot; : &quot;&#x3087;&quot; ,
+			&quot;xtu&quot; : &quot;&#x3063;&quot; ,
+			&quot;xtsu&quot; : &quot;&#x3063;&quot; ,
+			&quot;va&quot; : &quot;&#x30F4;&#x3041;&quot; ,
+			&quot;vi&quot; : &quot;&#x30F4;&#x3043;&quot; ,
+			&quot;vu&quot; : &quot;&#x30F4;&quot; ,
+			&quot;ve&quot; : &quot;&#x30F4;&#x3047;&quot; ,
+			&quot;vo&quot; : &quot;&#x30F4;&#x3049;&quot; ,
+			&quot;qa&quot; : &quot;&#x304F;&#x3041;&quot; ,
+			&quot;qi&quot; : &quot;&#x304F;&#x3043;&quot; ,
+			&quot;qu&quot; : &quot;&#x304F;&quot; ,
+			&quot;qe&quot; : &quot;&#x304F;&#x3047;&quot; ,
+			&quot;qo&quot; : &quot;&#x304F;&#x3049;&quot; ,
+			&quot;fa&quot; : &quot;&#x3075;&#x3041;&quot; ,
+			&quot;fi&quot; : &quot;&#x3075;&#x3043;&quot; ,
+			&quot;fu&quot; : &quot;&#x3075;&quot; ,
+			&quot;fe&quot; : &quot;&#x3075;&#x3047;&quot; ,
+			&quot;fo&quot; : &quot;&#x3075;&#x3049;&quot; ,
+			&quot;ja&quot; : &quot;&#x3058;&#x3083;&quot; ,
+			&quot;ji&quot; : &quot;&#x3058;&quot; ,
+			&quot;ju&quot; : &quot;&#x3058;&#x3085;&quot; ,
+			&quot;je&quot; : &quot;&#x3058;&#x3047;&quot; ,
+			&quot;jo&quot; : &quot;&#x3058;&#x3087;&quot; ,
+			&quot;cha&quot; : &quot;&#x3061;&#x3083;&quot; ,
+			&quot;chi&quot; : &quot;&#x3061;&quot; ,
+			&quot;chu&quot; : &quot;&#x3061;&#x3085;&quot; ,
+			&quot;che&quot; : &quot;&#x3061;&#x3047;&quot; ,
+			&quot;cho&quot; : &quot;&#x3061;&#x3087;&quot; ,
+			&quot;sha&quot; : &quot;&#x3057;&#x3083;&quot; ,
+			&quot;shi&quot; : &quot;&#x3057;&quot; ,
+			&quot;shu&quot; : &quot;&#x3057;&#x3085;&quot; ,
+			&quot;she&quot; : &quot;&#x3057;&#x3047;&quot; ,
+			&quot;sho&quot; : &quot;&#x3057;&#x3087;&quot; ,
+			&quot;tha&quot; : &quot;&#x3061;&#x3083;&quot; ,
+			&quot;thi&quot; : &quot;&#x3061;&quot; ,
+			&quot;thu&quot; : &quot;&#x3066;&#x3085;&quot; ,
+			&quot;the&quot; : &quot;&#x3066;&#x3047;&quot; ,
+			&quot;tho&quot; : &quot;&#x3066;&#x3087;&quot; ,
+			&quot;tsa&quot; : &quot;&#x3064;&#x3041;&quot; ,
+			&quot;tsi&quot; : &quot;&#x3064;&#x3043;&quot; ,
+			&quot;tsu&quot; : &quot;&#x3064;&quot; ,
+			&quot;tse&quot; : &quot;&#x3064;&#x3047;&quot; ,
+			&quot;tso&quot; : &quot;&#x3064;&#x3049;&quot; ,
+			&quot;n&quot; : &quot;&#x3093;&quot; ,
+			&quot;nn&quot; : &quot;&#x3093;&quot; ,
+			&quot;-&quot; : &quot;&#x30FC;&quot; ,
+			&quot;?&quot; : &quot;&#xFF1F;&quot; ,
+			&quot;!&quot; : &quot;&#xFF01;&quot;
+		};
+		/**
+		 * ya, yi, yu, ye, yo
+		 * @type {Object&lt;string, string&gt;}
+		 */
+		const y_komoji_map = {
+			&quot;a&quot; : &quot;&#x3083;&quot;,
+			&quot;i&quot; : &quot;&#x3043;&quot;,
+			&quot;u&quot; : &quot;&#x3085;&quot;,
+			&quot;e&quot; : &quot;&#x3047;&quot;,
+			&quot;o&quot; : &quot;&#x3087;&quot;
+		};
+		/**
+		 * @param {string} str 
+		 */
+		const func = function(str) {
+			const output = [];
+			let y_komoji = null;
+			let romaji = str.toLowerCase();
+			if(romaji.length &gt; 2) {
+				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
+					output.push(&quot;&#x3063;&quot;);
+					romaji = romaji.substr(1);
+				}
+			}
+			if(romaji.length === 3) {
+				const char_1 = romaji.substr(0, 1);
+				const char_2 = romaji.substr(1, 1);
+				if((char_2 === &quot;y&quot;) &amp;&amp; (char_1 !== &quot;l&quot;) &amp;&amp; (char_1 !== &quot;x&quot;)) {
+					y_komoji = y_komoji_map[romaji.substr(2)];
+					romaji = romaji.substr(0, 1) + &quot;i&quot;;
+				}
+			}
+			const data = map[romaji];
+			if(!data) {
+				return str;
+			}
+			output.push(data);
+			if(y_komoji) {
+				output.push(y_komoji);
+			}
+			return output.join(&quot;&quot;);
+		};
+		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?\\!-]/gi, func));
+	}
+
+	/**
+	 * &#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x304B;&#x3089;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toKatakanaFromRomaji(text) {
+		return Japanese.toKatakana(Japanese.toHiraganaFromRomaji(text));
+	}
+
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

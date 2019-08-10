@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/tools/StringComparator.js | MojiJS</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="Useful tools for Japanese character code."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="MojiJS"><meta property="twitter:description" content="Useful tools for Japanese character code."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/MojiJS.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/tools/StringComparator.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+import Japanese from &quot;../language/Japanese.js&quot;;
+import Unicode from &quot;../encode/Unicode.js&quot;;
+
+/**
+ * &#x6587;&#x5B57;&#x5217;&#x6BD4;&#x8F03;&#x95A2;&#x6570;&#x3092;&#x4F5C;&#x6210;&#x7528;&#x306E;&#x30C4;&#x30FC;&#x30EB;&#x30AF;&#x30E9;&#x30B9;
+ * @ignore
+ */
+class ComparatorTool {
+
+	/**
+	 * &#x6587;&#x5B57;&#x5217;&#x306E;&#x63FA;&#x308C;&#x3092;&#x9664;&#x53BB;&#x3057;&#x6B63;&#x898F;&#x5316;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * @param {String} string_data - &#x6B63;&#x898F;&#x5316;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x6B63;&#x898F;&#x5316;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toNormalizeString(string_data) {
+		let normalize_text = null;
+		// NORM_IGNOREWIDTH &#x534A;&#x89D2;&#x5168;&#x89D2;&#x533A;&#x5225;&#x3057;&#x306A;&#x3044;&#xFF08;&#x534A;&#x89D2;&#x82F1;&#x6570;&#x8A18;&#x53F7;&#x3068;&#x5168;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x306B;&#x7D71;&#x4E00;&#xFF09;
+		normalize_text = Japanese.toHalfWidthAsciiCode(Japanese.toHalfWidthAsciiCode(string_data));
+		// LCMAP_LOWERCASE &#x534A;&#x89D2;&#x306B;&#x7D71;&#x4E00;
+		normalize_text = normalize_text.toLowerCase();
+		// NORM_IGNOREKANATYPE &#x3072;&#x3089;&#x304C;&#x306A;&#x3068;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3092;&#x533A;&#x5225;&#x3057;&#x306A;&#x3044;
+		normalize_text = Japanese.toHiragana(normalize_text);
+		// NORM_IGNORENONSPACE &#x7C21;&#x5358;&#x306B;&#x5834;&#x6240;&#x3092;&#x3068;&#x3089;&#x306A;&#x3044;&#x8A18;&#x53F7;&#x3092;&#x524A;&#x9664;
+		normalize_text = normalize_text.replace(/[&#x309B;&#x309C;]/g, &quot;&quot;);
+		// NORM_IGNORESYMBOLS &#x82F1;&#x6587;&#x6CD5;&#x306E;&#x8A18;&#x53F7;&#x3092;&#x7121;&#x8996;
+		normalize_text = normalize_text.replace(/[&quot;&apos;-]/g, &quot;&quot;);
+		return normalize_text;
+	}
+
+	/**
+	 * ASCII&#x30B3;&#x30FC;&#x30C9;&#x304C;&#x534A;&#x89D2;&#x6570;&#x5024;&#x304B;&#x3069;&#x3046;&#x304B;&#x3092;&#x5224;&#x5B9A;&#x3059;&#x308B;
+	 * @param {number} string_number - ASCII&#x30B3;&#x30FC;&#x30C9;
+	 * @returns {Boolean} &#x6570;&#x5024;&#x306A;&#x3089;TRUE
+	 */
+	static isNumberAscii(string_number) {
+		const ASCII_0 = 0x30;
+		const ASCII_9 = 0x39;
+		return (ASCII_0 &lt;= string_number) &amp;&amp; (string_number &lt;= ASCII_9);
+	}
+
+	/**
+	 * ASCII&#x30B3;&#x30FC;&#x30C9;&#x914D;&#x5217;&#x306E;&#x4E2D;&#x3067;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x4F4D;&#x7F6E;&#x304B;&#x3089;&#x6570;&#x5024;&#x304C;&#x4F55;&#x30D0;&#x30A4;&#x30C8;&#x7D9A;&#x304F;&#x304B;
+	 * @param {Array&lt;number&gt;} string_number_array - ASCII&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x914D;&#x5217;
+	 * @param {number} offset - &#x3069;&#x306E;&#x4F4D;&#x7F6E;&#x304B;&#x3089;&#x8ABF;&#x3079;&#x308B;&#x304B;
+	 * @returns {number} &#x6570;&#x5024;&#x306A;&#x3089;TRUE
+	 */
+	static getNumberAsciiLength(string_number_array, offset) {
+		for(let i = offset; i &lt; string_number_array.length; i++) {
+			if(!ComparatorTool.isNumberAscii(string_number_array[i])) {
+				return (i - offset);
+			}
+		}
+		return (string_number_array.length - offset);
+	}
+
+	/**
+	 * ASCII&#x30B3;&#x30FC;&#x30C9;&#x914D;&#x5217;&#x306E;&#x4E2D;&#x306E;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x4F4D;&#x7F6E;&#x306B;&#x3042;&#x308B;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x540C;&#x58EB;&#x3092;Compare&#x3059;&#x308B;
+	 * @param {Array&lt;number&gt;} t1 - ASCII&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x914D;&#x5217;&#xFF08;&#x6BD4;&#x8F03;&#x5143;&#xFF09;
+	 * @param {number} t1off - &#x3069;&#x306E;&#x4F4D;&#x7F6E;&#x304B;&#x3089;&#x8ABF;&#x3079;&#x308B;&#x304B;
+	 * @param {number} t1size - &#x8ABF;&#x3079;&#x308B;&#x30B5;&#x30A4;&#x30BA;
+	 * @param {Array&lt;number&gt;} t2 - ASCII&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x914D;&#x5217;&#xFF08;&#x6BD4;&#x8F03;&#x5148;&#xFF09;
+	 * @param {number} t2off - &#x3069;&#x306E;&#x4F4D;&#x7F6E;&#x304B;&#x3089;&#x8ABF;&#x3079;&#x308B;&#x304B;
+	 * @param {number} t2size - &#x8ABF;&#x3079;&#x308B;&#x30B5;&#x30A4;&#x30BA;
+	 * @returns {number} Compare&#x7D50;&#x679C;
+	 */
+	static compareNumber(t1, t1off, t1size, t2, t2off, t2size) {
+		const ASCII_0 = 0x30;
+		const t1end = t1off + t1size;
+		const t2end = t2off + t2size;
+		// &#x524D;&#x65B9;&#x304B;&#x3089;&#x8ABF;&#x67FB;
+		let t1p = t1off;
+		let t2p = t2off;
+		// &#x5148;&#x982D;&#x306E;0&#x306F;&#x98DB;&#x3070;&#x3057;&#x3066;&#x6BD4;&#x8F03;&#x3057;&#x305F;&#x3044;
+		// 0&#x4EE5;&#x5916;&#x306E;&#x6570;&#x5024;&#x304C;&#x3069;&#x3053;&#x306B;&#x542B;&#x307E;&#x308C;&#x3066;&#x3044;&#x308B;&#x304B;&#x8ABF;&#x67FB;
+		for(;t1p &lt; t1end;t1p++) {
+			if(t1[t1p] !== ASCII_0) {
+				break;
+			}
+		}
+		for(;t2p &lt; t2end;t2p++) {
+			if(t2[t2p] !== ASCII_0) {
+				break;
+			}
+		}
+		// 0&#x3057;&#x304B;&#x306A;&#x304B;&#x3063;&#x305F;&#x5834;&#x5408;
+		if((t1p == t1end)||(t2p == t2end)) {
+			if(t1p != t1end) { //t2p&#x306E;&#x307F;&#x306F;&#x307F;&#x3060;&#x3057;&#x305F; == 0
+				return 1;
+			}
+			else if(t2p != t2end) {
+				return -1;
+			}
+			else {
+				return 0;
+			}
+		}
+		// &#x6841;&#x6570;&#x306E;&#x307F;&#x3067;&#x3069;&#x3061;&#x3089;&#x304C;&#x5927;&#x304D;&#x3044;&#x304B;&#x6BD4;&#x8F03;
+		const t1keta = t1size - (t1p - t1off);
+		const t2keta = t2size - (t2p - t2off);
+		if(t1keta &gt; t2keta) {
+			return 1;
+		}
+		else if(t1keta &lt; t2keta) {
+			return -1;
+		}
+		// &#x540C;&#x3058;&#x6841;&#x540C;&#x58EB;&#x306E;&#x6BD4;&#x8F03;
+		for(;t1p &lt; t1end;) {
+			if(t1[t1p] &gt; t2[t2p]) {
+				return 1;
+			}
+			else if(t1[t1p] &lt; t2[t2p]) {
+				return -1;
+			}
+			t1p++;
+			t2p++;
+		}
+		return 0;
+	}
+
+	/**
+	 * ASCII&#x30B3;&#x30FC;&#x30C9;&#x914D;&#x5217;&#x306E;&#x540C;&#x58EB;&#x3092;Compare&#x3059;&#x308B;
+	 * @param {Array&lt;number&gt;} t1 - ASCII&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x914D;&#x5217;&#xFF08;&#x6BD4;&#x8F03;&#x5143;&#xFF09;
+	 * @param {Array&lt;number&gt;} t2 - ASCII&#x30B3;&#x30FC;&#x30C9;&#x306E;&#x914D;&#x5217;&#xFF08;&#x6BD4;&#x8F03;&#x5148;&#xFF09;
+	 * @returns {number} Compare&#x7D50;&#x679C;
+	 */
+	static compareText(t1, t2) {
+		const l1 = t1.length;
+		const l2 = t2.length;
+		if((l1 === 0) &amp;&amp; (l2 === 0)) {
+			return 0;
+		}
+		if(l1 === 0) {
+			return -1;
+		}
+		if(l2 === 0) {
+			return 1;
+		}
+		//&#x3053;&#x306E;&#x5730;&#x70B9;&#x3067;&#x4E21;&#x65B9;&#x3068;&#x3082;&#x9577;&#x3055;&#x304C;1&#x3088;&#x308A;&#x5927;&#x304D;&#x3044;
+		let t1off = 0;
+		let t2off = 0;
+		while(t1off &lt;= l1 &amp;&amp; t2off &lt;= l2) {
+			const t1isnum = ComparatorTool.isNumberAscii(t1[t1off]);
+			const t2isnum = ComparatorTool.isNumberAscii(t2[t2off]);
+			//&#x6587;&#x5B57;&#x76EE;&#x306E;&#x7A2E;&#x985E;&#x304C;&#x9055;&#x3046;
+			if(t1isnum !== t2isnum) {
+				if(t1isnum) {
+					return -1;//&#x6570;&#x5024;&#x304C;&#x524D;
+				}
+				else {
+					return 1;//&#x6587;&#x5B57;&#x304C;&#x5F8C;&#x308D;
+				}
+			}
+			//&#x4E21;&#x65B9;&#x3068;&#x3082;&#x6570;&#x5024;
+			if(t1isnum) {
+				const t1size = ComparatorTool.getNumberAsciiLength(t1, t1off);
+				const t2size = ComparatorTool.getNumberAsciiLength(t2, t2off);
+				const r = ComparatorTool.compareNumber(t1,t1off,t1size,t2,t2off,t2size);
+				if(r !== 0) {
+					return r;
+				}
+				t1off += t1size;
+				t2off += t2size;
+			}
+			//&#x4E21;&#x65B9;&#x3068;&#x3082;&#x6587;&#x5B57;&#x5217;
+			else {
+				if(t1[t1off] &gt; t2[t2off]) {
+					return 1;
+				}
+				else if(t1[t1off] &lt; t2[t2off]) {
+					return -1;
+				}
+				t1off++;
+				t2off++;
+			}
+			//&#x4E21;&#x65B9;&#x3068;&#x3082;&#x30AA;&#x30FC;&#x30D0;&#x30FC;
+			if((t1off &gt;= l1)&amp;&amp;(t2off &gt;= l2)) {
+				//&#x9577;&#x3055;&#x3082;&#x7B49;&#x3057;&#x3044;
+				if(l1 === l2) {
+					return 0;
+				}
+				else if(l1 &gt; l2) {
+					return 1;
+				}
+				else {
+					return -1;
+				}
+			}
+			//&#x7247;&#x65B9;&#x306E;&#x307B;&#x3046;&#x304C;&#x30B5;&#x30A4;&#x30BA;&#x304C;&#x5927;&#x304D;&#x3044;
+			else if(t2off &gt;= l2) { //t2&#x306E;&#x65B9;&#x304C;&#x77ED;&#x3044;
+				return 1;
+			}
+			else if(t1off &gt;= l1) { //t1&#x306E;&#x65B9;&#x304C;&#x77ED;&#x3044;
+				return -1;
+			}
+		}
+		// &#x203B;&#x3053;&#x3053;&#x306B;&#x306F;&#x9054;&#x6210;&#x3057;&#x306A;&#x3044;
+		return 0;
+	}
+
+	/**
+	 * 2&#x3064;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x6BD4;&#x8F03;&#x3059;&#x308B;
+	 * @param {String} a - &#x6BD4;&#x8F03;&#x5143;
+	 * @param {String} b - &#x6BD4;&#x8F03;&#x5148;
+	 * @returns {number} Compare&#x7D50;&#x679C;
+	 */
+	static compareToForDefault(a, b) {
+		if(a === b) {
+			return 0;
+		}
+		if(typeof a === typeof b) {
+			return (a &lt; b ? -1 : 1);
+		}
+		return ((typeof a &lt; typeof b) ? -1 : 1);
+	}
+
+	/**
+	 * 2&#x3064;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x81EA;&#x7136;&#x9806;&#x306B;&#x6BD4;&#x8F03;&#x3092;&#x884C;&#x3046;&#xFF08;&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;&#xFF08;Natural Sort&#xFF09;&#x7528;&#xFF09;
+	 * @param {String} a - &#x6BD4;&#x8F03;&#x5143;
+	 * @param {String} b - &#x6BD4;&#x8F03;&#x5148;
+	 * @returns {number} Compare&#x7D50;&#x679C;
+	 */
+	static compareToForNatural(a, b) {
+		if((typeof a === typeof b) &amp;&amp; (typeof a === &quot;string&quot;)) {
+			const a_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(a));
+			const b_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(b));
+			return ComparatorTool.compareText(a_str, b_str);
+		}
+		else {
+			return ComparatorTool.compareToForDefault(a, b);
+		}
+	}
+
+}
+
+/**
+ * &#x65E5;&#x672C;&#x8A9E;&#x306E;&#x6587;&#x5B57;&#x5217;&#x6BD4;&#x8F03;&#x7528;&#x306E;&#x95A2;&#x6570;
+ * - sort&#x306E;&#x5F15;&#x6570;&#x3067;&#x5229;&#x7528;&#x3067;&#x304D;&#x307E;&#x3059;
+ * @ignore
+ */
+export default class StringComparator {
+
+	/**
+	 * 2&#x3064;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x6BD4;&#x8F03;&#x3059;&#x308B;&#x95A2;&#x6570;
+	 * @returns {function(string, string): number}
+	 */
+	static get DEFAULT() {
+		return ComparatorTool.compareToForDefault;
+	}
+
+	/**
+	 * 2&#x3064;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;&#x3067;&#x6BD4;&#x8F03;&#x3059;&#x308B;&#x95A2;&#x6570;
+	 * @returns {function(string, string): number}
+	 */
+	static get NATURAL() {
+		return ComparatorTool.compareToForNatural;
+	}
+
+}
+
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>
