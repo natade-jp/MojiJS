@@ -149,31 +149,55 @@ export default class SJIS {
 		const cut = [];
 		const SPACE = 0x20 ; // ' '
 
-		if(offset > 0) {
+		/**
+		 * @param {number} x
+		 * @returns {boolean} 
+		 */
+		const is_shift = function(x) {
+			return ((0x81 <= x) && (x <= 0x9F)) || ((0xE0 <= x) && (x <= 0xFC));
+		} 
+
+		if((offset > 0) && (offset < sjisbin.length)) {
 			// offset が1文字以降の場合、
 			// その位置が、2バイト文字の途中かどうか判定が必要である。
-			// そのため、1つ前の文字をしらべる。
-			// もし2バイト文字であれば、1バイト飛ばす。
-			const x = sjisbin[offset - 1];
-			if( ((0x81 <= x) && (x <= 0x9F)) || ((0xE0 <= x) && (x <= 0xFC)) ) {
-				cut.push(SPACE);
-				offset++;
-				size--;
+			// この判定をするためには、1バイト前の文字をしらべるだけでは分からない。
+			// 「髙」は、FB FCであり、1バイト前の文字も2バイト文字判定に引っかかる場合は、さらに後ろを探索していく必要がある
+			let is_odd = true;
+			for(let p = offset - 1; p >= 0; p--) {
+				const x = sjisbin[p];
+				is_odd = !is_odd;
+				if(is_shift(x)) {
+					continue;
+				}
+				else {
+					if(is_odd) {
+						// 2バイト目確定なのでスペースに置き換える
+						cut.push(SPACE);
+						offset++;
+						size--;
+					}
+					break;
+				}
 			}
 		}
 		
 		let is_2byte = false;
-
-		for(let i = 0, point = offset; ((i < size) && (point < sjisbin.length)); i++, point++) {
+		for(let i = 0, point = offset; i < size; i++, point++) {
+			if((point < 0) || (point >= sjisbin.length)) {
+				if(point >= sjisbin.length) {
+					break;
+				}
+				continue;
+			}
 			const x = sjisbin[point];
-			if(!is_2byte && (((0x81 <= x) && (x <= 0x9F)) || ((0xE0 <= x) && (x <= 0xFC)))) {
+			if(!is_2byte && is_shift(x)) {
 				is_2byte = true;
 			}
 			else {
 				is_2byte = false;
 			}
 			// 最後の文字が2バイト文字の1バイト目かどうかの判定
-			if((i === size - 1) && is_2byte) {
+			if(((i === size - 1)) && is_2byte) {
 				cut.push(SPACE);
 			}
 			else {

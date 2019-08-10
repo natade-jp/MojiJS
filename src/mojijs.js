@@ -22,6 +22,45 @@ import StringComparator from "./tools/StringComparator.js";
 export default class mojijs {
 	
 	/**
+	 * サロゲートペア対応のコードポイント取得
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} [index = 0] - インデックス
+	 * @returns {Number} コードポイント
+	 */
+	static codePointAt(text, index) {
+		return Unicode.codePointAt(text, index);
+	}
+
+	/**
+	 * コードポイントの数値データを文字列に変換
+	 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromCodePoint(codepoint) {
+		if(codepoint instanceof Array) {
+			return Unicode.fromCodePoint(codepoint);
+		}
+		else {
+			const codepoint_array = [];
+			for(let i = 0;i < arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
+			}
+			return Unicode.fromCodePoint(codepoint_array);
+		}
+	}
+
+	/**
+	 * コードポイント換算で文字列数をカウント
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} [beginIndex=0] - 最初のインデックス（省略可）
+	 * @param {Number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
+	 * @returns {Number} 文字数
+	 */
+	static codePointCount(text, beginIndex, endIndex) {
+		return Unicode.codePointCount(text, beginIndex, endIndex);
+	}
+
+	/**
 	 * 文字列をUTF32(コードポイント)の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列

@@ -50,17 +50,18 @@ export default class Unicode {
 	/**
 	 * サロゲートペア対応のコードポイント取得
 	 * @param {String} text - 対象テキスト
-	 * @param {Number} index - インデックス
+	 * @param {Number} [index = 0] - インデックス
 	 * @returns {Number} コードポイント
 	 */
 	static codePointAt(text, index) {
-		if(Unicode.isHighSurrogateAt(text, index)) {
-			const high = text.charCodeAt(index);
-			const low  = text.charCodeAt(index + 1);
+		let index_ = (index !== undefined) ? index : 0;
+		if(Unicode.isHighSurrogateAt(text, index_)) {
+			const high = text.charCodeAt(index_);
+			const low  = text.charCodeAt(index_ + 1);
 			return ((((high - 0xD800) << 10) | (low - 0xDC00)) + 0x10000);
 		}
 		else {
-			return (text.charCodeAt(index));
+			return (text.charCodeAt(index_));
 		}
 	}
 
@@ -157,7 +158,7 @@ export default class Unicode {
 		}
 		else {
 			for(let i = 0;i < arguments.length;i++) {
-				codepoint_array = arguments[i];
+				codepoint_array[i] = arguments[i];
 			}
 		}
 		const text = [];

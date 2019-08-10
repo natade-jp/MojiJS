@@ -2,7 +2,8 @@
     "env": {
         "browser": true,
         "es6": true,
-        "node": true
+        "node": true,
+        "jest/globals": true
     },
     "extends": "eslint:recommended",
     "parserOptions": {
@@ -34,5 +35,8 @@
         "no-console": 1,
         "no-var": 2,
         "prefer-const": 2
-    }
+    },
+    "plugins": [
+      "jest"
+    ]
 }
