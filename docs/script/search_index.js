@@ -2,7 +2,7 @@ window.esdocSearchIndex = [
   [
     "mojijs/src/mojijs.js~mojijs",
     "class/src/MojiJS.js~MojiJS.html",
-    "<span>MojiJS</span> <span class=\"search-result-import-path\">MojiJS/src/MojiJS.js</span>",
+    "<span>MojiJS</span> <span class=\"search-result-import-path\">mojijs/src/MojiJS.js</span>",
     "class"
   ],
   [

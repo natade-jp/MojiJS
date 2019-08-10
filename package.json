@@ -1,6 +1,6 @@
 {
-	"name": "MojiJS",
-	"version": "0.1.0",
+	"name": "mojijs",
+	"version": "1.0.0",
 	"description": "To convert or to analyze the character data of the Japanese.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {

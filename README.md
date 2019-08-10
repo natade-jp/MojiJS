@@ -1,12 +1,13 @@
 # MojiJS #
 [![Build Status](https://travis-ci.org/natade-jp/MojiJS.svg?branch=master)](https://travis-ci.org/natade-jp/MojiJS)
-[![ESDoc coverage badge](https://natade-jp.github.io/MojiJS/docs/badge.svg)](https://natade-jp.github.io/Moils/docs/)
+[![ESDoc coverage badge](https://natade-jp.github.io/MojiJS/docs/badge.svg)](https://natade-jp.github.io/MojiJS/docs/)
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
 
 ## What ##
 - 日本語の文字データを解析及び、変換するライブラリです。
 - [詳細なAPIを公開しています。](https://natade-jp.github.io/MojiJS/docs/)
 - [動作例](https://natade-jp.github.io/MojiJS/html/examples/demos/Text/) (コンソール及び[ソースコード](https://natade-jp.github.io/MojiJS/html/examples/demos/Text/main.mjs)を確認してみてください。)
+- [npm](https://www.npmjs.com/package/mojijs)
 
 以下のことが行えます
 - エンコード（UTF-8 / UTF-16 / UTF-32 / Shift_JIS / CP932(Windows31-J) / Shift_JIS-2004 ）
