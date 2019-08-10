@@ -19,7 +19,7 @@ import StringComparator from "./tools/StringComparator.js";
 /**
  * 日本語を扱うための様々な機能を提供します
  */
-export default class mojijs {
+export default class MojiJS {
 	
 	/**
 	 * サロゲートペア対応のコードポイント取得

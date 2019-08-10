@@ -1,4 +1,4 @@
-# mojijs #
+# MojiJS #
 
 ### What ####
 - Useful tools for Japanese character code.

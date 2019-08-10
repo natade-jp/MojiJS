@@ -1,1 +1,0 @@
-import mojijs from "../../../build/mojijs.module.min.mjs";export default mojijs;

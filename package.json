@@ -1,15 +1,15 @@
 {
-	"name": "mojijs",
+	"name": "MojiJS",
 	"version": "0.1.0",
 	"description": "Useful tools for Japanese character code.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/natade-jp/mojijs.git"
+		"url": "https://github.com/natade-jp/MojiJS.git"
 	},
 	"license": "MIT",
-	"main": "./build/mojijs.umd.js",
-	"module": "./build/mojijs.module.mjs",
+	"main": "./build/MojiJS.umd.js",
+	"module": "./build/MojiJS.module.mjs",
 	"keywords": [
 		"cp932",
 		"shift_jis",

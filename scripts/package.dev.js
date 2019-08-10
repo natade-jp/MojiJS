@@ -2,6 +2,6 @@
 
 // サンプルファイルは直接関連付ける
 File.saveTextFile(
-	"./html/examples/libs/mojijs.js",
-	"import mojijs from \"../../../src/mojijs.js\";export default mojijs;"
+	"./html/examples/libs/MojiJS.js",
+	"import MojiJS from \"../../../src/MojiJS.js\";export default MojiJS;"
 );
