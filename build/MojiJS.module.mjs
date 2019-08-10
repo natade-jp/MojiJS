@@ -54,7 +54,7 @@ class Unicode {
 	 * @returns {Number} コードポイント
 	 */
 	static codePointAt(text, index) {
-		let index_ = (index !== undefined) ? index : 0;
+		const index_ = (index !== undefined) ? index : 0;
 		if(Unicode.isHighSurrogateAt(text, index_)) {
 			const high = text.charCodeAt(index_);
 			const low  = text.charCodeAt(index_ + 1);
