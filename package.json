@@ -24,6 +24,7 @@
 		"utf16",
 		"utf32",
 		"encoding",
+		"kanji",
 		"unicode"
 	],
 	"directories": {
