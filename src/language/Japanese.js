@@ -370,7 +370,7 @@ export default class Japanese {
 				const next = str.charCodeAt(1);
 				const ch   = str.charCodeAt(0);
 				if(next === 0xFF9E) {
-					// Shift-JISにない濁点は無視
+					// Shift-JISにない濁点（ヷ、ヸ、ヹ、ヺ）は意図的に無視
 					// ヴ
 					if (ch === 0xFF73) {
 						return (String.fromCharCode(0x3094));
