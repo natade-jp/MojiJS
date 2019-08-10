@@ -42,7 +42,6 @@ const testSort  = function(operator, x, y) {
 	}
 	const testname = operator + " " + test_count + " (" + toStringFromArray(x) + ").sort(" + operator + ") = " + toStringFromArray(z) + " === " + toStringFromArray(y);
 	test(testname, () => { expect(equalsArray(z, y)).toBe(true); });
-
 }
 
 test_count = 0;
