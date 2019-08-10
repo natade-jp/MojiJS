@@ -1,7 +1,7 @@
 {
 	"name": "MojiJS",
 	"version": "0.1.0",
-	"description": "Useful tools for Japanese character code.",
+	"description": "To convert or to analyze the character data of the Japanese.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
 		"type": "git",
@@ -16,6 +16,14 @@
 		"sjis",
 		"shift_jis2004",
 		"sjis2004",
+		"japanese",
+		"hiragana",
+		"katakana",
+		"romaji",
+		"utf8",
+		"utf16",
+		"utf32",
+		"encoding",
 		"unicode"
 	],
 	"directories": {
