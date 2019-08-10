@@ -1,0 +1,20 @@
+{
+	"tags": {
+		"allowUnknownTags": true
+	},
+	"source": {
+		"includePattern": ".+\\.m?js$",
+		"excludePattern": "\\.test\\.m?js$"
+	},
+	"plugins": ["./node_modules/jsdoc-export-default-interop/dist/index"],
+	"templates": {
+		"cleverLinks": false,
+		"monospaceLinks": false,
+		"default": {
+			"outputSourceFiles": false
+		}
+	},
+	"opts": {
+		"template": "./node_modules/tsd-jsdoc/dist"
+	}
+}

@@ -6,10 +6,11 @@ import StringComparator from "./StringComparator.js";
  */
 const toStringFromArray = function(x) {
 	return (x).toString();
-}
+};
 
 /**
  * @param {Array} x 
+ * @param {Array} y 
  * @returns {boolean}
  */
 const equalsArray = function(x, y) {
@@ -22,7 +23,7 @@ const equalsArray = function(x, y) {
 		}
 	}
 	return true;
-}
+};
 
 let test_count = 0;
 
@@ -35,6 +36,7 @@ const testSort  = function(operator, x, y) {
 	test_count++;
 	const z = x.concat();
 	if(operator) {
+		// @ts-ignore
 		z.sort(StringComparator[operator]);
 	}
 	else {
@@ -42,7 +44,7 @@ const testSort  = function(operator, x, y) {
 	}
 	const testname = operator + " " + test_count + " (" + toStringFromArray(x) + ").sort(" + operator + ") = " + toStringFromArray(z) + " === " + toStringFromArray(y);
 	test(testname, () => { expect(equalsArray(z, y)).toBe(true); });
-}
+};
 
 test_count = 0;
 const data1 = ["3", "2", "10", "4", "2-4", "0-1", "テスト", "てすと２", "てスと01"];

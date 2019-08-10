@@ -9,6 +9,7 @@ let test_count = 0;
  */
 const testOperator1  = function(operator, x, y) {
 	test_count++;
+	// @ts-ignore
 	const out = Japanese[operator](x);
 	const testname = operator + " " + test_count + " (" + x + ")." + operator + "(" + x + ") = " + out + " === " + y;
 	test(testname, () => { expect(out === y).toBe(true); });

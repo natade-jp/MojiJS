@@ -15,9 +15,7 @@ const equalsArray = function(x, y) {
 		}
 	}
 	return true;
-}
-
-let test_count = 0;
+};
 
 {
 	test("getWidthForCP932", () => { expect(CP932.getWidthForCP932("ABCあいう高髙①")).toBe(15); });

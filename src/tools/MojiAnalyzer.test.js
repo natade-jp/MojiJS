@@ -1,6 +1,5 @@
 import Unicode from "../encode/Unicode.js";
-import CharacterAnalyzer from "./CharacterAnalyzer.js";
-
+import MojiAnalyzer from "./MojiAnalyzer.js";
 
 let test_count = 0;
 
@@ -11,7 +10,7 @@ let test_count = 0;
  */
 const testType  = function(text, operator, result) {
 	test_count++;
-	const data = CharacterAnalyzer.getMojiData(Unicode.codePointAt(text));
+	const data = MojiAnalyzer.getMojiData(Unicode.codePointAt(text));
 	// @ts-ignore
 	const y = data.type[operator];
 	const testname = operator + " " + test_count;
@@ -24,7 +23,7 @@ const testType  = function(text, operator, result) {
  */
 const testKuTen  = function(text, kuten) {
 	test_count++;
-	const data = CharacterAnalyzer.getMojiData(Unicode.codePointAt(text));
+	const data = MojiAnalyzer.getMojiData(Unicode.codePointAt(text));
 	/**
 	 * @type {boolean}
 	 */
@@ -46,7 +45,7 @@ const testKuTen  = function(text, kuten) {
  */
 const testMenKuTen  = function(text, menkuten, suijun) {
 	test_count++;
-	const data = CharacterAnalyzer.getMojiData(Unicode.codePointAt(text));
+	const data = MojiAnalyzer.getMojiData(Unicode.codePointAt(text));
 	/**
 	 * @type {boolean}
 	 */

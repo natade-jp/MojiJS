@@ -15,9 +15,7 @@ const equalsArray = function(x, y) {
 		}
 	}
 	return true;
-}
-
-let test_count = 0;
+};
 
 {
 	test("fromCodePoint 1", () => { expect(Unicode.fromCodePoint(134071, 37326, 23478 )).toBe("𠮷野家"); });
@@ -35,12 +33,12 @@ let test_count = 0;
 	 */
 	const toWord = function (x) {
 		const ret = [];
-		let len = x.length;
+		const len = x.length;
 		for(let i = 0; i < len; i = Unicode.offsetByCodePoints(x, i, 1)) {
 			ret.push(Unicode.fromCodePoint(Unicode.codePointAt(x, i)));
 		}
 		return ret;
-	}
+	};
 	test("codepoint 1", () => { expect(equalsArray(toWord("𠮷野家"), ["𠮷", "野", "家"])).toBe(true); });
 }
 
@@ -51,12 +49,12 @@ let test_count = 0;
 	 */
 	const toWord = function (x) {
 		const ret = [];
-		let len = Unicode.codePointCount(x);
+		const len = Unicode.codePointCount(x);
 		for(let i = 0; i < len; i++) {
 			ret.push(Unicode.fromCodePoint(Unicode.codePointAt(x, Unicode.offsetByCodePoints(x, 0, i))));
 		}
 		return ret;
-	}
+	};
 	test("codepoint 2", () => { expect(equalsArray(toWord("𠮷野家"), ["𠮷", "野", "家"])).toBe(true); });
 }
 
@@ -67,12 +65,12 @@ let test_count = 0;
 	 */
 	const toWord = function (x) {
 		const ret = [];
-		let len = x.length;
+		const len = x.length;
 		for(let i = len; i > 0; i = Unicode.offsetByCodePoints(x, i, -1)) {
 			ret.push(Unicode.fromCodePoint(Unicode.codePointBefore(x, i)));
 		}
 		return ret;
-	}
+	};
 	test("codepoint 3", () => { expect(equalsArray(toWord("𠮷野家"), ["家", "野", "𠮷"])).toBe(true); });
 }
 

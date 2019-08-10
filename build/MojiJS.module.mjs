@@ -4733,70 +4733,80 @@ class Japanese {
 /**
  * 制御文字マップ
  * @type {Object<number, string>}
+ * @ignore
  */
 let control_charcter_map = null;
 
 /**
  * 1981年より前に常用漢字とされているか
  * @type {Object<number, number>}
+ * @ignore
  */
 let joyokanji_before_1981_map = null;
 
 /**
  * 1981年時点で追加された常用漢字か
  * @type {Object<number, number>}
+ * @ignore
  */
 let joyokanji_add_1981_map = null;
 
 /**
  * 2010年時点で追加された常用漢字か
  * @type {Object<number, number>}
+ * @ignore
  */
 let joyokanji_add_2010_map = null;
 
 /**
  * 2010年時点で削除された常用漢字か
  * @type {Object<number, number>}
+ * @ignore
  */
 let joyokanji_delete_2010_map = null;
 
 /**
  * 2017年時点で常用漢字でかつ人名用漢字か
  * @type {Object<number, number>}
+ * @ignore
  */
 let jinmeiyokanji_joyokanji_isetai_2017_map = null;
 
 /**
  * 2017年時点で常用漢字でないが人名用漢字か（異性体なし）
  * @type {Object<number, number>}
+ * @ignore
  */
 let jinmeiyokanji_notjoyokanji_2017_map = null;
 
 /**
  * 2017年時点で異性体がある人名漢字
  * @type {Object<number, number>}
+ * @ignore
  */
 let jinmeiyokanji_notjoyokanji_isetai_2017_map = null;
 
 /**
  * コードポイントからUnicodeのブロック名に変換する
  * @type {function(number): string}
+ * @ignore
  */
 let to_block_name_from_unicode = null;
 
 /**
  * 調査用マップを作成するクラス
+ * @ignore
  */
-class CHAR_MAP {
+class CA_CHAR_MAP {
 	
 	/**
 	 * 初期化
 	 */
 	static init() {
-		if(CHAR_MAP.is_initmap) {
+		if(CA_CHAR_MAP.is_initmap) {
 			return;
 		}
-		CHAR_MAP.is_initmap = true;
+		CA_CHAR_MAP.is_initmap = true;
 
 		/**
 		 * 文字列から、UTF32の存在マップを作成
@@ -5034,7 +5044,7 @@ class CHAR_MAP {
 	 * @returns {string}
 	 */
 	static toBlockNameFromUnicode(unicode_codepoint) {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return to_block_name_from_unicode(unicode_codepoint);
 	}
 
@@ -5042,7 +5052,7 @@ class CHAR_MAP {
 	 * 変換用マップ
 	 */
 	static get CONTROL_CHARCTER() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return control_charcter_map;
 	}
 
@@ -5050,7 +5060,7 @@ class CHAR_MAP {
 	 * チェック用マップ
 	 */
 	static get JOYOJANJI_BEFORE_1981() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return joyokanji_before_1981_map;
 	}
 	
@@ -5058,7 +5068,7 @@ class CHAR_MAP {
 	 * チェック用マップ
 	 */
 	static get JOYOKANJI_ADD_1981() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return joyokanji_add_1981_map;
 	}
 	
@@ -5066,7 +5076,7 @@ class CHAR_MAP {
 	 * チェック用マップ
 	 */
 	static get JOYOKANJI_ADD_2010() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return joyokanji_add_2010_map;
 	}
 	
@@ -5074,7 +5084,7 @@ class CHAR_MAP {
 	 * チェック用マップ
 	 */
 	static get JOYOKANJI_DELETE_2010() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return joyokanji_delete_2010_map;
 	}
 	
@@ -5082,7 +5092,7 @@ class CHAR_MAP {
 	 * チェック用マップ
 	 */
 	static get JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return jinmeiyokanji_joyokanji_isetai_2017_map;
 	}
 	
@@ -5090,7 +5100,7 @@ class CHAR_MAP {
 	 * チェック用マップ
 	 */
 	static get JINMEIYOKANJI_NOTJOYOKANJI_2017() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_2017_map;
 	}
 	
@@ -5098,7 +5108,7 @@ class CHAR_MAP {
 	 * チェック用マップ
 	 */
 	static get JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
-		CHAR_MAP.init();
+		CA_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_isetai_2017_map;
 	}
 	
@@ -5107,7 +5117,7 @@ class CHAR_MAP {
 /**
  * マップを初期化した否か
  */
-CHAR_MAP.is_initmap = false;
+CA_CHAR_MAP.is_initmap = false;
 
 /**
  * 文字の解析用クラス
@@ -5121,7 +5131,7 @@ class Character {
 	 * @returns {String} 制御文字名、違う場合は null 
 	 */
 	static getControlCharcterName(unicode_codepoint) {
-		const control_charcter_map = CHAR_MAP.CONTROL_CHARCTER;
+		const control_charcter_map = CA_CHAR_MAP.CONTROL_CHARCTER;
 		const name = control_charcter_map[unicode_codepoint];
 		return name ? name : null;
 	}
@@ -5132,7 +5142,7 @@ class Character {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanjiBefore1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_before_1981_map = CA_CHAR_MAP.JOYOJANJI_BEFORE_1981;
 		return !!joyokanji_before_1981_map[unicode_codepoint];
 	}
 
@@ -5142,8 +5152,8 @@ class Character {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = CHAR_MAP.JOYOJANJI_BEFORE_1981;
-		const joyokanji_add_1981_map = CHAR_MAP.JOYOKANJI_ADD_1981;
+		const joyokanji_before_1981_map = CA_CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_add_1981_map = CA_CHAR_MAP.JOYOKANJI_ADD_1981;
 		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
 	}
 
@@ -5153,8 +5163,8 @@ class Character {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji2010(unicode_codepoint) {
-		const joyokanji_add_2010_map = CHAR_MAP.JOYOKANJI_ADD_2010;
-		const joyokanji_delete_2010_map = CHAR_MAP.JOYOKANJI_DELETE_2010;
+		const joyokanji_add_2010_map = CA_CHAR_MAP.JOYOKANJI_ADD_2010;
+		const joyokanji_delete_2010_map = CA_CHAR_MAP.JOYOKANJI_DELETE_2010;
 		if(joyokanji_delete_2010_map[unicode_codepoint]) {
 			return false;
 		}
@@ -5171,9 +5181,9 @@ class Character {
 		if(Character.isJoyoKanji2010(unicode_codepoint)) {
 			return false;
 		}
-		const jinmeiyokanji_joyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
-		const jinmeiyokanji_notjoyokanji_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
-		const jinmeiyokanji_notjoyokanji_isetai_map = CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_joyokanji_isetai_map = CA_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_notjoyokanji_map = CA_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
+		const jinmeiyokanji_notjoyokanji_isetai_map = CA_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
 		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);
@@ -5219,273 +5229,133 @@ class Character {
 
 /**
  * 文字のエンコード情報
+ * @typedef {Object} MojiEncodeData
+ * @property {import("../encode/SJIS.js").MenKuTen} kuten 区点 コード
+ * @property {import("../encode/SJIS.js").MenKuTen} menkuten 面区点 コード
+ * @property {number} cp932_code CP932(Windows-31J) コード
+ * @property {number} sjis2004_code Shift_JIS-2004 コード
+ * @property {Array<number>} utf8_array UTF-8 配列
+ * @property {Array<number>} utf16_array UTF-16 配列
+ * @property {Array<number>} utf32_array UTF-32 配列
+ * @property {Array<number>} cp932_array CP932(Windows-31J) バイト配列
+ * @property {Array<number>} sjis2004_array Shift_JIS-2004 コード バイト配列
+ * @property {Array<number>} shift_jis_array Shift_JIS バイト配列
+ * @property {Array<number>} iso2022jp_array ISO-2022-JP バイト配列
+ * @property {Array<number>} eucjp_array EUC-JP バイト配列
  */
-class CharacterEncodeData {
-
-	/**
-	 * データ格納用変数の初期化
-	 */
-	constructor() {
-
-		/**
-		 * 区点 コード
-		 * @type {import("../encode/SJIS.js").MenKuTen}
-		 */
-		this.kuten				= null;
-
-		/**
-		 * 面区点 コード
-		 * @type {import("../encode/SJIS.js").MenKuTen}
-		 */
-		this.menkuten			= null;
-
-		/**
-		 * CP932(Windows-31J) コード
-		 * @type {number}
-		 */
-		this.cp932_code		= 0;
-
-		/**
-		 * Shift_JIS-2004 コード
-		 * @type {number}
-		 */
-		this.sjis2004_code	= 0;
-
-		/**
-		 * UTF-8 配列
-		 * @type {Array<number>}
-		 */
-		this.utf8_array = [];
-		
-		/**
-		 * UTF-16 配列
-		 * @type {Array<number>}
-		 */
-		this.utf16_array = [];
-
-		/**
-		 * UTF-32 配列
-		 * @type {Array<number>}
-		 */
-		this.utf32_array = [];
-
-		/**
-		 * CP932(Windows-31J) バイト配列
-		 * @type {Array<number>}
-		 */
-		this.cp932_array = [];
-
-		/**
-		 * Shift_JIS-2004 コード バイト配列
-		 * @type {Array<number>}
-		 */
-		this.sjis2004_array = [];
-
-		/**
-		 * Shift_JIS バイト配列
-		 * @type {Array<number>}
-		 */
-		this.shift_jis_array = [];
-
-		/**
-		 * ISO-2022-JP バイト配列
-		 * @type {Array<number>}
-		 */
-		this.iso2022jp_array = [];
-
-		/**
-		 * EUC-JP バイト配列
-		 * @type {Array<number>}
-		 */
-		this.eucjp_array = [];
-	}
-}
 
 /**
  * 文字の種別情報
+ * @typedef {Object} MojiTypeData
+ * @property {boolean} is_regular_sjis Shift_JIS に登録された文字
+ * @property {boolean} is_regular_sjis2004 Shift_JIS-2004 に登録された文字
+ * @property {boolean} is_joyo_kanji 常用漢字
+ * @property {boolean} is_jinmeiyo_kanji 人名用漢字
+ * @property {boolean} is_gaiji_cp932 Windows-31J(CP932) 外字
+ * @property {boolean} is_IBM_extended_character Windows-31J(CP932) IBM拡張文字
+ * @property {boolean} is_NEC_selection_IBM_extended_character Windows-31J(CP932) NEC選定IBM拡張文字
+ * @property {boolean} is_NEC_special_character Windows-31J(CP932) NEC特殊文字
+ * @property {number} kanji_suijun Shift_JIS-2004 を使用して漢字の水準調査(1未満だと水準調査失敗)
+ * @property {boolean} is_surrogate_pair 要 Unicode サロゲートペア
+ * @property {string} control_name 制御文字名（制御文字ではない場合は null）
+ * @property {boolean} is_control_charcter 制御文字
+ * @property {string} blockname Unicodeブロック名
+ * @property {boolean} is_kanji 漢字
+ * @property {boolean} is_hiragana ひらがな
+ * @property {boolean} is_katakana カタカナ
+ * @property {boolean} is_fullwidth_ascii 全角ASCII
+ * @property {boolean} is_halfwidth_katakana 半角カタカナ
+ * @property {boolean} is_halfwidth_katakana 半角カタカナ
+ * @property {boolean} is_emoji 絵文字
+ * @property {boolean} is_emoticons 顔文字
+ * @property {boolean} is_gaiji 外字
  */
-class CharacterTypeData {
-	
-	/**
-	 * データ格納用変数の初期化
-	 */
-	constructor() {
-		/**
-		 * Shift_JIS に登録された文字
-		 * @type {boolean}
-		 */
-		this.is_regular_sjis	= false;
-
-		/**
-		 * Shift_JIS-2004 に登録された文字
-		 * @type {boolean}
-		 */
-		this.is_regular_sjis2004 = false;
-
-		/**
-		 * 漢字が常用漢字か、人名用漢字かなど
-		 * @type {boolean}
-		 */
-		this.is_joyo_kanji		= false;
-
-		/**
-		 * 人名用漢字
-		 * @type {boolean}
-		 */
-		this.is_jinmeiyo_kanji	= false;
-
-		/**
-		 * Windows-31J(CP932) 外字
-		 * @type {boolean}
-		 */
-		this.is_gaiji_cp932	= false;
-
-		/**
-		 * Windows-31J(CP932) IBM拡張文字
-		 * @type {boolean}
-		 */
-		this.is_IBM_extended_character	= false;
-
-		/**
-		 * Windows-31J(CP932) NEC選定IBM拡張文字
-		 * @type {boolean}
-		 */
-		this.is_NEC_selection_IBM_extended_character	= false;
-
-		/**
-		 * Windows-31J(CP932) NEC特殊文字
-		 * @type {boolean}
-		 */
-		this.is_NEC_special_character	= false;
-
-		/**
-		 * Shift_JIS-2004 を使用して漢字の水準調査
-		 * @type {number} 漢字水準, 1未満だと水準調査失敗
-		 */
-		this.kanji_suijun = -1;
-
-		/**
-		 * Unicode サロゲートペア
-		 * @type {boolean}
-		 */
-		this.is_surrogate_pair	= false;
-
-		/**
-		 * 制御文字名（制御文字ではない場合は null）
-		 * @type {string}
-		 */
-		this.control_name = null;
-
-		/**
-		 * 制御文字
-		 * @type {boolean}
-		 */
-		this.is_control_charcter = false;
-
-		/**
-		 * Unicodeブロック名
-		 * @type {string}
-		 */
-		this.blockname = "";
-
-		/**
-		 * 漢字
-		 * @type {boolean}
-		 */
-		this.is_kanji = false;
-
-		/**
-		 * ひらがな
-		 * @type {boolean}
-		 */
-		this.is_hiragana = false;
-
-		/**
-		 * カタカナ
-		 * @type {boolean}
-		 */
-		this.is_katakana = false;
-
-		/**
-		 * 全角ASCII
-		 * @type {boolean}
-		 */
-		this.is_fullwidth_ascii = false;
-
-		/**
-		 * 半角カタカナ
-		 * @type {boolean}
-		 */
-		this.is_halfwidth_katakana = false;
-
-		/**
-		 * 絵文字
-		 * @type {boolean}
-		 */
-		this.is_emoji = false;
-
-		/**
-		 * 顔文字
-		 * @type {boolean}
-		 */
-		this.is_emoticons = false;
-
-		/**
-		 * 外字
-		 * @type {boolean}
-		 */
-		this.is_gaiji = false;
-	}
-}
 
 /**
- * 文字の解析データ情報
+ * 文字の種別情報
+ * @typedef {Object} MojiData
+ * @property {MojiEncodeData} encode 文字のエンコード情報
+ * @property {MojiTypeData} type 文字の種別情報
+ * @property {string} character 解析した文字
+ * @property {number} codepoint 解析した文字のコードポイント
  */
-class CharacterData {
-
-	/**
-	 * データ格納用変数の初期化
-	 */
-	constructor() {
-	
-		/**
-		 * 文字のエンコード情報
-		 * @type {CharacterEncodeData}
-		 */
-		this.encode = new CharacterEncodeData();
-
-		/**
-		 * 文字の種別情報
-		 * @type {CharacterTypeData}
-		 */
-		this.type = new CharacterTypeData();
-
-		/**
-		 * 解析した文字
-		 * @type {string}
-		 */
-		this.character = null;
-
-		/**
-		 * 解析した文字のコードポイント
-		 * @type {number}
-		 */
-		this.codepoint = 0;
-	}
-}
 
 /**
  * 文字の解析用クラス
- * @ignore
  */
 class CharacterAnalyzer {
 
 	/**
+	 * 初期化
+	 * @returns {MojiData}
+	 * @ignore
+	 */
+	static _createMojiData() {
+
+		/**
+		 * @type {MojiEncodeData}
+		 */
+		const encode = {
+			kuten : null,
+			menkuten : null,
+			cp932_code : 0,
+			sjis2004_code : 0,
+			utf8_array : [],
+			utf16_array : [],
+			utf32_array : [],
+			cp932_array : [],
+			sjis2004_array : [],
+			shift_jis_array : [],
+			iso2022jp_array : [],
+			eucjp_array : []
+		};
+		
+		/**
+		 * @type {MojiTypeData}
+		 */
+		const type = {
+			is_regular_sjis	: false,
+			is_regular_sjis2004 : false,
+			is_joyo_kanji		: false,
+			is_jinmeiyo_kanji	: false,
+			is_gaiji_cp932	: false,
+			is_IBM_extended_character	: false,
+			is_NEC_selection_IBM_extended_character	: false,
+			is_NEC_special_character	: false,
+			kanji_suijun : -1,
+			is_surrogate_pair	: false,
+			control_name : null,
+			is_control_charcter : false,
+			blockname : "",
+			is_kanji : false,
+			is_hiragana : false,
+			is_katakana : false,
+			is_fullwidth_ascii : false,
+			is_halfwidth_katakana : false,
+			is_emoji : false,
+			is_emoticons : false,
+			is_gaiji : false
+		};
+
+		/**
+		 * @type {MojiData}
+		 */
+		const data = {
+			encode : encode,
+			type : type,
+			character : null,
+			codepoint : 0
+		};
+
+		return data;
+	}
+
+	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
 	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-	 * @returns {CharacterData} 文字の情報がつまったオブジェクト
+	 * @returns {MojiData} 文字の情報がつまったオブジェクト
 	 */
-	static getCharacterData(unicode_codepoint) {
+	static getMojiData(unicode_codepoint) {
 
 		// 基本情報取得
 		const cp932code = CP932.toCP932FromUnicode(unicode_codepoint);
@@ -5497,9 +5367,9 @@ class CharacterAnalyzer {
 
 		/**
 		 * 出力データの箱を用意
-		 * @type {CharacterData}
+		 * @type {MojiData}
 		 */
-		const data = new CharacterData();
+		const data = CharacterAnalyzer._createMojiData();
 		const encode = data.encode;
 		const type = data.type;
 		data.character = Unicode.fromCodePoint(unicode_codepoint);
@@ -5578,7 +5448,7 @@ class CharacterAnalyzer {
 		type.is_control_charcter = type.control_name ? true : false;
 
 		// Unicodeのブロック名
-		type.blockname = CHAR_MAP.toBlockNameFromUnicode(unicode_codepoint);
+		type.blockname = CA_CHAR_MAP.toBlockNameFromUnicode(unicode_codepoint);
 		// ブロック名から判断
 		type.is_kanji = /Ideographs/.test(type.blockname);
 		type.is_hiragana = /Hiragana/.test(type.blockname);
@@ -5610,200 +5480,200 @@ class CharacterAnalyzer {
  */
 
 /**
- * 文字列の揺れを除去し正規化します。
- * @param {String} string_data - 正規化したいテキスト
- * @returns {String} 正規化後のテキスト
+ * 文字列比較関数を作成用のツールクラス
+ * @ignore
  */
-const toNormalizeString = function(string_data) {
-	let normalize_text = null;
-	// NORM_IGNOREWIDTH 半角全角区別しない（半角英数記号と全角カタカナに統一）
-	normalize_text = Japanese.toHalfWidthAsciiCode(Japanese.toHalfWidthAsciiCode(string_data));
-	// LCMAP_LOWERCASE 半角に統一
-	normalize_text = normalize_text.toLowerCase();
-	// NORM_IGNOREKANATYPE ひらがなとカタカナを区別しない
-	normalize_text = Japanese.toHiragana(normalize_text);
-	// NORM_IGNORENONSPACE 簡単に場所をとらない記号を削除
-	normalize_text = normalize_text.replace(/[゛゜]/g, "");
-	// NORM_IGNORESYMBOLS 英文法の記号を無視
-	normalize_text = normalize_text.replace(/["'-]/g, "");
-	return normalize_text;
-};
+class ComparatorTool {
 
-/**
- * ASCIIコードが半角数値かどうかを判定する
- * @param {number} string_number - ASCIIコード
- * @returns {Boolean} 数値ならTRUE
- */
-const isNumberAscii = function(string_number) {
-	const ASCII_0 = 0x30;
-	const ASCII_9 = 0x39;
-	return (ASCII_0 <= string_number) && (string_number <= ASCII_9);
-};
+	/**
+	 * 文字列の揺れを除去し正規化します。
+	 * @param {String} string_data - 正規化したいテキスト
+	 * @returns {String} 正規化後のテキスト
+	 */
+	static toNormalizeString(string_data) {
+		let normalize_text = null;
+		// NORM_IGNOREWIDTH 半角全角区別しない（半角英数記号と全角カタカナに統一）
+		normalize_text = Japanese.toHalfWidthAsciiCode(Japanese.toHalfWidthAsciiCode(string_data));
+		// LCMAP_LOWERCASE 半角に統一
+		normalize_text = normalize_text.toLowerCase();
+		// NORM_IGNOREKANATYPE ひらがなとカタカナを区別しない
+		normalize_text = Japanese.toHiragana(normalize_text);
+		// NORM_IGNORENONSPACE 簡単に場所をとらない記号を削除
+		normalize_text = normalize_text.replace(/[゛゜]/g, "");
+		// NORM_IGNORESYMBOLS 英文法の記号を無視
+		normalize_text = normalize_text.replace(/["'-]/g, "");
+		return normalize_text;
+	}
 
-/**
- * ASCIIコード配列の中で指定した位置から数値が何バイト続くか
- * @param {Array<number>} string_number_array - ASCIIコードの配列
- * @param {number} offset - どの位置から調べるか
- * @returns {number} 数値ならTRUE
- */
-const getNumberAsciiLength = function(string_number_array, offset) {
-	for(let i = offset; i < string_number_array.length; i++) {
-		if(!isNumberAscii(string_number_array[i])) {
-			return (i - offset);
-		}
+	/**
+	 * ASCIIコードが半角数値かどうかを判定する
+	 * @param {number} string_number - ASCIIコード
+	 * @returns {Boolean} 数値ならTRUE
+	 */
+	static isNumberAscii(string_number) {
+		const ASCII_0 = 0x30;
+		const ASCII_9 = 0x39;
+		return (ASCII_0 <= string_number) && (string_number <= ASCII_9);
 	}
-	return (string_number_array.length - offset);
-};
 
-/**
- * ASCIIコード配列の中の指定した位置にある数値データ同士をCompareする
- * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
- * @param {number} t1off - どの位置から調べるか
- * @param {number} t1size - 調べるサイズ
- * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
- * @param {number} t2off - どの位置から調べるか
- * @param {number} t2size - 調べるサイズ
- * @returns {number} Compare結果
- */
-const compareNumber = function(t1, t1off, t1size, t2, t2off, t2size) {
-	const ASCII_0 = 0x30;
-	const t1end = t1off + t1size;
-	const t2end = t2off + t2size;
-	// 前方から調査
-	let t1p = t1off;
-	let t2p = t2off;
-	// 先頭の0は飛ばして比較したい
-	// 0以外の数値がどこに含まれているか調査
-	for(;t1p < t1end;t1p++) {
-		if(t1[t1p] !== ASCII_0) {
-			break;
-		}
-	}
-	for(;t2p < t2end;t2p++) {
-		if(t2[t2p] !== ASCII_0) {
-			break;
-		}
-	}
-	// 0しかなかった場合
-	if((t1p == t1end)||(t2p == t2end)) {
-		if(t1p != t1end) { //t2pのみはみだした == 0
-			return 1;
-		}
-		else if(t2p != t2end) {
-			return -1;
-		}
-		else {
-			return 0;
-		}
-	}
-	// 桁数のみでどちらが大きいか比較
-	const t1keta = t1size - (t1p - t1off);
-	const t2keta = t2size - (t2p - t2off);
-	if(t1keta > t2keta) {
-		return 1;
-	}
-	else if(t1keta < t2keta) {
-		return -1;
-	}
-	// 同じ桁同士の比較
-	for(;t1p < t1end;) {
-		if(t1[t1p] > t2[t2p]) {
-			return 1;
-		}
-		else if(t1[t1p] < t2[t2p]) {
-			return -1;
-		}
-		t1p++;
-		t2p++;
-	}
-	return 0;
-};
-
-/**
- * ASCIIコード配列の同士をCompareする
- * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
- * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
- * @returns {number} Compare結果
- */
-const compareText = function(t1, t2) {
-	const l1 = t1.length;
-	const l2 = t2.length;
-	if((l1 === 0) && (l2 === 0)) {
-		return 0;
-	}
-	if(l1 === 0) {
-		return -1;
-	}
-	if(l2 === 0) {
-		return 1;
-	}
-	//この地点で両方とも長さが1より大きい
-	let t1off = 0;
-	let t2off = 0;
-	while(t1off <= l1 && t2off <= l2) {
-		const t1isnum = isNumberAscii(t1[t1off]);
-		const t2isnum = isNumberAscii(t2[t2off]);
-		//文字目の種類が違う
-		if(t1isnum !== t2isnum) {
-			if(t1isnum) {
-				return -1;//数値が前
-			}
-			else {
-				return 1;//文字が後ろ
+	/**
+	 * ASCIIコード配列の中で指定した位置から数値が何バイト続くか
+	 * @param {Array<number>} string_number_array - ASCIIコードの配列
+	 * @param {number} offset - どの位置から調べるか
+	 * @returns {number} 数値ならTRUE
+	 */
+	static getNumberAsciiLength(string_number_array, offset) {
+		for(let i = offset; i < string_number_array.length; i++) {
+			if(!ComparatorTool.isNumberAscii(string_number_array[i])) {
+				return (i - offset);
 			}
 		}
-		//両方とも数値
-		if(t1isnum) {
-			const t1size = getNumberAsciiLength(t1, t1off);
-			const t2size = getNumberAsciiLength(t2, t2off);
-			const r = compareNumber(t1,t1off,t1size,t2,t2off,t2size);
-			if(r !== 0) {
-				return r;
+		return (string_number_array.length - offset);
+	}
+
+	/**
+	 * ASCIIコード配列の中の指定した位置にある数値データ同士をCompareする
+	 * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
+	 * @param {number} t1off - どの位置から調べるか
+	 * @param {number} t1size - 調べるサイズ
+	 * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
+	 * @param {number} t2off - どの位置から調べるか
+	 * @param {number} t2size - 調べるサイズ
+	 * @returns {number} Compare結果
+	 */
+	static compareNumber(t1, t1off, t1size, t2, t2off, t2size) {
+		const ASCII_0 = 0x30;
+		const t1end = t1off + t1size;
+		const t2end = t2off + t2size;
+		// 前方から調査
+		let t1p = t1off;
+		let t2p = t2off;
+		// 先頭の0は飛ばして比較したい
+		// 0以外の数値がどこに含まれているか調査
+		for(;t1p < t1end;t1p++) {
+			if(t1[t1p] !== ASCII_0) {
+				break;
 			}
-			t1off += t1size;
-			t2off += t2size;
 		}
-		//両方とも文字列
-		else {
-			if(t1[t1off] > t2[t2off]) {
+		for(;t2p < t2end;t2p++) {
+			if(t2[t2p] !== ASCII_0) {
+				break;
+			}
+		}
+		// 0しかなかった場合
+		if((t1p == t1end)||(t2p == t2end)) {
+			if(t1p != t1end) { //t2pのみはみだした == 0
 				return 1;
 			}
-			else if(t1[t1off] < t2[t2off]) {
+			else if(t2p != t2end) {
 				return -1;
 			}
-			t1off++;
-			t2off++;
-		}
-		//両方ともオーバー
-		if((t1off >= l1)&&(t2off >= l2)) {
-			//長さも等しい
-			if(l1 === l2) {
+			else {
 				return 0;
 			}
-			else if(l1 > l2) {
+		}
+		// 桁数のみでどちらが大きいか比較
+		const t1keta = t1size - (t1p - t1off);
+		const t2keta = t2size - (t2p - t2off);
+		if(t1keta > t2keta) {
+			return 1;
+		}
+		else if(t1keta < t2keta) {
+			return -1;
+		}
+		// 同じ桁同士の比較
+		for(;t1p < t1end;) {
+			if(t1[t1p] > t2[t2p]) {
 				return 1;
 			}
+			else if(t1[t1p] < t2[t2p]) {
+				return -1;
+			}
+			t1p++;
+			t2p++;
+		}
+		return 0;
+	}
+
+	/**
+	 * ASCIIコード配列の同士をCompareする
+	 * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
+	 * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
+	 * @returns {number} Compare結果
+	 */
+	static compareText(t1, t2) {
+		const l1 = t1.length;
+		const l2 = t2.length;
+		if((l1 === 0) && (l2 === 0)) {
+			return 0;
+		}
+		if(l1 === 0) {
+			return -1;
+		}
+		if(l2 === 0) {
+			return 1;
+		}
+		//この地点で両方とも長さが1より大きい
+		let t1off = 0;
+		let t2off = 0;
+		while(t1off <= l1 && t2off <= l2) {
+			const t1isnum = ComparatorTool.isNumberAscii(t1[t1off]);
+			const t2isnum = ComparatorTool.isNumberAscii(t2[t2off]);
+			//文字目の種類が違う
+			if(t1isnum !== t2isnum) {
+				if(t1isnum) {
+					return -1;//数値が前
+				}
+				else {
+					return 1;//文字が後ろ
+				}
+			}
+			//両方とも数値
+			if(t1isnum) {
+				const t1size = ComparatorTool.getNumberAsciiLength(t1, t1off);
+				const t2size = ComparatorTool.getNumberAsciiLength(t2, t2off);
+				const r = ComparatorTool.compareNumber(t1,t1off,t1size,t2,t2off,t2size);
+				if(r !== 0) {
+					return r;
+				}
+				t1off += t1size;
+				t2off += t2size;
+			}
+			//両方とも文字列
 			else {
+				if(t1[t1off] > t2[t2off]) {
+					return 1;
+				}
+				else if(t1[t1off] < t2[t2off]) {
+					return -1;
+				}
+				t1off++;
+				t2off++;
+			}
+			//両方ともオーバー
+			if((t1off >= l1)&&(t2off >= l2)) {
+				//長さも等しい
+				if(l1 === l2) {
+					return 0;
+				}
+				else if(l1 > l2) {
+					return 1;
+				}
+				else {
+					return -1;
+				}
+			}
+			//片方のほうがサイズが大きい
+			else if(t2off >= l2) { //t2の方が短い
+				return 1;
+			}
+			else if(t1off >= l1) { //t1の方が短い
 				return -1;
 			}
 		}
-		//片方のほうがサイズが大きい
-		else if(t2off >= l2) { //t2の方が短い
-			return 1;
-		}
-		else if(t1off >= l1) { //t1の方が短い
-			return -1;
-		}
+		// ※ここには達成しない
+		return 0;
 	}
-	// ※ここには達成しない
-	return 0;
-};
-
-/**
- * 日本語の文字列比較用の関数
- * - sortの引数で利用できます
- */
-const Comparator = {
 
 	/**
 	 * 2つの文字列を比較する
@@ -5811,7 +5681,7 @@ const Comparator = {
 	 * @param {String} b - 比較先
 	 * @returns {number} Compare結果
 	 */
-	DEFAULT : function(a, b) {
+	static compareToForDefault(a, b) {
 		if(a === b) {
 			return 0;
 		}
@@ -5819,7 +5689,7 @@ const Comparator = {
 			return (a < b ? -1 : 1);
 		}
 		return ((typeof a < typeof b) ? -1 : 1);
-	},
+	}
 
 	/**
 	 * 2つの文字列を自然順に比較を行う（自然順ソート（Natural Sort）用）
@@ -5827,18 +5697,18 @@ const Comparator = {
 	 * @param {String} b - 比較先
 	 * @returns {number} Compare結果
 	 */
-	NATURAL : function(a, b) {
+	static compareToForNatural(a, b) {
 		if((typeof a === typeof b) && (typeof a === "string")) {
-			const a_str = Unicode.toUTF16Array(toNormalizeString(a));
-			const b_str = Unicode.toUTF16Array(toNormalizeString(b));
-			return compareText(a_str, b_str);
+			const a_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(a));
+			const b_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(b));
+			return ComparatorTool.compareText(a_str, b_str);
 		}
 		else {
-			return Comparator.DEFAULT(a, b);
+			return ComparatorTool.compareToForDefault(a, b);
 		}
 	}
-};
 
+}
 
 /**
  * 日本語の文字列比較用の関数
@@ -5852,7 +5722,7 @@ class StringComparator {
 	 * @returns {function(string, string): number}
 	 */
 	static get DEFAULT() {
-		return Comparator.DEFAULT;
+		return ComparatorTool.compareToForDefault;
 	}
 
 	/**
@@ -5860,7 +5730,7 @@ class StringComparator {
 	 * @returns {function(string, string): number}
 	 */
 	static get NATURAL() {
-		return Comparator.NATURAL;
+		return ComparatorTool.compareToForNatural;
 	}
 
 }
@@ -6322,10 +6192,10 @@ class MojiJS {
 	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
 	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-	 * @returns {CharacterData} 文字の情報がつまったオブジェクト
+	 * @returns {import("./tools/MojiAnalyzer.js").MojiData} 文字の情報がつまったオブジェクト
 	 */
-	static getCharacterData(unicode_codepoint) {
-		return CharacterAnalyzer.getCharacterData(unicode_codepoint);
+	static getMojiData(unicode_codepoint) {
+		return CharacterAnalyzer.getMojiData(unicode_codepoint);
 	}
 
 	/**
