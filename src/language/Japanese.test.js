@@ -11,7 +11,7 @@ const testOperator1  = function(operator, x, y) {
 	test_count++;
 	// @ts-ignore
 	const out = Japanese[operator](x);
-	const testname = operator + " " + test_count + " (" + x + ")." + operator + "(" + x + ") = " + out + " === " + y;
+	const testname = operator + " " + test_count + " " + operator + "(" + x + ") = " + out + " === " + y;
 	test(testname, () => { expect(out === y).toBe(true); });
 };
 
@@ -36,3 +36,12 @@ testOperator1("toKatakanaFromRomaji", "aiueo!konnnichiwa-!waha-!jaja-n!", "ア�
 
 testOperator1("toHiraganaFromRomaji", "kyapi-nn!shi!chi!tsu!tha!xtsu!ltu!xxa!", "きゃぴーん！し！ち！つ！ちゃ！っ！っ！っぁ！");
 testOperator1("toKatakanaFromRomaji", "kyapi-nn!shi!chi!tsu!tha!xtsu!ltu!xxa!", "キャピーン！シ！チ！ツ！チャ！ッ！ッ！ッァ！");
+testOperator1("toHiraganaFromRomaji", "gwagwigwugwegwo", "ぐぁぐぃぐぅぐぇぐぉ");
+testOperator1("toHiraganaFromRomaji", "pyapyipyupyepyo", "ぴゃぴぃぴゅぴぇぴょ");
+testOperator1("toHiraganaFromRomaji", "kakkoii", "かっこいい");
+
+testOperator1("toRomajiFromHiragana", "こんにちわ", "konnichiwa");
+testOperator1("toRomajiFromHiragana", "ぐぁぐぃぐぅぐぇぐぉ", "gwagwigwugwegwo");
+testOperator1("toRomajiFromHiragana", "ぴゃぴぃぴゅぴぇぴょ", "pyapyipyupyepyo");
+testOperator1("toRomajiFromHiragana", "かっこいい", "kakkoii");
+

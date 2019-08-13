@@ -103,7 +103,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 英語を半角に変換
+	 * アルファベットを半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -118,7 +118,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * 英語を全角に変換
+	 * アルファベットを全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -421,6 +421,7 @@ export default class Japanese {
 	static toHiraganaFromRomaji(text) {
 		/**
 		 * ローマ字から変換マップ
+		 * .y[aiuoe] は除いている
 		 * @type {Object<string, string>}
 		 */
 		const map = {
@@ -523,6 +524,7 @@ export default class Japanese {
 			"xyo" : "ょ" ,
 			"xtu" : "っ" ,
 			"xtsu" : "っ" ,
+			// 環境依存をなくすために、SJISにあるカタカナにしています。
 			"va" : "ヴぁ" ,
 			"vi" : "ヴぃ" ,
 			"vu" : "ヴ" ,
@@ -533,26 +535,21 @@ export default class Japanese {
 			"qu" : "く" ,
 			"qe" : "くぇ" ,
 			"qo" : "くぉ" ,
-			"fa" : "ふぁ" ,
-			"fi" : "ふぃ" ,
-			"fu" : "ふ" ,
-			"fe" : "ふぇ" ,
-			"fo" : "ふぉ" ,
-			"ja" : "じゃ" ,
-			"ji" : "じ" ,
-			"ju" : "じゅ" ,
-			"je" : "じぇ" ,
-			"jo" : "じょ" ,
-			"cha" : "ちゃ" ,
-			"chi" : "ち" ,
-			"chu" : "ちゅ" ,
-			"che" : "ちぇ" ,
-			"cho" : "ちょ" ,
+			"gwa" : "ぐぁ" ,
+			"gwi" : "ぐぃ" ,
+			"gwu" : "ぐぅ" ,
+			"gwe" : "ぐぇ" ,
+			"gwo" : "ぐぉ" ,
 			"sha" : "しゃ" ,
 			"shi" : "し" ,
 			"shu" : "しゅ" ,
 			"she" : "しぇ" ,
 			"sho" : "しょ" ,
+			"cha" : "ちゃ" ,
+			"chi" : "ち" ,
+			"chu" : "ちゅ" ,
+			"che" : "ちぇ" ,
+			"cho" : "ちょ" ,
 			"tha" : "ちゃ" ,
 			"thi" : "ち" ,
 			"thu" : "てゅ" ,
@@ -563,11 +560,23 @@ export default class Japanese {
 			"tsu" : "つ" ,
 			"tse" : "つぇ" ,
 			"tso" : "つぉ" ,
+			"fa" : "ふぁ" ,
+			"fi" : "ふぃ" ,
+			"fu" : "ふ" ,
+			"fe" : "ふぇ" ,
+			"fo" : "ふぉ" ,
+			"ja" : "じゃ" ,
+			"ji" : "じ" ,
+			"ju" : "じゅ" ,
+			"je" : "じぇ" ,
+			"jo" : "じょ" ,
 			"n" : "ん" ,
 			"nn" : "ん" ,
 			"-" : "ー" ,
 			"?" : "？" ,
-			"!" : "！"
+			"!" : "！",
+			"," : "、",
+			"." : "。" 
 		};
 		/**
 		 * ya, yi, yu, ye, yo
@@ -588,6 +597,7 @@ export default class Japanese {
 			let y_komoji = null;
 			let romaji = str.toLowerCase();
 			if(romaji.length > 2) {
+				// 同じ文字の繰り返しなら「っ」に変更
 				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
 					output.push("っ");
 					romaji = romaji.substr(1);
@@ -596,6 +606,9 @@ export default class Japanese {
 			if(romaji.length === 3) {
 				const char_1 = romaji.substr(0, 1);
 				const char_2 = romaji.substr(1, 1);
+				// 2文字目がyで始まる場合（ただし、lya, xya などを除く）は
+				// 小文字リストから選んで、最後に小文字をつける
+				// sya -> si につけかえて辞書から探す
 				if((char_2 === "y") && (char_1 !== "l") && (char_1 !== "x")) {
 					y_komoji = y_komoji_map[romaji.substr(2)];
 					romaji = romaji.substr(0, 1) + "i";
@@ -611,7 +624,11 @@ export default class Japanese {
 			}
 			return output.join("");
 		};
-		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?\\!-]/gi, func));
+		// ([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe] ... yが入り込む可能性がある文字。前の文字を繰り返して「tta -> った」にも対応。
+		// [xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe] ... yを使用しない文字
+		// nn? ... ん
+		// [?!-] ... 記号
+		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
 	}
 
 	/**
@@ -621,6 +638,263 @@ export default class Japanese {
 	 */
 	static toKatakanaFromRomaji(text) {
 		return Japanese.toKatakana(Japanese.toHiraganaFromRomaji(text));
+	}
+
+	/**
+	 * ひらがなからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromHiragana(text) {
+		/**
+		 * ひらがなからローマ字への変換マップ
+		 * @type {Object<string, string>}
+		 */
+		const map = {
+			"あ" : "a" ,
+			"い" : "i" ,
+			"う" : "u" ,
+			"え" : "e" ,
+			"お" : "o" ,
+			"か" : "ka" ,
+			"き" : "ki" ,
+			"く" : "ku" ,
+			"け" : "ke" ,
+			"こ" : "ko" ,
+			"が" : "ga" ,
+			"ぎ" : "gi" ,
+			"ぐ" : "gu" ,
+			"げ" : "ge" ,
+			"ご" : "go" ,
+			"さ" : "sa" ,
+			"し" : "shi" ,
+			"す" : "su" ,
+			"せ" : "se" ,
+			"そ" : "so" ,
+			"ざ" : "za" ,
+			"じ" : "ji" ,
+			"ず" : "zu" ,
+			"ぜ" : "ze" ,
+			"ぞ" : "zo" ,
+			"た" : "ta" ,
+			"ち" : "chi" ,
+			"つ" : "tsu" ,
+			"て" : "te" ,
+			"と" : "to" ,
+			"だ" : "da" ,
+			"ぢ" : "di" ,
+			"づ" : "du" ,
+			"で" : "de" ,
+			"ど" : "do" ,
+			"な" : "na" ,
+			"に" : "ni" ,
+			"ぬ" : "nu" ,
+			"ね" : "ne" ,
+			"の" : "no" ,
+			"は" : "ha" ,
+			"ひ" : "hi" ,
+			"ふ" : "fu" ,
+			"へ" : "he" ,
+			"ほ" : "ho" ,
+			"ば" : "ba" ,
+			"び" : "bi" ,
+			"ぶ" : "bu" ,
+			"べ" : "be" ,
+			"ぼ" : "bo" ,
+			"ぱ" : "pa" ,
+			"ぴ" : "pi" ,
+			"ぷ" : "pu" ,
+			"ぺ" : "pe" ,
+			"ぽ" : "po" ,
+			"ま" : "ma" ,
+			"み" : "mi" ,
+			"む" : "mu" ,
+			"め" : "me" ,
+			"も" : "mo" ,
+			"や" : "ya" ,
+			"ゆ" : "yu" ,
+			"いぇ" : "ye" ,
+			"よ" : "yo" ,
+			"ら" : "ra" ,
+			"り" : "ri" ,
+			"る" : "ru" ,
+			"れ" : "re" ,
+			"ろ" : "ro" ,
+			"わ" : "wa" ,
+			"うぃ" : "wi" ,
+			"うぇ" : "we" ,
+			"うぉ" : "wo" ,
+			"を" : "wo" ,
+			"ゐ" : "wi" ,
+			"ゑ" : "we" ,
+			"ん" : "n" ,
+			"ぁ" : "lya" ,
+			"ぃ" : "lyi" ,
+			"ぅ" : "lyu" ,
+			"ぇ" : "lye" ,
+			"ぉ" : "lyo" ,
+			"ゃ" : "lya" ,
+			"ゅ" : "lyu" ,
+			"ょ" : "lyo" ,
+			// 環境依存をなくすために、SJISにあるカタカナにしています。
+			"ヴぁ" : "va" ,
+			"ヴぃ" : "vi" ,
+			"ヴ" : "vu" ,
+			"ヴぇ" : "ve" ,
+			"ヴぉ" : "vo" ,
+			"ゔぁ" : "va" ,
+			"ゔぃ" : "vi" ,
+			"ゔ" : "vu" ,
+			"ゔぇ" : "ve" ,
+			"ゔぉ" : "vo" ,
+			"きゃ" : "kya" ,
+			"きぃ" : "kyi" ,
+			"きゅ" : "kyu" ,
+			"きぇ" : "kye" ,
+			"きょ" : "kyo" ,
+			"ぎゃ" : "gya" ,
+			"ぎぃ" : "gyi" ,
+			"ぎゅ" : "gyu" ,
+			"ぎぇ" : "gye" ,
+			"ぎょ" : "gyo" ,
+			"くぁ" : "qa" ,
+			"くぃ" : "qi" ,
+			"くぅ" : "qu" ,
+			"くぇ" : "qe" ,
+			"くぉ" : "qo" ,
+			"ぐぁ" : "gwa" ,
+			"ぐぃ" : "gwi" ,
+			"ぐぅ" : "gwu" ,
+			"ぐぇ" : "gwe" ,
+			"ぐぉ" : "gwo" ,
+			"しゃ" : "sha" ,
+			// "しぃ" : "shii" ,
+			"しゅ" : "shu" ,
+			"しぇ" : "she" ,
+			"しょ" : "sho" ,
+			"じゃ" : "ja" ,
+			// "じぃ" : "jii" ,
+			"じゅ" : "ju" ,
+			"じぇ" : "je" ,
+			"じょ" : "jo" ,
+			"ちゃ" : "cha" ,
+			// "ちぃ" : "chii"
+			"ちゅ" : "chu" ,
+			"ちぇ" : "che" ,
+			"ちょ" : "cho" ,
+			"つぁ" : "tsa" ,
+			"つぃ" : "tsi" ,
+			"つぇ" : "tse" ,
+			"つぉ" : "tso" ,
+			"てぁ" : "tha" ,
+			"てぃ" : "thi" ,
+			"てゅ" : "thu" ,
+			"てぇ" : "the" ,
+			"てょ" : "tho" ,
+			"にゃ" : "nya" ,
+			"にぃ" : "nyi" ,
+			"にゅ" : "nyu" ,
+			"にぇ" : "nye" ,
+			"にょ" : "nyo" ,
+			"ひゃ" : "hya" ,
+			"ひぃ" : "hyi" ,
+			"ひゅ" : "hyu" ,
+			"ひぇ" : "hye" ,
+			"ひょ" : "hyo" ,
+			"びゃ" : "bya" ,
+			"びぃ" : "byi" ,
+			"びゅ" : "byu" ,
+			"びぇ" : "bye" ,
+			"びょ" : "byo" ,
+			"ぴゃ" : "pya" ,
+			"ぴぃ" : "pyi" ,
+			"ぴゅ" : "pyu" ,
+			"ぴぇ" : "pye" ,
+			"ぴょ" : "pyo" ,
+			"ふぁ" : "fa" ,
+			"ふぃ" : "fi" ,
+			"ふぇ" : "fe" ,
+			"ふぉ" : "fo" ,
+			"りゃ" : "rya" ,
+			"りぃ" : "ryi" ,
+			"りゅ" : "ryu" ,
+			"りぇ" : "rye" ,
+			"りょ" : "ryo" ,
+			"ー" : "-" ,
+			"？" : "?" ,
+			"！" : "!" ,
+			"、" : "," ,
+			"。" : "." 
+		};
+
+		/**
+		 * @type {Object<string, string>}
+		 */
+		const komoji_map = {
+			"ぁ" : "la",
+			"ぃ" : "li",
+			"ぅ" : "lu",
+			"ぇ" : "le",
+			"ぉ" : "lo",
+			"ゃ" : "lya",
+			"ゅ" : "lyu",
+			"ょ" : "lyo"
+		};
+
+		/**
+		 * @param {string} str 
+		 */
+		const func = function(str) {
+			let tgt = str;
+			let is_xtu = false; 
+			// 1文字目に「っ」があるか
+			if(/^っ/.test(tgt)) {
+				is_xtu = true;
+				tgt = tgt.replace(/^っ*/, "");
+			}
+			// 変換
+			let trans = map[tgt];
+			// 変換に失敗した場合は
+			if(!trans) {
+				if(trans.length === 1) {
+					// 1文字なのでこれ以上変換不能
+					return str;
+				}
+				const char_1 = trans.substr(0, 1);
+				const char_2 = trans.substr(1, 1);
+				// 最後の文字が小文字である
+				if(!komoji_map[char_2]) {
+					// これ以上変換不能
+					return str;
+				}
+				tgt = char_1;
+				const last_text = komoji_map[char_2];
+				// 再度変換テスト
+				trans = map[tgt];
+				if(!trans) {
+					// これ以上変換不能
+					return str;
+				}
+				trans += last_text;
+			}
+			if(is_xtu) {
+				trans = trans.substr(0, 1) + trans;
+			}
+			return trans;
+		};
+		// [っ]*[あいうえおか-ぢつ-もやゆよら-ろわゐゑをんヴ][ぁぃぅぇぉゃゅょ]? ... 促音＋子音母音
+		// [ぁぃぅぇぉゃゅょゎっ] ... 小文字のみ
+		// [？！－。、] ... 記号
+		return (text.replace(/[っ]*[あいうえおか-ぢつ-もやゆよら-ろわゐゑをんヴゔ][ぁぃぅぇぉゃゅょ]?|[ぁぃぅぇぉゃゅょゎっ]|[？！－。、]/g, func));
+	}
+
+	/**
+	 * カタカナからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromKatakana(text) {
+		return Japanese.toRomajiFromHiragana(Japanese.toHiragana(text));
 	}
 
 }

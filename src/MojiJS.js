@@ -371,7 +371,7 @@ export default class MojiJS {
 	}
 	
 	/**
-	 * 英語を半角に変換
+	 * アルファベットを半角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -380,7 +380,7 @@ export default class MojiJS {
 	}
 	
 	/**
-	 * 英語を全角に変換
+	 * アルファベットを全角に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {String} 変換後のテキスト
 	 */
@@ -458,6 +458,24 @@ export default class MojiJS {
 	 */
 	static toKatakanaFromRomaji(text) {
 		return Japanese.toKatakanaFromRomaji(text);
+	}
+
+	/**
+	 * ひらがなからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromHiragana(text) {
+		return Japanese.toRomajiFromHiragana(text);
+	}
+
+	/**
+	 * カタカナからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromKatakana(text) {
+		return Japanese.toRomajiFromKatakana(text);
 	}
 
 	/**
