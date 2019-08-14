@@ -144,11 +144,15 @@ export default class Unicode {
 	}
 
 	/**
-	 * コードポイントの数値データを文字列に変換
-	 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
-	 * @returns {String} 変換後のテキスト
+	 * コードポイントの数値データをUTF16の配列に変換
+	 * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数
+	 * @returns {Array<number>} 変換後のテキスト
 	 */
-	static fromCodePoint() {
+	static toUTF16ArrayfromCodePoint() {
+		/**
+		 * @type {Array<number>}
+		 */
+		const utf16_array = [];
 		/**
 		 * @type {Array<number>}
 		 */
@@ -161,18 +165,41 @@ export default class Unicode {
 				codepoint_array[i] = arguments[i];
 			}
 		}
-		const text = [];
 		for(let i = 0;i < codepoint_array.length;i++) {
 			const codepoint = codepoint_array[i];
 			if(0x10000 <= codepoint) {
 				const high = (( codepoint - 0x10000 ) >> 10) + 0xD800;
 				const low  = (codepoint & 0x3FF) + 0xDC00;
-				text[text.length] = String.fromCharCode(high);
-				text[text.length] = String.fromCharCode(low);
+				utf16_array.push(high);
+				utf16_array.push(low);
 			}
 			else {
-				text[text.length] = String.fromCharCode(codepoint);
+				utf16_array.push(codepoint);
 			}
+		}
+		return utf16_array;
+	}
+
+	/**
+	 * コードポイントの数値データを文字列に変換
+	 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromCodePoint(codepoint) {
+		let utf16_array = null;
+		if(codepoint instanceof Array) {
+			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint);
+		}
+		else {
+			const codepoint_array = [];
+			for(let i = 0;i < arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
+			}
+			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint_array);
+		}
+		const text = [];
+		for(let i = 0;i < utf16_array.length;i++) {
+			text[text.length] = String.fromCharCode(utf16_array[i]);
 		}
 		return(text.join(""));
 	}
@@ -231,51 +258,7 @@ export default class Unicode {
 	 * @returns {Array<number>} UTF8のデータが入った配列
 	 */
 	static toUTF8Array(text) {
-		const utf32 = Unicode.toUTF32Array(text);
-		const utf8 = [];
-		for(let i = 0; i < utf32.length; i++) {
-			let codepoint = utf32[i];
-			// 1バイト文字
-			if(codepoint <= 0x7F) {
-				utf8.push(codepoint);
-				continue;
-			}
-			const buffer = [];
-			let size = 0;
-			// 2バイト以上
-			if(codepoint < 0x800) {
-				size = 2;
-			}
-			else if(codepoint < 0x10000) {
-				size = 3;
-			}
-			else {
-				size = 4;
-			}
-			for(let j = 0; j < size; j++) {
-				let write = codepoint & ((1 << 6) - 1);
-				if(j === size - 1) {
-					if(size === 2) {
-						write |= 0xC0; // 1100 0000
-					}
-					else if(size === 3) {
-						write |= 0xE0; // 1110 0000
-					}
-					else {
-						write |= 0xF0; // 1111 0000
-					}
-					buffer.push(write);
-					break;
-				}
-				buffer.push(write | 0x80); // 1000 0000
-				codepoint = codepoint >> 6;
-			}
-			// 反転
-			for(let j = buffer.length - 1; j >= 0; j--) {
-				utf8.push(buffer[j]);
-			}
-		}
-		return utf8;
+		return Unicode.toUTFBinaryFromCodePoint(Unicode.toUTF32Array(text), "utf-8");
 	}
 
 	/**
@@ -284,38 +267,7 @@ export default class Unicode {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromUTF8Array(utf8) {
-		const utf32 = [];
-		let size = 0;
-		let write = 0;
-		for(let i = 0; i < utf8.length; i++) {
-			const bin = utf8[i];
-			if(bin < 0x80) {
-				utf32.push(bin);
-			}
-			if(size === 0) {
-				if(bin < 0xE0) {
-					size = 1;
-					write = bin & 0x1F; // 0001 1111
-				}
-				else if(bin < 0xF0) {
-					size = 2;
-					write = bin & 0xF; // 0000 1111
-				}
-				else {
-					size = 3;
-					write = bin & 0x7; // 0000 0111
-				}
-			}
-			else {
-				write <<= 6;
-				write |= bin & 0x3F; // 0011 1111
-				size--;
-				if(size === 0) {
-					utf32.push(write);
-				}
-			}
-		}
-		return Unicode.fromCodePoint(utf32);
+		return Unicode.fromCodePoint(Unicode.toCodePointFromUTFBinary(utf8, "utf-8"));
 	}
 
 	/**
@@ -334,4 +286,283 @@ export default class Unicode {
 		}
 		return Unicode.fromUTF32Array(cut);
 	}
+
+	/**
+	 * UTFのバイナリ配列からバイトオーダーマーク(BOM)を調査する
+	 * @param {Array<number>} utfbinary - 調査するバイナリ配列
+	 * @returns {string} 符号化形式(不明時はnull)
+	 */
+	static getCharsetFromBOM(utfbinary) {
+		if(utfbinary.length >= 4) {
+			if((utfbinary[0] === 0x00) && (utfbinary[1] === 0x00) && (utfbinary[2] === 0xFE) && (utfbinary[3] === 0xFF)) {
+				return "UTF-32BE";
+			}
+			if((utfbinary[0] === 0xFF) && (utfbinary[1] === 0xFE) && (utfbinary[2] === 0x00) && (utfbinary[3] === 0x00)) {
+				return "UTF-32LE";
+			}
+		}
+		if(utfbinary.length >= 3) {
+			if((utfbinary[0] === 0xEF) && (utfbinary[1] === 0xBB) && (utfbinary[2] === 0xBF)) {
+				return "UTF-8";
+			}
+		}
+		if(utfbinary.length >= 2) {
+			if((utfbinary[0] === 0xFE) && (utfbinary[1] === 0xFF)) {
+				return "UTF-16BE";
+			}
+			if((utfbinary[0] === 0xFF) && (utfbinary[1] === 0xFE)) {
+				return "UTF-16LE";
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * UTFのバイナリ配列からコードポイントに変換
+	 * @param {Array<number>} binary - 変換したいバイナリ配列
+	 * @param {String} [charset] - UTFの種類（省略した場合はBOM付きを期待する）
+	 * @returns {Array<number>} コードポイントの配列(失敗時はnull)
+	 */
+	static toCodePointFromUTFBinary(binary, charset) {
+		const utf32_array = [];
+		let check_charset = charset;
+		let offset = 0;
+		// バイトオーダーマーク(BOM)がある場合は BOM を優先
+		const charset_for_bom = Unicode.getCharsetFromBOM(binary);
+		if(charset_for_bom) {
+			check_charset = charset_for_bom;
+			if(/utf-?8/i.test(charset_for_bom)) {
+				offset = 3;
+			}
+			else if(/utf-?16/i.test(charset_for_bom)) {
+				offset = 2;
+			}
+			else if(/utf-?32/i.test(charset_for_bom)) {
+				offset = 4;
+			}
+		}
+		// BOM付きではない＋指定もしていないので変換失敗
+		if(!charset_for_bom && !charset) {
+			return null;
+		}
+		// UTF-8
+		if(/utf-?8n?/i.test(check_charset)) {
+			let size = 0;
+			let write = 0;
+			for(let i = offset; i < binary.length; i++) {
+				const bin = binary[i];
+				if(size === 0) {
+					if(bin < 0x80) {
+						utf32_array.push(bin);
+					}
+					else if(bin < 0xE0) {
+						size = 1;
+						write = bin & 0x1F; // 0001 1111
+					}
+					else if(bin < 0xF0) {
+						size = 2;
+						write = bin & 0xF; // 0000 1111
+					}
+					else {
+						size = 3;
+						write = bin & 0x7; // 0000 0111
+					}
+				}
+				else {
+					write <<= 6;
+					write |= bin & 0x3F; // 0011 1111
+					size--;
+					if(size === 0) {
+						utf32_array.push(write);
+					}
+				}
+			}
+			return utf32_array;
+		}
+		// UTF-16
+		else if(/utf-?16/i.test(check_charset)) {
+			// UTF-16 につめる
+			const utf16 = [];
+			// UTF-16BE
+			if(/utf-?16(be)/i.test(check_charset)) {
+				for(let i = offset; i < binary.length; i += 2) {
+					utf16.push((binary[i] << 8) | binary[i + 1]);
+				}
+			}
+			// UTF-16LE
+			else if(/utf-?16(le)?/i.test(check_charset)) {
+				for(let i = offset; i < binary.length; i += 2) {
+					utf16.push(binary[i] | (binary[i + 1] << 8));
+				}
+			}
+			// UTF-32 につめる
+			for(let i = 0; i < utf16.length; i++) {
+				if((0xD800 <= utf16[i]) && (utf16[i] <= 0xDBFF)) {
+					if(i + 2 <= utf16.length) {
+						const high = utf16[i];
+						const low  = utf16[i + 1];
+						utf32_array.push((((high - 0xD800) << 10) | (low - 0xDC00)) + 0x10000);
+					}
+					i++;
+				}
+				else {
+					utf32_array.push(utf16[i]);
+				}
+			}
+			return utf32_array;
+		}
+		// UTF-32
+		else {
+			// UTF-32BE
+			if(/utf-?32(be)/i.test(check_charset)) {
+				for(let i = offset; i < binary.length; i += 4) {
+					utf32_array.push((binary[i] << 24) | (binary[i + 1] << 16) | (binary[i + 2] << 8) | binary[i + 3]);
+				}
+				return utf32_array;
+			}
+			// UTF-32LE
+			else if(/utf-?32(le)?/i.test(check_charset)) {
+				for(let i = offset; i < binary.length; i += 4) {
+					utf32_array.push(binary[i] | (binary[i + 1] << 8) | (binary[i + 2] << 16) | (binary[i + 3] << 24));
+				}
+				return utf32_array;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * UTF32配列からバイナリ配列に変換
+	 * @param {Array<number>} utf32_array - 変換したいUTF-32配列
+	 * @param {String} charset - UTFの種類
+	 * @param {boolean} [with_bom=false] - BOMをつけるかどうか
+	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
+	 */
+	static toUTFBinaryFromCodePoint(utf32_array, charset, with_bom) {
+		const with_bom_ = with_bom !== undefined ? with_bom : false;
+		/**
+		 * @type {Array<number>}
+		 */
+		const binary = [];
+		// UTF-8
+		if(/utf-?8n?/i.test(charset)) {
+			// bom をつける
+			if(with_bom_) {
+				binary.push(0xEF);
+				binary.push(0xBB);
+				binary.push(0xBF);
+			}
+			for(let i = 0; i < utf32_array.length; i++) {
+				let codepoint = utf32_array[i];
+				// 1バイト文字
+				if(codepoint <= 0x7F) {
+					binary.push(codepoint);
+					continue;
+				}
+				const buffer = [];
+				let size = 0;
+				// 2バイト以上
+				if(codepoint < 0x800) {
+					size = 2;
+				}
+				else if(codepoint < 0x10000) {
+					size = 3;
+				}
+				else {
+					size = 4;
+				}
+				for(let j = 0; j < size; j++) {
+					let write = codepoint & ((1 << 6) - 1);
+					if(j === size - 1) {
+						if(size === 2) {
+							write |= 0xC0; // 1100 0000
+						}
+						else if(size === 3) {
+							write |= 0xE0; // 1110 0000
+						}
+						else {
+							write |= 0xF0; // 1111 0000
+						}
+						buffer.push(write);
+						break;
+					}
+					buffer.push(write | 0x80); // 1000 0000
+					codepoint = codepoint >> 6;
+				}
+				// 反転
+				for(let j = buffer.length - 1; j >= 0; j--) {
+					binary.push(buffer[j]);
+				}
+			}
+			return binary;
+		}
+		// UTF-16
+		else if(/utf-?16/i.test(charset)) {
+			// UTF-16 に詰め替える
+			const utf16_array = Unicode.toUTF16ArrayfromCodePoint(utf32_array);
+			// UTF-16BE
+			if(/utf-?16(be)/i.test(charset)) {
+				// bom をつける
+				if(with_bom_) {
+					binary.push(0xFE);
+					binary.push(0xFF);
+				}
+				for(let i = 0; i < utf16_array.length; i++ ) {
+					binary.push(utf16_array[i] >> 8);
+					binary.push(utf16_array[i] & 0xff);
+				}
+			}
+			// UTF-16LE
+			else if(/utf-?16(le)?/i.test(charset)) {
+				// bom をつける
+				if(with_bom_) {
+					binary.push(0xFF);
+					binary.push(0xFE);
+				}
+				for(let i = 0; i < utf16_array.length; i++ ) {
+					binary.push(utf16_array[i] & 0xff);
+					binary.push(utf16_array[i] >> 8);
+				}
+			}
+			return binary;
+		}
+		// UTF-32
+		else if(/utf-?32/i.test(charset)) {
+			// UTF-32BE
+			if(/utf-?32(be)/i.test(charset)) {
+				// bom をつける
+				if(with_bom_) {
+					binary.push(0x00);
+					binary.push(0x00);
+					binary.push(0xFE);
+					binary.push(0xFF);
+				}
+				for(let i = 0; i < utf32_array.length; i++) {
+					binary.push((utf32_array[i] >> 24) & 0xff);
+					binary.push((utf32_array[i] >> 16) & 0xff);
+					binary.push((utf32_array[i] >> 8) & 0xff);
+					binary.push(utf32_array[i] & 0xff);
+				}
+			}
+			// UTF-32LE
+			else if(/utf-?32(le)?/i.test(charset)) {
+				// bom をつける
+				if(with_bom_) {
+					binary.push(0xFF);
+					binary.push(0xFE);
+					binary.push(0x00);
+					binary.push(0x00);
+				}
+				for(let i = 0; i < utf32_array.length; i++) {
+					binary.push(utf32_array[i] & 0xff);
+					binary.push((utf32_array[i] >> 8) & 0xff);
+					binary.push((utf32_array[i] >> 16) & 0xff);
+					binary.push((utf32_array[i] >> 24) & 0xff);
+				}
+			}
+			return binary;
+		}
+		return null;
+	}
+
 }

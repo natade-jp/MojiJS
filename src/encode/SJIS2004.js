@@ -1617,7 +1617,7 @@ export default class SJIS2004 {
 	/**
 	 * Shift_JIS-2004 の配列から文字列に変換
 	 * @param {Array<number>} sjis2004 - 変換したいテキスト
-	 * @returns {String} 変換後のテキスト
+	 * @returns {{encode_string : String, ng_count : number}} 変換後のテキスト
 	 */
 	static fromSJIS2004Array(sjis2004) {
 		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE);

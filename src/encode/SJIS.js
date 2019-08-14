@@ -75,12 +75,13 @@ export default class SJIS {
 	 * SJISの配列から文字列に変換
 	 * @param {Array<number>} sjis - 変換したいテキスト
 	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
-	 * @returns {String} 変換後のテキスト
+	 * @returns {{encode_string : String, ng_count : number}} 変換後のテキスト
 	 */
 	static fromSJISArray(sjis, sjis_to_unicode) {
 		const map = sjis_to_unicode;
 		const utf16 = [];
 		const ng = "?".charCodeAt(0);
+		let ng_count = 0;
 		for(let i = 0; i < sjis.length; i++) {
 			let x = sjis[i];
 			/**
@@ -118,9 +119,13 @@ export default class SJIS {
 			}
 			else {
 				utf16.push(ng);
+				ng_count++;
 			}
 		}
-		return Unicode.fromUTF16Array(utf16);
+		return {
+			encode_string : Unicode.fromUTF16Array(utf16),
+			ng_count : ng_count
+		};
 	}
 
 	/**
@@ -155,7 +160,7 @@ export default class SJIS {
 		 */
 		const is_shift = function(x) {
 			return ((0x81 <= x) && (x <= 0x9F)) || ((0xE0 <= x) && (x <= 0xFC));
-		} 
+		};
 
 		if((offset > 0) && (offset < sjisbin.length)) {
 			// offset が1文字以降の場合、
@@ -204,7 +209,7 @@ export default class SJIS {
 				cut.push(x);
 			}
 		}
-		return SJIS.fromSJISArray(cut, sjis_to_unicode);
+		return SJIS.fromSJISArray(cut, sjis_to_unicode).encode_string;
 	}
 
 	/**

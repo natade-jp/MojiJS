@@ -1426,7 +1426,7 @@ export default class CP932 {
 	/**
 	 * CP932 の配列から文字列に変換
 	 * @param {Array<number>} cp932 - 変換したいテキスト
-	 * @returns {String} 変換後のテキスト
+	 * @returns {{encode_string : String, ng_count : number}} 変換後のテキスト
 	 */
 	static fromCP932Array(cp932) {
 		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
