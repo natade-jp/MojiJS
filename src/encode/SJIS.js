@@ -21,6 +21,9 @@ import Unicode from "./Unicode.js";
 
 /**
  * Shift_JIS を扱うクラス
+ * 
+ * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+ * @deprecated
  */
 export default class SJIS {
 
@@ -29,6 +32,7 @@ export default class SJIS {
 	 * @param {String} text - 変換したいテキスト
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {{encode : Array<number>, ng_count : number}} Shift_JIS のデータが入った配列
+	 * @ignore
 	 */
 	static toSJISArray(text, unicode_to_sjis) {
 		const map = unicode_to_sjis;
@@ -58,6 +62,7 @@ export default class SJIS {
 	 * @param {String} text - 変換したいテキスト
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {Array<number>} Shift_JIS のデータが入ったバイナリ配列
+	 * @ignore
 	 */
 	static toSJISBinary(text, unicode_to_sjis) {
 		const sjis = SJIS.toSJISArray(text, unicode_to_sjis).encode;
@@ -79,6 +84,7 @@ export default class SJIS {
 	 * @param {Array<number>} sjis - 変換したいテキスト
 	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
 	 * @returns {{decode : String, ng_count : number}} 変換後のテキスト
+	 * @ignore
 	 */
 	static fromSJISArray(sjis, sjis_to_unicode) {
 		const map = sjis_to_unicode;
@@ -138,6 +144,7 @@ export default class SJIS {
 	 * @param {String} text - カウントしたいテキスト
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {Number} 文字の横幅
+	 * @ignore
 	 */
 	static getWidthForSJIS(text, unicode_to_sjis) {
 		return SJIS.toSJISBinary(text, unicode_to_sjis).length;
@@ -151,6 +158,7 @@ export default class SJIS {
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
 	 * @returns {String} 切り出したテキスト
+	 * @ignore
 	 */
 	static cutTextForSJIS(text, offset, size, unicode_to_sjis, sjis_to_unicode) {
 		const sjisbin = SJIS.toSJISBinary(text, unicode_to_sjis);
@@ -220,6 +228,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {Number} 符号化数値(変換できない場合はnullとなる)
+	 * @ignore
 	 */
 	static toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -313,6 +322,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS-2004 への変換マップ
 	 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 * @ignore
 	 */
 	static toMenKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -409,6 +419,7 @@ export default class SJIS {
 	 * @param {MenKuTen|string} menkuten - 面区点番号
 	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から Unicode への変換マップ
 	 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
+	 * @ignore
 	 */
 	static toUnicodeCodeFromMenKuTen(menkuten, sjis_to_unicode) {
 		const sjis_code = SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
@@ -489,6 +500,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 * @ignore
 	 */
 	static toKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -515,6 +527,7 @@ export default class SJIS {
 	 * @param {MenKuTen|string} kuten - 区点番号
 	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から Unicode への変換マップ
 	 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
+	 * @ignore
 	 */
 	static toUnicodeCodeFromKuTen(kuten, sjis_to_unicode) {
 		const sjis_code = SJIS.toSJISCodeFromKuTen(kuten);
@@ -596,6 +609,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
+	 * @ignore
 	 */
 	static toJISKanjiSuijunFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {

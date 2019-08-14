@@ -1,5 +1,8 @@
 /**
  * _CP932_, Windows-31J を扱うクラス
+ *
+ * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+ * @deprecated
  */
 declare class _CP932_ {
     /**
@@ -53,6 +56,9 @@ declare class _CP932_ {
 
 /**
  * EUC-JP を扱うクラス
+ *
+ * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+ * @deprecated
  */
 declare class _EUCJP_ {
     /**
@@ -100,70 +106,11 @@ declare type _MenKuTen_ = {
 
 /**
  * Shift_JIS を扱うクラス
+ *
+ * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+ * @deprecated
  */
 declare class _SJIS_ {
-    /**
-     * 文字列を Shift_JIS の配列に変換
-     * @param {String} text - 変換したいテキスト
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS への変換マップ
-     * @returns {{encode : Array<number>, ng_count : number}} Shift_JIS のデータが入った配列
-     */
-    static toSJISArray(text: string, unicode_to_sjis: {
-        [key: number]: number;
-    }): any;
-    /**
-     * 文字列を Shift_JIS のバイナリ配列に変換
-     * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-     * @param {String} text - 変換したいテキスト
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS への変換マップ
-     * @returns {Array<number>} Shift_JIS のデータが入ったバイナリ配列
-     */
-    static toSJISBinary(text: string, unicode_to_sjis: {
-        [key: number]: number;
-    }): number[];
-    /**
-     * _SJIS_の配列から文字列に変換
-     * @param {Array<number>} sjis - 変換したいテキスト
-     * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から _Unicode_ への変換マップ
-     * @returns {{decode : String, ng_count : number}} 変換後のテキスト
-     */
-    static fromSJISArray(sjis: number[], sjis_to_unicode: {
-        [key: number]: number | number[];
-    }): any;
-    /**
-     * 指定したテキストの横幅を Shift_JIS で換算でカウント
-     * - 半角を1、全角を2としてカウント
-     * - Shift_JIS の範囲にない文字は2としてカウント
-     * @param {String} text - カウントしたいテキスト
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS への変換マップ
-     * @returns {Number} 文字の横幅
-     */
-    static getWidthForSJIS(text: string, unicode_to_sjis: {
-        [key: number]: number;
-    }): number;
-    /**
-     * 指定したテキストの横幅を _CP932_ で換算した場合の切り出し
-     * @param {String} text - 切り出したいテキスト
-     * @param {Number} offset - 切り出し位置
-     * @param {Number} size - 切り出す長さ
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS への変換マップ
-     * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から _Unicode_ への変換マップ
-     * @returns {String} 切り出したテキスト
-     */
-    static cutTextForSJIS(text: string, offset: number, size: number, unicode_to_sjis: {
-        [key: number]: number;
-    }, sjis_to_unicode: {
-        [key: number]: number | number[];
-    }): string;
-    /**
-     * 指定したコードポイントの文字から Shift_JIS 上の符号化数値に変換
-     * @param {Number} unicode_codepoint - _Unicode_のコードポイント
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS への変換マップ
-     * @returns {Number} 符号化数値(変換できない場合はnullとなる)
-     */
-    static toSJISCodeFromUnicode(unicode_codepoint: number, unicode_to_sjis: {
-        [key: number]: number;
-    }): number;
     /**
      * 指定した Shift_JIS-2004 のコードから面区点番号に変換
      * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
@@ -171,29 +118,11 @@ declare class _SJIS_ {
      */
     static toMenKuTenFromSJIS2004Code(sjis_code: number): _MenKuTen_;
     /**
-     * 指定したコードポイントの文字から Shift_JIS-2004 上の面区点番号に変換
-     * @param {Number} unicode_codepoint - _Unicode_のコードポイント
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS-2004 への変換マップ
-     * @returns {_MenKuTen_} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-     */
-    static toMenKuTenFromUnicode(unicode_codepoint: number, unicode_to_sjis: {
-        [key: number]: number;
-    }): _MenKuTen_;
-    /**
      * 指定した面区点番号から Shift_JIS-2004 コードに変換
      * @param {_MenKuTen_|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
      * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
      */
     static toSJIS2004CodeFromMenKuTen(menkuten: _MenKuTen_ | string): number;
-    /**
-     * 指定した面区点番号から _Unicode_ コードポイントに変換
-     * @param {_MenKuTen_|string} menkuten - 面区点番号
-     * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から _Unicode_ への変換マップ
-     * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
-     */
-    static toUnicodeCodeFromMenKuTen(menkuten: _MenKuTen_ | string, sjis_to_unicode: {
-        [key: number]: number | number[];
-    }): number[];
     /**
      * 指定した Shift_JIS のコードから区点番号に変換
      * @param {Number} sjis_code - Shift_JIS のコードポイント
@@ -201,44 +130,17 @@ declare class _SJIS_ {
      */
     static toKuTenFromSJISCode(sjis_code: number): _MenKuTen_;
     /**
-     * 指定したコードポイントの文字から Shift_JIS 上の面区点番号に変換
-     * @param {Number} unicode_codepoint - _Unicode_のコードポイント
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS への変換マップ
-     * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-     */
-    static toKuTenFromUnicode(unicode_codepoint: number, unicode_to_sjis: {
-        [key: number]: number;
-    }): any;
-    /**
      * 指定した面区点番号／区点番号から Shift_JIS コードに変換
      * @param {_MenKuTen_|string} kuten - 面区点番号／区点番号
      * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
      */
     static toSJISCodeFromKuTen(kuten: _MenKuTen_ | string): number;
     /**
-     * 指定した区点番号から _Unicode_ コードポイントに変換
-     * @param {_MenKuTen_|string} kuten - 区点番号
-     * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から _Unicode_ への変換マップ
-     * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
-     */
-    static toUnicodeCodeFromKuTen(kuten: _MenKuTen_ | string, sjis_to_unicode: {
-        [key: number]: number | number[];
-    }): number[];
-    /**
      * Shift_JIS のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
      * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
      * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
      */
     static toJISKanjiSuijunFromSJISCode(sjis_code: number): number;
-    /**
-     * _Unicode_ のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
-     * @param {Number} unicode_codepoint - _Unicode_のコードポイント
-     * @param {Object<number, number>} unicode_to_sjis - _Unicode_ から Shift_JIS への変換マップ
-     * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
-     */
-    static toJISKanjiSuijunFromUnicode(unicode_codepoint: number, unicode_to_sjis: {
-        [key: number]: number;
-    }): number;
     /**
      * 指定した面区点番号から Shift_JIS の仕様上、正規な物か判定
      * @param {_MenKuTen_|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
@@ -249,6 +151,9 @@ declare class _SJIS_ {
 
 /**
  * Shift_JIS-2004 を扱うクラス
+ *
+ * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+ * @deprecated
  */
 declare class _SJIS2004_ {
     /**
@@ -301,17 +206,10 @@ declare class _SJIS2004_ {
 }
 
 /**
- * The script is part of MojiJS.
- *
- * AUTHOR:
- *  natade (http://twitter.com/natadea)
- *
- * LICENSE:
- *  The MIT license https://opensource.org/licenses/MIT
- */
-
-/**
  * _Unicode_ を扱うクラス
+ *
+ * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+ * @deprecated
  */
 declare class _Unicode_ {
     /**
@@ -690,27 +588,42 @@ declare class MojiJS {
     static COMPARE_NATURAL: any;
     /**
      * _Unicode_専用の内部関数を利用する
+     *
+     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
      * @returns {typeof _Unicode_}
+     * @deprecated
      */
     static Unicode: typeof _Unicode_;
     /**
      * Shift_JIS専用の内部関数を利用する
+     *
+     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
      * @returns {typeof _SJIS_}
+     * @deprecated
      */
     static SJIS: typeof _SJIS_;
     /**
      * _CP932_専用の内部関数を利用する
+     *
+     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
      * @returns {typeof _CP932_}
+     * @deprecated
      */
     static CP932: typeof _CP932_;
     /**
      * Shift_JIS-2004専用の内部関数を利用する
+     *
+     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
      * @returns {typeof _SJIS2004_}
+     * @deprecated
      */
     static SJIS2004: typeof _SJIS2004_;
     /**
      * EUC-JP専用の内部関数を利用する
+     *
+     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
      * @returns {typeof _EUCJP_}
+     * @deprecated
      */
     static EUCJP: typeof _EUCJP_;
 }

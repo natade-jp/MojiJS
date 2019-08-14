@@ -23,7 +23,7 @@ npm install --save-dev mojijs
 ## Sample ##
 
 ### エンコード
-```
+```javascript
 const MojiJS = require("mojijs");
 
 console.log(MojiJS.encode("圡①靁謹𪘂麵", "shift_jis-2004"));
@@ -34,7 +34,7 @@ console.log(MojiJS.decode([0x61, 0xE3, 0x81, 0x82], "utf-8"));
 ```
 
 ### 日本語の変換
-```
+```javascript
 const MojiJS = require("mojijs");
 
 console.log(MojiJS.toHiragana("カキクケコ"));
@@ -42,7 +42,7 @@ console.log(MojiJS.toHiragana("カキクケコ"));
 ```
 
 ### 面区点
-```
+```javascript
 const MojiJS = require("mojijs");
 
 const data1 = MojiJS.getMojiData(MojiJS.codePointAt("髙"));
@@ -62,7 +62,7 @@ console.log("面区点：" + data3.encode.menkuten.text + ", 漢字水準：" + 
 
 
 ### 自然順ソート
-```
+```javascript
 const MojiJS = require("mojijs");
 
 console.log(["３", "02", "あ", "イ", "う", "1"].sort(MojiJS.COMPARE_NATURAL));

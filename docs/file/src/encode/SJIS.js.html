@@ -67,6 +67,9 @@ import Unicode from &quot;./Unicode.js&quot;;
 
 /**
  * Shift_JIS &#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
+ * 
+ * &#x5185;&#x90E8;&#x51E6;&#x7406;&#x7528;&#x306E;&#x95A2;&#x6570;&#x306E;&#x305F;&#x3081;&#x5909;&#x66F4;&#x3059;&#x308B;&#x53EF;&#x80FD;&#x6027;&#x304C;&#x9AD8;&#x304F;&#x3001;&#x76F4;&#x63A5;&#x5229;&#x7528;&#x3059;&#x308B;&#x3053;&#x3068;&#x3092;&#x304A;&#x52E7;&#x3081;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;
+ * @deprecated
  */
 export default class SJIS {
 
@@ -75,6 +78,7 @@ export default class SJIS {
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {{encode : Array&lt;number&gt;, ng_count : number}} Shift_JIS &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 * @ignore
 	 */
 	static toSJISArray(text, unicode_to_sjis) {
 		const map = unicode_to_sjis;
@@ -104,6 +108,7 @@ export default class SJIS {
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Array&lt;number&gt;} Shift_JIS &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
+	 * @ignore
 	 */
 	static toSJISBinary(text, unicode_to_sjis) {
 		const sjis = SJIS.toSJISArray(text, unicode_to_sjis).encode;
@@ -125,6 +130,7 @@ export default class SJIS {
 	 * @param {Array&lt;number&gt;} sjis - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {Object&lt;number, number|Array&lt;number&gt;&gt;} sjis_to_unicode - Shift_JIS &#x304B;&#x3089; Unicode &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {{decode : String, ng_count : number}} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @ignore
 	 */
 	static fromSJISArray(sjis, sjis_to_unicode) {
 		const map = sjis_to_unicode;
@@ -184,6 +190,7 @@ export default class SJIS {
 	 * @param {String} text - &#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Number} &#x6587;&#x5B57;&#x306E;&#x6A2A;&#x5E45;
+	 * @ignore
 	 */
 	static getWidthForSJIS(text, unicode_to_sjis) {
 		return SJIS.toSJISBinary(text, unicode_to_sjis).length;
@@ -197,6 +204,7 @@ export default class SJIS {
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @param {Object&lt;number, number|Array&lt;number&gt;&gt;} sjis_to_unicode - Shift_JIS &#x304B;&#x3089; Unicode &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {String} &#x5207;&#x308A;&#x51FA;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @ignore
 	 */
 	static cutTextForSJIS(text, offset, size, unicode_to_sjis, sjis_to_unicode) {
 		const sjisbin = SJIS.toSJISBinary(text, unicode_to_sjis);
@@ -266,6 +274,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicode&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Number} &#x7B26;&#x53F7;&#x5316;&#x6570;&#x5024;(&#x5909;&#x63DB;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;null&#x3068;&#x306A;&#x308B;)
+	 * @ignore
 	 */
 	static toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -359,6 +368,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicode&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS-2004 &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {MenKuTen} &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#xFF08;1&#x30D0;&#x30A4;&#x30C8;&#x306E;JIS&#x30B3;&#x30FC;&#x30C9;&#x306A;&#x3069;&#xFF09;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
+	 * @ignore
 	 */
 	static toMenKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -455,6 +465,7 @@ export default class SJIS {
 	 * @param {MenKuTen|string} menkuten - &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;
 	 * @param {Object&lt;number, number|Array&lt;number&gt;&gt;} sjis_to_unicode - Shift_JIS-2004 &#x304B;&#x3089; Unicode &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Array&lt;number&gt;} UTF-32&#x306E;&#x914D;&#x5217;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
+	 * @ignore
 	 */
 	static toUnicodeCodeFromMenKuTen(menkuten, sjis_to_unicode) {
 		const sjis_code = SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
@@ -535,6 +546,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicode&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Object} &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#xFF08;1&#x30D0;&#x30A4;&#x30C8;&#x306E;JIS&#x30B3;&#x30FC;&#x30C9;&#x306A;&#x3069;&#xFF09;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
+	 * @ignore
 	 */
 	static toKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -561,6 +573,7 @@ export default class SJIS {
 	 * @param {MenKuTen|string} kuten - &#x533A;&#x70B9;&#x756A;&#x53F7;
 	 * @param {Object&lt;number, number|Array&lt;number&gt;&gt;} sjis_to_unicode - Shift_JIS-2004 &#x304B;&#x3089; Unicode &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Array&lt;number&gt;} UTF-32&#x306E;&#x914D;&#x5217;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
+	 * @ignore
 	 */
 	static toUnicodeCodeFromKuTen(kuten, sjis_to_unicode) {
 		const sjis_code = SJIS.toSJISCodeFromKuTen(kuten);
@@ -642,6 +655,7 @@ export default class SJIS {
 	 * @param {Number} unicode_codepoint - Unicode&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Number} -1...&#x5909;&#x63DB;&#x4E0D;&#x53EF;, 0...&#x6C34;&#x6E96;&#x306A;&#x3057;, 1...&#x7B2C;1&#x6C34;&#x6E96;, ...
+	 * @ignore
 	 */
 	static toJISKanjiSuijunFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {

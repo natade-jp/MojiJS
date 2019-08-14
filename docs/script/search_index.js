@@ -672,24 +672,6 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
-    "src/encode/sjis.js~sjis.cuttextforsjis",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-cutTextForSJIS",
-    "src/encode/SJIS.js~SJIS.cutTextForSJIS",
-    "method"
-  ],
-  [
-    "src/encode/sjis.js~sjis.fromsjisarray",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-fromSJISArray",
-    "src/encode/SJIS.js~SJIS.fromSJISArray",
-    "method"
-  ],
-  [
-    "src/encode/sjis.js~sjis.getwidthforsjis",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-getWidthForSJIS",
-    "src/encode/SJIS.js~SJIS.getWidthForSJIS",
-    "method"
-  ],
-  [
     "src/encode/sjis.js~sjis.isregularmenkuten",
     "class/src/encode/SJIS.js~SJIS.html#static-method-isRegularMenKuten",
     "src/encode/SJIS.js~SJIS.isRegularMenKuten",
@@ -702,21 +684,9 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/encode/sjis.js~sjis.tojiskanjisuijunfromunicode",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toJISKanjiSuijunFromUnicode",
-    "src/encode/SJIS.js~SJIS.toJISKanjiSuijunFromUnicode",
-    "method"
-  ],
-  [
     "src/encode/sjis.js~sjis.tokutenfromsjiscode",
     "class/src/encode/SJIS.js~SJIS.html#static-method-toKuTenFromSJISCode",
     "src/encode/SJIS.js~SJIS.toKuTenFromSJISCode",
-    "method"
-  ],
-  [
-    "src/encode/sjis.js~sjis.tokutenfromunicode",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toKuTenFromUnicode",
-    "src/encode/SJIS.js~SJIS.toKuTenFromUnicode",
     "method"
   ],
   [
@@ -726,51 +696,15 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/encode/sjis.js~sjis.tomenkutenfromunicode",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toMenKuTenFromUnicode",
-    "src/encode/SJIS.js~SJIS.toMenKuTenFromUnicode",
-    "method"
-  ],
-  [
     "src/encode/sjis.js~sjis.tosjis2004codefrommenkuten",
     "class/src/encode/SJIS.js~SJIS.html#static-method-toSJIS2004CodeFromMenKuTen",
     "src/encode/SJIS.js~SJIS.toSJIS2004CodeFromMenKuTen",
     "method"
   ],
   [
-    "src/encode/sjis.js~sjis.tosjisarray",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISArray",
-    "src/encode/SJIS.js~SJIS.toSJISArray",
-    "method"
-  ],
-  [
-    "src/encode/sjis.js~sjis.tosjisbinary",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISBinary",
-    "src/encode/SJIS.js~SJIS.toSJISBinary",
-    "method"
-  ],
-  [
     "src/encode/sjis.js~sjis.tosjiscodefromkuten",
     "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISCodeFromKuTen",
     "src/encode/SJIS.js~SJIS.toSJISCodeFromKuTen",
-    "method"
-  ],
-  [
-    "src/encode/sjis.js~sjis.tosjiscodefromunicode",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISCodeFromUnicode",
-    "src/encode/SJIS.js~SJIS.toSJISCodeFromUnicode",
-    "method"
-  ],
-  [
-    "src/encode/sjis.js~sjis.tounicodecodefromkuten",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toUnicodeCodeFromKuTen",
-    "src/encode/SJIS.js~SJIS.toUnicodeCodeFromKuTen",
-    "method"
-  ],
-  [
-    "src/encode/sjis.js~sjis.tounicodecodefrommenkuten",
-    "class/src/encode/SJIS.js~SJIS.html#static-method-toUnicodeCodeFromMenKuTen",
-    "src/encode/SJIS.js~SJIS.toUnicodeCodeFromMenKuTen",
     "method"
   ],
   [

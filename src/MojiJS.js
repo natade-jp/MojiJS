@@ -412,7 +412,10 @@ export default class MojiJS {
 
 	/**
 	 * Unicode専用の内部関数を利用する
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 	 * @returns {typeof Unicode}
+	 * @deprecated
 	 */
 	static get Unicode() {
 		return Unicode;
@@ -420,7 +423,10 @@ export default class MojiJS {
 
 	/**
 	 * Shift_JIS専用の内部関数を利用する
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 	 * @returns {typeof SJIS}
+	 * @deprecated
 	 */
 	static get SJIS() {
 		return SJIS;
@@ -428,7 +434,10 @@ export default class MojiJS {
 
 	/**
 	 * CP932専用の内部関数を利用する
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 	 * @returns {typeof CP932}
+	 * @deprecated
 	 */
 	static get CP932() {
 		return CP932;
@@ -436,7 +445,10 @@ export default class MojiJS {
 
 	/**
 	 * Shift_JIS-2004専用の内部関数を利用する
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 	 * @returns {typeof SJIS2004}
+	 * @deprecated
 	 */
 	static get SJIS2004() {
 		return SJIS2004;
@@ -444,7 +456,10 @@ export default class MojiJS {
 
 	/**
 	 * EUC-JP専用の内部関数を利用する
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 	 * @returns {typeof EUCJP}
+	 * @deprecated
 	 */
 	static get EUCJP() {
 		return EUCJP;

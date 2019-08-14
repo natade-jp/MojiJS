@@ -1573,6 +1573,9 @@ SJIS2004MAP.unicode_to_sjis2004_map = null;
 
 /**
  * Shift_JIS-2004 を扱うクラス
+ * 
+ * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+ * @deprecated
  */
 export default class SJIS2004 {
 	
