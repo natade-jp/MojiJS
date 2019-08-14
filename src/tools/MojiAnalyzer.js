@@ -548,7 +548,6 @@ class MojiAnalizerTools {
  * @property {boolean} is_katakana カタカナ
  * @property {boolean} is_fullwidth_ascii 全角ASCII
  * @property {boolean} is_halfwidth_katakana 半角カタカナ
- * @property {boolean} is_halfwidth_katakana 半角カタカナ
  * @property {boolean} is_emoji 絵文字
  * @property {boolean} is_emoticons 顔文字
  * @property {boolean} is_gaiji 外字

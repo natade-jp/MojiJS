@@ -30,7 +30,12 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -54,7 +59,7 @@ import Unicode from &quot;./Unicode.js&quot;;
 /**
  * &#x9762;&#x533A;&#x70B9;&#x60C5;&#x5831;
  * @typedef {Object} MenKuTen
- * @property {string} text &#x9762;-&#x533A;-&#x70B9;
+ * @property {string} [text] &#x9762;-&#x533A;-&#x70B9;
  * @property {number} [men=1] &#x9762;
  * @property {number} ku &#x533A;
  * @property {number} ten &#x70B9;
@@ -62,7 +67,6 @@ import Unicode from &quot;./Unicode.js&quot;;
 
 /**
  * Shift_JIS &#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
- * @ignore
  */
 export default class SJIS {
 
@@ -70,13 +74,14 @@ export default class SJIS {
 	 * &#x6587;&#x5B57;&#x5217;&#x3092; Shift_JIS &#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
-	 * @returns {Array&lt;number&gt;} Shift_JIS &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 * @returns {{encode : Array&lt;number&gt;, ng_count : number}} Shift_JIS &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
 	 */
 	static toSJISArray(text, unicode_to_sjis) {
 		const map = unicode_to_sjis;
 		const utf32 = Unicode.toUTF32Array(text);
 		const sjis = [];
 		const ng = &quot;?&quot;.charCodeAt(0);
+		let ng_count = 0;
 		for(let i = 0; i &lt; utf32.length; i++) {
 			const map_bin = map[utf32[i]];
 			if(map_bin) {
@@ -84,9 +89,13 @@ export default class SJIS {
 			}
 			else {
 				sjis.push(ng);
+				ng_count++;
 			}
 		}
-		return sjis;
+		return {
+			encode : sjis,
+			ng_count : ng_count
+		};
 	}
 
 	/**
@@ -96,8 +105,8 @@ export default class SJIS {
 	 * @param {Object&lt;number, number&gt;} unicode_to_sjis - Unicode &#x304B;&#x3089; Shift_JIS &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
 	 * @returns {Array&lt;number&gt;} Shift_JIS &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
 	 */
-	static toSJISArrayBinary(text, unicode_to_sjis) {
-		const sjis = SJIS.toSJISArray(text, unicode_to_sjis);
+	static toSJISBinary(text, unicode_to_sjis) {
+		const sjis = SJIS.toSJISArray(text, unicode_to_sjis).encode;
 		const sjisbin = [];
 		for(let i = 0; i &lt; sjis.length; i++) {
 			if(sjis[i] &lt; 0x100) {
@@ -107,7 +116,6 @@ export default class SJIS {
 				sjisbin.push(sjis[i] &gt;&gt; 8);
 				sjisbin.push(sjis[i] &amp; 0xFF);
 			}
-
 		}
 		return sjisbin;
 	}
@@ -116,12 +124,13 @@ export default class SJIS {
 	 * SJIS&#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
 	 * @param {Array&lt;number&gt;} sjis - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {Object&lt;number, number|Array&lt;number&gt;&gt;} sjis_to_unicode - Shift_JIS &#x304B;&#x3089; Unicode &#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
-	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {{decode : String, ng_count : number}} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
 	static fromSJISArray(sjis, sjis_to_unicode) {
 		const map = sjis_to_unicode;
 		const utf16 = [];
 		const ng = &quot;?&quot;.charCodeAt(0);
+		let ng_count = 0;
 		for(let i = 0; i &lt; sjis.length; i++) {
 			let x = sjis[i];
 			/**
@@ -159,9 +168,13 @@ export default class SJIS {
 			}
 			else {
 				utf16.push(ng);
+				ng_count++;
 			}
 		}
-		return Unicode.fromUTF16Array(utf16);
+		return {
+			decode : Unicode.fromUTF32Array(utf16),
+			ng_count : ng_count
+		};
 	}
 
 	/**
@@ -173,7 +186,7 @@ export default class SJIS {
 	 * @returns {Number} &#x6587;&#x5B57;&#x306E;&#x6A2A;&#x5E45;
 	 */
 	static getWidthForSJIS(text, unicode_to_sjis) {
-		return SJIS.toSJISArrayBinary(text, unicode_to_sjis).length;
+		return SJIS.toSJISBinary(text, unicode_to_sjis).length;
 	}
 
 	/**
@@ -186,7 +199,7 @@ export default class SJIS {
 	 * @returns {String} &#x5207;&#x308A;&#x51FA;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
 	static cutTextForSJIS(text, offset, size, unicode_to_sjis, sjis_to_unicode) {
-		const sjisbin = SJIS.toSJISArrayBinary(text, unicode_to_sjis);
+		const sjisbin = SJIS.toSJISBinary(text, unicode_to_sjis);
 		const cut = [];
 		const SPACE = 0x20 ; // &apos; &apos;
 
@@ -196,7 +209,7 @@ export default class SJIS {
 		 */
 		const is_shift = function(x) {
 			return ((0x81 &lt;= x) &amp;&amp; (x &lt;= 0x9F)) || ((0xE0 &lt;= x) &amp;&amp; (x &lt;= 0xFC));
-		} 
+		};
 
 		if((offset &gt; 0) &amp;&amp; (offset &lt; sjisbin.length)) {
 			// offset &#x304C;1&#x6587;&#x5B57;&#x4EE5;&#x964D;&#x306E;&#x5834;&#x5408;&#x3001;
@@ -245,7 +258,7 @@ export default class SJIS {
 				cut.push(x);
 			}
 		}
-		return SJIS.fromSJISArray(cut, sjis_to_unicode);
+		return SJIS.fromSJISArray(cut, sjis_to_unicode).decode;
 	}
 
 	/**
@@ -259,7 +272,7 @@ export default class SJIS {
 			return null;
 		}
 		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis);
+		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis).encode;
 		return sjis_array[0];
 	}
 
@@ -532,8 +545,8 @@ export default class SJIS {
 	}
 
 	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x304B;&#x3089; Shift_JIS &#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
-	 * @param {MenKuTen|string} kuten - &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;&#xFF0F;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x304B;&#x3089; Shift_JIS &#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
+	 * @param {MenKuTen|string} kuten - &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;&#xFF0F;&#x533A;&#x70B9;&#x756A;&#x53F7;
 	 * @returns {Number} Shift_JIS &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
 	 */
 	static toSJISCodeFromKuTen(kuten) {

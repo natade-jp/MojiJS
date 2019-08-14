@@ -50,6 +50,18 @@ let dts_text = File.loadTextFile("./out/types.d.ts");
 	dts_text = dts_text.replace(/import\([^)]*\)\./g, "");
 }
 
+{
+	// 型定義ファイルで無名関数を戻り値として返す場合の記述方法が不明なので、 any にしておく。
+	// static COMPARE_DEFAULT: function(string, string): number;
+	dts_text = dts_text.replace(/: function\([^;]+;/g, ": any;");
+}
+
+{
+	// 以下のようなコードが原因不明で入り込む場合があるので削除する
+	// declare var default: any;
+	dts_text = dts_text.replace(/\ndeclare var default: any;\n/g, "\n");
+}
+
 // 型の補正
 // 外部に見せる必要がなく、見せると衝突してしまう可能性が高いため、装飾する。
 {
@@ -59,6 +71,10 @@ let dts_text = File.loadTextFile("./out/types.d.ts");
 		"SJIS",
 		"SJIS2004",
 		"SJIS2004MAP",
+		"EUCJPTools",
+		"EUCJP",
+		"EncodeTools",
+		"Encode",
 		"Unicode",
 		"Japanese",
 		"MojiAnalyzer",
@@ -84,5 +100,5 @@ let dts_text = File.loadTextFile("./out/types.d.ts");
 	}
 }
 
-File.saveTextFile("./build/MojiJS.d.ts", dts_text);
+File.saveTextFile("./build/mojijs.d.ts", dts_text);
 File.deleteDirectory("./out");

@@ -1,31 +1,31 @@
 [
   {
-    "name": "Unicode.fromCodePoint",
+    "name": "Unicode.toUTF16ArrayfromCodePoint",
     "filePath": "src/encode/Unicode.js",
     "lines": [
       {
-        "lineNumber": 145,
+        "lineNumber": 144,
         "line": "\t/**"
       },
       {
+        "lineNumber": 145,
+        "line": "\t * コードポイントの数値データをUTF16の配列に変換"
+      },
+      {
         "lineNumber": 146,
-        "line": "\t * コードポイントの数値データを文字列に変換"
+        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
       },
       {
         "lineNumber": 147,
-        "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数"
+        "line": "\t * @returns {Array<number>} 変換後のテキスト"
       },
       {
         "lineNumber": 148,
-        "line": "\t * @returns {String} 変換後のテキスト"
-      },
-      {
-        "lineNumber": 149,
         "line": "\t */"
       },
       {
-        "lineNumber": 150,
-        "line": "\tstatic fromCodePoint() {"
+        "lineNumber": 149,
+        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
       }
     ],
     "codeParams": [],

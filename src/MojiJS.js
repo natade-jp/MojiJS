@@ -8,10 +8,12 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Encode from "./encode/Encode.js";
 import Unicode from "./encode/Unicode.js";
 import SJIS from "./encode/SJIS.js";
 import CP932 from "./encode/CP932.js";
 import SJIS2004 from "./encode/SJIS2004.js";
+import EUCJP from "./encode/EUCJP.js";
 import Japanese from "./language/Japanese.js";
 import CharacterAnalyzer from "./tools/MojiAnalyzer.js";
 import StringComparator from "./tools/StringComparator.js";
@@ -20,6 +22,35 @@ import StringComparator from "./tools/StringComparator.js";
  * 日本語を扱うための様々な機能を提供します
  */
 export default class MojiJS {
+
+	// ---------------------------------
+	// 文字列のエンコードとデコードを扱う関数
+	// ---------------------------------
+
+	/**
+	 * 文字列からバイナリ配列にエンコードする
+	 * @param {String} text - 変換したいテキスト
+	 * @param {String} charset - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @param {boolean} [is_with_bom=false] - BOMをつけるかどうか
+	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
+	 */
+	static encode(text, charset, is_with_bom) {
+		return Encode.encode(text, charset, is_with_bom);
+	}
+
+	/**
+	 * バイナリ配列から文字列にデコードする
+	 * @param {Array<number>} binary - 変換したいバイナリ配列
+	 * @param {String} [charset="autodetect"] - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @returns {String} 変換した文字列（失敗したらnull）
+	 */
+	static decode(binary, charset) {
+		return Encode.decode(binary, charset);
+	}
+
+	// ---------------------------------
+	// Unicode を扱う関数群
+	// ---------------------------------
 	
 	/**
 	 * サロゲートペア対応のコードポイント取得
@@ -114,6 +145,10 @@ export default class MojiJS {
 		return Unicode.fromUTF8Array(utf8);
 	}
 
+	// ---------------------------------
+	// 切り出しを扱う関数群
+	// ---------------------------------
+
 	/**
 	 * 指定したテキストを切り出す
 	 * - 単位は文字数
@@ -124,106 +159,6 @@ export default class MojiJS {
 	 */
 	static cutTextForCodePoint(text, offset, size) {
 		return Unicode.cutTextForCodePoint(text, offset, size);
-	}
-
-	/**
-	 * 指定した Shift_JIS-2004 のコードから面区点番号に変換
-	 * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
-	 * @returns {import("./encode/SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-	 */
-	static toMenKuTenFromSJIS2004Code(sjis_code) {
-		return SJIS.toMenKuTenFromSJIS2004Code(sjis_code);
-	}
-	
-	/**
-	 * 指定した面区点番号から Shift_JIS-2004 コードに変換
-	 * @param {import("./encode/SJIS.js").MenKuTen|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
-	 * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
-	 */
-	static toSJIS2004CodeFromMenKuTen(menkuten) {
-		return SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
-	}
-
-	/**
-	 * 指定した Shift_JIS のコードから区点番号に変換
-	 * @param {Number} sjis_code - Shift_JIS のコードポイント
-	 * @returns {import("./encode/SJIS.js").MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-	 */
-	static toKuTenFromSJISCode(sjis_code) {
-		return SJIS.toKuTenFromSJISCode(sjis_code);
-	}
-
-	/**
-	 * 指定した区点番号から Shift_JIS コードに変換
-	 * @param {import("./encode/SJIS.js").MenKuTen|string} kuten - 面区点番号
-	 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
-	 */
-	static toSJISCodeFromKuTen(kuten) {
-		return SJIS.toSJISCodeFromKuTen(kuten);
-	}
-	
-	/**
-	 * Shift_JIS のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
-	 * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
-	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
-	 */
-	static toJISKanjiSuijunFromSJISCode(sjis_code) {
-		return SJIS.toJISKanjiSuijunFromSJISCode(sjis_code);
-	}
-	
-	/**
-	 * 指定した面区点番号から Shift_JIS の仕様上、正規な物か判定
-	 * @param {import("./encode/SJIS.js").MenKuTen|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
-	 * @returns {Boolean} 正規なデータは true, 不正なデータは false
-	 */
-	static isRegularMenKuten(menkuten) {
-		return SJIS.isRegularMenKuten(menkuten);
-	}
-	
-	/**
-	 * Unicode のコードから CP932 のコードに変換
-	 * @param {Number} unicode_codepoint - Unicode のコードポイント
-	 * @returns {Number} CP932 のコードポイント (存在しない場合は undefined)
-	 */
-	static toCP932FromUnicode(unicode_codepoint) {
-		return CP932.toCP932FromUnicode(unicode_codepoint);
-	}
-
-	/**
-	 * CP932 のコードから Unicode のコードに変換
-	 * @param {Number} cp932_codepoint - CP932 のコードポイント
-	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
-	 */
-	static toUnicodeFromCP932(cp932_codepoint) {
-		return CP932.toUnicodeFromCP932(cp932_codepoint);
-	}
-	
-	/**
-	 * 文字列を CP932 の配列に変換
-	 * @param {String} text - 変換したいテキスト
-	 * @returns {Array<number>} CP932 のデータが入った配列
-	 */
-	static toCP932Array(text) {
-		return CP932.toCP932Array(text);
-	}
-
-	/**
-	 * 文字列を CP932 のバイナリ配列に変換
-	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-	 * @param {String} text - 変換したいテキスト
-	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
-	 */
-	static toCP932Binary(text) {
-		return CP932.toCP932Binary(text);
-	}
-
-	/**
-	 * CP932 の配列から文字列に変換
-	 * @param {Array<number>} cp932 - 変換したいテキスト
-	 * @returns {String} 変換後のテキスト
-	 */
-	static fromCP932Array(cp932) {
-		return CP932.fromCP932Array(cp932).encode_string;
 	}
 
 	/**
@@ -249,52 +184,6 @@ export default class MojiJS {
 	}
 	
 	/**
-	 * Unicode のコードから Shift_JIS-2004 のコードに変換
-	 * @param {Number} unicode_codepoint - Unicode のコードポイント
-	 * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
-	 */
-	static toSJIS2004FromUnicode(unicode_codepoint) {
-		return SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
-	}
-
-	/**
-	 * Shift_JIS-2004 のコードから Unicode のコードに変換
-	 * @param {Number} sjis2004_codepoint - Shift_JIS-2004 のコードポイント
-	 * @returns {number|Array<number>} Unicode のコードポイント (存在しない場合は undefined)
-	 */
-	static toUnicodeFromSJIS2004(sjis2004_codepoint) {
-		return SJIS2004.toUnicodeFromSJIS2004(sjis2004_codepoint);
-	}
-	
-	/**
-	 * 文字列を Shift_JIS-2004 の配列に変換
-	 * @param {String} text - 変換したいテキスト
-	 * @returns {Array<number>} Shift_JIS-2004 のデータが入った配列
-	 */
-	static toSJIS2004Array(text) {
-		return SJIS2004.toSJIS2004Array(text);
-	}
-
-	/**
-	 * 文字列を Shift_JIS-2004 のバイナリ配列に変換
-	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-	 * @param {String} text - 変換したいテキスト
-	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
-	 */
-	static toSJIS2004Binary(text) {
-		return SJIS2004.toSJIS2004Binary(text);
-	}
-
-	/**
-	 * Shift_JIS-2004 の配列から文字列に変換
-	 * @param {Array<number>} sjis2004 - 変換したいテキスト
-	 * @returns {String} 変換後のテキスト
-	 */
-	static fromSJIS2004Array(sjis2004) {
-		return SJIS2004.fromSJIS2004Array(sjis2004).encode_string;
-	}
-
-	/**
 	 * 指定したテキストの横幅を Shift_JIS-2004 で換算でカウント
 	 * - 半角を1、全角を2としてカウント
 	 * - Shift_JIS-2004 の範囲にない文字は2としてカウント
@@ -315,6 +204,10 @@ export default class MojiJS {
 	static cutTextForSJIS2004(text, offset, size) {
 		return SJIS2004.cutTextForSJIS2004(text, offset, size);
 	}
+
+	// ---------------------------------
+	// 日本語の変換用の関数群
+	// ---------------------------------
 
 	/**
 	 * カタカナをひらがなに変換
@@ -478,6 +371,10 @@ export default class MojiJS {
 		return Japanese.toRomajiFromKatakana(text);
 	}
 
+	// ---------------------------------
+	// 1つの文字データに対して調査を行う
+	// ---------------------------------
+
 	/**
 	 * 指定した1つの文字に関して、解析を行い情報を返します
 	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
@@ -486,6 +383,10 @@ export default class MojiJS {
 	static getMojiData(unicode_codepoint) {
 		return CharacterAnalyzer.getMojiData(unicode_codepoint);
 	}
+
+	// ---------------------------------
+	// 比較関数
+	// ---------------------------------
 
 	/**
 	 * 2つの文字列を比較する関数
@@ -505,4 +406,48 @@ export default class MojiJS {
 		return StringComparator.NATURAL;
 	}
 	
+	// ---------------------------------
+	// 内部で用いてる関数を利用する
+	// ---------------------------------
+
+	/**
+	 * Unicode専用の内部関数を利用する
+	 * @returns {typeof Unicode}
+	 */
+	static get Unicode() {
+		return Unicode;
+	}
+
+	/**
+	 * Shift_JIS専用の内部関数を利用する
+	 * @returns {typeof SJIS}
+	 */
+	static get SJIS() {
+		return SJIS;
+	}
+
+	/**
+	 * CP932専用の内部関数を利用する
+	 * @returns {typeof CP932}
+	 */
+	static get CP932() {
+		return CP932;
+	}
+
+	/**
+	 * Shift_JIS-2004専用の内部関数を利用する
+	 * @returns {typeof SJIS2004}
+	 */
+	static get SJIS2004() {
+		return SJIS2004;
+	}
+
+	/**
+	 * EUC-JP専用の内部関数を利用する
+	 * @returns {typeof EUCJP}
+	 */
+	static get EUCJP() {
+		return EUCJP;
+	}
+
 }

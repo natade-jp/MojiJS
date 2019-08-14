@@ -21,7 +21,6 @@ import Unicode from "./Unicode.js";
 
 /**
  * Shift_JIS を扱うクラス
- * @ignore
  */
 export default class SJIS {
 
@@ -29,13 +28,14 @@ export default class SJIS {
 	 * 文字列を Shift_JIS の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
-	 * @returns {Array<number>} Shift_JIS のデータが入った配列
+	 * @returns {{encode : Array<number>, ng_count : number}} Shift_JIS のデータが入った配列
 	 */
 	static toSJISArray(text, unicode_to_sjis) {
 		const map = unicode_to_sjis;
 		const utf32 = Unicode.toUTF32Array(text);
 		const sjis = [];
 		const ng = "?".charCodeAt(0);
+		let ng_count = 0;
 		for(let i = 0; i < utf32.length; i++) {
 			const map_bin = map[utf32[i]];
 			if(map_bin) {
@@ -43,9 +43,13 @@ export default class SJIS {
 			}
 			else {
 				sjis.push(ng);
+				ng_count++;
 			}
 		}
-		return sjis;
+		return {
+			encode : sjis,
+			ng_count : ng_count
+		};
 	}
 
 	/**
@@ -56,7 +60,7 @@ export default class SJIS {
 	 * @returns {Array<number>} Shift_JIS のデータが入ったバイナリ配列
 	 */
 	static toSJISBinary(text, unicode_to_sjis) {
-		const sjis = SJIS.toSJISArray(text, unicode_to_sjis);
+		const sjis = SJIS.toSJISArray(text, unicode_to_sjis).encode;
 		const sjisbin = [];
 		for(let i = 0; i < sjis.length; i++) {
 			if(sjis[i] < 0x100) {
@@ -66,7 +70,6 @@ export default class SJIS {
 				sjisbin.push(sjis[i] >> 8);
 				sjisbin.push(sjis[i] & 0xFF);
 			}
-
 		}
 		return sjisbin;
 	}
@@ -75,7 +78,7 @@ export default class SJIS {
 	 * SJISの配列から文字列に変換
 	 * @param {Array<number>} sjis - 変換したいテキスト
 	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
-	 * @returns {{encode_string : String, ng_count : number}} 変換後のテキスト
+	 * @returns {{decode : String, ng_count : number}} 変換後のテキスト
 	 */
 	static fromSJISArray(sjis, sjis_to_unicode) {
 		const map = sjis_to_unicode;
@@ -123,7 +126,7 @@ export default class SJIS {
 			}
 		}
 		return {
-			encode_string : Unicode.fromUTF32Array(utf16),
+			decode : Unicode.fromUTF32Array(utf16),
 			ng_count : ng_count
 		};
 	}
@@ -209,7 +212,7 @@ export default class SJIS {
 				cut.push(x);
 			}
 		}
-		return SJIS.fromSJISArray(cut, sjis_to_unicode).encode_string;
+		return SJIS.fromSJISArray(cut, sjis_to_unicode).decode;
 	}
 
 	/**
@@ -223,7 +226,7 @@ export default class SJIS {
 			return null;
 		}
 		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis);
+		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis).encode;
 		return sjis_array[0];
 	}
 

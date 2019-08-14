@@ -30,7 +30,12 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -49,10 +54,12 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Encode from &quot;./encode/Encode.js&quot;;
 import Unicode from &quot;./encode/Unicode.js&quot;;
 import SJIS from &quot;./encode/SJIS.js&quot;;
 import CP932 from &quot;./encode/CP932.js&quot;;
 import SJIS2004 from &quot;./encode/SJIS2004.js&quot;;
+import EUCJP from &quot;./encode/EUCJP.js&quot;;
 import Japanese from &quot;./language/Japanese.js&quot;;
 import CharacterAnalyzer from &quot;./tools/MojiAnalyzer.js&quot;;
 import StringComparator from &quot;./tools/StringComparator.js&quot;;
@@ -61,6 +68,35 @@ import StringComparator from &quot;./tools/StringComparator.js&quot;;
  * &#x65E5;&#x672C;&#x8A9E;&#x3092;&#x6271;&#x3046;&#x305F;&#x3081;&#x306E;&#x69D8;&#x3005;&#x306A;&#x6A5F;&#x80FD;&#x3092;&#x63D0;&#x4F9B;&#x3057;&#x307E;&#x3059;
  */
 export default class MojiJS {
+
+	// ---------------------------------
+	// &#x6587;&#x5B57;&#x5217;&#x306E;&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#x3068;&#x30C7;&#x30B3;&#x30FC;&#x30C9;&#x3092;&#x6271;&#x3046;&#x95A2;&#x6570;
+	// ---------------------------------
+
+	/**
+	 * &#x6587;&#x5B57;&#x5217;&#x304B;&#x3089;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x306B;&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#x3059;&#x308B;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {String} charset - &#x30AD;&#x30E3;&#x30E9;&#x30BB;&#x30C3;&#x30C8;(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @param {boolean} [is_with_bom=false] - BOM&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @returns {Array&lt;number&gt;} &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;(&#x5931;&#x6557;&#x6642;&#x306F;null)
+	 */
+	static encode(text, charset, is_with_bom) {
+		return Encode.encode(text, charset, is_with_bom);
+	}
+
+	/**
+	 * &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x30C7;&#x30B3;&#x30FC;&#x30C9;&#x3059;&#x308B;
+	 * @param {Array&lt;number&gt;} binary - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
+	 * @param {String} [charset=&quot;autodetect&quot;] - &#x30AD;&#x30E3;&#x30E9;&#x30BB;&#x30C3;&#x30C8;(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @returns {String} &#x5909;&#x63DB;&#x3057;&#x305F;&#x6587;&#x5B57;&#x5217;&#xFF08;&#x5931;&#x6557;&#x3057;&#x305F;&#x3089;null&#xFF09;
+	 */
+	static decode(binary, charset) {
+		return Encode.decode(binary, charset);
+	}
+
+	// ---------------------------------
+	// Unicode &#x3092;&#x6271;&#x3046;&#x95A2;&#x6570;&#x7FA4;
+	// ---------------------------------
 	
 	/**
 	 * &#x30B5;&#x30ED;&#x30B2;&#x30FC;&#x30C8;&#x30DA;&#x30A2;&#x5BFE;&#x5FDC;&#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x53D6;&#x5F97;
@@ -155,6 +191,10 @@ export default class MojiJS {
 		return Unicode.fromUTF8Array(utf8);
 	}
 
+	// ---------------------------------
+	// &#x5207;&#x308A;&#x51FA;&#x3057;&#x3092;&#x6271;&#x3046;&#x95A2;&#x6570;&#x7FA4;
+	// ---------------------------------
+
 	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x3092;&#x5207;&#x308A;&#x51FA;&#x3059;
 	 * - &#x5358;&#x4F4D;&#x306F;&#x6587;&#x5B57;&#x6570;
@@ -165,106 +205,6 @@ export default class MojiJS {
 	 */
 	static cutTextForCodePoint(text, offset, size) {
 		return Unicode.cutTextForCodePoint(text, offset, size);
-	}
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F; Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x304B;&#x3089;&#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x306B;&#x5909;&#x63DB;
-	 * @param {Number} sjis_code - Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
-	 * @returns {import(&quot;./encode/SJIS.js&quot;).MenKuTen} &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#xFF08;1&#x30D0;&#x30A4;&#x30C8;&#x306E;JIS&#x30B3;&#x30FC;&#x30C9;&#x306A;&#x3069;&#xFF09;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
-	 */
-	static toMenKuTenFromSJIS2004Code(sjis_code) {
-		return SJIS.toMenKuTenFromSJIS2004Code(sjis_code);
-	}
-	
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x304B;&#x3089; Shift_JIS-2004 &#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
-	 * @param {import(&quot;./encode/SJIS.js&quot;).MenKuTen|string} menkuten - &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;&#xFF08;&#x9762;&#x304C;&#x7701;&#x7565;&#x3055;&#x308C;&#x305F;&#x5834;&#x5408;&#x306F;&#x3001;1&#x3068;&#x307F;&#x306A;&#x3059;&#xFF09;
-	 * @returns {Number} Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
-	 */
-	static toSJIS2004CodeFromMenKuTen(menkuten) {
-		return SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
-	}
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F; Shift_JIS &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x304B;&#x3089;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x306B;&#x5909;&#x63DB;
-	 * @param {Number} sjis_code - Shift_JIS &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
-	 * @returns {import(&quot;./encode/SJIS.js&quot;).MenKuTen} &#x533A;&#x70B9;&#x756A;&#x53F7;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#xFF08;1&#x30D0;&#x30A4;&#x30C8;&#x306E;JIS&#x30B3;&#x30FC;&#x30C9;&#x306A;&#x3069;&#xFF09;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
-	 */
-	static toKuTenFromSJISCode(sjis_code) {
-		return SJIS.toKuTenFromSJISCode(sjis_code);
-	}
-
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x304B;&#x3089; Shift_JIS &#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
-	 * @param {import(&quot;./encode/SJIS.js&quot;).MenKuTen|string} kuten - &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;
-	 * @returns {Number} Shift_JIS &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
-	 */
-	static toSJISCodeFromKuTen(kuten) {
-		return SJIS.toSJISCodeFromKuTen(kuten);
-	}
-	
-	/**
-	 * Shift_JIS &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;JIS&#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF08;JIS Chinese character standard&#xFF09;&#x306B;&#x5909;&#x63DB;
-	 * @param {Number} sjis_code - Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
-	 * @returns {Number} -1...&#x5909;&#x63DB;&#x4E0D;&#x53EF;, 0...&#x6C34;&#x6E96;&#x306A;&#x3057;, 1...&#x7B2C;1&#x6C34;&#x6E96;, ...
-	 */
-	static toJISKanjiSuijunFromSJISCode(sjis_code) {
-		return SJIS.toJISKanjiSuijunFromSJISCode(sjis_code);
-	}
-	
-	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x304B;&#x3089; Shift_JIS &#x306E;&#x4ED5;&#x69D8;&#x4E0A;&#x3001;&#x6B63;&#x898F;&#x306A;&#x7269;&#x304B;&#x5224;&#x5B9A;
-	 * @param {import(&quot;./encode/SJIS.js&quot;).MenKuTen|string} menkuten - &#x9762;&#x533A;&#x70B9;&#x756A;&#x53F7;&#xFF08;&#x9762;&#x304C;&#x7701;&#x7565;&#x3055;&#x308C;&#x305F;&#x5834;&#x5408;&#x306F;&#x3001;1&#x3068;&#x307F;&#x306A;&#x3059;&#xFF09;
-	 * @returns {Boolean} &#x6B63;&#x898F;&#x306A;&#x30C7;&#x30FC;&#x30BF;&#x306F; true, &#x4E0D;&#x6B63;&#x306A;&#x30C7;&#x30FC;&#x30BF;&#x306F; false
-	 */
-	static isRegularMenKuten(menkuten) {
-		return SJIS.isRegularMenKuten(menkuten);
-	}
-	
-	/**
-	 * Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x304B;&#x3089; CP932 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
-	 * @param {Number} unicode_codepoint - Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
-	 * @returns {Number} CP932 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8; (&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; undefined)
-	 */
-	static toCP932FromUnicode(unicode_codepoint) {
-		return CP932.toCP932FromUnicode(unicode_codepoint);
-	}
-
-	/**
-	 * CP932 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x304B;&#x3089; Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
-	 * @param {Number} cp932_codepoint - CP932 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
-	 * @returns {Number} Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8; (&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; undefined)
-	 */
-	static toUnicodeFromCP932(cp932_codepoint) {
-		return CP932.toUnicodeFromCP932(cp932_codepoint);
-	}
-	
-	/**
-	 * &#x6587;&#x5B57;&#x5217;&#x3092; CP932 &#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {Array&lt;number&gt;} CP932 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
-	 */
-	static toCP932Array(text) {
-		return CP932.toCP932Array(text);
-	}
-
-	/**
-	 * &#x6587;&#x5B57;&#x5217;&#x3092; CP932 &#x306E;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * - &#x65E5;&#x672C;&#x8A9E;&#x6587;&#x5B57;&#x306F;2&#x30D0;&#x30A4;&#x30C8;&#x3068;&#x3057;&#x3066;&#x3001;&#x914D;&#x5217;&#x3082;2&#x3064;&#x5206;&#x3001;&#x4F7F;&#x7528;&#x3057;&#x307E;&#x3059;&#x3002;
-	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {Array&lt;number&gt;} CP932 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
-	 */
-	static toCP932ArrayBinary(text) {
-		return CP932.toCP932ArrayBinary(text);
-	}
-
-	/**
-	 * CP932 &#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {Array&lt;number&gt;} cp932 - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 */
-	static fromCP932Array(cp932) {
-		return CP932.fromCP932Array(cp932);
 	}
 
 	/**
@@ -290,52 +230,6 @@ export default class MojiJS {
 	}
 	
 	/**
-	 * Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x304B;&#x3089; Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
-	 * @param {Number} unicode_codepoint - Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
-	 * @returns {Number} Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8; (&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; undefined)
-	 */
-	static toSJIS2004FromUnicode(unicode_codepoint) {
-		return SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
-	}
-
-	/**
-	 * Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x304B;&#x3089; Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x306B;&#x5909;&#x63DB;
-	 * @param {Number} sjis2004_codepoint - Shift_JIS-2004 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
-	 * @returns {number|Array&lt;number&gt;} Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8; (&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; undefined)
-	 */
-	static toUnicodeFromSJIS2004(sjis2004_codepoint) {
-		return SJIS2004.toUnicodeFromSJIS2004(sjis2004_codepoint);
-	}
-	
-	/**
-	 * &#x6587;&#x5B57;&#x5217;&#x3092; Shift_JIS-2004 &#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {Array&lt;number&gt;} Shift_JIS-2004 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
-	 */
-	static toSJIS2004Array(text) {
-		return SJIS2004.toSJIS2004Array(text);
-	}
-
-	/**
-	 * &#x6587;&#x5B57;&#x5217;&#x3092; Shift_JIS-2004 &#x306E;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * - &#x65E5;&#x672C;&#x8A9E;&#x6587;&#x5B57;&#x306F;2&#x30D0;&#x30A4;&#x30C8;&#x3068;&#x3057;&#x3066;&#x3001;&#x914D;&#x5217;&#x3082;2&#x3064;&#x5206;&#x3001;&#x4F7F;&#x7528;&#x3057;&#x307E;&#x3059;&#x3002;
-	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {Array&lt;number&gt;} Shift_JIS-2004 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
-	 */
-	static toSJIS2004ArrayBinary(text) {
-		return SJIS2004.toSJIS2004ArrayBinary(text);
-	}
-
-	/**
-	 * Shift_JIS-2004 &#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {Array&lt;number&gt;} sjis2004 - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 */
-	static fromSJIS2004Array(sjis2004) {
-		return SJIS2004.fromSJIS2004Array(sjis2004);
-	}
-
-	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092; Shift_JIS-2004 &#x3067;&#x63DB;&#x7B97;&#x3067;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
 	 * - &#x534A;&#x89D2;&#x3092;1&#x3001;&#x5168;&#x89D2;&#x3092;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
 	 * - Shift_JIS-2004 &#x306E;&#x7BC4;&#x56F2;&#x306B;&#x306A;&#x3044;&#x6587;&#x5B57;&#x306F;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
@@ -356,6 +250,10 @@ export default class MojiJS {
 	static cutTextForSJIS2004(text, offset, size) {
 		return SJIS2004.cutTextForSJIS2004(text, offset, size);
 	}
+
+	// ---------------------------------
+	// &#x65E5;&#x672C;&#x8A9E;&#x306E;&#x5909;&#x63DB;&#x7528;&#x306E;&#x95A2;&#x6570;&#x7FA4;
+	// ---------------------------------
 
 	/**
 	 * &#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3092;&#x3072;&#x3089;&#x304C;&#x306A;&#x306B;&#x5909;&#x63DB;
@@ -412,7 +310,7 @@ export default class MojiJS {
 	}
 	
 	/**
-	 * &#x82F1;&#x8A9E;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * &#x30A2;&#x30EB;&#x30D5;&#x30A1;&#x30D9;&#x30C3;&#x30C8;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
@@ -421,7 +319,7 @@ export default class MojiJS {
 	}
 	
 	/**
-	 * &#x82F1;&#x8A9E;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * &#x30A2;&#x30EB;&#x30D5;&#x30A1;&#x30D9;&#x30C3;&#x30C8;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
@@ -502,6 +400,28 @@ export default class MojiJS {
 	}
 
 	/**
+	 * &#x3072;&#x3089;&#x304C;&#x306A;&#x304B;&#x3089;&#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toRomajiFromHiragana(text) {
+		return Japanese.toRomajiFromHiragana(text);
+	}
+
+	/**
+	 * &#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x304B;&#x3089;&#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toRomajiFromKatakana(text) {
+		return Japanese.toRomajiFromKatakana(text);
+	}
+
+	// ---------------------------------
+	// 1&#x3064;&#x306E;&#x6587;&#x5B57;&#x30C7;&#x30FC;&#x30BF;&#x306B;&#x5BFE;&#x3057;&#x3066;&#x8ABF;&#x67FB;&#x3092;&#x884C;&#x3046;
+	// ---------------------------------
+
+	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;1&#x3064;&#x306E;&#x6587;&#x5B57;&#x306B;&#x95A2;&#x3057;&#x3066;&#x3001;&#x89E3;&#x6790;&#x3092;&#x884C;&#x3044;&#x60C5;&#x5831;&#x3092;&#x8FD4;&#x3057;&#x307E;&#x3059;
 	 * @param {Number} unicode_codepoint - UTF-32 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 * @returns {import(&quot;./tools/MojiAnalyzer.js&quot;).MojiData} &#x6587;&#x5B57;&#x306E;&#x60C5;&#x5831;&#x304C;&#x3064;&#x307E;&#x3063;&#x305F;&#x30AA;&#x30D6;&#x30B8;&#x30A7;&#x30AF;&#x30C8;
@@ -509,6 +429,10 @@ export default class MojiJS {
 	static getMojiData(unicode_codepoint) {
 		return CharacterAnalyzer.getMojiData(unicode_codepoint);
 	}
+
+	// ---------------------------------
+	// &#x6BD4;&#x8F03;&#x95A2;&#x6570;
+	// ---------------------------------
 
 	/**
 	 * 2&#x3064;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x6BD4;&#x8F03;&#x3059;&#x308B;&#x95A2;&#x6570;
@@ -528,6 +452,50 @@ export default class MojiJS {
 		return StringComparator.NATURAL;
 	}
 	
+	// ---------------------------------
+	// &#x5185;&#x90E8;&#x3067;&#x7528;&#x3044;&#x3066;&#x308B;&#x95A2;&#x6570;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;
+	// ---------------------------------
+
+	/**
+	 * Unicode&#x5C02;&#x7528;&#x306E;&#x5185;&#x90E8;&#x95A2;&#x6570;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;
+	 * @returns {typeof Unicode}
+	 */
+	static get Unicode() {
+		return Unicode;
+	}
+
+	/**
+	 * Shift_JIS&#x5C02;&#x7528;&#x306E;&#x5185;&#x90E8;&#x95A2;&#x6570;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;
+	 * @returns {typeof SJIS}
+	 */
+	static get SJIS() {
+		return SJIS;
+	}
+
+	/**
+	 * CP932&#x5C02;&#x7528;&#x306E;&#x5185;&#x90E8;&#x95A2;&#x6570;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;
+	 * @returns {typeof CP932}
+	 */
+	static get CP932() {
+		return CP932;
+	}
+
+	/**
+	 * Shift_JIS-2004&#x5C02;&#x7528;&#x306E;&#x5185;&#x90E8;&#x95A2;&#x6570;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;
+	 * @returns {typeof SJIS2004}
+	 */
+	static get SJIS2004() {
+		return SJIS2004;
+	}
+
+	/**
+	 * EUC-JP&#x5C02;&#x7528;&#x306E;&#x5185;&#x90E8;&#x95A2;&#x6570;&#x3092;&#x5229;&#x7528;&#x3059;&#x308B;
+	 * @returns {typeof EUCJP}
+	 */
+	static get EUCJP() {
+		return EUCJP;
+	}
+
 }
 </code></pre>
 

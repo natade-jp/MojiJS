@@ -21,12 +21,12 @@ const equalsArray = function(x, y) {
 	const text  = "ぐ園aｱ⑯";
 	const eucjp	= [0xA4, 0xB0, 0xB1, 0xE0, 0x61, 0x80, 0xB1, 0xAD, 0xB0];
 	test("toEUCJPBinary", () => { expect(equalsArray(EUCJP.toEUCJPBinary(text), eucjp)).toBe(true); });
-	test("fromEUCJPBinary", () => { expect(EUCJP.fromEUCJPBinary(eucjp).encode_string).toBe(text); });
+	test("fromEUCJPBinary", () => { expect(EUCJP.fromEUCJPBinary(eucjp).decode).toBe(text); });
 }
 
 {
 	const text  = "謹𪘂麵";
-	const eucjp	= [0xFC, 0xB0, 0x8F, 0xFE, 0xF0, 0xFE, 0xF0];
-	test("toEUCJIS2004Binary", () => { expect(equalsArray(EUCJP.toEUCJIS2004Binary(text), eucjp)).toBe(true); });
-	test("fromEUCJIS2004Binary", () => { expect(EUCJP.fromEUCJIS2004Binary(eucjp).encode_string).toBe(text); });
+	const eucjis2004 = [0xFC, 0xB0, 0x8F, 0xFE, 0xF0, 0xFE, 0xF0];
+	test("toEUCJIS2004Binary", () => { expect(equalsArray(EUCJP.toEUCJIS2004Binary(text), eucjis2004)).toBe(true); });
+	test("fromEUCJIS2004Binary", () => { expect(EUCJP.fromEUCJIS2004Binary(eucjis2004).decode).toBe(text); });
 }

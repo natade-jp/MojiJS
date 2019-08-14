@@ -1,4 +1,5 @@
-﻿
+﻿// @ts-check
+
 import Log from "../../libs/Log.module.js";
 import MojiJS from "../../libs/MojiJS.js";
 
@@ -94,19 +95,12 @@ const testCP932 = function() {
 	Log.println("lengthは " + x.length);
 	Log.println("文字の横幅は " + MojiJS.getWidthForCP932(x));
 
-	Log.println("◆Windows-31J の符号化コードで1文字ごと表示します。");
-	const cp932array = MojiJS.toCP932Array(x);
-	for(let i = 0; i < cp932array.length; i++) {
-		Log.printf("%04X ", cp932array[i]);
-	}
-	Log.println(MojiJS.fromCP932Array(cp932array));
-
 	Log.println("◆Windows-31J の符号化コードで1バイトごと表示します。");
-	const cp932arraybin = MojiJS.toCP932ArrayBinary(x);
+	const cp932arraybin = MojiJS.encode(x, "Windows-31J");
 	for(let i = 0; i < cp932arraybin.length; i++) {
 		Log.printf("%02X ", cp932arraybin[i]);
 	}
-	Log.println(MojiJS.fromCP932Array(cp932arraybin));
+	Log.println(MojiJS.decode(cp932arraybin));
 	
 	Log.println("◆文字の横幅換算で文字列をカットします。");
 	

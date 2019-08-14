@@ -111,7 +111,6 @@ class EUCJPTools {
 
 /**
  * EUC-JP を扱うクラス
- * @ignore
  */
 export default class EUCJP {
 
@@ -122,13 +121,13 @@ export default class EUCJP {
 	 * @returns {Array<number>} EUC-JP(CP51932) のデータが入ったバイナリ配列
 	 */
 	static toEUCJPBinary(text) {
-		return EUCJPTools.toEUCJPBinaryFromSJISArray(CP932.toCP932Array(text), SJIS.toKuTenFromSJISCode);
+		return EUCJPTools.toEUCJPBinaryFromSJISArray(CP932.toCP932Array(text).encode, SJIS.toKuTenFromSJISCode);
 	}
 
 	/**
 	 * EUC-JP の配列から文字列に変換
 	 * @param {Array<number>} eucjp - 変換したいテキスト
-	 * @returns {{encode_string : String, ng_count : number}} 変換後のテキスト
+	 * @returns {{decode : String, ng_count : number}} 変換後のテキスト
 	 */
 	static fromEUCJPBinary(eucjp) {
 		return CP932.fromCP932Array(EUCJPTools.toSJISArrayFromEUCJPBinary(eucjp, SJIS.toSJISCodeFromKuTen));
@@ -141,13 +140,13 @@ export default class EUCJP {
 	 * @returns {Array<number>} EUC-JIS-2004 のデータが入ったバイナリ配列
 	 */
 	static toEUCJIS2004Binary(text) {
-		return EUCJPTools.toEUCJPBinaryFromSJISArray(SJIS2004.toSJIS2004Array(text), SJIS.toMenKuTenFromSJIS2004Code);
+		return EUCJPTools.toEUCJPBinaryFromSJISArray(SJIS2004.toSJIS2004Array(text).encode, SJIS.toMenKuTenFromSJIS2004Code);
 	}
 
 	/**
 	 * EUC-JIS-2004 の配列から文字列に変換
 	 * @param {Array<number>} eucjp - 変換したいテキスト
-	 * @returns {{encode_string : String, ng_count : number}} 変換後のテキスト
+	 * @returns {{decode : String, ng_count : number}} 変換後のテキスト
 	 */
 	static fromEUCJIS2004Binary(eucjp) {
 		return SJIS2004.fromSJIS2004Array(EUCJPTools.toSJISArrayFromEUCJPBinary(eucjp, SJIS.toSJISCodeFromKuTen));

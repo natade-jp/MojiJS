@@ -30,7 +30,12 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -51,7 +56,6 @@
 
 /**
  * Unicode &#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
- * @ignore
  */
 export default class Unicode {
 
@@ -95,7 +99,7 @@ export default class Unicode {
 	 * @returns {Number} &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 */
 	static codePointAt(text, index) {
-		let index_ = (index !== undefined) ? index : 0;
+		const index_ = (index !== undefined) ? index : 0;
 		if(Unicode.isHighSurrogateAt(text, index_)) {
 			const high = text.charCodeAt(index_);
 			const low  = text.charCodeAt(index_ + 1);
@@ -185,11 +189,15 @@ export default class Unicode {
 	}
 
 	/**
-	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
-	 * @param {...(number|Array&lt;number&gt;)} codepoint - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x914D;&#x5217;&#x3001;&#x53C8;&#x306F;&#x6570;&#x5024;&#x3092;&#x4E26;&#x3079;&#x305F;&#x53EF;&#x5909;&#x5F15;&#x6570;
-	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x3092;UTF16&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {...(number|Array&lt;number&gt;)} codepoint - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;UTF-32&#x306E;&#x914D;&#x5217;&#x3001;&#x53C8;&#x306F;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x3092;&#x4E26;&#x3079;&#x305F;&#x53EF;&#x5909;&#x5F15;&#x6570;
+	 * @returns {Array&lt;number&gt;} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
-	static fromCodePoint() {
+	static toUTF16ArrayfromCodePoint() {
+		/**
+		 * @type {Array&lt;number&gt;}
+		 */
+		const utf16_array = [];
 		/**
 		 * @type {Array&lt;number&gt;}
 		 */
@@ -202,18 +210,41 @@ export default class Unicode {
 				codepoint_array[i] = arguments[i];
 			}
 		}
-		const text = [];
 		for(let i = 0;i &lt; codepoint_array.length;i++) {
 			const codepoint = codepoint_array[i];
 			if(0x10000 &lt;= codepoint) {
 				const high = (( codepoint - 0x10000 ) &gt;&gt; 10) + 0xD800;
 				const low  = (codepoint &amp; 0x3FF) + 0xDC00;
-				text[text.length] = String.fromCharCode(high);
-				text[text.length] = String.fromCharCode(low);
+				utf16_array.push(high);
+				utf16_array.push(low);
 			}
 			else {
-				text[text.length] = String.fromCharCode(codepoint);
+				utf16_array.push(codepoint);
 			}
+		}
+		return utf16_array;
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {...(number|Array&lt;number&gt;)} codepoint - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6570;&#x5024;&#x914D;&#x5217;&#x3001;&#x53C8;&#x306F;&#x6570;&#x5024;&#x3092;&#x4E26;&#x3079;&#x305F;&#x53EF;&#x5909;&#x5F15;&#x6570;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static fromCodePoint(codepoint) {
+		let utf16_array = null;
+		if(codepoint instanceof Array) {
+			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint);
+		}
+		else {
+			const codepoint_array = [];
+			for(let i = 0;i &lt; arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
+			}
+			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint_array);
+		}
+		const text = [];
+		for(let i = 0;i &lt; utf16_array.length;i++) {
+			text[text.length] = String.fromCharCode(utf16_array[i]);
 		}
 		return(text.join(&quot;&quot;));
 	}
@@ -272,51 +303,7 @@ export default class Unicode {
 	 * @returns {Array&lt;number&gt;} UTF8&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
 	 */
 	static toUTF8Array(text) {
-		const utf32 = Unicode.toUTF32Array(text);
-		const utf8 = [];
-		for(let i = 0; i &lt; utf32.length; i++) {
-			let codepoint = utf32[i];
-			// 1&#x30D0;&#x30A4;&#x30C8;&#x6587;&#x5B57;
-			if(codepoint &lt;= 0x7F) {
-				utf8.push(codepoint);
-				continue;
-			}
-			const buffer = [];
-			let size = 0;
-			// 2&#x30D0;&#x30A4;&#x30C8;&#x4EE5;&#x4E0A;
-			if(codepoint &lt; 0x800) {
-				size = 2;
-			}
-			else if(codepoint &lt; 0x10000) {
-				size = 3;
-			}
-			else {
-				size = 4;
-			}
-			for(let j = 0; j &lt; size; j++) {
-				let write = codepoint &amp; ((1 &lt;&lt; 6) - 1);
-				if(j === size - 1) {
-					if(size === 2) {
-						write |= 0xC0; // 1100 0000
-					}
-					else if(size === 3) {
-						write |= 0xE0; // 1110 0000
-					}
-					else {
-						write |= 0xF0; // 1111 0000
-					}
-					buffer.push(write);
-					break;
-				}
-				buffer.push(write | 0x80); // 1000 0000
-				codepoint = codepoint &gt;&gt; 6;
-			}
-			// &#x53CD;&#x8EE2;
-			for(let j = buffer.length - 1; j &gt;= 0; j--) {
-				utf8.push(buffer[j]);
-			}
-		}
-		return utf8;
+		return Unicode.toUTFBinaryFromCodePoint(Unicode.toUTF32Array(text), &quot;utf-8&quot;);
 	}
 
 	/**
@@ -325,38 +312,7 @@ export default class Unicode {
 	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
 	static fromUTF8Array(utf8) {
-		const utf32 = [];
-		let size = 0;
-		let write = 0;
-		for(let i = 0; i &lt; utf8.length; i++) {
-			const bin = utf8[i];
-			if(bin &lt; 0x80) {
-				utf32.push(bin);
-			}
-			if(size === 0) {
-				if(bin &lt; 0xE0) {
-					size = 1;
-					write = bin &amp; 0x1F; // 0001 1111
-				}
-				else if(bin &lt; 0xF0) {
-					size = 2;
-					write = bin &amp; 0xF; // 0000 1111
-				}
-				else {
-					size = 3;
-					write = bin &amp; 0x7; // 0000 0111
-				}
-			}
-			else {
-				write &lt;&lt;= 6;
-				write |= bin &amp; 0x3F; // 0011 1111
-				size--;
-				if(size === 0) {
-					utf32.push(write);
-				}
-			}
-		}
-		return Unicode.fromCodePoint(utf32);
+		return Unicode.fromCodePoint(Unicode.toCodePointFromUTFBinary(utf8, &quot;utf-8&quot;));
 	}
 
 	/**
@@ -375,6 +331,285 @@ export default class Unicode {
 		}
 		return Unicode.fromUTF32Array(cut);
 	}
+
+	/**
+	 * UTF&#x306E;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x304B;&#x3089;&#x30D0;&#x30A4;&#x30C8;&#x30AA;&#x30FC;&#x30C0;&#x30FC;&#x30DE;&#x30FC;&#x30AF;(BOM)&#x3092;&#x8ABF;&#x67FB;&#x3059;&#x308B;
+	 * @param {Array&lt;number&gt;} utfbinary - &#x8ABF;&#x67FB;&#x3059;&#x308B;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
+	 * @returns {string} &#x7B26;&#x53F7;&#x5316;&#x5F62;&#x5F0F;(&#x4E0D;&#x660E;&#x6642;&#x306F;null)
+	 */
+	static getCharsetFromBOM(utfbinary) {
+		if(utfbinary.length &gt;= 4) {
+			if((utfbinary[0] === 0x00) &amp;&amp; (utfbinary[1] === 0x00) &amp;&amp; (utfbinary[2] === 0xFE) &amp;&amp; (utfbinary[3] === 0xFF)) {
+				return &quot;UTF-32BE&quot;;
+			}
+			if((utfbinary[0] === 0xFF) &amp;&amp; (utfbinary[1] === 0xFE) &amp;&amp; (utfbinary[2] === 0x00) &amp;&amp; (utfbinary[3] === 0x00)) {
+				return &quot;UTF-32LE&quot;;
+			}
+		}
+		if(utfbinary.length &gt;= 3) {
+			if((utfbinary[0] === 0xEF) &amp;&amp; (utfbinary[1] === 0xBB) &amp;&amp; (utfbinary[2] === 0xBF)) {
+				return &quot;UTF-8&quot;;
+			}
+		}
+		if(utfbinary.length &gt;= 2) {
+			if((utfbinary[0] === 0xFE) &amp;&amp; (utfbinary[1] === 0xFF)) {
+				return &quot;UTF-16BE&quot;;
+			}
+			if((utfbinary[0] === 0xFF) &amp;&amp; (utfbinary[1] === 0xFE)) {
+				return &quot;UTF-16LE&quot;;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * UTF&#x306E;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x304B;&#x3089;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306B;&#x5909;&#x63DB;
+	 * @param {Array&lt;number&gt;} binary - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
+	 * @param {String} [charset] - UTF&#x306E;&#x7A2E;&#x985E;&#xFF08;&#x7701;&#x7565;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;BOM&#x4ED8;&#x304D;&#x3092;&#x671F;&#x5F85;&#x3059;&#x308B;&#xFF09;
+	 * @returns {Array&lt;number&gt;} &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x914D;&#x5217;(&#x5931;&#x6557;&#x6642;&#x306F;null)
+	 */
+	static toCodePointFromUTFBinary(binary, charset) {
+		const utf32_array = [];
+		let check_charset = charset;
+		let offset = 0;
+		// &#x30D0;&#x30A4;&#x30C8;&#x30AA;&#x30FC;&#x30C0;&#x30FC;&#x30DE;&#x30FC;&#x30AF;(BOM)&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F; BOM &#x3092;&#x512A;&#x5148;
+		const charset_for_bom = Unicode.getCharsetFromBOM(binary);
+		if(charset_for_bom) {
+			check_charset = charset_for_bom;
+			if(/utf-?8/i.test(charset_for_bom)) {
+				offset = 3;
+			}
+			else if(/utf-?16/i.test(charset_for_bom)) {
+				offset = 2;
+			}
+			else if(/utf-?32/i.test(charset_for_bom)) {
+				offset = 4;
+			}
+		}
+		// BOM&#x4ED8;&#x304D;&#x3067;&#x306F;&#x306A;&#x3044;&#xFF0B;&#x6307;&#x5B9A;&#x3082;&#x3057;&#x3066;&#x3044;&#x306A;&#x3044;&#x306E;&#x3067;&#x5909;&#x63DB;&#x5931;&#x6557;
+		if(!charset_for_bom &amp;&amp; !charset) {
+			return null;
+		}
+		// UTF-8
+		if(/utf-?8n?/i.test(check_charset)) {
+			let size = 0;
+			let write = 0;
+			for(let i = offset; i &lt; binary.length; i++) {
+				const bin = binary[i];
+				if(size === 0) {
+					if(bin &lt; 0x80) {
+						utf32_array.push(bin);
+					}
+					else if(bin &lt; 0xE0) {
+						size = 1;
+						write = bin &amp; 0x1F; // 0001 1111
+					}
+					else if(bin &lt; 0xF0) {
+						size = 2;
+						write = bin &amp; 0xF; // 0000 1111
+					}
+					else {
+						size = 3;
+						write = bin &amp; 0x7; // 0000 0111
+					}
+				}
+				else {
+					write &lt;&lt;= 6;
+					write |= bin &amp; 0x3F; // 0011 1111
+					size--;
+					if(size === 0) {
+						utf32_array.push(write);
+					}
+				}
+			}
+			return utf32_array;
+		}
+		// UTF-16
+		else if(/utf-?16/i.test(check_charset)) {
+			// UTF-16 &#x306B;&#x3064;&#x3081;&#x308B;
+			const utf16 = [];
+			// UTF-16BE
+			if(/utf-?16(be)/i.test(check_charset)) {
+				for(let i = offset; i &lt; binary.length; i += 2) {
+					utf16.push((binary[i] &lt;&lt; 8) | binary[i + 1]);
+				}
+			}
+			// UTF-16LE
+			else if(/utf-?16(le)?/i.test(check_charset)) {
+				for(let i = offset; i &lt; binary.length; i += 2) {
+					utf16.push(binary[i] | (binary[i + 1] &lt;&lt; 8));
+				}
+			}
+			// UTF-32 &#x306B;&#x3064;&#x3081;&#x308B;
+			for(let i = 0; i &lt; utf16.length; i++) {
+				if((0xD800 &lt;= utf16[i]) &amp;&amp; (utf16[i] &lt;= 0xDBFF)) {
+					if(i + 2 &lt;= utf16.length) {
+						const high = utf16[i];
+						const low  = utf16[i + 1];
+						utf32_array.push((((high - 0xD800) &lt;&lt; 10) | (low - 0xDC00)) + 0x10000);
+					}
+					i++;
+				}
+				else {
+					utf32_array.push(utf16[i]);
+				}
+			}
+			return utf32_array;
+		}
+		// UTF-32
+		else {
+			// UTF-32BE
+			if(/utf-?32(be)/i.test(check_charset)) {
+				for(let i = offset; i &lt; binary.length; i += 4) {
+					utf32_array.push((binary[i] &lt;&lt; 24) | (binary[i + 1] &lt;&lt; 16) | (binary[i + 2] &lt;&lt; 8) | binary[i + 3]);
+				}
+				return utf32_array;
+			}
+			// UTF-32LE
+			else if(/utf-?32(le)?/i.test(check_charset)) {
+				for(let i = offset; i &lt; binary.length; i += 4) {
+					utf32_array.push(binary[i] | (binary[i + 1] &lt;&lt; 8) | (binary[i + 2] &lt;&lt; 16) | (binary[i + 3] &lt;&lt; 24));
+				}
+				return utf32_array;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * UTF32&#x914D;&#x5217;&#x304B;&#x3089;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {Array&lt;number&gt;} utf32_array - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;UTF-32&#x914D;&#x5217;
+	 * @param {String} charset - UTF&#x306E;&#x7A2E;&#x985E;
+	 * @param {boolean} [is_with_bom=false] - BOM&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @returns {Array&lt;number&gt;} &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;(&#x5931;&#x6557;&#x6642;&#x306F;null)
+	 */
+	static toUTFBinaryFromCodePoint(utf32_array, charset, is_with_bom) {
+		const is_with_bom_ = is_with_bom !== undefined ? is_with_bom : false;
+		/**
+		 * @type {Array&lt;number&gt;}
+		 */
+		const binary = [];
+		// UTF-8
+		if(/utf-?8n?/i.test(charset)) {
+			// bom &#x3092;&#x3064;&#x3051;&#x308B;
+			if(is_with_bom_) {
+				binary.push(0xEF);
+				binary.push(0xBB);
+				binary.push(0xBF);
+			}
+			for(let i = 0; i &lt; utf32_array.length; i++) {
+				let codepoint = utf32_array[i];
+				// 1&#x30D0;&#x30A4;&#x30C8;&#x6587;&#x5B57;
+				if(codepoint &lt;= 0x7F) {
+					binary.push(codepoint);
+					continue;
+				}
+				const buffer = [];
+				let size = 0;
+				// 2&#x30D0;&#x30A4;&#x30C8;&#x4EE5;&#x4E0A;
+				if(codepoint &lt; 0x800) {
+					size = 2;
+				}
+				else if(codepoint &lt; 0x10000) {
+					size = 3;
+				}
+				else {
+					size = 4;
+				}
+				for(let j = 0; j &lt; size; j++) {
+					let write = codepoint &amp; ((1 &lt;&lt; 6) - 1);
+					if(j === size - 1) {
+						if(size === 2) {
+							write |= 0xC0; // 1100 0000
+						}
+						else if(size === 3) {
+							write |= 0xE0; // 1110 0000
+						}
+						else {
+							write |= 0xF0; // 1111 0000
+						}
+						buffer.push(write);
+						break;
+					}
+					buffer.push(write | 0x80); // 1000 0000
+					codepoint = codepoint &gt;&gt; 6;
+				}
+				// &#x53CD;&#x8EE2;
+				for(let j = buffer.length - 1; j &gt;= 0; j--) {
+					binary.push(buffer[j]);
+				}
+			}
+			return binary;
+		}
+		// UTF-16
+		else if(/utf-?16/i.test(charset)) {
+			// UTF-16 &#x306B;&#x8A70;&#x3081;&#x66FF;&#x3048;&#x308B;
+			const utf16_array = Unicode.toUTF16ArrayfromCodePoint(utf32_array);
+			// UTF-16BE
+			if(/utf-?16(be)/i.test(charset)) {
+				// bom &#x3092;&#x3064;&#x3051;&#x308B;
+				if(is_with_bom_) {
+					binary.push(0xFE);
+					binary.push(0xFF);
+				}
+				for(let i = 0; i &lt; utf16_array.length; i++ ) {
+					binary.push(utf16_array[i] &gt;&gt; 8);
+					binary.push(utf16_array[i] &amp; 0xff);
+				}
+			}
+			// UTF-16LE
+			else if(/utf-?16(le)?/i.test(charset)) {
+				// bom &#x3092;&#x3064;&#x3051;&#x308B;
+				if(is_with_bom_) {
+					binary.push(0xFF);
+					binary.push(0xFE);
+				}
+				for(let i = 0; i &lt; utf16_array.length; i++ ) {
+					binary.push(utf16_array[i] &amp; 0xff);
+					binary.push(utf16_array[i] &gt;&gt; 8);
+				}
+			}
+			return binary;
+		}
+		// UTF-32
+		else if(/utf-?32/i.test(charset)) {
+			// UTF-32BE
+			if(/utf-?32(be)/i.test(charset)) {
+				// bom &#x3092;&#x3064;&#x3051;&#x308B;
+				if(is_with_bom_) {
+					binary.push(0x00);
+					binary.push(0x00);
+					binary.push(0xFE);
+					binary.push(0xFF);
+				}
+				for(let i = 0; i &lt; utf32_array.length; i++) {
+					binary.push((utf32_array[i] &gt;&gt; 24) &amp; 0xff);
+					binary.push((utf32_array[i] &gt;&gt; 16) &amp; 0xff);
+					binary.push((utf32_array[i] &gt;&gt; 8) &amp; 0xff);
+					binary.push(utf32_array[i] &amp; 0xff);
+				}
+			}
+			// UTF-32LE
+			else if(/utf-?32(le)?/i.test(charset)) {
+				// bom &#x3092;&#x3064;&#x3051;&#x308B;
+				if(is_with_bom_) {
+					binary.push(0xFF);
+					binary.push(0xFE);
+					binary.push(0x00);
+					binary.push(0x00);
+				}
+				for(let i = 0; i &lt; utf32_array.length; i++) {
+					binary.push(utf32_array[i] &amp; 0xff);
+					binary.push((utf32_array[i] &gt;&gt; 8) &amp; 0xff);
+					binary.push((utf32_array[i] &gt;&gt; 16) &amp; 0xff);
+					binary.push((utf32_array[i] &gt;&gt; 24) &amp; 0xff);
+				}
+			}
+			return binary;
+		}
+		return null;
+	}
+
 }
 </code></pre>
 

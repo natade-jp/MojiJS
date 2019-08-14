@@ -1,13 +1,17 @@
 # History
 
-## v1.0.x
+## v2.0.0
 
 ### 仕様変更
 - 「ArrayBinary」から「Binary」へ単語を変更
+- 一般的には不要な関数を隠して、encode/decodeの2種類のみ見せるように変更
+- 「Windows-31J」「Shift_JIS-2004」への変換失敗時の回数を抽出できるように仕様を変更
 
 ### 機能追加
-- ひらがなからローマ字に変換を追加
-- toCodePointFromUTFBinary, toUTFBinaryFromCodePoint を追加
+- 「ひらがな」から「ローマ字」に変換を追加
+- Unicodeのエンディアン指定、BOMに対応
+- EUC-JP, EUC-JIS-2004 に対応
+- 不要な関数を隠すことに追加して、内部の専用関数も呼び出しできるように修正
 
 ### 不具合修正
 - gwagwigwugwegwo が変換できない問題を修正

@@ -30,7 +30,12 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -144,7 +149,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * &#x82F1;&#x8A9E;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * &#x30A2;&#x30EB;&#x30D5;&#x30A1;&#x30D9;&#x30C3;&#x30C8;&#x3092;&#x534A;&#x89D2;&#x306B;&#x5909;&#x63DB;
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
@@ -159,7 +164,7 @@ export default class Japanese {
 	}
 	
 	/**
-	 * &#x82F1;&#x8A9E;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
+	 * &#x30A2;&#x30EB;&#x30D5;&#x30A1;&#x30D9;&#x30C3;&#x30C8;&#x3092;&#x5168;&#x89D2;&#x306B;&#x5909;&#x63DB;
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
@@ -411,7 +416,7 @@ export default class Japanese {
 				const next = str.charCodeAt(1);
 				const ch   = str.charCodeAt(0);
 				if(next === 0xFF9E) {
-					// Shift-JIS&#x306B;&#x306A;&#x3044;&#x6FC1;&#x70B9;&#x306F;&#x7121;&#x8996;
+					// Shift-JIS&#x306B;&#x306A;&#x3044;&#x6FC1;&#x70B9;&#xFF08;&#x30F7;&#x3001;&#x30F8;&#x3001;&#x30F9;&#x3001;&#x30FA;&#xFF09;&#x306F;&#x610F;&#x56F3;&#x7684;&#x306B;&#x7121;&#x8996;
 					// &#x30F4;
 					if (ch === 0xFF73) {
 						return (String.fromCharCode(0x3094));
@@ -462,6 +467,7 @@ export default class Japanese {
 	static toHiraganaFromRomaji(text) {
 		/**
 		 * &#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x304B;&#x3089;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
+		 * .y[aiuoe] &#x306F;&#x9664;&#x3044;&#x3066;&#x3044;&#x308B;
 		 * @type {Object&lt;string, string&gt;}
 		 */
 		const map = {
@@ -564,6 +570,7 @@ export default class Japanese {
 			&quot;xyo&quot; : &quot;&#x3087;&quot; ,
 			&quot;xtu&quot; : &quot;&#x3063;&quot; ,
 			&quot;xtsu&quot; : &quot;&#x3063;&quot; ,
+			// &#x74B0;&#x5883;&#x4F9D;&#x5B58;&#x3092;&#x306A;&#x304F;&#x3059;&#x305F;&#x3081;&#x306B;&#x3001;SJIS&#x306B;&#x3042;&#x308B;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x306B;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
 			&quot;va&quot; : &quot;&#x30F4;&#x3041;&quot; ,
 			&quot;vi&quot; : &quot;&#x30F4;&#x3043;&quot; ,
 			&quot;vu&quot; : &quot;&#x30F4;&quot; ,
@@ -574,26 +581,21 @@ export default class Japanese {
 			&quot;qu&quot; : &quot;&#x304F;&quot; ,
 			&quot;qe&quot; : &quot;&#x304F;&#x3047;&quot; ,
 			&quot;qo&quot; : &quot;&#x304F;&#x3049;&quot; ,
-			&quot;fa&quot; : &quot;&#x3075;&#x3041;&quot; ,
-			&quot;fi&quot; : &quot;&#x3075;&#x3043;&quot; ,
-			&quot;fu&quot; : &quot;&#x3075;&quot; ,
-			&quot;fe&quot; : &quot;&#x3075;&#x3047;&quot; ,
-			&quot;fo&quot; : &quot;&#x3075;&#x3049;&quot; ,
-			&quot;ja&quot; : &quot;&#x3058;&#x3083;&quot; ,
-			&quot;ji&quot; : &quot;&#x3058;&quot; ,
-			&quot;ju&quot; : &quot;&#x3058;&#x3085;&quot; ,
-			&quot;je&quot; : &quot;&#x3058;&#x3047;&quot; ,
-			&quot;jo&quot; : &quot;&#x3058;&#x3087;&quot; ,
-			&quot;cha&quot; : &quot;&#x3061;&#x3083;&quot; ,
-			&quot;chi&quot; : &quot;&#x3061;&quot; ,
-			&quot;chu&quot; : &quot;&#x3061;&#x3085;&quot; ,
-			&quot;che&quot; : &quot;&#x3061;&#x3047;&quot; ,
-			&quot;cho&quot; : &quot;&#x3061;&#x3087;&quot; ,
+			&quot;gwa&quot; : &quot;&#x3050;&#x3041;&quot; ,
+			&quot;gwi&quot; : &quot;&#x3050;&#x3043;&quot; ,
+			&quot;gwu&quot; : &quot;&#x3050;&#x3045;&quot; ,
+			&quot;gwe&quot; : &quot;&#x3050;&#x3047;&quot; ,
+			&quot;gwo&quot; : &quot;&#x3050;&#x3049;&quot; ,
 			&quot;sha&quot; : &quot;&#x3057;&#x3083;&quot; ,
 			&quot;shi&quot; : &quot;&#x3057;&quot; ,
 			&quot;shu&quot; : &quot;&#x3057;&#x3085;&quot; ,
 			&quot;she&quot; : &quot;&#x3057;&#x3047;&quot; ,
 			&quot;sho&quot; : &quot;&#x3057;&#x3087;&quot; ,
+			&quot;cha&quot; : &quot;&#x3061;&#x3083;&quot; ,
+			&quot;chi&quot; : &quot;&#x3061;&quot; ,
+			&quot;chu&quot; : &quot;&#x3061;&#x3085;&quot; ,
+			&quot;che&quot; : &quot;&#x3061;&#x3047;&quot; ,
+			&quot;cho&quot; : &quot;&#x3061;&#x3087;&quot; ,
 			&quot;tha&quot; : &quot;&#x3061;&#x3083;&quot; ,
 			&quot;thi&quot; : &quot;&#x3061;&quot; ,
 			&quot;thu&quot; : &quot;&#x3066;&#x3085;&quot; ,
@@ -604,11 +606,23 @@ export default class Japanese {
 			&quot;tsu&quot; : &quot;&#x3064;&quot; ,
 			&quot;tse&quot; : &quot;&#x3064;&#x3047;&quot; ,
 			&quot;tso&quot; : &quot;&#x3064;&#x3049;&quot; ,
+			&quot;fa&quot; : &quot;&#x3075;&#x3041;&quot; ,
+			&quot;fi&quot; : &quot;&#x3075;&#x3043;&quot; ,
+			&quot;fu&quot; : &quot;&#x3075;&quot; ,
+			&quot;fe&quot; : &quot;&#x3075;&#x3047;&quot; ,
+			&quot;fo&quot; : &quot;&#x3075;&#x3049;&quot; ,
+			&quot;ja&quot; : &quot;&#x3058;&#x3083;&quot; ,
+			&quot;ji&quot; : &quot;&#x3058;&quot; ,
+			&quot;ju&quot; : &quot;&#x3058;&#x3085;&quot; ,
+			&quot;je&quot; : &quot;&#x3058;&#x3047;&quot; ,
+			&quot;jo&quot; : &quot;&#x3058;&#x3087;&quot; ,
 			&quot;n&quot; : &quot;&#x3093;&quot; ,
 			&quot;nn&quot; : &quot;&#x3093;&quot; ,
 			&quot;-&quot; : &quot;&#x30FC;&quot; ,
 			&quot;?&quot; : &quot;&#xFF1F;&quot; ,
-			&quot;!&quot; : &quot;&#xFF01;&quot;
+			&quot;!&quot; : &quot;&#xFF01;&quot;,
+			&quot;,&quot; : &quot;&#x3001;&quot;,
+			&quot;.&quot; : &quot;&#x3002;&quot; 
 		};
 		/**
 		 * ya, yi, yu, ye, yo
@@ -629,6 +643,7 @@ export default class Japanese {
 			let y_komoji = null;
 			let romaji = str.toLowerCase();
 			if(romaji.length &gt; 2) {
+				// &#x540C;&#x3058;&#x6587;&#x5B57;&#x306E;&#x7E70;&#x308A;&#x8FD4;&#x3057;&#x306A;&#x3089;&#x300C;&#x3063;&#x300D;&#x306B;&#x5909;&#x66F4;
 				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
 					output.push(&quot;&#x3063;&quot;);
 					romaji = romaji.substr(1);
@@ -637,6 +652,9 @@ export default class Japanese {
 			if(romaji.length === 3) {
 				const char_1 = romaji.substr(0, 1);
 				const char_2 = romaji.substr(1, 1);
+				// 2&#x6587;&#x5B57;&#x76EE;&#x304C;y&#x3067;&#x59CB;&#x307E;&#x308B;&#x5834;&#x5408;&#xFF08;&#x305F;&#x3060;&#x3057;&#x3001;lya, xya &#x306A;&#x3069;&#x3092;&#x9664;&#x304F;&#xFF09;&#x306F;
+				// &#x5C0F;&#x6587;&#x5B57;&#x30EA;&#x30B9;&#x30C8;&#x304B;&#x3089;&#x9078;&#x3093;&#x3067;&#x3001;&#x6700;&#x5F8C;&#x306B;&#x5C0F;&#x6587;&#x5B57;&#x3092;&#x3064;&#x3051;&#x308B;
+				// sya -&gt; si &#x306B;&#x3064;&#x3051;&#x304B;&#x3048;&#x3066;&#x8F9E;&#x66F8;&#x304B;&#x3089;&#x63A2;&#x3059;
 				if((char_2 === &quot;y&quot;) &amp;&amp; (char_1 !== &quot;l&quot;) &amp;&amp; (char_1 !== &quot;x&quot;)) {
 					y_komoji = y_komoji_map[romaji.substr(2)];
 					romaji = romaji.substr(0, 1) + &quot;i&quot;;
@@ -652,7 +670,11 @@ export default class Japanese {
 			}
 			return output.join(&quot;&quot;);
 		};
-		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?\\!-]/gi, func));
+		// ([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe] ... y&#x304C;&#x5165;&#x308A;&#x8FBC;&#x3080;&#x53EF;&#x80FD;&#x6027;&#x304C;&#x3042;&#x308B;&#x6587;&#x5B57;&#x3002;&#x524D;&#x306E;&#x6587;&#x5B57;&#x3092;&#x7E70;&#x308A;&#x8FD4;&#x3057;&#x3066;&#x300C;tta -&gt; &#x3063;&#x305F;&#x300D;&#x306B;&#x3082;&#x5BFE;&#x5FDC;&#x3002;
+		// [xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe] ... y&#x3092;&#x4F7F;&#x7528;&#x3057;&#x306A;&#x3044;&#x6587;&#x5B57;
+		// nn? ... &#x3093;
+		// [?!-] ... &#x8A18;&#x53F7;
+		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
 	}
 
 	/**
@@ -662,6 +684,263 @@ export default class Japanese {
 	 */
 	static toKatakanaFromRomaji(text) {
 		return Japanese.toKatakana(Japanese.toHiraganaFromRomaji(text));
+	}
+
+	/**
+	 * &#x3072;&#x3089;&#x304C;&#x306A;&#x304B;&#x3089;&#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toRomajiFromHiragana(text) {
+		/**
+		 * &#x3072;&#x3089;&#x304C;&#x306A;&#x304B;&#x3089;&#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x3078;&#x306E;&#x5909;&#x63DB;&#x30DE;&#x30C3;&#x30D7;
+		 * @type {Object&lt;string, string&gt;}
+		 */
+		const map = {
+			&quot;&#x3042;&quot; : &quot;a&quot; ,
+			&quot;&#x3044;&quot; : &quot;i&quot; ,
+			&quot;&#x3046;&quot; : &quot;u&quot; ,
+			&quot;&#x3048;&quot; : &quot;e&quot; ,
+			&quot;&#x304A;&quot; : &quot;o&quot; ,
+			&quot;&#x304B;&quot; : &quot;ka&quot; ,
+			&quot;&#x304D;&quot; : &quot;ki&quot; ,
+			&quot;&#x304F;&quot; : &quot;ku&quot; ,
+			&quot;&#x3051;&quot; : &quot;ke&quot; ,
+			&quot;&#x3053;&quot; : &quot;ko&quot; ,
+			&quot;&#x304C;&quot; : &quot;ga&quot; ,
+			&quot;&#x304E;&quot; : &quot;gi&quot; ,
+			&quot;&#x3050;&quot; : &quot;gu&quot; ,
+			&quot;&#x3052;&quot; : &quot;ge&quot; ,
+			&quot;&#x3054;&quot; : &quot;go&quot; ,
+			&quot;&#x3055;&quot; : &quot;sa&quot; ,
+			&quot;&#x3057;&quot; : &quot;shi&quot; ,
+			&quot;&#x3059;&quot; : &quot;su&quot; ,
+			&quot;&#x305B;&quot; : &quot;se&quot; ,
+			&quot;&#x305D;&quot; : &quot;so&quot; ,
+			&quot;&#x3056;&quot; : &quot;za&quot; ,
+			&quot;&#x3058;&quot; : &quot;ji&quot; ,
+			&quot;&#x305A;&quot; : &quot;zu&quot; ,
+			&quot;&#x305C;&quot; : &quot;ze&quot; ,
+			&quot;&#x305E;&quot; : &quot;zo&quot; ,
+			&quot;&#x305F;&quot; : &quot;ta&quot; ,
+			&quot;&#x3061;&quot; : &quot;chi&quot; ,
+			&quot;&#x3064;&quot; : &quot;tsu&quot; ,
+			&quot;&#x3066;&quot; : &quot;te&quot; ,
+			&quot;&#x3068;&quot; : &quot;to&quot; ,
+			&quot;&#x3060;&quot; : &quot;da&quot; ,
+			&quot;&#x3062;&quot; : &quot;di&quot; ,
+			&quot;&#x3065;&quot; : &quot;du&quot; ,
+			&quot;&#x3067;&quot; : &quot;de&quot; ,
+			&quot;&#x3069;&quot; : &quot;do&quot; ,
+			&quot;&#x306A;&quot; : &quot;na&quot; ,
+			&quot;&#x306B;&quot; : &quot;ni&quot; ,
+			&quot;&#x306C;&quot; : &quot;nu&quot; ,
+			&quot;&#x306D;&quot; : &quot;ne&quot; ,
+			&quot;&#x306E;&quot; : &quot;no&quot; ,
+			&quot;&#x306F;&quot; : &quot;ha&quot; ,
+			&quot;&#x3072;&quot; : &quot;hi&quot; ,
+			&quot;&#x3075;&quot; : &quot;fu&quot; ,
+			&quot;&#x3078;&quot; : &quot;he&quot; ,
+			&quot;&#x307B;&quot; : &quot;ho&quot; ,
+			&quot;&#x3070;&quot; : &quot;ba&quot; ,
+			&quot;&#x3073;&quot; : &quot;bi&quot; ,
+			&quot;&#x3076;&quot; : &quot;bu&quot; ,
+			&quot;&#x3079;&quot; : &quot;be&quot; ,
+			&quot;&#x307C;&quot; : &quot;bo&quot; ,
+			&quot;&#x3071;&quot; : &quot;pa&quot; ,
+			&quot;&#x3074;&quot; : &quot;pi&quot; ,
+			&quot;&#x3077;&quot; : &quot;pu&quot; ,
+			&quot;&#x307A;&quot; : &quot;pe&quot; ,
+			&quot;&#x307D;&quot; : &quot;po&quot; ,
+			&quot;&#x307E;&quot; : &quot;ma&quot; ,
+			&quot;&#x307F;&quot; : &quot;mi&quot; ,
+			&quot;&#x3080;&quot; : &quot;mu&quot; ,
+			&quot;&#x3081;&quot; : &quot;me&quot; ,
+			&quot;&#x3082;&quot; : &quot;mo&quot; ,
+			&quot;&#x3084;&quot; : &quot;ya&quot; ,
+			&quot;&#x3086;&quot; : &quot;yu&quot; ,
+			&quot;&#x3044;&#x3047;&quot; : &quot;ye&quot; ,
+			&quot;&#x3088;&quot; : &quot;yo&quot; ,
+			&quot;&#x3089;&quot; : &quot;ra&quot; ,
+			&quot;&#x308A;&quot; : &quot;ri&quot; ,
+			&quot;&#x308B;&quot; : &quot;ru&quot; ,
+			&quot;&#x308C;&quot; : &quot;re&quot; ,
+			&quot;&#x308D;&quot; : &quot;ro&quot; ,
+			&quot;&#x308F;&quot; : &quot;wa&quot; ,
+			&quot;&#x3046;&#x3043;&quot; : &quot;wi&quot; ,
+			&quot;&#x3046;&#x3047;&quot; : &quot;we&quot; ,
+			&quot;&#x3046;&#x3049;&quot; : &quot;wo&quot; ,
+			&quot;&#x3092;&quot; : &quot;wo&quot; ,
+			&quot;&#x3090;&quot; : &quot;wi&quot; ,
+			&quot;&#x3091;&quot; : &quot;we&quot; ,
+			&quot;&#x3093;&quot; : &quot;n&quot; ,
+			&quot;&#x3041;&quot; : &quot;lya&quot; ,
+			&quot;&#x3043;&quot; : &quot;lyi&quot; ,
+			&quot;&#x3045;&quot; : &quot;lyu&quot; ,
+			&quot;&#x3047;&quot; : &quot;lye&quot; ,
+			&quot;&#x3049;&quot; : &quot;lyo&quot; ,
+			&quot;&#x3083;&quot; : &quot;lya&quot; ,
+			&quot;&#x3085;&quot; : &quot;lyu&quot; ,
+			&quot;&#x3087;&quot; : &quot;lyo&quot; ,
+			// &#x74B0;&#x5883;&#x4F9D;&#x5B58;&#x3092;&#x306A;&#x304F;&#x3059;&#x305F;&#x3081;&#x306B;&#x3001;SJIS&#x306B;&#x3042;&#x308B;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x306B;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;
+			&quot;&#x30F4;&#x3041;&quot; : &quot;va&quot; ,
+			&quot;&#x30F4;&#x3043;&quot; : &quot;vi&quot; ,
+			&quot;&#x30F4;&quot; : &quot;vu&quot; ,
+			&quot;&#x30F4;&#x3047;&quot; : &quot;ve&quot; ,
+			&quot;&#x30F4;&#x3049;&quot; : &quot;vo&quot; ,
+			&quot;&#x3094;&#x3041;&quot; : &quot;va&quot; ,
+			&quot;&#x3094;&#x3043;&quot; : &quot;vi&quot; ,
+			&quot;&#x3094;&quot; : &quot;vu&quot; ,
+			&quot;&#x3094;&#x3047;&quot; : &quot;ve&quot; ,
+			&quot;&#x3094;&#x3049;&quot; : &quot;vo&quot; ,
+			&quot;&#x304D;&#x3083;&quot; : &quot;kya&quot; ,
+			&quot;&#x304D;&#x3043;&quot; : &quot;kyi&quot; ,
+			&quot;&#x304D;&#x3085;&quot; : &quot;kyu&quot; ,
+			&quot;&#x304D;&#x3047;&quot; : &quot;kye&quot; ,
+			&quot;&#x304D;&#x3087;&quot; : &quot;kyo&quot; ,
+			&quot;&#x304E;&#x3083;&quot; : &quot;gya&quot; ,
+			&quot;&#x304E;&#x3043;&quot; : &quot;gyi&quot; ,
+			&quot;&#x304E;&#x3085;&quot; : &quot;gyu&quot; ,
+			&quot;&#x304E;&#x3047;&quot; : &quot;gye&quot; ,
+			&quot;&#x304E;&#x3087;&quot; : &quot;gyo&quot; ,
+			&quot;&#x304F;&#x3041;&quot; : &quot;qa&quot; ,
+			&quot;&#x304F;&#x3043;&quot; : &quot;qi&quot; ,
+			&quot;&#x304F;&#x3045;&quot; : &quot;qu&quot; ,
+			&quot;&#x304F;&#x3047;&quot; : &quot;qe&quot; ,
+			&quot;&#x304F;&#x3049;&quot; : &quot;qo&quot; ,
+			&quot;&#x3050;&#x3041;&quot; : &quot;gwa&quot; ,
+			&quot;&#x3050;&#x3043;&quot; : &quot;gwi&quot; ,
+			&quot;&#x3050;&#x3045;&quot; : &quot;gwu&quot; ,
+			&quot;&#x3050;&#x3047;&quot; : &quot;gwe&quot; ,
+			&quot;&#x3050;&#x3049;&quot; : &quot;gwo&quot; ,
+			&quot;&#x3057;&#x3083;&quot; : &quot;sha&quot; ,
+			// &quot;&#x3057;&#x3043;&quot; : &quot;shii&quot; ,
+			&quot;&#x3057;&#x3085;&quot; : &quot;shu&quot; ,
+			&quot;&#x3057;&#x3047;&quot; : &quot;she&quot; ,
+			&quot;&#x3057;&#x3087;&quot; : &quot;sho&quot; ,
+			&quot;&#x3058;&#x3083;&quot; : &quot;ja&quot; ,
+			// &quot;&#x3058;&#x3043;&quot; : &quot;jii&quot; ,
+			&quot;&#x3058;&#x3085;&quot; : &quot;ju&quot; ,
+			&quot;&#x3058;&#x3047;&quot; : &quot;je&quot; ,
+			&quot;&#x3058;&#x3087;&quot; : &quot;jo&quot; ,
+			&quot;&#x3061;&#x3083;&quot; : &quot;cha&quot; ,
+			// &quot;&#x3061;&#x3043;&quot; : &quot;chii&quot;
+			&quot;&#x3061;&#x3085;&quot; : &quot;chu&quot; ,
+			&quot;&#x3061;&#x3047;&quot; : &quot;che&quot; ,
+			&quot;&#x3061;&#x3087;&quot; : &quot;cho&quot; ,
+			&quot;&#x3064;&#x3041;&quot; : &quot;tsa&quot; ,
+			&quot;&#x3064;&#x3043;&quot; : &quot;tsi&quot; ,
+			&quot;&#x3064;&#x3047;&quot; : &quot;tse&quot; ,
+			&quot;&#x3064;&#x3049;&quot; : &quot;tso&quot; ,
+			&quot;&#x3066;&#x3041;&quot; : &quot;tha&quot; ,
+			&quot;&#x3066;&#x3043;&quot; : &quot;thi&quot; ,
+			&quot;&#x3066;&#x3085;&quot; : &quot;thu&quot; ,
+			&quot;&#x3066;&#x3047;&quot; : &quot;the&quot; ,
+			&quot;&#x3066;&#x3087;&quot; : &quot;tho&quot; ,
+			&quot;&#x306B;&#x3083;&quot; : &quot;nya&quot; ,
+			&quot;&#x306B;&#x3043;&quot; : &quot;nyi&quot; ,
+			&quot;&#x306B;&#x3085;&quot; : &quot;nyu&quot; ,
+			&quot;&#x306B;&#x3047;&quot; : &quot;nye&quot; ,
+			&quot;&#x306B;&#x3087;&quot; : &quot;nyo&quot; ,
+			&quot;&#x3072;&#x3083;&quot; : &quot;hya&quot; ,
+			&quot;&#x3072;&#x3043;&quot; : &quot;hyi&quot; ,
+			&quot;&#x3072;&#x3085;&quot; : &quot;hyu&quot; ,
+			&quot;&#x3072;&#x3047;&quot; : &quot;hye&quot; ,
+			&quot;&#x3072;&#x3087;&quot; : &quot;hyo&quot; ,
+			&quot;&#x3073;&#x3083;&quot; : &quot;bya&quot; ,
+			&quot;&#x3073;&#x3043;&quot; : &quot;byi&quot; ,
+			&quot;&#x3073;&#x3085;&quot; : &quot;byu&quot; ,
+			&quot;&#x3073;&#x3047;&quot; : &quot;bye&quot; ,
+			&quot;&#x3073;&#x3087;&quot; : &quot;byo&quot; ,
+			&quot;&#x3074;&#x3083;&quot; : &quot;pya&quot; ,
+			&quot;&#x3074;&#x3043;&quot; : &quot;pyi&quot; ,
+			&quot;&#x3074;&#x3085;&quot; : &quot;pyu&quot; ,
+			&quot;&#x3074;&#x3047;&quot; : &quot;pye&quot; ,
+			&quot;&#x3074;&#x3087;&quot; : &quot;pyo&quot; ,
+			&quot;&#x3075;&#x3041;&quot; : &quot;fa&quot; ,
+			&quot;&#x3075;&#x3043;&quot; : &quot;fi&quot; ,
+			&quot;&#x3075;&#x3047;&quot; : &quot;fe&quot; ,
+			&quot;&#x3075;&#x3049;&quot; : &quot;fo&quot; ,
+			&quot;&#x308A;&#x3083;&quot; : &quot;rya&quot; ,
+			&quot;&#x308A;&#x3043;&quot; : &quot;ryi&quot; ,
+			&quot;&#x308A;&#x3085;&quot; : &quot;ryu&quot; ,
+			&quot;&#x308A;&#x3047;&quot; : &quot;rye&quot; ,
+			&quot;&#x308A;&#x3087;&quot; : &quot;ryo&quot; ,
+			&quot;&#x30FC;&quot; : &quot;-&quot; ,
+			&quot;&#xFF1F;&quot; : &quot;?&quot; ,
+			&quot;&#xFF01;&quot; : &quot;!&quot; ,
+			&quot;&#x3001;&quot; : &quot;,&quot; ,
+			&quot;&#x3002;&quot; : &quot;.&quot; 
+		};
+
+		/**
+		 * @type {Object&lt;string, string&gt;}
+		 */
+		const komoji_map = {
+			&quot;&#x3041;&quot; : &quot;la&quot;,
+			&quot;&#x3043;&quot; : &quot;li&quot;,
+			&quot;&#x3045;&quot; : &quot;lu&quot;,
+			&quot;&#x3047;&quot; : &quot;le&quot;,
+			&quot;&#x3049;&quot; : &quot;lo&quot;,
+			&quot;&#x3083;&quot; : &quot;lya&quot;,
+			&quot;&#x3085;&quot; : &quot;lyu&quot;,
+			&quot;&#x3087;&quot; : &quot;lyo&quot;
+		};
+
+		/**
+		 * @param {string} str 
+		 */
+		const func = function(str) {
+			let tgt = str;
+			let is_xtu = false; 
+			// 1&#x6587;&#x5B57;&#x76EE;&#x306B;&#x300C;&#x3063;&#x300D;&#x304C;&#x3042;&#x308B;&#x304B;
+			if(/^&#x3063;/.test(tgt)) {
+				is_xtu = true;
+				tgt = tgt.replace(/^&#x3063;*/, &quot;&quot;);
+			}
+			// &#x5909;&#x63DB;
+			let trans = map[tgt];
+			// &#x5909;&#x63DB;&#x306B;&#x5931;&#x6557;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;
+			if(!trans) {
+				if(trans.length === 1) {
+					// 1&#x6587;&#x5B57;&#x306A;&#x306E;&#x3067;&#x3053;&#x308C;&#x4EE5;&#x4E0A;&#x5909;&#x63DB;&#x4E0D;&#x80FD;
+					return str;
+				}
+				const char_1 = trans.substr(0, 1);
+				const char_2 = trans.substr(1, 1);
+				// &#x6700;&#x5F8C;&#x306E;&#x6587;&#x5B57;&#x304C;&#x5C0F;&#x6587;&#x5B57;&#x3067;&#x3042;&#x308B;
+				if(!komoji_map[char_2]) {
+					// &#x3053;&#x308C;&#x4EE5;&#x4E0A;&#x5909;&#x63DB;&#x4E0D;&#x80FD;
+					return str;
+				}
+				tgt = char_1;
+				const last_text = komoji_map[char_2];
+				// &#x518D;&#x5EA6;&#x5909;&#x63DB;&#x30C6;&#x30B9;&#x30C8;
+				trans = map[tgt];
+				if(!trans) {
+					// &#x3053;&#x308C;&#x4EE5;&#x4E0A;&#x5909;&#x63DB;&#x4E0D;&#x80FD;
+					return str;
+				}
+				trans += last_text;
+			}
+			if(is_xtu) {
+				trans = trans.substr(0, 1) + trans;
+			}
+			return trans;
+		};
+		// [&#x3063;]*[&#x3042;&#x3044;&#x3046;&#x3048;&#x304A;&#x304B;-&#x3062;&#x3064;-&#x3082;&#x3084;&#x3086;&#x3088;&#x3089;-&#x308D;&#x308F;&#x3090;&#x3091;&#x3092;&#x3093;&#x30F4;][&#x3041;&#x3043;&#x3045;&#x3047;&#x3049;&#x3083;&#x3085;&#x3087;]? ... &#x4FC3;&#x97F3;&#xFF0B;&#x5B50;&#x97F3;&#x6BCD;&#x97F3;
+		// [&#x3041;&#x3043;&#x3045;&#x3047;&#x3049;&#x3083;&#x3085;&#x3087;&#x308E;&#x3063;] ... &#x5C0F;&#x6587;&#x5B57;&#x306E;&#x307F;
+		// [&#xFF1F;&#xFF01;&#xFF0D;&#x3002;&#x3001;] ... &#x8A18;&#x53F7;
+		return (text.replace(/[&#x3063;]*[&#x3042;&#x3044;&#x3046;&#x3048;&#x304A;&#x304B;-&#x3062;&#x3064;-&#x3082;&#x3084;&#x3086;&#x3088;&#x3089;-&#x308D;&#x308F;&#x3090;&#x3091;&#x3092;&#x3093;&#x30F4;&#x3094;][&#x3041;&#x3043;&#x3045;&#x3047;&#x3049;&#x3083;&#x3085;&#x3087;]?|[&#x3041;&#x3043;&#x3045;&#x3047;&#x3049;&#x3083;&#x3085;&#x3087;&#x308E;&#x3063;]|[&#xFF1F;&#xFF01;&#xFF0D;&#x3002;&#x3001;]/g, func));
+	}
+
+	/**
+	 * &#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x304B;&#x3089;&#x30ED;&#x30FC;&#x30DE;&#x5B57;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static toRomajiFromKatakana(text) {
+		return Japanese.toRomajiFromHiragana(Japanese.toHiragana(text));
 	}
 
 }

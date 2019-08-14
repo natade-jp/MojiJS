@@ -1,8 +1,38 @@
 window.esdocSearchIndex = [
   [
+    "mojijs/src/encode/cp932.js~cp932",
+    "class/src/encode/CP932.js~CP932.html",
+    "<span>CP932</span> <span class=\"search-result-import-path\">mojijs/src/encode/CP932.js</span>",
+    "class"
+  ],
+  [
+    "mojijs/src/encode/eucjp.js~eucjp",
+    "class/src/encode/EUCJP.js~EUCJP.html",
+    "<span>EUCJP</span> <span class=\"search-result-import-path\">mojijs/src/encode/EUCJP.js</span>",
+    "class"
+  ],
+  [
     "mojijs/src/mojijs.js~mojijs",
     "class/src/MojiJS.js~MojiJS.html",
     "<span>MojiJS</span> <span class=\"search-result-import-path\">mojijs/src/MojiJS.js</span>",
+    "class"
+  ],
+  [
+    "mojijs/src/encode/sjis2004.js~sjis2004",
+    "class/src/encode/SJIS2004.js~SJIS2004.html",
+    "<span>SJIS2004</span> <span class=\"search-result-import-path\">mojijs/src/encode/SJIS2004.js</span>",
+    "class"
+  ],
+  [
+    "mojijs/src/encode/sjis.js~sjis",
+    "class/src/encode/SJIS.js~SJIS.html",
+    "<span>SJIS</span> <span class=\"search-result-import-path\">mojijs/src/encode/SJIS.js</span>",
+    "class"
+  ],
+  [
+    "mojijs/src/encode/unicode.js~unicode",
+    "class/src/encode/Unicode.js~Unicode.html",
+    "<span>Unicode</span> <span class=\"search-result-import-path\">mojijs/src/encode/Unicode.js</span>",
     "class"
   ],
   [
@@ -306,6 +336,36 @@ window.esdocSearchIndex = [
     "member"
   ],
   [
+    "src/mojijs.js~mojijs.cp932",
+    "class/src/MojiJS.js~MojiJS.html#static-get-CP932",
+    "src/MojiJS.js~MojiJS.CP932",
+    "member"
+  ],
+  [
+    "src/mojijs.js~mojijs.eucjp",
+    "class/src/MojiJS.js~MojiJS.html#static-get-EUCJP",
+    "src/MojiJS.js~MojiJS.EUCJP",
+    "member"
+  ],
+  [
+    "src/mojijs.js~mojijs.sjis",
+    "class/src/MojiJS.js~MojiJS.html#static-get-SJIS",
+    "src/MojiJS.js~MojiJS.SJIS",
+    "member"
+  ],
+  [
+    "src/mojijs.js~mojijs.sjis2004",
+    "class/src/MojiJS.js~MojiJS.html#static-get-SJIS2004",
+    "src/MojiJS.js~MojiJS.SJIS2004",
+    "member"
+  ],
+  [
+    "src/mojijs.js~mojijs.unicode",
+    "class/src/MojiJS.js~MojiJS.html#static-get-Unicode",
+    "src/MojiJS.js~MojiJS.Unicode",
+    "member"
+  ],
+  [
     "src/mojijs.js~mojijs.codepointat",
     "class/src/MojiJS.js~MojiJS.html#static-method-codePointAt",
     "src/MojiJS.js~MojiJS.codePointAt",
@@ -336,21 +396,21 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/mojijs.js~mojijs.fromcp932array",
-    "class/src/MojiJS.js~MojiJS.html#static-method-fromCP932Array",
-    "src/MojiJS.js~MojiJS.fromCP932Array",
+    "src/mojijs.js~mojijs.decode",
+    "class/src/MojiJS.js~MojiJS.html#static-method-decode",
+    "src/MojiJS.js~MojiJS.decode",
+    "method"
+  ],
+  [
+    "src/mojijs.js~mojijs.encode",
+    "class/src/MojiJS.js~MojiJS.html#static-method-encode",
+    "src/MojiJS.js~MojiJS.encode",
     "method"
   ],
   [
     "src/mojijs.js~mojijs.fromcodepoint",
     "class/src/MojiJS.js~MojiJS.html#static-method-fromCodePoint",
     "src/MojiJS.js~MojiJS.fromCodePoint",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.fromsjis2004array",
-    "class/src/MojiJS.js~MojiJS.html#static-method-fromSJIS2004Array",
-    "src/MojiJS.js~MojiJS.fromSJIS2004Array",
     "method"
   ],
   [
@@ -387,30 +447,6 @@ window.esdocSearchIndex = [
     "src/mojijs.js~mojijs.getwidthforsjis2004",
     "class/src/MojiJS.js~MojiJS.html#static-method-getWidthForSJIS2004",
     "src/MojiJS.js~MojiJS.getWidthForSJIS2004",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.isregularmenkuten",
-    "class/src/MojiJS.js~MojiJS.html#static-method-isRegularMenKuten",
-    "src/MojiJS.js~MojiJS.isRegularMenKuten",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tocp932array",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toCP932Array",
-    "src/MojiJS.js~MojiJS.toCP932Array",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tocp932arraybinary",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toCP932ArrayBinary",
-    "src/MojiJS.js~MojiJS.toCP932ArrayBinary",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tocp932fromunicode",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toCP932FromUnicode",
-    "src/MojiJS.js~MojiJS.toCP932FromUnicode",
     "method"
   ],
   [
@@ -498,12 +534,6 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/mojijs.js~mojijs.tojiskanjisuijunfromsjiscode",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toJISKanjiSuijunFromSJISCode",
-    "src/MojiJS.js~MojiJS.toJISKanjiSuijunFromSJISCode",
-    "method"
-  ],
-  [
     "src/mojijs.js~mojijs.tokatakana",
     "class/src/MojiJS.js~MojiJS.html#static-method-toKatakana",
     "src/MojiJS.js~MojiJS.toKatakana",
@@ -516,45 +546,15 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/mojijs.js~mojijs.tokutenfromsjiscode",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toKuTenFromSJISCode",
-    "src/MojiJS.js~MojiJS.toKuTenFromSJISCode",
+    "src/mojijs.js~mojijs.toromajifromhiragana",
+    "class/src/MojiJS.js~MojiJS.html#static-method-toRomajiFromHiragana",
+    "src/MojiJS.js~MojiJS.toRomajiFromHiragana",
     "method"
   ],
   [
-    "src/mojijs.js~mojijs.tomenkutenfromsjis2004code",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toMenKuTenFromSJIS2004Code",
-    "src/MojiJS.js~MojiJS.toMenKuTenFromSJIS2004Code",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tosjis2004array",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toSJIS2004Array",
-    "src/MojiJS.js~MojiJS.toSJIS2004Array",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tosjis2004arraybinary",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toSJIS2004ArrayBinary",
-    "src/MojiJS.js~MojiJS.toSJIS2004ArrayBinary",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tosjis2004codefrommenkuten",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toSJIS2004CodeFromMenKuTen",
-    "src/MojiJS.js~MojiJS.toSJIS2004CodeFromMenKuTen",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tosjis2004fromunicode",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toSJIS2004FromUnicode",
-    "src/MojiJS.js~MojiJS.toSJIS2004FromUnicode",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tosjiscodefromkuten",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toSJISCodeFromKuTen",
-    "src/MojiJS.js~MojiJS.toSJISCodeFromKuTen",
+    "src/mojijs.js~mojijs.toromajifromkatakana",
+    "class/src/MojiJS.js~MojiJS.html#static-method-toRomajiFromKatakana",
+    "src/MojiJS.js~MojiJS.toRomajiFromKatakana",
     "method"
   ],
   [
@@ -576,21 +576,87 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
-    "src/mojijs.js~mojijs.tounicodefromcp932",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toUnicodeFromCP932",
-    "src/MojiJS.js~MojiJS.toUnicodeFromCP932",
-    "method"
-  ],
-  [
-    "src/mojijs.js~mojijs.tounicodefromsjis2004",
-    "class/src/MojiJS.js~MojiJS.html#static-method-toUnicodeFromSJIS2004",
-    "src/MojiJS.js~MojiJS.toUnicodeFromSJIS2004",
-    "method"
-  ],
-  [
     "src/encode/cp932.js",
     "file/src/encode/CP932.js.html",
     "src/encode/CP932.js",
+    "file"
+  ],
+  [
+    "src/encode/cp932.js~cp932.cuttextforcp932",
+    "class/src/encode/CP932.js~CP932.html#static-method-cutTextForCP932",
+    "src/encode/CP932.js~CP932.cutTextForCP932",
+    "method"
+  ],
+  [
+    "src/encode/cp932.js~cp932.fromcp932array",
+    "class/src/encode/CP932.js~CP932.html#static-method-fromCP932Array",
+    "src/encode/CP932.js~CP932.fromCP932Array",
+    "method"
+  ],
+  [
+    "src/encode/cp932.js~cp932.getwidthforcp932",
+    "class/src/encode/CP932.js~CP932.html#static-method-getWidthForCP932",
+    "src/encode/CP932.js~CP932.getWidthForCP932",
+    "method"
+  ],
+  [
+    "src/encode/cp932.js~cp932.tocp932array",
+    "class/src/encode/CP932.js~CP932.html#static-method-toCP932Array",
+    "src/encode/CP932.js~CP932.toCP932Array",
+    "method"
+  ],
+  [
+    "src/encode/cp932.js~cp932.tocp932binary",
+    "class/src/encode/CP932.js~CP932.html#static-method-toCP932Binary",
+    "src/encode/CP932.js~CP932.toCP932Binary",
+    "method"
+  ],
+  [
+    "src/encode/cp932.js~cp932.tocp932fromunicode",
+    "class/src/encode/CP932.js~CP932.html#static-method-toCP932FromUnicode",
+    "src/encode/CP932.js~CP932.toCP932FromUnicode",
+    "method"
+  ],
+  [
+    "src/encode/cp932.js~cp932.tounicodefromcp932",
+    "class/src/encode/CP932.js~CP932.html#static-method-toUnicodeFromCP932",
+    "src/encode/CP932.js~CP932.toUnicodeFromCP932",
+    "method"
+  ],
+  [
+    "src/encode/eucjp.js",
+    "file/src/encode/EUCJP.js.html",
+    "src/encode/EUCJP.js",
+    "file"
+  ],
+  [
+    "src/encode/eucjp.js~eucjp.fromeucjis2004binary",
+    "class/src/encode/EUCJP.js~EUCJP.html#static-method-fromEUCJIS2004Binary",
+    "src/encode/EUCJP.js~EUCJP.fromEUCJIS2004Binary",
+    "method"
+  ],
+  [
+    "src/encode/eucjp.js~eucjp.fromeucjpbinary",
+    "class/src/encode/EUCJP.js~EUCJP.html#static-method-fromEUCJPBinary",
+    "src/encode/EUCJP.js~EUCJP.fromEUCJPBinary",
+    "method"
+  ],
+  [
+    "src/encode/eucjp.js~eucjp.toeucjis2004binary",
+    "class/src/encode/EUCJP.js~EUCJP.html#static-method-toEUCJIS2004Binary",
+    "src/encode/EUCJP.js~EUCJP.toEUCJIS2004Binary",
+    "method"
+  ],
+  [
+    "src/encode/eucjp.js~eucjp.toeucjpbinary",
+    "class/src/encode/EUCJP.js~EUCJP.html#static-method-toEUCJPBinary",
+    "src/encode/EUCJP.js~EUCJP.toEUCJPBinary",
+    "method"
+  ],
+  [
+    "src/encode/encode.js",
+    "file/src/encode/Encode.js.html",
+    "src/encode/Encode.js",
     "file"
   ],
   [
@@ -606,16 +672,274 @@ window.esdocSearchIndex = [
     "typedef"
   ],
   [
+    "src/encode/sjis.js~sjis.cuttextforsjis",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-cutTextForSJIS",
+    "src/encode/SJIS.js~SJIS.cutTextForSJIS",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.fromsjisarray",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-fromSJISArray",
+    "src/encode/SJIS.js~SJIS.fromSJISArray",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.getwidthforsjis",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-getWidthForSJIS",
+    "src/encode/SJIS.js~SJIS.getWidthForSJIS",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.isregularmenkuten",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-isRegularMenKuten",
+    "src/encode/SJIS.js~SJIS.isRegularMenKuten",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tojiskanjisuijunfromsjiscode",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toJISKanjiSuijunFromSJISCode",
+    "src/encode/SJIS.js~SJIS.toJISKanjiSuijunFromSJISCode",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tojiskanjisuijunfromunicode",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toJISKanjiSuijunFromUnicode",
+    "src/encode/SJIS.js~SJIS.toJISKanjiSuijunFromUnicode",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tokutenfromsjiscode",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toKuTenFromSJISCode",
+    "src/encode/SJIS.js~SJIS.toKuTenFromSJISCode",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tokutenfromunicode",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toKuTenFromUnicode",
+    "src/encode/SJIS.js~SJIS.toKuTenFromUnicode",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tomenkutenfromsjis2004code",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toMenKuTenFromSJIS2004Code",
+    "src/encode/SJIS.js~SJIS.toMenKuTenFromSJIS2004Code",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tomenkutenfromunicode",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toMenKuTenFromUnicode",
+    "src/encode/SJIS.js~SJIS.toMenKuTenFromUnicode",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tosjis2004codefrommenkuten",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJIS2004CodeFromMenKuTen",
+    "src/encode/SJIS.js~SJIS.toSJIS2004CodeFromMenKuTen",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tosjisarray",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISArray",
+    "src/encode/SJIS.js~SJIS.toSJISArray",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tosjisbinary",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISBinary",
+    "src/encode/SJIS.js~SJIS.toSJISBinary",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tosjiscodefromkuten",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISCodeFromKuTen",
+    "src/encode/SJIS.js~SJIS.toSJISCodeFromKuTen",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tosjiscodefromunicode",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toSJISCodeFromUnicode",
+    "src/encode/SJIS.js~SJIS.toSJISCodeFromUnicode",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tounicodecodefromkuten",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toUnicodeCodeFromKuTen",
+    "src/encode/SJIS.js~SJIS.toUnicodeCodeFromKuTen",
+    "method"
+  ],
+  [
+    "src/encode/sjis.js~sjis.tounicodecodefrommenkuten",
+    "class/src/encode/SJIS.js~SJIS.html#static-method-toUnicodeCodeFromMenKuTen",
+    "src/encode/SJIS.js~SJIS.toUnicodeCodeFromMenKuTen",
+    "method"
+  ],
+  [
     "src/encode/sjis2004.js",
     "file/src/encode/SJIS2004.js.html",
     "src/encode/SJIS2004.js",
     "file"
   ],
   [
+    "src/encode/sjis2004.js~sjis2004.cuttextforsjis2004",
+    "class/src/encode/SJIS2004.js~SJIS2004.html#static-method-cutTextForSJIS2004",
+    "src/encode/SJIS2004.js~SJIS2004.cutTextForSJIS2004",
+    "method"
+  ],
+  [
+    "src/encode/sjis2004.js~sjis2004.fromsjis2004array",
+    "class/src/encode/SJIS2004.js~SJIS2004.html#static-method-fromSJIS2004Array",
+    "src/encode/SJIS2004.js~SJIS2004.fromSJIS2004Array",
+    "method"
+  ],
+  [
+    "src/encode/sjis2004.js~sjis2004.getwidthforsjis2004",
+    "class/src/encode/SJIS2004.js~SJIS2004.html#static-method-getWidthForSJIS2004",
+    "src/encode/SJIS2004.js~SJIS2004.getWidthForSJIS2004",
+    "method"
+  ],
+  [
+    "src/encode/sjis2004.js~sjis2004.tosjis2004array",
+    "class/src/encode/SJIS2004.js~SJIS2004.html#static-method-toSJIS2004Array",
+    "src/encode/SJIS2004.js~SJIS2004.toSJIS2004Array",
+    "method"
+  ],
+  [
+    "src/encode/sjis2004.js~sjis2004.tosjis2004binary",
+    "class/src/encode/SJIS2004.js~SJIS2004.html#static-method-toSJIS2004Binary",
+    "src/encode/SJIS2004.js~SJIS2004.toSJIS2004Binary",
+    "method"
+  ],
+  [
+    "src/encode/sjis2004.js~sjis2004.tosjis2004fromunicode",
+    "class/src/encode/SJIS2004.js~SJIS2004.html#static-method-toSJIS2004FromUnicode",
+    "src/encode/SJIS2004.js~SJIS2004.toSJIS2004FromUnicode",
+    "method"
+  ],
+  [
+    "src/encode/sjis2004.js~sjis2004.tounicodefromsjis2004",
+    "class/src/encode/SJIS2004.js~SJIS2004.html#static-method-toUnicodeFromSJIS2004",
+    "src/encode/SJIS2004.js~SJIS2004.toUnicodeFromSJIS2004",
+    "method"
+  ],
+  [
     "src/encode/unicode.js",
     "file/src/encode/Unicode.js.html",
     "src/encode/Unicode.js",
     "file"
+  ],
+  [
+    "src/encode/unicode.js~unicode.codepointat",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-codePointAt",
+    "src/encode/Unicode.js~Unicode.codePointAt",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.codepointbefore",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-codePointBefore",
+    "src/encode/Unicode.js~Unicode.codePointBefore",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.codepointcount",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-codePointCount",
+    "src/encode/Unicode.js~Unicode.codePointCount",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.cuttextforcodepoint",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-cutTextForCodePoint",
+    "src/encode/Unicode.js~Unicode.cutTextForCodePoint",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.fromcodepoint",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-fromCodePoint",
+    "src/encode/Unicode.js~Unicode.fromCodePoint",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.fromutf16array",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-fromUTF16Array",
+    "src/encode/Unicode.js~Unicode.fromUTF16Array",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.fromutf32array",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-fromUTF32Array",
+    "src/encode/Unicode.js~Unicode.fromUTF32Array",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.fromutf8array",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-fromUTF8Array",
+    "src/encode/Unicode.js~Unicode.fromUTF8Array",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.getcharsetfrombom",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-getCharsetFromBOM",
+    "src/encode/Unicode.js~Unicode.getCharsetFromBOM",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.ishighsurrogateat",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-isHighSurrogateAt",
+    "src/encode/Unicode.js~Unicode.isHighSurrogateAt",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.islowsurrogateat",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-isLowSurrogateAt",
+    "src/encode/Unicode.js~Unicode.isLowSurrogateAt",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.issurrogatepairat",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-isSurrogatePairAt",
+    "src/encode/Unicode.js~Unicode.isSurrogatePairAt",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.offsetbycodepoints",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-offsetByCodePoints",
+    "src/encode/Unicode.js~Unicode.offsetByCodePoints",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.tocodepointfromutfbinary",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-toCodePointFromUTFBinary",
+    "src/encode/Unicode.js~Unicode.toCodePointFromUTFBinary",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.toutf16array",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-toUTF16Array",
+    "src/encode/Unicode.js~Unicode.toUTF16Array",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.toutf16arrayfromcodepoint",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-toUTF16ArrayfromCodePoint",
+    "src/encode/Unicode.js~Unicode.toUTF16ArrayfromCodePoint",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.toutf32array",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-toUTF32Array",
+    "src/encode/Unicode.js~Unicode.toUTF32Array",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.toutf8array",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-toUTF8Array",
+    "src/encode/Unicode.js~Unicode.toUTF8Array",
+    "method"
+  ],
+  [
+    "src/encode/unicode.js~unicode.toutfbinaryfromcodepoint",
+    "class/src/encode/Unicode.js~Unicode.html#static-method-toUTFBinaryFromCodePoint",
+    "src/encode/Unicode.js~Unicode.toUTFBinaryFromCodePoint",
+    "method"
   ],
   [
     "src/language/japanese.js",

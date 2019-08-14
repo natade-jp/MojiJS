@@ -439,7 +439,7 @@ class Log {
 	 * ログを記録する
 	 * C言語のprintfのようなフォーマットが指定可能
 	 * @param {string} text 
-	 * @param {string} parmeter パラメータは可変引数
+	 * @param {*} parmeter パラメータは可変引数
 	 */
 	static printf(text, parmeter) {
 		const x = [];

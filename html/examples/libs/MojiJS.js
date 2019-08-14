@@ -1,1 +1,1 @@
-import MojiJS from "../../../build/MojiJS.module.min.mjs";export default MojiJS;
+import MojiJS from "../../../build/mojijs.module.min.js";export default MojiJS;

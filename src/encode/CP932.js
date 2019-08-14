@@ -1382,7 +1382,6 @@ CP932MAP.unicode_to_cp932_map = null;
 
 /**
  * CP932, Windows-31J を扱うクラス
- * @ignore
  */
 export default class CP932 {
 
@@ -1407,7 +1406,7 @@ export default class CP932 {
 	/**
 	 * 文字列を CP932 の配列に変換
 	 * @param {String} text - 変換したいテキスト
-	 * @returns {Array<number>} CP932 のデータが入った配列
+	 * @returns {{encode : Array<number>, ng_count : number}} CP932 のデータが入った配列
 	 */
 	static toCP932Array(text) {
 		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
@@ -1426,7 +1425,7 @@ export default class CP932 {
 	/**
 	 * CP932 の配列から文字列に変換
 	 * @param {Array<number>} cp932 - 変換したいテキスト
-	 * @returns {{encode_string : String, ng_count : number}} 変換後のテキスト
+	 * @returns {{decode : String, ng_count : number}} 変換後のテキスト
 	 */
 	static fromCP932Array(cp932) {
 		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);

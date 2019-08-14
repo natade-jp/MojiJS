@@ -30,7 +30,12 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -49,12 +54,43 @@
 </ul>
 <p>&#x4EE5;&#x4E0B;&#x306E;&#x3053;&#x3068;&#x304C;&#x884C;&#x3048;&#x307E;&#x3059;</p>
 <ul>
-<li>&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#xFF08;UTF-8 / UTF-16 / UTF-32 / Shift_JIS / CP932(Windows31-J) / Shift_JIS-2004 &#xFF09;</li>
+<li>&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#xFF08;UTF-8 / UTF-16 / UTF-32 / Shift_JIS / Shift_JIS-2004 / EUC-JP / EUC-JIS-2004 &#xFF09;</li>
 <li>&#x65E5;&#x672C;&#x8A9E;&#x306E;&#x5909;&#x63DB; (&#x3072;&#x3089;&#x304C;&#x306A;, &#x30AB;&#x30BF;&#x30AB;&#x30CA;, &#x534A;&#x89D2;, &#x5168;&#x89D2;, &#x30ED;&#x30FC;&#x30DE;&#x5B57; &#x306A;&#x3069;))</li>
 <li>&#x6F22;&#x5B57;&#x306E;&#x5224;&#x5B9A; (&#x5E38;&#x7528;&#x6F22;&#x5B57;, &#x4EBA;&#x540D;&#x7528;&#x6F22;&#x5B57;, &#x9762;&#x533A;&#x70B9;, &#x6F22;&#x5B57;&#x6C34;&#x6E96; &#x306A;&#x3069;)</li>
-<li>Natural sort order&#xFF08;&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;&#xFF09;</li>
+<li>&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;</li>
 </ul>
-<h2 id="author">Author</h2><ul>
+<h2 id="install">Install</h2><pre><code><code class="source-code prettyprint">npm install --save-dev mojijs</code>
+</code></pre><h2 id="sample">Sample</h2><h3 id="&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;">&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;</h3><pre><code><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
+
+console.log(MojiJS.encode(&quot;&#x5721;&#x2460;&#x9741;&#xFA63;&#x2A602;&#x9EB5;&quot;, &quot;shift_jis-2004&quot;));
+-&gt; [ 136, 98, 135, 64, 251, 154, 238, 174, 252, 238, 239, 238 ]
+
+console.log(MojiJS.decode([0x61, 0xE3, 0x81, 0x82], &quot;utf-8&quot;));
+-&gt; a&#x3042;</code>
+</code></pre><h3 id="&#x65E5;&#x672C;&#x8A9E;&#x306E;&#x5909;&#x63DB;">&#x65E5;&#x672C;&#x8A9E;&#x306E;&#x5909;&#x63DB;</h3><pre><code><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
+
+console.log(MojiJS.toHiragana(&quot;&#x30AB;&#x30AD;&#x30AF;&#x30B1;&#x30B3;&quot;));
+-&gt; &#x304B;&#x304D;&#x304F;&#x3051;&#x3053;</code>
+</code></pre><h3 id="&#x9762;&#x533A;&#x70B9;">&#x9762;&#x533A;&#x70B9;</h3><pre><code><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
+
+const data1 = MojiJS.getMojiData(MojiJS.codePointAt(&quot;&#x9AD9;&quot;));
+console.log(&quot;&#x533A;&#x70B9;&#xFF1A;&quot; + data1.encode.kuten.text + &quot;, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;&quot; + data1.type.kanji_suijun);
+-&gt; &#x533A;&#x70B9;&#xFF1A;118-94, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;0
+// &#x203B;&#x9AD9;&#x306F; JIS X 0208 &#x306B;&#x767B;&#x9332;&#x3055;&#x308C;&#x3066;&#x3044;&#x306A;&#x3044;&#x306E;&#x3067;&#x3001;&#x6F22;&#x5B57;&#x6C34;&#x6E96;&#x306F;&#x8868;&#x793A;&#x4E0D;&#x53EF;
+
+const data2 = MojiJS.getMojiData(MojiJS.codePointAt(&quot;&#x5721;&quot;));
+console.log(&quot;&#x9762;&#x533A;&#x70B9;&#xFF1A;&quot; + data2.encode.menkuten.text + &quot;, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;&quot; + data2.type.kanji_suijun);
+-&gt; &#x9762;&#x533A;&#x70B9;&#xFF1A;1-15-35, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;3
+
+const data3 = MojiJS.getMojiData(MojiJS.codePointAt(&quot;&#x5501;&quot;));
+console.log(&quot;&#x9762;&#x533A;&#x70B9;&#xFF1A;&quot; + data3.encode.menkuten.text + &quot;, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;&quot; + data3.type.kanji_suijun);
+-&gt; &#x9762;&#x533A;&#x70B9;&#xFF1A;2-3-93, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;4
+</code>
+</code></pre><h3 id="&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;">&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;</h3><pre><code><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
+
+console.log([&quot;&#xFF13;&quot;, &quot;02&quot;, &quot;&#x3042;&quot;, &quot;&#x30A4;&quot;, &quot;&#x3046;&quot;, &quot;1&quot;].sort(MojiJS.COMPARE_NATURAL));
+-&gt; [ &apos;1&apos;, &apos;02&apos;, &apos;&#xFF13;&apos;, &apos;&#x3042;&apos;, &apos;&#x30A4;&apos;, &apos;&#x3046;&apos; ]</code>
+</code></pre><h2 id="author">Author</h2><ul>
 <li><a href="https://twitter.com/natadea">natade</a></li>
 </ul>
 </div>

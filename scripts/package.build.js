@@ -26,8 +26,8 @@ File.exec("npx rollup -c \"./scripts/rollup.config.js\"");
 
 // 先頭に著作権表記をするターゲット
 const target_file = [
-	"./build/MojiJS.umd.min.js",
-	"./build/MojiJS.module.min.mjs"
+	"./build/mojijs.umd.min.js",
+	"./build/mojijs.module.min.js"
 ];
 
 // ヘッダ追加
@@ -38,5 +38,5 @@ for(const key in target_file) {
 // サンプルファイルはbuild内のデータと関連付ける
 File.saveTextFile(
 	"./html/examples/libs/MojiJS.js",
-	"import MojiJS from \"../../../build/MojiJS.module.min.mjs\";export default MojiJS;"
+	"import MojiJS from \"../../../build/mojijs.module.min.js\";export default MojiJS;"
 );

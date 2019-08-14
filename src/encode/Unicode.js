@@ -10,7 +10,6 @@
 
 /**
  * Unicode を扱うクラス
- * @ignore
  */
 export default class Unicode {
 
@@ -435,11 +434,11 @@ export default class Unicode {
 	 * UTF32配列からバイナリ配列に変換
 	 * @param {Array<number>} utf32_array - 変換したいUTF-32配列
 	 * @param {String} charset - UTFの種類
-	 * @param {boolean} [with_bom=false] - BOMをつけるかどうか
+	 * @param {boolean} [is_with_bom=false] - BOMをつけるかどうか
 	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
 	 */
-	static toUTFBinaryFromCodePoint(utf32_array, charset, with_bom) {
-		const with_bom_ = with_bom !== undefined ? with_bom : false;
+	static toUTFBinaryFromCodePoint(utf32_array, charset, is_with_bom) {
+		const is_with_bom_ = is_with_bom !== undefined ? is_with_bom : false;
 		/**
 		 * @type {Array<number>}
 		 */
@@ -447,7 +446,7 @@ export default class Unicode {
 		// UTF-8
 		if(/utf-?8n?/i.test(charset)) {
 			// bom をつける
-			if(with_bom_) {
+			if(is_with_bom_) {
 				binary.push(0xEF);
 				binary.push(0xBB);
 				binary.push(0xBF);
@@ -503,7 +502,7 @@ export default class Unicode {
 			// UTF-16BE
 			if(/utf-?16(be)/i.test(charset)) {
 				// bom をつける
-				if(with_bom_) {
+				if(is_with_bom_) {
 					binary.push(0xFE);
 					binary.push(0xFF);
 				}
@@ -515,7 +514,7 @@ export default class Unicode {
 			// UTF-16LE
 			else if(/utf-?16(le)?/i.test(charset)) {
 				// bom をつける
-				if(with_bom_) {
+				if(is_with_bom_) {
 					binary.push(0xFF);
 					binary.push(0xFE);
 				}
@@ -531,7 +530,7 @@ export default class Unicode {
 			// UTF-32BE
 			if(/utf-?32(be)/i.test(charset)) {
 				// bom をつける
-				if(with_bom_) {
+				if(is_with_bom_) {
 					binary.push(0x00);
 					binary.push(0x00);
 					binary.push(0xFE);
@@ -547,7 +546,7 @@ export default class Unicode {
 			// UTF-32LE
 			else if(/utf-?32(le)?/i.test(charset)) {
 				// bom をつける
-				if(with_bom_) {
+				if(is_with_bom_) {
 					binary.push(0xFF);
 					binary.push(0xFE);
 					binary.push(0x00);
