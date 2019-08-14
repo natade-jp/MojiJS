@@ -31,4 +31,4 @@ File.saveTextFile(
 
 File.exec("npx jest");
 
-//File.deleteFile("jest.config.js");
+File.deleteFile("jest.config.js");

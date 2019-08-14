@@ -213,8 +213,8 @@ export default class MojiJS {
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
 	 */
-	static toCP932ArrayBinary(text) {
-		return CP932.toCP932ArrayBinary(text);
+	static toCP932Binary(text) {
+		return CP932.toCP932Binary(text);
 	}
 
 	/**
@@ -223,7 +223,7 @@ export default class MojiJS {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromCP932Array(cp932) {
-		return CP932.fromCP932Array(cp932);
+		return CP932.fromCP932Array(cp932).encode_string;
 	}
 
 	/**
@@ -281,8 +281,8 @@ export default class MojiJS {
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
 	 */
-	static toSJIS2004ArrayBinary(text) {
-		return SJIS2004.toSJIS2004ArrayBinary(text);
+	static toSJIS2004Binary(text) {
+		return SJIS2004.toSJIS2004Binary(text);
 	}
 
 	/**
@@ -291,7 +291,7 @@ export default class MojiJS {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromSJIS2004Array(sjis2004) {
-		return SJIS2004.fromSJIS2004Array(sjis2004);
+		return SJIS2004.fromSJIS2004Array(sjis2004).encode_string;
 	}
 
 	/**

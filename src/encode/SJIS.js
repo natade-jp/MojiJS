@@ -13,7 +13,7 @@ import Unicode from "./Unicode.js";
 /**
  * 面区点情報
  * @typedef {Object} MenKuTen
- * @property {string} text 面-区-点
+ * @property {string} [text] 面-区-点
  * @property {number} [men=1] 面
  * @property {number} ku 区
  * @property {number} ten 点
@@ -55,7 +55,7 @@ export default class SJIS {
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {Array<number>} Shift_JIS のデータが入ったバイナリ配列
 	 */
-	static toSJISArrayBinary(text, unicode_to_sjis) {
+	static toSJISBinary(text, unicode_to_sjis) {
 		const sjis = SJIS.toSJISArray(text, unicode_to_sjis);
 		const sjisbin = [];
 		for(let i = 0; i < sjis.length; i++) {
@@ -123,7 +123,7 @@ export default class SJIS {
 			}
 		}
 		return {
-			encode_string : Unicode.fromUTF16Array(utf16),
+			encode_string : Unicode.fromUTF32Array(utf16),
 			ng_count : ng_count
 		};
 	}
@@ -137,7 +137,7 @@ export default class SJIS {
 	 * @returns {Number} 文字の横幅
 	 */
 	static getWidthForSJIS(text, unicode_to_sjis) {
-		return SJIS.toSJISArrayBinary(text, unicode_to_sjis).length;
+		return SJIS.toSJISBinary(text, unicode_to_sjis).length;
 	}
 
 	/**
@@ -150,7 +150,7 @@ export default class SJIS {
 	 * @returns {String} 切り出したテキスト
 	 */
 	static cutTextForSJIS(text, offset, size, unicode_to_sjis, sjis_to_unicode) {
-		const sjisbin = SJIS.toSJISArrayBinary(text, unicode_to_sjis);
+		const sjisbin = SJIS.toSJISBinary(text, unicode_to_sjis);
 		const cut = [];
 		const SPACE = 0x20 ; // ' '
 
@@ -496,8 +496,8 @@ export default class SJIS {
 	}
 
 	/**
-	 * 指定した区点番号から Shift_JIS コードに変換
-	 * @param {MenKuTen|string} kuten - 面区点番号
+	 * 指定した面区点番号／区点番号から Shift_JIS コードに変換
+	 * @param {MenKuTen|string} kuten - 面区点番号／区点番号
 	 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
 	 */
 	static toSJISCodeFromKuTen(kuten) {

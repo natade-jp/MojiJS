@@ -1610,8 +1610,8 @@ export default class SJIS2004 {
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
 	 */
-	static toSJIS2004ArrayBinary(text) {
-		return SJIS.toSJISArrayBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+	static toSJIS2004Binary(text) {
+		return SJIS.toSJISBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
 	}
 
 	/**

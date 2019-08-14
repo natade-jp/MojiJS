@@ -1419,8 +1419,8 @@ export default class CP932 {
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
 	 */
-	static toCP932ArrayBinary(text) {
-		return SJIS.toSJISArrayBinary(text, CP932MAP.UNICODE_TO_CP932);
+	static toCP932Binary(text) {
+		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932);
 	}
 
 	/**
