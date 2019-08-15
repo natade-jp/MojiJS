@@ -1,6 +1,6 @@
 {
 	"name": "mojijs",
-	"version": "2.1.0",
+	"version": "2.1.1",
 	"description": "To convert or to analyze the character data of the Japanese.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
@@ -8,8 +8,8 @@
 		"url": "https://github.com/natade-jp/MojiJS.git"
 	},
 	"license": "MIT",
-	"main": "./build/mojijs.js",
-	"module": "./build/mojijs.mjs.js",
+	"main": "./build/umd",
+	"module": "./build/esm",
 	"keywords": [
 		"cp932",
 		"sjis",
