@@ -100,5 +100,5 @@ let dts_text = File.loadTextFile("./out/types.d.ts");
 	}
 }
 
-File.saveTextFile("./build/mojijs.d.ts", dts_text);
+File.saveTextFile("./build/index.d.ts", dts_text);
 File.deleteDirectory("./out");

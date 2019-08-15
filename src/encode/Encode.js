@@ -55,6 +55,49 @@ class EncodeTools {
 		return charset;
 	}
 
+	/**
+	 * 同一の種別の文字列の重なりをカウントする
+	 * @param {Array<number>} utf32_array 
+	 * @returns {number} 
+	 */
+	static countWord(utf32_array) {
+		let count = 0;
+		let type = 0;
+		let old_type = -1;
+		for(let i = 0; i < utf32_array.length; i++) {
+			const ch = utf32_array[i];
+			// a-zA-Z
+			if(((0x41 <= ch) && (ch <= 0x5A)) || ((0x61 <= ch) && (ch <= 0x6A))) {
+				type = 1;
+			}
+			// 0-9
+			else if((0x30 <= ch) && (ch <= 0x39)) {
+				type = 2;
+			}
+			// ぁ-ん
+			else if((0x3041 <= ch) && (ch <= 0x3093)) {
+				type = 3;
+			}
+			// ァ-ン
+			else if((0x30A1 <= ch) && (ch <= 0x30F3)) {
+				type = 4;
+			}
+			// CJK統合漢字拡張A - CJK統合漢字, 追加漢字面
+			else if(((0x3400 <= ch) && (ch < 0xA000)) || ((0x20000 <= ch) && (ch < 0x2FA20))) {
+				type = 5;
+			}
+			else {
+				old_type = -1;
+				continue;
+			}
+			if(type === old_type) {
+				count++;
+			}
+			old_type = type;
+		}
+		return count;
+	}
+
 }
 
 /**
@@ -127,28 +170,46 @@ export default class Encode {
 					return Unicode.fromUTF32Array(ret);
 				}
 			}
-			// 有名な文字コードで試していく
+			// 有名な文字コードで試す
+			let max_data = "";
+			let max_count = -1;
+			// Shift_JIS
+			{
+				const text = CP932.fromCP932Array(binary).decode;
+				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				if(max_count < count) {
+					max_data = text;
+					max_count = count;
+				}
+			}
+			// EUC-JP-2004
+			{
+				const text = EUCJP.fromEUCJIS2004Binary(binary).decode;
+				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				if(max_count < count) {
+					max_data = text;
+					max_count = count;
+				}
+			}
 			// UTF-8
 			{
-				const text = Unicode.fromUTF32Array(Unicode.toCodePointFromUTFBinary(binary, "utf-8"));
-				if(CP932.toCP932Array(text).ng_count === 0) {
-					return text;
+				const utf32 = Unicode.toCodePointFromUTFBinary(binary, "utf-8");
+				const count = EncodeTools.countWord(utf32);
+				if(max_count < count) {
+					max_data = Unicode.fromUTF32Array(utf32);
+					max_count = count;
 				}
 			}
 			// UTF-16LE
 			{
-				const text = Unicode.fromUTF32Array(Unicode.toCodePointFromUTFBinary(binary, "utf-16"));
-				if(CP932.toCP932Array(text).ng_count === 0) {
-					return text;
+				const utf32 = Unicode.toCodePointFromUTFBinary(binary, "utf-16");
+				const count = EncodeTools.countWord(utf32);
+				if(max_count < count) {
+					max_data = Unicode.fromUTF32Array(utf32);
+					max_count = count;
 				}
 			}
-			// Shift_JIS
-			{
-				const text = CP932.fromCP932Array(binary);
-				if(text.ng_count === 0) {
-					return text.decode;
-				}
-			}
+			return max_data;
 		}
 		return null;
 	}

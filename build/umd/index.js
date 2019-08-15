@@ -16,6 +16,9 @@
 
 	/**
 	 * Unicode を扱うクラス
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+	 * @deprecated
 	 */
 	var Unicode = function Unicode () {};
 
@@ -589,6 +592,9 @@
 
 	/**
 	 * Shift_JIS を扱うクラス
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+	 * @deprecated
 	 */
 	var SJIS = function SJIS () {};
 
@@ -620,6 +626,7 @@
 		 * @param {String} text - 変換したいテキスト
 		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 		 * @returns {Array<number>} Shift_JIS のデータが入ったバイナリ配列
+		 * @ignore
 		 */
 	SJIS.toSJISBinary = function toSJISBinary (text, unicode_to_sjis) {
 		var sjis = SJIS.toSJISArray(text, unicode_to_sjis).encode;
@@ -641,6 +648,7 @@
 		 * @param {Array<number>} sjis - 変換したいテキスト
 		 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
 		 * @returns {{decode : String, ng_count : number}} 変換後のテキスト
+		 * @ignore
 		 */
 	SJIS.fromSJISArray = function fromSJISArray (sjis, sjis_to_unicode) {
 		var map = sjis_to_unicode;
@@ -700,6 +708,7 @@
 		 * @param {String} text - カウントしたいテキスト
 		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 		 * @returns {Number} 文字の横幅
+		 * @ignore
 		 */
 	SJIS.getWidthForSJIS = function getWidthForSJIS (text, unicode_to_sjis) {
 		return SJIS.toSJISBinary(text, unicode_to_sjis).length;
@@ -713,6 +722,7 @@
 		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 		 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
 		 * @returns {String} 切り出したテキスト
+		 * @ignore
 		 */
 	SJIS.cutTextForSJIS = function cutTextForSJIS (text, offset, size, unicode_to_sjis, sjis_to_unicode) {
 		var sjisbin = SJIS.toSJISBinary(text, unicode_to_sjis);
@@ -782,6 +792,7 @@
 		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 		 * @returns {Number} 符号化数値(変換できない場合はnullとなる)
+		 * @ignore
 		 */
 	SJIS.toSJISCodeFromUnicode = function toSJISCodeFromUnicode (unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -875,6 +886,7 @@
 		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS-2004 への変換マップ
 		 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+		 * @ignore
 		 */
 	SJIS.toMenKuTenFromUnicode = function toMenKuTenFromUnicode (unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -971,6 +983,7 @@
 		 * @param {MenKuTen|string} menkuten - 面区点番号
 		 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から Unicode への変換マップ
 		 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
+		 * @ignore
 		 */
 	SJIS.toUnicodeCodeFromMenKuTen = function toUnicodeCodeFromMenKuTen (menkuten, sjis_to_unicode) {
 		var sjis_code = SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
@@ -1051,6 +1064,7 @@
 		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 		 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+		 * @ignore
 		 */
 	SJIS.toKuTenFromUnicode = function toKuTenFromUnicode (unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -1077,6 +1091,7 @@
 		 * @param {MenKuTen|string} kuten - 区点番号
 		 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から Unicode への変換マップ
 		 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
+		 * @ignore
 		 */
 	SJIS.toUnicodeCodeFromKuTen = function toUnicodeCodeFromKuTen (kuten, sjis_to_unicode) {
 		var sjis_code = SJIS.toSJISCodeFromKuTen(kuten);
@@ -1158,6 +1173,7 @@
 		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 		 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
+		 * @ignore
 		 */
 	SJIS.toJISKanjiSuijunFromUnicode = function toJISKanjiSuijunFromUnicode (unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
@@ -2604,6 +2620,9 @@
 
 	/**
 	 * CP932, Windows-31J を扱うクラス
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+	 * @deprecated
 	 */
 	var CP932 = function CP932 () {};
 
@@ -4243,6 +4262,9 @@
 
 	/**
 	 * Shift_JIS-2004 を扱うクラス
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+	 * @deprecated
 	 */
 	var SJIS2004 = function SJIS2004 () {};
 
@@ -4410,6 +4432,9 @@
 
 	/**
 	 * EUC-JP を扱うクラス
+	 * 
+	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
+	 * @deprecated
 	 */
 	var EUCJP = function EUCJP () {};
 
@@ -4493,6 +4518,49 @@
 	};
 
 	/**
+		 * 同一の種別の文字列の重なりをカウントする
+		 * @param {Array<number>} utf32_array 
+		 * @returns {number} 
+		 */
+	EncodeTools.countWord = function countWord (utf32_array) {
+		var count = 0;
+		var type = 0;
+		var old_type = -1;
+		for(var i = 0; i < utf32_array.length; i++) {
+			var ch = utf32_array[i];
+			// a-zA-Z
+			if(((0x41 <= ch) && (ch <= 0x5A)) || ((0x61 <= ch) && (ch <= 0x6A))) {
+				type = 1;
+			}
+			// 0-9
+			else if((0x30 <= ch) && (ch <= 0x39)) {
+				type = 2;
+			}
+			// ぁ-ん
+			else if((0x3041 <= ch) && (ch <= 0x3093)) {
+				type = 3;
+			}
+			// ァ-ン
+			else if((0x30A1 <= ch) && (ch <= 0x30F3)) {
+				type = 4;
+			}
+			// CJK統合漢字拡張A - CJK統合漢字, 追加漢字面
+			else if(((0x3400 <= ch) && (ch < 0xA000)) || ((0x20000 <= ch) && (ch < 0x2FA20))) {
+				type = 5;
+			}
+			else {
+				old_type = -1;
+				continue;
+			}
+			if(type === old_type) {
+				count++;
+			}
+			old_type = type;
+		}
+		return count;
+	};
+
+	/**
 	 * 文字データのバイナリへのエンコード、文字列へのデコードを扱うクラス
 	 * @ignore
 	 */
@@ -4555,28 +4623,46 @@
 					return Unicode.fromUTF32Array(ret$1);
 				}
 			}
-			// 有名な文字コードで試していく
+			// 有名な文字コードで試す
+			var max_data = "";
+			var max_count = -1;
+			// Shift_JIS
+			{
+				var text = CP932.fromCP932Array(binary).decode;
+				var count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				if(max_count < count) {
+					max_data = text;
+					max_count = count;
+				}
+			}
+			// EUC-JP-2004
+			{
+				var text$1 = EUCJP.fromEUCJIS2004Binary(binary).decode;
+				var count$1 = EncodeTools.countWord(Unicode.toUTF32Array(text$1));
+				if(max_count < count$1) {
+					max_data = text$1;
+					max_count = count$1;
+				}
+			}
 			// UTF-8
 			{
-				var text = Unicode.fromUTF32Array(Unicode.toCodePointFromUTFBinary(binary, "utf-8"));
-				if(CP932.toCP932Array(text).ng_count === 0) {
-					return text;
+				var utf32 = Unicode.toCodePointFromUTFBinary(binary, "utf-8");
+				var count$2 = EncodeTools.countWord(utf32);
+				if(max_count < count$2) {
+					max_data = Unicode.fromUTF32Array(utf32);
+					max_count = count$2;
 				}
 			}
 			// UTF-16LE
 			{
-				var text$1 = Unicode.fromUTF32Array(Unicode.toCodePointFromUTFBinary(binary, "utf-16"));
-				if(CP932.toCP932Array(text$1).ng_count === 0) {
-					return text$1;
+				var utf32$1 = Unicode.toCodePointFromUTFBinary(binary, "utf-16");
+				var count$3 = EncodeTools.countWord(utf32$1);
+				if(max_count < count$3) {
+					max_data = Unicode.fromUTF32Array(utf32$1);
+					max_count = count$3;
 				}
 			}
-			// Shift_JIS
-			{
-				var text$2 = CP932.fromCP932Array(binary);
-				if(text$2.ng_count === 0) {
-					return text$2.decode;
-				}
-			}
+			return max_data;
 		}
 		return null;
 	};
@@ -6863,7 +6949,10 @@
 
 	/**
 		 * Unicode専用の内部関数を利用する
+		 * 
+		 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 		 * @returns {typeof Unicode}
+		 * @deprecated
 		 */
 	staticAccessors$4.Unicode.get = function () {
 		return Unicode;
@@ -6871,7 +6960,10 @@
 
 	/**
 		 * Shift_JIS専用の内部関数を利用する
+		 * 
+		 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 		 * @returns {typeof SJIS}
+		 * @deprecated
 		 */
 	staticAccessors$4.SJIS.get = function () {
 		return SJIS;
@@ -6879,7 +6971,10 @@
 
 	/**
 		 * CP932専用の内部関数を利用する
+		 * 
+		 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 		 * @returns {typeof CP932}
+		 * @deprecated
 		 */
 	staticAccessors$4.CP932.get = function () {
 		return CP932;
@@ -6887,7 +6982,10 @@
 
 	/**
 		 * Shift_JIS-2004専用の内部関数を利用する
+		 * 
+		 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 		 * @returns {typeof SJIS2004}
+		 * @deprecated
 		 */
 	staticAccessors$4.SJIS2004.get = function () {
 		return SJIS2004;
@@ -6895,7 +6993,10 @@
 
 	/**
 		 * EUC-JP専用の内部関数を利用する
+		 * 
+		 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
 		 * @returns {typeof EUCJP}
+		 * @deprecated
 		 */
 	staticAccessors$4.EUCJP.get = function () {
 		return EUCJP;

@@ -50,7 +50,8 @@ const equalsArray = function(x, y) {
 	const text = "ABCあいう高髙①";
 	const cp932 = [0x41, 0x42, 0x43, 0x82, 0xA0, 0x82, 0xA2, 0x82, 0xA4, 0x8D, 0x82, 0xFB, 0xFC, 0x87, 0x40];
 	test("encode 2-1", () => { expect(equalsArray(Encode.encode(text, "Windows-31J"), cp932)).toBe(true); });
-	test("decode 2-1", () => { expect(Encode.decode(cp932)).toBe(text); });
+	test("decode 2-1", () => { expect(Encode.decode(cp932, "Windows-31J")).toBe(text); });
+	test("decode 2-2", () => { expect(Encode.decode(cp932)).toBe(text); });
 }
 
 {
@@ -72,4 +73,5 @@ const equalsArray = function(x, y) {
 	const eucjis2004 = [0xFC, 0xB0, 0x8F, 0xFE, 0xF0, 0xFE, 0xF0];
 	test("encode 5-1", () => { expect(equalsArray(Encode.encode(text, "EUC-JIS-2004"), eucjis2004)).toBe(true); });
 	test("decode 5-1", () => { expect(Encode.decode(eucjis2004, "EUC-JIS-2004")).toBe(text); });
+	test("decode 5-2", () => { expect(Encode.decode(eucjis2004)).toBe(text); });
 }
