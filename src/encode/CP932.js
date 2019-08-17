@@ -8,6 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Unicode from "./Unicode.js";
 import SJIS from "./SJIS.js";
 
 /**
@@ -1382,9 +1383,7 @@ CP932MAP.unicode_to_cp932_map = null;
 
 /**
  * CP932, Windows-31J を扱うクラス
- * 
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
+ * @ignore
  */
 export default class CP932 {
 
@@ -1432,6 +1431,30 @@ export default class CP932 {
 	 */
 	static fromCP932Array(cp932) {
 		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
+	}
+
+	/**
+	 * 指定した文字から Windows-31J 上の区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./SJIS.js").MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toKuTen(text) {
+		if(text.length === 0) {
+			return null;
+		}
+		const cp932_code = CP932.toCP932FromUnicode(Unicode.toUTF32Array(text)[0]);
+		return cp932_code ? SJIS.toKuTenFromSJISCode(cp932_code) : null;
+	}
+	
+	/**
+	 * Windows-31J 上の区点番号から文字列に変換
+	 * @param {import("./SJIS.js").MenKuTen|string} kuten - 区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromKuTen(kuten) {
+		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE);
+		return code ? Unicode.fromUTF32Array(code) : "";
 	}
 
 }

@@ -7,7 +7,7 @@ const testJapanese = function() {
 
 	let x;
 	Log.println("");
-	Log.println("◆◆Japanese クラスのサンプル");
+	Log.println("◆◆変換のサンプル");
 
 	Log.println("◆半角、全角で変換します。");
 	x = "１２３456　ＡＢＣdef ";
@@ -48,7 +48,7 @@ const testJapanese = function() {
 const testUnicode = function() {
 
 	Log.println("");
-	Log.println("◆◆Unicode クラスのサンプル");
+	Log.println("◆◆Unicode対応のサンプル");
 
 	const x = MojiJS.fromCodePoint(134071, 37326, 23478 );
 	Log.println("サロゲートペア対応 " + x);
@@ -87,13 +87,13 @@ const testUnicode = function() {
 const testCP932 = function() {
 
 	Log.println("");
-	Log.println("◆◆CP932(Windows-31J) クラスのサンプル");
+	Log.println("◆◆日本語文字コード対応のサンプル");
 
 	const x = "ABCあいう高髙①";
 
 	Log.println("「" + x + "」");
 	Log.println("lengthは " + x.length);
-	Log.println("文字の横幅は " + MojiJS.getWidthForCP932(x));
+	Log.println("文字の横幅は " + MojiJS.getWidth(x));
 
 	Log.println("◆Windows-31J の符号化コードで1バイトごと表示します。");
 	const cp932arraybin = MojiJS.encode(x, "Windows-31J");
@@ -104,19 +104,19 @@ const testCP932 = function() {
 	
 	Log.println("◆文字の横幅換算で文字列をカットします。");
 	
-	Log.println("\"" + MojiJS.cutTextForCP932(x, 0, 5) + "\"");
-	Log.println("\"" + MojiJS.cutTextForCP932(x, 1, 5) + "\"");
-	Log.println("\"" + MojiJS.cutTextForCP932(x, 2, 5) + "\"");
-	Log.println("\"" + MojiJS.cutTextForCP932(x, 3, 5) + "\"");
-	Log.println("\"" + MojiJS.cutTextForCP932(x, 4, 5) + "\"");
-	Log.println("\"" + MojiJS.cutTextForCP932(x, 5, 5) + "\"");
-	Log.println("\"" + MojiJS.cutTextForCP932(x, 6, 5) + "\"");
+	Log.println("\"" + MojiJS.cutTextForWidth(x, 0, 5) + "\"");
+	Log.println("\"" + MojiJS.cutTextForWidth(x, 1, 5) + "\"");
+	Log.println("\"" + MojiJS.cutTextForWidth(x, 2, 5) + "\"");
+	Log.println("\"" + MojiJS.cutTextForWidth(x, 3, 5) + "\"");
+	Log.println("\"" + MojiJS.cutTextForWidth(x, 4, 5) + "\"");
+	Log.println("\"" + MojiJS.cutTextForWidth(x, 5, 5) + "\"");
+	Log.println("\"" + MojiJS.cutTextForWidth(x, 6, 5) + "\"");
 };
 
 const testCharacterAnalyser = function() {
 
 	Log.println("");
-	Log.println("◆◆CharacterAnalyser クラスのサンプル");
+	Log.println("◆◆文字解析のサンプル");
 
 	const analysis = function(moji) {
 		return MojiJS.getMojiData(MojiJS.codePointAt(moji));
@@ -196,7 +196,7 @@ const testCharacterAnalyser = function() {
 const testStringComparator = function() {
 	const a = ["3", "2", "10", "4", "2-4", "0-1", "テスト", "てすと２", "てスと01"];
 	Log.println("");
-	Log.println("◆◆StringComparator クラスのサンプル");
+	Log.println("◆◆文字列比較のサンプル");
 
 	Log.println("標準ソート");
 	a.sort();

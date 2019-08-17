@@ -30,12 +30,7 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -54,6 +49,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Unicode from &quot;./Unicode.js&quot;;
 import SJIS from &quot;./SJIS.js&quot;;
 
 /**
@@ -1428,9 +1424,7 @@ CP932MAP.unicode_to_cp932_map = null;
 
 /**
  * CP932, Windows-31J &#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
- * 
- * &#x5185;&#x90E8;&#x51E6;&#x7406;&#x7528;&#x306E;&#x95A2;&#x6570;&#x306E;&#x305F;&#x3081;&#x5909;&#x66F4;&#x3059;&#x308B;&#x53EF;&#x80FD;&#x6027;&#x304C;&#x9AD8;&#x304F;&#x3001;&#x76F4;&#x63A5;&#x5229;&#x7528;&#x3059;&#x308B;&#x3053;&#x3068;&#x3092;&#x304A;&#x52E7;&#x3081;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;
- * @deprecated
+ * @ignore
  */
 export default class CP932 {
 
@@ -1455,7 +1449,7 @@ export default class CP932 {
 	/**
 	 * &#x6587;&#x5B57;&#x5217;&#x3092; CP932 &#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {{encode : Array&lt;number&gt;, ng_count : number}} CP932 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 * @returns {Array&lt;number&gt;} CP932 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
 	 */
 	static toCP932Array(text) {
 		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
@@ -1474,32 +1468,34 @@ export default class CP932 {
 	/**
 	 * CP932 &#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
 	 * @param {Array&lt;number&gt;} cp932 - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {{decode : String, ng_count : number}} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
 	static fromCP932Array(cp932) {
 		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
 	}
 
 	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092; CP932 &#x3067;&#x63DB;&#x7B97;&#x3067;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
-	 * - &#x534A;&#x89D2;&#x3092;1&#x3001;&#x5168;&#x89D2;&#x3092;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
-	 * - CP932 &#x306E;&#x7BC4;&#x56F2;&#x306B;&#x306A;&#x3044;&#x6587;&#x5B57;&#x306F;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
-	 * @param {String} text - &#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @returns {Number} &#x6587;&#x5B57;&#x306E;&#x6A2A;&#x5E45;
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x6587;&#x5B57;&#x304B;&#x3089; Windows-31J &#x4E0A;&#x306E;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x306B;&#x5909;&#x63DB;
+	 * - 2&#x6587;&#x5B57;&#x4EE5;&#x4E0A;&#x3092;&#x6307;&#x5B9A;&#x3057;&#x305F;&#x5834;&#x5408;&#x306F;&#x3001;1&#x6587;&#x5B57;&#x76EE;&#x306E;&#x307F;&#x3092;&#x5909;&#x63DB;&#x3059;&#x308B;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {import(&quot;./SJIS.js&quot;).MenKuTen} &#x533A;&#x70B9;&#x756A;&#x53F7;(&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#xFF08;1&#x30D0;&#x30A4;&#x30C8;&#x306E;JIS&#x30B3;&#x30FC;&#x30C9;&#x306A;&#x3069;&#xFF09;&#x306F;null&#x3092;&#x8FD4;&#x3059;)
 	 */
-	static getWidthForCP932(text) {
-		return SJIS.getWidthForSJIS(text, CP932MAP.UNICODE_TO_CP932);
+	static toKuTen(text) {
+		if(text.length === 0) {
+			return null;
+		}
+		const cp932_code = CP932.toCP932FromUnicode(Unicode.toUTF32Array(text)[0]);
+		return cp932_code ? SJIS.toKuTenFromSJISCode(cp932_code) : null;
 	}
-
+	
 	/**
-	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092; CP932 &#x3067;&#x63DB;&#x7B97;&#x3057;&#x305F;&#x5834;&#x5408;&#x306E;&#x5207;&#x308A;&#x51FA;&#x3057;
-	 * @param {String} text - &#x5207;&#x308A;&#x51FA;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
-	 * @param {Number} offset - &#x5207;&#x308A;&#x51FA;&#x3057;&#x4F4D;&#x7F6E;
-	 * @param {Number} size - &#x5207;&#x308A;&#x51FA;&#x3059;&#x9577;&#x3055;
-	 * @returns {String} &#x5207;&#x308A;&#x51FA;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * Windows-31J &#x4E0A;&#x306E;&#x533A;&#x70B9;&#x756A;&#x53F7;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {import(&quot;./SJIS.js&quot;).MenKuTen|string} kuten - &#x533A;&#x70B9;&#x756A;&#x53F7;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
-	static cutTextForCP932(text, offset, size) {
-		return SJIS.cutTextForSJIS(text, offset, size, CP932MAP.UNICODE_TO_CP932, CP932MAP.CP932_TO_UNICODE);
+	static fromKuTen(kuten) {
+		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE);
+		return code ? Unicode.fromUTF32Array(code) : &quot;&quot;;
 	}
 
 }

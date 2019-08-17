@@ -30,12 +30,7 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -53,6 +48,8 @@
  * LICENSE:
  *  The MIT license https://opensource.org/licenses/MIT
  */
+
+import Unicode from &quot;../encode/Unicode.js&quot;;
 
 /**
  * &#x65E5;&#x672C;&#x8A9E;&#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
@@ -941,6 +938,78 @@ export default class Japanese {
 	 */
 	static toRomajiFromKatakana(text) {
 		return Japanese.toRomajiFromHiragana(Japanese.toHiragana(text));
+	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092;&#x534A;&#x89D2;&#xFF0F;&#x5168;&#x89D2;&#x3067;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
+	 * - &#x534A;&#x89D2;&#x3092;1&#x3001;&#x5168;&#x89D2;&#x3092;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
+	 * - &#x534A;&#x89D2;&#x306F;&#x3001;ASCII&#x6587;&#x5B57;&#x3001;&#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3002;&#x5168;&#x89D2;&#x306F;&#x305D;&#x308C;&#x4EE5;&#x5916;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * @param {String} text - &#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {Number} &#x6587;&#x5B57;&#x306E;&#x6A2A;&#x5E45;
+	 */
+	static getWidth(text) {
+		const utf32_array = Unicode.toUTF32Array(text);
+		let count = 0;
+		for(let i = 0; i &lt; utf32_array.length; i++) {
+			const ch = utf32_array[i];
+			if((ch &lt; 0x80) || ((0xFF61 &lt;= ch) &amp;&amp; (ch &lt; 0xFFA0))) {
+				count++;
+			}
+			else {
+				count += 2;
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092;&#x534A;&#x89D2;&#xFF0F;&#x5168;&#x89D2;&#x3067;&#x63DB;&#x7B97;&#x3057;&#x305F;&#x5834;&#x5408;&#x306E;&#x5207;&#x308A;&#x51FA;&#x3057;
+	 * - &#x534A;&#x89D2;&#x3092;1&#x3001;&#x5168;&#x89D2;&#x3092;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
+	 * - &#x534A;&#x89D2;&#x306F;&#x3001;ASCII&#x6587;&#x5B57;&#x3001;&#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3002;&#x5168;&#x89D2;&#x306F;&#x305D;&#x308C;&#x4EE5;&#x5916;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * @param {String} text - &#x5207;&#x308A;&#x51FA;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @param {Number} offset - &#x5207;&#x308A;&#x51FA;&#x3057;&#x4F4D;&#x7F6E;
+	 * @param {Number} size - &#x5207;&#x308A;&#x51FA;&#x3059;&#x9577;&#x3055;
+	 * @returns {String} &#x5207;&#x308A;&#x51FA;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @ignore
+	 */
+	static cutTextForWidth(text, offset, size) {
+		const utf32_array = Unicode.toUTF32Array(text);
+		const SPACE = 0x20 ; // &apos; &apos;
+		const output = [];
+		let is_target = false;
+		let position = 0;
+		let cut_size = size;
+		if(offset &lt; 0) {
+			cut_size += offset;
+			offset = 0;
+		}
+		if(cut_size &lt;= 0) {
+			return &quot;&quot;;
+		}
+		for(let i = 0; i &lt; utf32_array.length; i++) {
+			const ch = utf32_array[i];
+			const ch_size = ((ch &lt; 0x80) || ((0xFF61 &lt;= ch) &amp;&amp; (ch &lt; 0xFFA0))) ? 1 : 2;
+			if(position &gt;= offset) {
+				is_target = true;
+				if(cut_size &gt;= ch_size) {
+					output.push(ch);
+				}
+				else {
+					output.push(SPACE);
+				}
+				cut_size -= ch_size;
+				if(cut_size &lt;= 0) {
+					break;
+				}
+			}
+			position += ch_size;
+			// 2&#x30D0;&#x30A4;&#x30C8;&#x6587;&#x5B57;&#x306E;&#x9014;&#x4E2D;&#x3092;offset&#x6307;&#x5B9A;&#x3057;&#x3066;&#x3044;&#x305F;&#x5834;&#x5408;&#x306B;&#x306A;&#x308B;&#x3002;
+			if(((position - 1) &gt;= offset) &amp;&amp; !is_target) {
+				cut_size--;
+				output.push(SPACE);
+			}
+		}
+		return Unicode.fromUTF32Array(output);
 	}
 
 }

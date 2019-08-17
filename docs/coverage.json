@@ -1,7 +1,7 @@
 {
   "coverage": "100%",
-  "expectCount": 182,
-  "actualCount": 182,
+  "expectCount": 181,
+  "actualCount": 181,
   "files": {
     "src/encode/CP932.js": {
       "expectCount": 12,
@@ -13,14 +13,19 @@
       "actualCount": 6,
       "undocumentLines": []
     },
-    "src/encode/EUCJP.js": {
-      "expectCount": 8,
-      "actualCount": 8,
+    "src/encode/EUCJIS2004.js": {
+      "expectCount": 3,
+      "actualCount": 3,
+      "undocumentLines": []
+    },
+    "src/encode/EUCJPMS.js": {
+      "expectCount": 7,
+      "actualCount": 7,
       "undocumentLines": []
     },
     "src/encode/SJIS.js": {
-      "expectCount": 18,
-      "actualCount": 18,
+      "expectCount": 16,
+      "actualCount": 16,
       "undocumentLines": []
     },
     "src/encode/SJIS2004.js": {
@@ -34,13 +39,13 @@
       "undocumentLines": []
     },
     "src/language/Japanese.js": {
-      "expectCount": 19,
-      "actualCount": 19,
+      "expectCount": 21,
+      "actualCount": 21,
       "undocumentLines": []
     },
     "src/MojiJS.js": {
-      "expectCount": 43,
-      "actualCount": 43,
+      "expectCount": 40,
+      "actualCount": 40,
       "undocumentLines": []
     },
     "src/tools/MojiAnalyzer.js": {

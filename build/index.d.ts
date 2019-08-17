@@ -1,95 +1,4 @@
 /**
- * _CP932_, Windows-31J を扱うクラス
- *
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
- */
-declare class _CP932_ {
-    /**
-     * _Unicode_ のコードから _CP932_ のコードに変換
-     * @param {Number} unicode_codepoint - _Unicode_ のコードポイント
-     * @returns {Number} _CP932_ のコードポイント (存在しない場合は undefined)
-     */
-    static toCP932FromUnicode(unicode_codepoint: number): number;
-    /**
-     * _CP932_ のコードから _Unicode_ のコードに変換
-     * @param {Number} cp932_codepoint - _CP932_ のコードポイント
-     * @returns {Number} _Unicode_ のコードポイント (存在しない場合は undefined)
-     */
-    static toUnicodeFromCP932(cp932_codepoint: number): number;
-    /**
-     * 文字列を _CP932_ の配列に変換
-     * @param {String} text - 変換したいテキスト
-     * @returns {{encode : Array<number>, ng_count : number}} _CP932_ のデータが入った配列
-     */
-    static toCP932Array(text: string): {encode : Array<number>, ng_count : number};
-    /**
-     * 文字列を _CP932_ のバイナリ配列に変換
-     * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-     * @param {String} text - 変換したいテキスト
-     * @returns {Array<number>} _CP932_ のデータが入ったバイナリ配列
-     */
-    static toCP932Binary(text: string): number[];
-    /**
-     * _CP932_ の配列から文字列に変換
-     * @param {Array<number>} cp932 - 変換したいテキスト
-     * @returns {{decode : String, ng_count : number}} 変換後のテキスト
-     */
-    static fromCP932Array(cp932: number[]): {decode : String, ng_count : number};
-    /**
-     * 指定したテキストの横幅を _CP932_ で換算でカウント
-     * - 半角を1、全角を2としてカウント
-     * - _CP932_ の範囲にない文字は2としてカウント
-     * @param {String} text - カウントしたいテキスト
-     * @returns {Number} 文字の横幅
-     */
-    static getWidthForCP932(text: string): number;
-    /**
-     * 指定したテキストの横幅を _CP932_ で換算した場合の切り出し
-     * @param {String} text - 切り出したいテキスト
-     * @param {Number} offset - 切り出し位置
-     * @param {Number} size - 切り出す長さ
-     * @returns {String} 切り出したテキスト
-     */
-    static cutTextForCP932(text: string, offset: number, size: number): string;
-}
-
-/**
- * EUC-JP を扱うクラス
- *
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
- */
-declare class _EUCJP_ {
-    /**
-     * 文字列を EUC-JP のバイナリ配列に変換
-     * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-     * @param {String} text - 変換したいテキスト
-     * @returns {Array<number>} EUC-JP(CP51932) のデータが入ったバイナリ配列
-     */
-    static toEUCJPBinary(text: string): number[];
-    /**
-     * EUC-JP の配列から文字列に変換
-     * @param {Array<number>} eucjp - 変換したいテキスト
-     * @returns {{decode : String, ng_count : number}} 変換後のテキスト
-     */
-    static fromEUCJPBinary(eucjp: number[]): {decode : String, ng_count : number};
-    /**
-     * 文字列を EUC-JIS-2004 のバイナリ配列に変換
-     * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-     * @param {String} text - 変換したいテキスト
-     * @returns {Array<number>} EUC-JIS-2004 のデータが入ったバイナリ配列
-     */
-    static toEUCJIS2004Binary(text: string): number[];
-    /**
-     * EUC-JIS-2004 の配列から文字列に変換
-     * @param {Array<number>} eucjp - 変換したいテキスト
-     * @returns {{decode : String, ng_count : number}} 変換後のテキスト
-     */
-    static fromEUCJIS2004Binary(eucjp: number[]): {decode : String, ng_count : number};
-}
-
-/**
  * 面区点情報
  * @typedef {Object} _MenKuTen_
  * @property {string} [text] 面-区-点
@@ -103,245 +12,6 @@ declare type _MenKuTen_ = {
     ku: number;
     ten: number;
 };
-
-/**
- * Shift_JIS を扱うクラス
- *
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
- */
-declare class _SJIS_ {
-    /**
-     * 指定した Shift_JIS-2004 のコードから面区点番号に変換
-     * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
-     * @returns {_MenKuTen_} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-     */
-    static toMenKuTenFromSJIS2004Code(sjis_code: number): _MenKuTen_;
-    /**
-     * 指定した面区点番号から Shift_JIS-2004 コードに変換
-     * @param {_MenKuTen_|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
-     * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
-     */
-    static toSJIS2004CodeFromMenKuTen(menkuten: _MenKuTen_ | string): number;
-    /**
-     * 指定した Shift_JIS のコードから区点番号に変換
-     * @param {Number} sjis_code - Shift_JIS のコードポイント
-     * @returns {_MenKuTen_} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-     */
-    static toKuTenFromSJISCode(sjis_code: number): _MenKuTen_;
-    /**
-     * 指定した面区点番号／区点番号から Shift_JIS コードに変換
-     * @param {_MenKuTen_|string} kuten - 面区点番号／区点番号
-     * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
-     */
-    static toSJISCodeFromKuTen(kuten: _MenKuTen_ | string): number;
-    /**
-     * Shift_JIS のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
-     * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
-     * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
-     */
-    static toJISKanjiSuijunFromSJISCode(sjis_code: number): number;
-    /**
-     * 指定した面区点番号から Shift_JIS の仕様上、正規な物か判定
-     * @param {_MenKuTen_|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
-     * @returns {Boolean} 正規なデータは true, 不正なデータは false
-     */
-    static isRegularMenKuten(menkuten: _MenKuTen_ | string): boolean;
-}
-
-/**
- * Shift_JIS-2004 を扱うクラス
- *
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
- */
-declare class _SJIS2004_ {
-    /**
-     * _Unicode_ のコードから Shift_JIS-2004 のコードに変換
-     * @param {Number} unicode_codepoint - _Unicode_ のコードポイント
-     * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
-     */
-    static toSJIS2004FromUnicode(unicode_codepoint: number): number;
-    /**
-     * Shift_JIS-2004 のコードから _Unicode_ のコードに変換
-     * @param {Number} sjis2004_codepoint - Shift_JIS-2004 のコードポイント
-     * @returns {number|Array<number>} _Unicode_ のコードポイント (存在しない場合は undefined)
-     */
-    static toUnicodeFromSJIS2004(sjis2004_codepoint: number): number | number[];
-    /**
-     * 文字列を Shift_JIS-2004 の配列に変換
-     * @param {String} text - 変換したいテキスト
-     * @returns {{encode : Array<number>, ng_count : number}} Shift_JIS-2004 のデータが入った配列
-     */
-    static toSJIS2004Array(text: string): {encode : Array<number>, ng_count : number};
-    /**
-     * 文字列を Shift_JIS-2004 のバイナリ配列に変換
-     * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-     * @param {String} text - 変換したいテキスト
-     * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
-     */
-    static toSJIS2004Binary(text: string): number[];
-    /**
-     * Shift_JIS-2004 の配列から文字列に変換
-     * @param {Array<number>} sjis2004 - 変換したいテキスト
-     * @returns {{decode : String, ng_count : number}} 変換後のテキスト
-     */
-    static fromSJIS2004Array(sjis2004: number[]): {decode : String, ng_count : number};
-    /**
-     * 指定したテキストの横幅を Shift_JIS-2004 で換算でカウント
-     * - 半角を1、全角を2としてカウント
-     * - Shift_JIS-2004 の範囲にない文字は2としてカウント
-     * @param {String} text - カウントしたいテキスト
-     * @returns {Number} 文字の横幅
-     */
-    static getWidthForSJIS2004(text: string): number;
-    /**
-     * 指定したテキストの横幅を Shift_JIS-2004 で換算した場合の切り出し
-     * @param {String} text - 切り出したいテキスト
-     * @param {Number} offset - 切り出し位置
-     * @param {Number} size - 切り出す長さ
-     * @returns {String} 切り出したテキスト
-     */
-    static cutTextForSJIS2004(text: string, offset: number, size: number): string;
-}
-
-/**
- * _Unicode_ を扱うクラス
- *
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
- */
-declare class _Unicode_ {
-    /**
-     * 上位のサロゲートペアの判定
-     * @param {String} text - 対象テキスト
-     * @param {Number} index - インデックス
-     * @returns {Boolean} 確認結果
-     */
-    static isHighSurrogateAt(text: string, index: number): boolean;
-    /**
-     * 下位のサロゲートペアの判定
-     * @param {String} text - 対象テキスト
-     * @param {Number} index - インデックス
-     * @returns {Boolean} 確認結果
-     */
-    static isLowSurrogateAt(text: string, index: number): boolean;
-    /**
-     * サロゲートペアの判定
-     * @param {String} text - 対象テキスト
-     * @param {Number} index - インデックス
-     * @returns {Boolean} 確認結果
-     */
-    static isSurrogatePairAt(text: string, index: number): boolean;
-    /**
-     * サロゲートペア対応のコードポイント取得
-     * @param {String} text - 対象テキスト
-     * @param {Number} [index = 0] - インデックス
-     * @returns {Number} コードポイント
-     */
-    static codePointAt(text: string, index?: number): number;
-    /**
-     * インデックスの前にあるコードポイント
-     * @param {String} text - 対象テキスト
-     * @param {Number} index - インデックス
-     * @returns {Number} コードポイント
-     */
-    static codePointBefore(text: string, index: number): number;
-    /**
-     * コードポイント換算で文字列数をカウント
-     * @param {String} text - 対象テキスト
-     * @param {Number} [beginIndex=0] - 最初のインデックス（省略可）
-     * @param {Number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
-     * @returns {Number} 文字数
-     */
-    static codePointCount(text: string, beginIndex?: number, endIndex?: number): number;
-    /**
-     * コードポイント換算で文字列配列の位置を計算
-     * @param {String} text - 対象テキスト
-     * @param {Number} index - オフセット
-     * @param {Number} codePointOffset - ずらすコードポイント数
-     * @returns {Number} ずらしたインデックス
-     */
-    static offsetByCodePoints(text: string, index: number, codePointOffset: number): number;
-    /**
-     * コードポイントの数値データをUTF16の配列に変換
-     * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数
-     * @returns {Array<number>} 変換後のテキスト
-     */
-    static toUTF16ArrayfromCodePoint(...codepoint: (number | number[])[]): number[];
-    /**
-     * コードポイントの数値データを文字列に変換
-     * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
-     * @returns {String} 変換後のテキスト
-     */
-    static fromCodePoint(...codepoint: (number | number[])[]): string;
-    /**
-     * 文字列をUTF32(コードポイント)の配列に変換
-     * @param {String} text - 変換したいテキスト
-     * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列
-     */
-    static toUTF32Array(text: string): number[];
-    /**
-     * UTF32の配列から文字列に変換
-     * @param {Array<number>} utf32 - 変換したいテキスト
-     * @returns {String} 変換後のテキスト
-     */
-    static fromUTF32Array(utf32: number[]): string;
-    /**
-     * 文字列をUTF16の配列に変換
-     * @param {String} text - 変換したいテキスト
-     * @returns {Array<number>} UTF16のデータが入った配列
-     */
-    static toUTF16Array(text: string): number[];
-    /**
-     * UTF16の配列から文字列に変換
-     * @param {Array<number>} utf16 - 変換したいテキスト
-     * @returns {String} 変換後のテキスト
-     */
-    static fromUTF16Array(utf16: number[]): string;
-    /**
-     * 文字列をUTF8の配列に変換
-     * @param {String} text - 変換したいテキスト
-     * @returns {Array<number>} UTF8のデータが入った配列
-     */
-    static toUTF8Array(text: string): number[];
-    /**
-     * UTF8の配列から文字列に変換
-     * @param {Array<number>} utf8 - 変換したいテキスト
-     * @returns {String} 変換後のテキスト
-     */
-    static fromUTF8Array(utf8: number[]): string;
-    /**
-     * 指定したテキストを切り出す
-     * - 単位は文字数
-     * @param {String} text - 切り出したいテキスト
-     * @param {Number} offset - 切り出し位置
-     * @param {Number} size - 切り出す長さ
-     * @returns {String} 切り出したテキスト
-     */
-    static cutTextForCodePoint(text: string, offset: number, size: number): string;
-    /**
-     * UTFのバイナリ配列からバイトオーダーマーク(BOM)を調査する
-     * @param {Array<number>} utfbinary - 調査するバイナリ配列
-     * @returns {string} 符号化形式(不明時はnull)
-     */
-    static getCharsetFromBOM(utfbinary: number[]): string;
-    /**
-     * UTFのバイナリ配列からコードポイントに変換
-     * @param {Array<number>} binary - 変換したいバイナリ配列
-     * @param {String} [charset] - UTFの種類（省略した場合はBOM付きを期待する）
-     * @returns {Array<number>} コードポイントの配列(失敗時はnull)
-     */
-    static toCodePointFromUTFBinary(binary: number[], charset?: string): number[];
-    /**
-     * UTF32配列からバイナリ配列に変換
-     * @param {Array<number>} utf32_array - 変換したいUTF-32配列
-     * @param {String} charset - UTFの種類
-     * @param {boolean} [is_with_bom=false] - BOMをつけるかどうか
-     * @returns {Array<number>} バイナリ配列(失敗時はnull)
-     */
-    static toUTFBinaryFromCodePoint(utf32_array: number[], charset: string, is_with_bom?: boolean): number[];
-}
 
 /**
  * 日本語を扱うための様々な機能を提供します
@@ -429,37 +99,43 @@ declare class MojiJS {
      */
     static cutTextForCodePoint(text: string, offset: number, size: number): string;
     /**
-     * 指定したテキストの横幅を _CP932_ で換算でカウント
+     * 指定したテキストの横幅を半角／全角でカウント
      * - 半角を1、全角を2としてカウント
-     * - _CP932_ の範囲にない文字は2としてカウント
+     * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
      * @param {String} text - カウントしたいテキスト
      * @returns {Number} 文字の横幅
      */
-    static getWidthForCP932(text: string): number;
+    static getWidth(text: string): number;
     /**
-     * 指定したテキストの横幅を _CP932_ で換算した場合の切り出し
+     * 指定したテキストを切り出す
+     * - 単位は半角／全角で換算した文字の横幅
+     * - 半角を1、全角を2としてカウント
+     * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
      * @param {String} text - 切り出したいテキスト
      * @param {Number} offset - 切り出し位置
      * @param {Number} size - 切り出す長さ
      * @returns {String} 切り出したテキスト
      */
-    static cutTextForCP932(text: string, offset: number, size: number): string;
+    static cutTextForWidth(text: string, offset: number, size: number): string;
     /**
-     * 指定したテキストの横幅を Shift_JIS-2004 で換算でカウント
-     * - 半角を1、全角を2としてカウント
-     * - Shift_JIS-2004 の範囲にない文字は2としてカウント
-     * @param {String} text - カウントしたいテキスト
-     * @returns {Number} 文字の横幅
+     * 指定した文字から Windows-31J 上の区点番号に変換
+     * - 2文字以上を指定した場合は、1文字目のみを変換する
+     * @param {String} text - 変換したいテキスト
+     * @returns {_MenKuTen_} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
      */
-    static getWidthForSJIS2004(text: string): number;
+    static toKuTen(text: string): _MenKuTen_;
     /**
-     * 指定したテキストの横幅を Shift_JIS-2004 で換算した場合の切り出し
-     * @param {String} text - 切り出したいテキスト
-     * @param {Number} offset - 切り出し位置
-     * @param {Number} size - 切り出す長さ
-     * @returns {String} 切り出したテキスト
+     * Windows-31J 上の区点番号から文字列に変換
+     * @param {_MenKuTen_|string} kuten - 区点番号
+     * @returns {String} 変換後のテキスト
      */
-    static cutTextForSJIS2004(text: string, offset: number, size: number): string;
+    static fromKuTen(kuten: any): string;
+    /**
+     * Shift_JIS-2004 上の面区点番号から文字列に変換
+     * @param {_MenKuTen_|string} menkuten - 面区点番号
+     * @returns {String} 変換後のテキスト
+     */
+    static fromMenKuTen(menkuten: any): string;
     /**
      * カタカナをひらがなに変換
      * @param {String} text - 変換したいテキスト
@@ -586,46 +262,6 @@ declare class MojiJS {
      * @returns {function(string, string): number}
      */
     static COMPARE_NATURAL: any;
-    /**
-     * _Unicode_専用の内部関数を利用する
-     *
-     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-     * @returns {typeof _Unicode_}
-     * @deprecated
-     */
-    static Unicode: typeof _Unicode_;
-    /**
-     * Shift_JIS専用の内部関数を利用する
-     *
-     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-     * @returns {typeof _SJIS_}
-     * @deprecated
-     */
-    static SJIS: typeof _SJIS_;
-    /**
-     * _CP932_専用の内部関数を利用する
-     *
-     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-     * @returns {typeof _CP932_}
-     * @deprecated
-     */
-    static CP932: typeof _CP932_;
-    /**
-     * Shift_JIS-2004専用の内部関数を利用する
-     *
-     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-     * @returns {typeof _SJIS2004_}
-     * @deprecated
-     */
-    static SJIS2004: typeof _SJIS2004_;
-    /**
-     * EUC-JP専用の内部関数を利用する
-     *
-     * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-     * @returns {typeof _EUCJP_}
-     * @deprecated
-     */
-    static EUCJP: typeof _EUCJP_;
 }
 
 /**
@@ -642,7 +278,8 @@ declare class MojiJS {
  * @property {Array<number>} sjis2004_array Shift_JIS-2004 コード バイト配列
  * @property {Array<number>} shift_jis_array Shift_JIS バイト配列
  * @property {Array<number>} iso2022jp_array ISO-2022-JP バイト配列
- * @property {Array<number>} eucjp_array EUC-JP バイト配列
+ * @property {Array<number>} eucjpms_array eucJP-ms バイト配列
+ * @property {Array<number>} eucjis2004_array EUC-JP-2004 バイト配列
  */
 declare type _MojiEncodeData_ = {
     cp932_code: number;
@@ -654,7 +291,8 @@ declare type _MojiEncodeData_ = {
     sjis2004_array: number[];
     shift_jis_array: number[];
     iso2022jp_array: number[];
-    eucjp_array: number[];
+    eucjpms_array: number[];
+    eucjis2004_array: number[];
 };
 
 /**

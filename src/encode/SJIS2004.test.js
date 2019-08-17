@@ -29,3 +29,8 @@ const equalsArray = function(x, y) {
 	test("toSJIS2004Array 2", () => { expect(equalsArray(SJIS2004.toSJIS2004Array(text), sjis2004)).toBe(true); });
 	test("fromSJIS2004Array 2", () => { expect(SJIS2004.fromSJIS2004Array(sjis2004)).toBe(text); });
 }
+
+{
+	test("toMenKuTen", () => { expect(SJIS2004.toMenKuTen("𪘂").text).toBe("2-94-80"); });
+	test("fromMenKuTen", () => { expect(SJIS2004.fromMenKuTen("2-94-80")).toBe("𪘂"); });
+}

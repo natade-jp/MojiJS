@@ -60,7 +60,6 @@ console.log("面区点：" + data3.encode.menkuten.text + ", 漢字水準：" + 
 
 ```
 
-
 ### 自然順ソート
 ```javascript
 const MojiJS = require("mojijs");

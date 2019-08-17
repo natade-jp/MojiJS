@@ -10,9 +10,7 @@
 
 /**
  * Unicode を扱うクラス
- * 
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
+ * @ignore
  */
 export default class Unicode {
 

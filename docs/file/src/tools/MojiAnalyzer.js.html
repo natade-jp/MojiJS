@@ -30,12 +30,7 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -58,6 +53,8 @@ import Unicode from &quot;../encode/Unicode.js&quot;;
 import SJIS from &quot;../encode/SJIS.js&quot;;
 import CP932 from &quot;../encode/CP932.js&quot;;
 import SJIS2004 from &quot;../encode/SJIS2004.js&quot;;
+import EUCJPMS from &quot;../encode/EUCJPMS.js&quot;;
+import EUCJIS2004 from &quot;../encode/EUCJIS2004.js&quot;;
 
 /**
  * &#x5236;&#x5FA1;&#x6587;&#x5B57;&#x30DE;&#x30C3;&#x30D7;
@@ -570,7 +567,8 @@ class MojiAnalizerTools {
  * @property {Array&lt;number&gt;} sjis2004_array Shift_JIS-2004 &#x30B3;&#x30FC;&#x30C9; &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;
  * @property {Array&lt;number&gt;} shift_jis_array Shift_JIS &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;
  * @property {Array&lt;number&gt;} iso2022jp_array ISO-2022-JP &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;
- * @property {Array&lt;number&gt;} eucjp_array EUC-JP &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;
+ * @property {Array&lt;number&gt;} eucjpms_array eucJP-ms &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;
+ * @property {Array&lt;number&gt;} eucjis2004_array EUC-JP-2004 &#x30D0;&#x30A4;&#x30C8;&#x914D;&#x5217;
  */
 
 /**
@@ -612,7 +610,7 @@ class MojiAnalizerTools {
  * &#x6587;&#x5B57;&#x306E;&#x89E3;&#x6790;&#x7528;&#x30AF;&#x30E9;&#x30B9;
  * @ignore
  */
-export default class CharacterAnalyzer {
+export default class MojiAnalyzer {
 
 	/**
 	 * &#x521D;&#x671F;&#x5316;
@@ -636,7 +634,8 @@ export default class CharacterAnalyzer {
 			sjis2004_array : [],
 			shift_jis_array : [],
 			iso2022jp_array : [],
-			eucjp_array : []
+			eucjpms_array : [],
+			eucjis2004_array : []
 		};
 		
 		/**
@@ -698,10 +697,11 @@ export default class CharacterAnalyzer {
 		 * &#x51FA;&#x529B;&#x30C7;&#x30FC;&#x30BF;&#x306E;&#x7BB1;&#x3092;&#x7528;&#x610F;
 		 * @type {MojiData}
 		 */
-		const data = CharacterAnalyzer._createMojiData();
+		const data = MojiAnalyzer._createMojiData();
 		const encode = data.encode;
 		const type = data.type;
-		data.character = Unicode.fromCodePoint(unicode_codepoint);
+		const character = Unicode.fromCodePoint(unicode_codepoint);
+		data.character = character;
 		data.codepoint = unicode_codepoint;
 
 		// &#x53E5;&#x70B9;&#x3068;&#x9762;&#x533A;&#x70B9;&#x60C5;&#x5831;(&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;null&#x306B;&#x306A;&#x308B;)
@@ -739,37 +739,36 @@ export default class CharacterAnalyzer {
 		encode.cp932_array = cp932code ? ((cp932code &gt;= 0x100) ? [cp932code &gt;&gt; 8, cp932code &amp; 0xff] : [cp932code]) : [];
 		encode.sjis2004_array = sjis2004code ? ((sjis2004code &gt;= 0x100) ? [sjis2004code &gt;&gt; 8, sjis2004code &amp; 0xff] : [sjis2004code]) : [];
 
+		// EUC-JP&#x7CFB;&#x306E;&#x914D;&#x5217;
+		encode.eucjpms_array = EUCJPMS.toEUCJPMSBinary(character);
+		encode.eucjis2004_array = EUCJIS2004.toEUCJIS2004Binary(character);
+
 		// ISO-2022-JP , EUC-JP
-		if(cp932code &lt; 0xE0 || kuten) {
+		if(cp932code &lt; 0xE0 || is_regular_sjis) {
 			if(cp932code &lt; 0x80) {
 				encode.shift_jis_array = [cp932code];
 				encode.iso2022jp_array = [];
-				encode.eucjp_array = [cp932code];
 			}
-			else {
+			else if(cp932code &lt; 0xE0) {
 				// &#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x306E;&#x6271;&#x3044;
-				if(cp932code &lt; 0xE0) {
-					encode.shift_jis_array = [cp932code];
-					encode.iso2022jp_array = [];
-					encode.eucjp_array = [0x80, cp932code];
-				}
-				else {
-					encode.shift_jis_array = [encode.cp932_array[0], encode.cp932_array[1]];
-					encode.iso2022jp_array = [kuten.ku + 0x20, kuten.ten + 0x20];
-					encode.eucjp_array = [kuten.ku + 0xA0, kuten.ten + 0xA0];
-				}
+				encode.shift_jis_array = [cp932code];
+				encode.iso2022jp_array = [];
+			}
+			else if(kuten.ku &lt;= 94) {
+				// &#x533A;&#x70B9;&#x306F;94&#x307E;&#x3067;&#x5229;&#x7528;&#x3067;&#x304D;&#x308B;&#x3002;
+				// &#x3064;&#x307E;&#x308A;&#x3001;&#x6700;&#x5927;&#x3067;&#x3082; 94 + 0xA0 = 0xFE &#x3068;&#x306A;&#x308A; 0xFF &#x4EE5;&#x4E0A;&#x306B;&#x306A;&#x3089;&#x306A;&#x3044;
+				encode.shift_jis_array = [encode.cp932_array[0], encode.cp932_array[1]];
+				encode.iso2022jp_array = [kuten.ku + 0x20, kuten.ten + 0x20];
 			}
 		}
 		else {
 			encode.shift_jis_array = [];
 			encode.iso2022jp_array = [];
-			encode.eucjp_array = [];
 		}
 		// SJIS&#x3068;&#x3057;&#x3066;&#x6B63;&#x898F;&#x3067;&#x306A;&#x3051;&#x308C;&#x3070;&#x5F37;&#x5236;&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#x5931;&#x6557;
 		if(!is_regular_sjis) {
 			encode.shift_jis_array = [];
 			encode.iso2022jp_array = [];
-			encode.eucjp_array = [];
 		}
 
 		// &#x5236;&#x5FA1;&#x6587;&#x5B57;&#x304B;&#x3069;&#x3046;&#x304B;

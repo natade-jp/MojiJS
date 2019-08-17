@@ -100,9 +100,7 @@ EUCJPMSMAP.eucjpms_to_cp932_map = null;
 
 /**
  * eucJP-ms を扱うクラス
- * 
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
+ * @ignore
  */
 export default class EUCJPMS {
 
@@ -204,14 +202,19 @@ export default class EUCJPMS {
 				sjis_array.push(x2);
 				continue;
 			}
-			// 日本語
-			const kuten = {
-				ku : x1 - 0xA0,
-				ten : x2 - 0xA0
-			};
-			sjis_array.push(SJIS.toSJISCodeFromKuTen(kuten));
-		}
 
+			// 日本語
+			if((0xA1 <= x1) && (x1 <= 0xFE) && (0xA1 <= x2) && (x2 <= 0xFE)) {
+				const kuten = {
+					ku : x1 - 0xA0,
+					ten : x2 - 0xA0
+				};
+				sjis_array.push(SJIS.toSJISCodeFromKuTen(kuten));
+			}
+			else {
+				sjis_array.push(ng);
+			}
+		}
 		return CP932.fromCP932Array(sjis_array);
 	}
 

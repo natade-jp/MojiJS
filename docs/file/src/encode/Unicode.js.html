@@ -30,12 +30,7 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -56,9 +51,7 @@
 
 /**
  * Unicode &#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
- * 
- * &#x5185;&#x90E8;&#x51E6;&#x7406;&#x7528;&#x306E;&#x95A2;&#x6570;&#x306E;&#x305F;&#x3081;&#x5909;&#x66F4;&#x3059;&#x308B;&#x53EF;&#x80FD;&#x6027;&#x304C;&#x9AD8;&#x304F;&#x3001;&#x76F4;&#x63A5;&#x5229;&#x7528;&#x3059;&#x308B;&#x3053;&#x3068;&#x3092;&#x304A;&#x52E7;&#x3081;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;
- * @deprecated
+ * @ignore
  */
 export default class Unicode {
 
@@ -306,7 +299,7 @@ export default class Unicode {
 	 * @returns {Array&lt;number&gt;} UTF8&#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
 	 */
 	static toUTF8Array(text) {
-		return Unicode.toUTFBinaryFromCodePoint(Unicode.toUTF32Array(text), &quot;utf-8&quot;);
+		return Unicode.toUTFBinaryFromCodePoint(Unicode.toUTF32Array(text), &quot;utf-8&quot;, false);
 	}
 
 	/**
@@ -483,11 +476,15 @@ export default class Unicode {
 	 * UTF32&#x914D;&#x5217;&#x304B;&#x3089;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
 	 * @param {Array&lt;number&gt;} utf32_array - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;UTF-32&#x914D;&#x5217;
 	 * @param {String} charset - UTF&#x306E;&#x7A2E;&#x985E;
-	 * @param {boolean} [is_with_bom=false] - BOM&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @param {boolean} [is_with_bom=true] - BOM&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;
 	 * @returns {Array&lt;number&gt;} &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;(&#x5931;&#x6557;&#x6642;&#x306F;null)
 	 */
 	static toUTFBinaryFromCodePoint(utf32_array, charset, is_with_bom) {
-		const is_with_bom_ = is_with_bom !== undefined ? is_with_bom : false;
+		let is_with_bom_ = is_with_bom !== undefined ? is_with_bom : true;
+		// charset &#x306B;&quot; with BOM&quot; &#x304C;&#x5165;&#x3063;&#x3066;&#x3044;&#x308B;&#x5834;&#x5408;&#x306F;BOM&#x4ED8;&#x304D;&#x3068;&#x3059;&#x308B;
+		if(/\s+with\s+bom$/i.test(charset)) {
+			is_with_bom_ = true;
+		}
 		/**
 		 * @type {Array&lt;number&gt;}
 		 */

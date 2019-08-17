@@ -13,9 +13,7 @@ import SJIS2004 from "./SJIS2004.js";
 
 /**
  * EUC-JIS-2004 を扱うクラス
- * 
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
+ * @ignore
  */
 export default class EUCJIS2004 {
 
@@ -70,6 +68,7 @@ export default class EUCJIS2004 {
 	 */
 	static fromEUCJIS2004Binary(eucjp) {
 		const sjis_array = [];
+		const ng = "?".charCodeAt(0);
 		const SS2 = 0x8E; // C1制御文字 シングルシフト2
 		const SS3 = 0x8F; // C1制御文字 シングルシフト3
 		for(let i = 0; i < eucjp.length; i++) {
@@ -110,14 +109,20 @@ export default class EUCJIS2004 {
 				sjis_array.push(x2);
 				continue;
 			}
-			// EUC-JIS-2000 JIS X 0213:2004 の2面に対応
-			// 日本語
-			const kuten = {
-				men : men,
-				ku : x1 - 0xA0,
-				ten : x2 - 0xA0
-			};
-			sjis_array.push(SJIS.toSJIS2004CodeFromMenKuTen(kuten));
+
+			if((0xA1 <= x1) && (x1 <= 0xFE) && (0xA1 <= x2) && (x2 <= 0xFE)) {
+				// EUC-JIS-2000 JIS X 0213:2004 の2面に対応
+				// 日本語
+				const kuten = {
+					men : men,
+					ku : x1 - 0xA0,
+					ten : x2 - 0xA0
+				};
+				sjis_array.push(SJIS.toSJIS2004CodeFromMenKuTen(kuten));
+			}
+			else {
+				sjis_array.push(ng);
+			}
 		}
 		return SJIS2004.fromSJIS2004Array(sjis_array);
 	}

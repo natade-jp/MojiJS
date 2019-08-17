@@ -30,12 +30,7 @@
   <ul>
     
   <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
-<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/CP932.js~CP932.html">CP932</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/EUCJP.js~EUCJP.html">EUCJP</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS.js~SJIS.html">SJIS</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/SJIS2004.js~SJIS2004.html">SJIS2004</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/encode/Unicode.js~Unicode.html">Unicode</a></span></span></li>
-<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
 <li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
 <li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
@@ -57,7 +52,8 @@
 import Unicode from &quot;./Unicode.js&quot;;
 import CP932 from &quot;./CP932.js&quot;;
 import SJIS2004 from &quot;./SJIS2004.js&quot;;
-import EUCJP from &quot;./EUCJP.js&quot;;
+import EUCJPMS from &quot;./EUCJPMS.js&quot;;
+import EUCJIS2004 from &quot;./EUCJIS2004.js&quot;;
 
 /**
  * Encode&#x7528;&#x306E;&#x30C4;&#x30FC;&#x30EB;&#x30AF;&#x30E9;&#x30B9;
@@ -71,34 +67,53 @@ class EncodeTools {
 	 * @returns {String} 
 	 */
 	static normalizeCharSetName(charset) {
-		if(/^(unicode-1-1-utf-8|UTF8)$/i.test(charset)) {
-			return &quot;UTF-8&quot;;
+		let x1, x2;
+		let is_with_bom = false;
+		// BOM &#x306E;&#x6587;&#x5B57;&#x304C;&#x3042;&#x308B;&#x5834;&#x5408;&#x306F; BOM &#x4ED8;&#x304D;&#x3068;&#x3059;&#x308B;
+		if(/^bom\s+|\s+bom\s+|\s+bom$/i.test(x1)) {
+			is_with_bom = true;
+			x1 = charset.replace(/^bom\s+|(\s+with)?\s+bom\s+|(\s+with\s*)?\s+bom$/, &quot;&quot;);
 		}
-		else if(/^(csunicode|iso-10646-ucs-2|ucs-2|Unicode|UnicodeFEFF|UTF-16|UTF16|UTF16LE)$/i.test(charset)) {
-			return &quot;UTF-16LE&quot;;
+		else {
+			x1 = charset;
 		}
-		else if(/^(UnicodeFFFE|UTF16BE)$/i.test(charset)) {
-			return &quot;UTF-16BE&quot;;
+		if(/^(unicode-1-1-utf-8|UTF[-_]?8)$/i.test(x1)) {
+			x2 = &quot;UTF-8&quot;;
 		}
-		else if(/^(utf32_littleendian|UTF-32|UTF32|UTF32LE)$/i.test(charset)) {
-			return &quot;UTF-32LE&quot;;
+		else if(/^(csunicode|iso-10646-ucs-2|ucs-2|Unicode|UnicodeFEFF|UTF[-_]?16([-_]?LE)?)$/i.test(x1)) {
+			x2 = &quot;UTF-16LE&quot;;
 		}
-		else if(/^(utf32_bigendian|UTF32BE)$/i.test(charset)) {
-			return &quot;UTF-32BE&quot;;
+		else if(/^(UnicodeFFFE|UTF[-_]?16[-_]?BE)$/i.test(x1)) {
+			x2 = &quot;UTF-16BE&quot;;
 		}
-		else if(/^(csshiftjis|ms_kanji|cp932|ms932|shift-jis|sjis|Windows-31J|x-sjis)$/i.test(charset)) {
-			return &quot;Shift_JIS&quot;;
+		else if(/^(utf32_littleendian|UTF[-_]?32([-_]?LE)?)$/i.test(x1)) {
+			x2 = &quot;UTF-32LE&quot;;
 		}
-		else if(/^(sjis2004|sjis-2004|sjis_2004|shift_jis2004|shift-jis2004|shift-jis-2004)$/i.test(charset)) {
-			return &quot;Shift_JIS-2004&quot;;
+		else if(/^(utf32_bigendian|UTF[-_]?32[-_]?BE)$/i.test(x1)) {
+			x2 = &quot;UTF-32BE&quot;;
 		}
-		else if(/^(eucjp|cseucpkdfmtjapanese|x-euc-jp)$/i.test(charset)) {
-			return &quot;EUC-JP&quot;;
+		else if(/^(csshiftjis|ms_kanji|(cp|ms)932|shift[-_]?jis|sjis|Windows[-_]?31J|x-sjis)$/i.test(x1)) {
+			x2 = &quot;Shift_JIS&quot;;
 		}
-		else if(/^(eucjis2004|euc-jis2004|eucjis-2004|eucjp2004|euc-jp2004|eucjp-2004|euc-jp-2004)$/i.test(charset)) {
-			return &quot;EUC-JIS-2004&quot;;
+		else if(/^(sjis[-_]?2004|shift[-_]?jis[-_]?2004)$/i.test(x1)) {
+			x2 = &quot;Shift_JIS-2004&quot;;
 		}
-		return charset;
+		else if(/^(euc[-_]?JP[-_]?ms)$/i.test(x1)) {
+			x2 = &quot;eucJP-ms&quot;;
+		}
+		else if(/^(euc[-_]?jp|cseucpkdfmtjapanese|x-euc-jp)$/i.test(x1)) {
+			x2 = &quot;EUC-JP&quot;;
+		}
+		else if(/^(euc[-_]?jis[-_]?200|euc[-_]?jp[-_]?2004)$/i.test(x1)) {
+			x2 = &quot;EUC-JIS-2004&quot;;
+		}
+		else {
+			x2 = x1;
+		}
+		if(is_with_bom) {
+			x2 += &quot; with BOM&quot;;
+		}
+		return x2;
 	}
 
 	/**
@@ -128,9 +143,21 @@ class EncodeTools {
 			else if((0x30A1 &lt;= ch) &amp;&amp; (ch &lt;= 0x30F3)) {
 				type = 4;
 			}
+			// &#x5168;&#x89D2;&#x82F1;&#x5B57;
+			else if(((0xFF21 &lt;= ch) &amp;&amp; (ch &lt;= 0xFF3A)) || ((0xFF41 &lt;= ch) &amp;&amp; (ch &lt;= 0xFF5A))) {
+				type = 5;
+			}
+			// &#x5168;&#x89D2;&#x6570;&#x5024;
+			else if((0xFF10 &lt;= ch) &amp;&amp; (ch &lt;= 0xFF19)) {
+				type = 6;
+			}
+			// &#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;
+			else if((0xFF61 &lt;= ch) &amp;&amp; (ch &lt; 0xFFA0)) {
+				type = 7;
+			}
 			// CJK&#x7D71;&#x5408;&#x6F22;&#x5B57;&#x62E1;&#x5F35;A - CJK&#x7D71;&#x5408;&#x6F22;&#x5B57;, &#x8FFD;&#x52A0;&#x6F22;&#x5B57;&#x9762;
 			else if(((0x3400 &lt;= ch) &amp;&amp; (ch &lt; 0xA000)) || ((0x20000 &lt;= ch) &amp;&amp; (ch &lt; 0x2FA20))) {
-				type = 5;
+				type = 8;
 			}
 			else {
 				old_type = -1;
@@ -156,7 +183,7 @@ export default class Encode {
 	 * &#x6587;&#x5B57;&#x5217;&#x304B;&#x3089;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x306B;&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#x3059;&#x308B;
 	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {String} charset - &#x30AD;&#x30E3;&#x30E9;&#x30BB;&#x30C3;&#x30C8;(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
-	 * @param {boolean} [is_with_bom=false] - BOM&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;
+	 * @param {boolean} [is_with_bom=true] - BOM&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x3069;&#x3046;&#x304B;
 	 * @returns {Array&lt;number&gt;} &#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;(&#x5931;&#x6557;&#x6642;&#x306F;null)
 	 */
 	static encode(text, charset, is_with_bom) {
@@ -171,11 +198,11 @@ export default class Encode {
 		else if(/^Shift_JIS-2004$/i.test(ncharset)) {
 			return SJIS2004.toSJIS2004Binary(text);
 		}
-		else if(/^EUC-JP$/i.test(ncharset)) {
-			return EUCJP.toEUCJPBinary(text);
+		else if(/^eucJP-ms$/i.test(ncharset)) {
+			return EUCJPMS.toEUCJPMSBinary(text);
 		}
-		else if(/^EUC-JIS-2004$/i.test(ncharset)) {
-			return EUCJP.toEUCJIS2004Binary(text);
+		else if(/^(EUC-JP|EUC-JIS-2004)$/i.test(ncharset)) {
+			return EUCJIS2004.toEUCJIS2004Binary(text);
 		}
 		return null;
 	}
@@ -195,16 +222,16 @@ export default class Encode {
 			}
 		}
 		else if(/^Shift_JIS$/i.test(ncharset)) {
-			return CP932.fromCP932Array(binary).decode;
+			return CP932.fromCP932Array(binary);
 		}
 		else if(/^Shift_JIS-2004$/i.test(ncharset)) {
-			return SJIS2004.fromSJIS2004Array(binary).decode;
+			return SJIS2004.fromSJIS2004Array(binary);
 		}
-		else if(/^EUC-JP$/i.test(ncharset)) {
-			return EUCJP.fromEUCJPBinary(binary).decode;
+		else if(/^eucJP-ms$/i.test(ncharset)) {
+			return EUCJPMS.fromEUCJPMSBinary(binary);
 		}
-		else if(/^EUC-JIS-2004$/i.test(ncharset)) {
-			return EUCJP.fromEUCJIS2004Binary(binary).decode;
+		else if(/^(EUC-JP|EUC-JIS-2004)$/i.test(ncharset)) {
+			return EUCJIS2004.fromEUCJIS2004Binary(binary);
 		}
 		else if(/autodetect/i.test(ncharset)) {
 			// BOM&#x304C;&#x4ED8;&#x3044;&#x3066;&#x3044;&#x308B;&#x304B;&#x8ABF;&#x3079;&#x308B;
@@ -221,16 +248,25 @@ export default class Encode {
 			let max_count = -1;
 			// Shift_JIS
 			{
-				const text = CP932.fromCP932Array(binary).decode;
+				const text = CP932.fromCP932Array(binary);
 				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
 				if(max_count &lt; count) {
 					max_data = text;
 					max_count = count;
 				}
 			}
-			// EUC-JP-2004
+			// eucJP-ms
 			{
-				const text = EUCJP.fromEUCJIS2004Binary(binary).decode;
+				const text = EUCJPMS.fromEUCJPMSBinary(binary);
+				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				if(max_count &lt; count) {
+					max_data = text;
+					max_count = count;
+				}
+			}
+			// EUC-JP, EUC-JP-2004
+			{
+				const text = EUCJIS2004.fromEUCJIS2004Binary(binary);
 				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
 				if(max_count &lt; count) {
 					max_data = text;

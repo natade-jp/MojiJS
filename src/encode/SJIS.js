@@ -21,9 +21,7 @@ import Unicode from "./Unicode.js";
 
 /**
  * Shift_JIS を扱うクラス
- * 
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
+ * @ignore
  */
 export default class SJIS {
 
@@ -242,14 +240,23 @@ export default class SJIS {
 	 * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
 	 */
 	static toSJIS2004CodeFromMenKuTen(menkuten) {
-		let m, k, t;
+		let m = null, k = null, t = null;
+		let text = null;
 		if(menkuten instanceof Object) {
-			m = menkuten.men ? menkuten.men : 1;
-			k = menkuten.ku;
-			t = menkuten.ten;
+			if(menkuten.text && (typeof menkuten.text === "string")) {
+				text = menkuten.text;
+			}
+			else if((menkuten.ku) && (menkuten.ten)) {
+				m = menkuten.men ? menkuten.men : 1;
+				k = menkuten.ku;
+				t = menkuten.ten;
+			}
 		}
-		else if((typeof menkuten === "string")) {
-			const strmkt = menkuten.split("-");
+		else  if((typeof menkuten === "string")) {
+			text = menkuten;
+		}
+		if(text) {
+			const strmkt = text.split("-");
 			if(strmkt.length === 3) {
 				m = parseInt(strmkt[0], 10);
 				k = parseInt(strmkt[1], 10);
@@ -260,11 +267,8 @@ export default class SJIS {
 				k = parseInt(strmkt[0], 10);
 				t = parseInt(strmkt[1], 10);
 			}
-			else {
-				throw "IllegalArgumentException";
-			}
 		}
-		else {		
+		if(!m || !k || !t) {
 			throw "IllegalArgumentException";
 		}
 
@@ -403,7 +407,7 @@ export default class SJIS {
 	 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号に変換
 	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
-	 * @returns {Object} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
 	 * @ignore
 	 */
 	static toKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
@@ -429,7 +433,7 @@ export default class SJIS {
 	/**
 	 * 指定した区点番号から Unicode コードポイントに変換
 	 * @param {MenKuTen|string} kuten - 区点番号
-	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から Unicode への変換マップ
+	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
 	 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
 	 * @ignore
 	 */

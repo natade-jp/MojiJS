@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">src/encode/EUCJIS2004.js | mojijs</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<meta name="description" content="To convert or to analyze the character data of the Japanese."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="mojijs"><meta property="twitter:description" content="To convert or to analyze the character data of the Japanese."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./">Home</a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/natade-jp/MojiJS.git"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/MojiJS.js~MojiJS.html">MojiJS</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#encode">encode</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MenKuTen">MenKuTen</a></span></span></li>
+<li data-ice="doc"><a data-ice="dirPath" class="nav-dir-path" href="identifiers.html#tools">tools</a><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiData">MojiData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiEncodeData">MojiEncodeData</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-MojiTypeData">MojiTypeData</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">src/encode/EUCJIS2004.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">&#xFEFF;/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+import SJIS from &quot;./SJIS.js&quot;;
+import SJIS2004 from &quot;./SJIS2004.js&quot;;
+
+/**
+ * EUC-JIS-2004 &#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
+ * @ignore
+ */
+export default class EUCJIS2004 {
+
+	/**
+	 * &#x6587;&#x5B57;&#x5217;&#x3092; EUC-JIS-2004 &#x306E;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {Array&lt;number&gt;} EUC-JIS-2004 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
+	 */
+	static toEUCJIS2004Binary(text) {
+		const sjis_array = SJIS2004.toSJIS2004Array(text);
+		const bin = [];
+		const ng = &quot;?&quot;.charCodeAt(0);
+		const SS2 = 0x8E; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;2
+		const SS3 = 0x8F; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;3
+		for(let i = 0; i &lt; sjis_array.length; i++) {
+			const code = sjis_array[i];
+			const kuten = SJIS.toMenKuTenFromSJIS2004Code(code);
+			if(code &lt; 0x80) {
+				// G0 ASCII
+				bin.push(code);
+			}
+			else if(code &lt; 0xE0) {
+				// G2 &#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;
+				bin.push(SS2);
+				bin.push(code);
+			}
+			else {
+				// G1 &#x3068; G3 &#x3092;&#x5207;&#x308A;&#x66FF;&#x3048;&#x308B; 
+				if(kuten.men === 2) {
+					// &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8; SS3 &#x3067; G3 &#x3092;&#x547C;&#x3073;&#x51FA;&#x3059;&#x3002;
+					// G3 &#x306F; JIS X 0213:2004 &#x306E;2&#x9762;&#x3092;&#x8868;&#x3059;
+					bin.push(SS3);
+				}
+				if(kuten.ku &lt;= 94) {
+					// &#x533A;&#x70B9;&#x306F;94&#x307E;&#x3067;&#x5229;&#x7528;&#x3067;&#x304D;&#x308B;&#x3002;
+					// &#x3064;&#x307E;&#x308A;&#x3001;&#x6700;&#x5927;&#x3067;&#x3082; 94 + 0xA0 = 0xFE &#x3068;&#x306A;&#x308A; 0xFF &#x4EE5;&#x4E0A;&#x306B;&#x306A;&#x3089;&#x306A;&#x3044;
+					bin.push(kuten.ku + 0xA0);
+					bin.push(kuten.ten + 0xA0);
+				}
+				else {
+					bin.push(ng);
+				}
+			}
+		}
+		return bin;
+	}
+
+	/**
+	 * EUC-JIS-2004 &#x306E;&#x914D;&#x5217;&#x304B;&#x3089;&#x6587;&#x5B57;&#x5217;&#x306B;&#x5909;&#x63DB;
+	 * @param {Array&lt;number&gt;} eucjp - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 */
+	static fromEUCJIS2004Binary(eucjp) {
+		const sjis_array = [];
+		const ng = &quot;?&quot;.charCodeAt(0);
+		const SS2 = 0x8E; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;2
+		const SS3 = 0x8F; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;3
+		for(let i = 0; i &lt; eucjp.length; i++) {
+			let x1, x2;
+			x1 = eucjp[i];
+			// ASCII
+			if(x1 &lt; 0x80) {
+				sjis_array.push(x1);
+				continue;
+			}
+			if(i &gt;= eucjp.length - 1) {
+				// &#x6587;&#x5B57;&#x304C;&#x8DB3;&#x308A;&#x306A;&#x3044;
+				break;
+			}
+			let men = 1;
+			{
+				// 3&#x30D0;&#x30A4;&#x30C8;&#x8AAD;&#x307F;&#x8FBC;&#x307F;(G3)
+				if(x1 === SS3) {
+					// &#x6587;&#x5B57;&#x304C;&#x8DB3;&#x308A;&#x306A;&#x3044;
+					if(i &gt;= eucjp.length - 2) {
+						break;
+					}
+					// &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8; SS3 &#x3067; G3 &#x3092;&#x547C;&#x3073;&#x51FA;&#x3059;&#x3002;
+					// G3 &#x306F;&#x3001;EUC-JIS-2000 &#x306E;&#x5834;&#x5408; JIS X 0213:2004 &#x306E;2&#x9762;&#x3092;&#x8868;&#x3059;
+					men = 2;
+					x1 = eucjp[i + 1];
+					x2 = eucjp[i + 2];
+					i += 2;
+				}
+				// 2&#x30D0;&#x30A4;&#x30C8;&#x8AAD;&#x307F;&#x8FBC;&#x307F;
+				else {
+					x2 = eucjp[i + 1];
+					i += 1;
+				}
+			}
+			// &#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;
+			if(x1 === SS2) {
+				sjis_array.push(x2);
+				continue;
+			}
+
+			if((0xA1 &lt;= x1) &amp;&amp; (x1 &lt;= 0xFE) &amp;&amp; (0xA1 &lt;= x2) &amp;&amp; (x2 &lt;= 0xFE)) {
+				// EUC-JIS-2000 JIS X 0213:2004 &#x306E;2&#x9762;&#x306B;&#x5BFE;&#x5FDC;
+				// &#x65E5;&#x672C;&#x8A9E;
+				const kuten = {
+					men : men,
+					ku : x1 - 0xA0,
+					ten : x2 - 0xA0
+				};
+				sjis_array.push(SJIS.toSJIS2004CodeFromMenKuTen(kuten));
+			}
+			else {
+				sjis_array.push(ng);
+			}
+		}
+		return SJIS2004.fromSJIS2004Array(sjis_array);
+	}
+
+}
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

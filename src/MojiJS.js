@@ -10,11 +10,11 @@
 
 import Encode from "./encode/Encode.js";
 import Unicode from "./encode/Unicode.js";
-import CP932 from "./encode/CP932.js";
-import SJIS2004 from "./encode/SJIS2004.js";
 import Japanese from "./language/Japanese.js";
 import CharacterAnalyzer from "./tools/MojiAnalyzer.js";
 import StringComparator from "./tools/StringComparator.js";
+import CP932 from "./encode/CP932.js";
+import SJIS2004 from "./encode/SJIS2004.js";
 
 /**
  * 日本語を扱うための様々な機能を提供します
@@ -171,17 +171,60 @@ export default class MojiJS {
 	}
 
 	/**
-	 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
+	 * 指定したテキストを切り出す
+	 * - 単位は半角／全角で換算した文字の横幅
 	 * - 半角を1、全角を2としてカウント
 	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
 	 * @returns {String} 切り出したテキスト
-	 * @ignore
 	 */
 	static cutTextForWidth(text, offset, size) {
 		return Japanese.cutTextForWidth(text, offset, size);
+	}
+
+	// ---------------------------------
+	// 面区点コードの変換用
+	// ---------------------------------
+
+	/**
+	 * 指定した文字から Windows-31J 上の区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./encode/SJIS.js").MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toKuTen(text) {
+		return CP932.toKuTen(text);
+	}
+	
+	/**
+	 * Windows-31J 上の区点番号から文字列に変換
+	 * @param {import("./encode/SJIS.js").MenKuTen|string} kuten - 区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromKuTen(kuten) {
+		return CP932.fromKuTen(kuten);
+	}
+
+	/**
+	 * 指定した文字から Shift_JIS-2004 上の面区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./encode/SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 * @ignore
+	 */
+	static toMenKuTen(text) {
+		return SJIS2004.toMenKuTen(text);
+	}
+	
+	/**
+	 * Shift_JIS-2004 上の面区点番号から文字列に変換
+	 * @param {import("./encode/SJIS.js").MenKuTen|string} menkuten - 面区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromMenKuTen(menkuten) {
+		return SJIS2004.fromMenKuTen(menkuten);
 	}
 
 	// ---------------------------------

@@ -1,6 +1,6 @@
 {
 	"name": "mojijs",
-	"version": "2.1.1",
+	"version": "3.0.0",
 	"description": "To convert or to analyze the character data of the Japanese.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
@@ -12,11 +12,14 @@
 	"module": "./build/esm",
 	"keywords": [
 		"cp932",
+		"ms932",
+		"windows-31j",
 		"sjis",
 		"shift_jis",
 		"shift_jis-2004",
 		"euc-jp",
 		"euc-jis-2004",
+		"eucjp-ms",
 		"japanese",
 		"hiragana",
 		"katakana",

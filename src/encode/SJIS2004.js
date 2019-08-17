@@ -8,6 +8,7 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Unicode from "./Unicode.js";
 import SJIS from "./SJIS.js";
 
 /**
@@ -1573,9 +1574,7 @@ SJIS2004MAP.unicode_to_sjis2004_map = null;
 
 /**
  * Shift_JIS-2004 を扱うクラス
- * 
- * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
- * @deprecated
+ * @ignore
  */
 export default class SJIS2004 {
 	
@@ -1625,4 +1624,29 @@ export default class SJIS2004 {
 		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
 	}
 
+	/**
+	 * 指定した文字から Shift_JIS-2004 上の面区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 * @ignore
+	 */
+	static toMenKuTen(text) {
+		if(text.length === 0) {
+			return null;
+		}
+		const sjis2004_code = SJIS2004.toSJIS2004FromUnicode(Unicode.toUTF32Array(text)[0]);
+		return sjis2004_code ? SJIS.toMenKuTenFromSJIS2004Code(sjis2004_code) : null;
+	}
+	
+	/**
+	 * Shift_JIS-2004 上の面区点番号から文字列に変換
+	 * @param {import("./SJIS.js").MenKuTen|string} menkuten - 面区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromMenKuTen(menkuten) {
+		const code = SJIS.toUnicodeCodeFromKuTen(menkuten, SJIS2004MAP.SJIS2004_TO_UNICODE);
+		return code ? Unicode.fromUTF32Array(code) : "";
+	}
+	
 }

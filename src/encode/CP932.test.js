@@ -30,3 +30,8 @@ const equalsArray = function(x, y) {
 	test("toCP932ArrayBinary", () => { expect(equalsArray(CP932.toCP932Binary(text), cp932binary)).toBe(true); });
 	test("fromCP932Array (binary)", () => { expect(CP932.fromCP932Array(cp932binary)).toBe(text); });
 }
+
+{
+	test("toKuTen", () => { expect(CP932.toKuTen("髙").text).toBe("118-94"); });
+	test("fromKuTen", () => { expect(CP932.fromKuTen("118-94")).toBe("髙"); });
+}
