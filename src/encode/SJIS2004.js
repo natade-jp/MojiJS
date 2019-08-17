@@ -1629,7 +1629,6 @@ export default class SJIS2004 {
 	 * - 2文字以上を指定した場合は、1文字目のみを変換する
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {import("./SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-	 * @ignore
 	 */
 	static toMenKuTen(text) {
 		if(text.length === 0) {

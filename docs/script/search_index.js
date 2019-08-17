@@ -492,6 +492,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/mojijs.js~mojijs.tomenkuten",
+    "class/src/MojiJS.js~MojiJS.html#static-method-toMenKuTen",
+    "src/MojiJS.js~MojiJS.toMenKuTen",
+    "method"
+  ],
+  [
     "src/mojijs.js~mojijs.toromajifromhiragana",
     "class/src/MojiJS.js~MojiJS.html#static-method-toRomajiFromHiragana",
     "src/MojiJS.js~MojiJS.toRomajiFromHiragana",
