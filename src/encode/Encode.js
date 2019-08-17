@@ -102,9 +102,21 @@ class EncodeTools {
 			else if((0x30A1 <= ch) && (ch <= 0x30F3)) {
 				type = 4;
 			}
+			// 全角英字
+			else if(((0xFF21 <= ch) && (ch <= 0xFF3A)) || ((0xFF41 <= ch) && (ch <= 0xFF5A))) {
+				type = 5;
+			}
+			// 全角数値
+			else if((0xFF10 <= ch) && (ch <= 0xFF19)) {
+				type = 6;
+			}
+			// 半角カタカナ
+			else if((0xFF61 <= ch) && (ch < 0xFFA0)) {
+				type = 7;
+			}
 			// CJK統合漢字拡張A - CJK統合漢字, 追加漢字面
 			else if(((0x3400 <= ch) && (ch < 0xA000)) || ((0x20000 <= ch) && (ch < 0x2FA20))) {
-				type = 5;
+				type = 8;
 			}
 			else {
 				old_type = -1;

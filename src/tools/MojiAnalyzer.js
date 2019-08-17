@@ -12,6 +12,8 @@ import Unicode from "../encode/Unicode.js";
 import SJIS from "../encode/SJIS.js";
 import CP932 from "../encode/CP932.js";
 import SJIS2004 from "../encode/SJIS2004.js";
+import EUCJPMS from "../encode/EUCJPMS.js";
+import EUCJIS2004 from "../encode/EUCJIS2004.js";
 
 /**
  * 制御文字マップ
@@ -524,7 +526,8 @@ class MojiAnalizerTools {
  * @property {Array<number>} sjis2004_array Shift_JIS-2004 コード バイト配列
  * @property {Array<number>} shift_jis_array Shift_JIS バイト配列
  * @property {Array<number>} iso2022jp_array ISO-2022-JP バイト配列
- * @property {Array<number>} eucjp_array EUC-JP バイト配列
+ * @property {Array<number>} eucjpms_array eucJP-ms バイト配列
+ * @property {Array<number>} eucjis2004_array EUC-JP-2004 バイト配列
  */
 
 /**
@@ -590,7 +593,8 @@ export default class MojiAnalyzer {
 			sjis2004_array : [],
 			shift_jis_array : [],
 			iso2022jp_array : [],
-			eucjp_array : []
+			eucjpms_array : [],
+			eucjis2004_array : []
 		};
 		
 		/**
@@ -655,7 +659,8 @@ export default class MojiAnalyzer {
 		const data = MojiAnalyzer._createMojiData();
 		const encode = data.encode;
 		const type = data.type;
-		data.character = Unicode.fromCodePoint(unicode_codepoint);
+		const character = Unicode.fromCodePoint(unicode_codepoint);
+		data.character = character;
 		data.codepoint = unicode_codepoint;
 
 		// 句点と面区点情報(ない場合はnullになる)
@@ -693,39 +698,36 @@ export default class MojiAnalyzer {
 		encode.cp932_array = cp932code ? ((cp932code >= 0x100) ? [cp932code >> 8, cp932code & 0xff] : [cp932code]) : [];
 		encode.sjis2004_array = sjis2004code ? ((sjis2004code >= 0x100) ? [sjis2004code >> 8, sjis2004code & 0xff] : [sjis2004code]) : [];
 
+		// EUC-JP系の配列
+		encode.eucjpms_array = EUCJPMS.toEUCJPMSBinary(character);
+		encode.eucjis2004_array = EUCJIS2004.toEUCJIS2004Binary(character);
+
 		// ISO-2022-JP , EUC-JP
 		if(cp932code < 0xE0 || is_regular_sjis) {
 			if(cp932code < 0x80) {
 				encode.shift_jis_array = [cp932code];
 				encode.iso2022jp_array = [];
-				encode.eucjp_array = [cp932code];
 			}
 			else if(cp932code < 0xE0) {
 				// 半角カタカナの扱い
 				encode.shift_jis_array = [cp932code];
 				encode.iso2022jp_array = [];
-				encode.eucjp_array = [0x8E, cp932code];
 			}
 			else if(kuten.ku <= 94) {
 				// 区点は94まで利用できる。
 				// つまり、最大でも 94 + 0xA0 = 0xFE となり 0xFF 以上にならない
-				// しかし、cp932を利用すると、IBM拡張文字が115区〜119区を利用しているためはみ出す。
-				// 従ってはみ出た場合は ? に変換する
 				encode.shift_jis_array = [encode.cp932_array[0], encode.cp932_array[1]];
 				encode.iso2022jp_array = [kuten.ku + 0x20, kuten.ten + 0x20];
-				encode.eucjp_array = [kuten.ku + 0xA0, kuten.ten + 0xA0];
 			}
 		}
 		else {
 			encode.shift_jis_array = [];
 			encode.iso2022jp_array = [];
-			encode.eucjp_array = [];
 		}
 		// SJISとして正規でなければ強制エンコード失敗
 		if(!is_regular_sjis) {
 			encode.shift_jis_array = [];
 			encode.iso2022jp_array = [];
-			encode.eucjp_array = [];
 		}
 
 		// 制御文字かどうか

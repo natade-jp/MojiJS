@@ -1625,26 +1625,4 @@ export default class SJIS2004 {
 		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
 	}
 
-	/**
-	 * 指定したテキストの横幅を Shift_JIS-2004 で換算でカウント
-	 * - 半角を1、全角を2としてカウント
-	 * - Shift_JIS-2004 の範囲にない文字は2としてカウント
-	 * @param {String} text - カウントしたいテキスト
-	 * @returns {Number} 文字の横幅
-	 */
-	static getWidthForSJIS2004(text) {
-		return SJIS.getWidthForSJIS(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
-	}
-
-	/**
-	 * 指定したテキストの横幅を Shift_JIS-2004 で換算した場合の切り出し
-	 * @param {String} text - 切り出したいテキスト
-	 * @param {Number} offset - 切り出し位置
-	 * @param {Number} size - 切り出す長さ
-	 * @returns {String} 切り出したテキスト
-	 */
-	static cutTextForSJIS2004(text, offset, size) {
-		return SJIS.cutTextForSJIS(text, offset, size, SJIS2004MAP.UNICODE_TO_SJIS2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
-	}
-
 }

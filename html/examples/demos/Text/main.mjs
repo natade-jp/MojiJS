@@ -212,7 +212,7 @@ const testStringComparator = function() {
 
 const main = function() {
 	
-	Log.println("jptest クラスのサンプル");
+	Log.println("MojiJS クラスのサンプル");
 
 	testJapanese();
 	testUnicode();

@@ -160,47 +160,28 @@ export default class MojiJS {
 	}
 
 	/**
-	 * 指定したテキストの横幅を CP932 で換算でカウント
+	 * 指定したテキストの横幅を半角／全角でカウント
 	 * - 半角を1、全角を2としてカウント
-	 * - CP932 の範囲にない文字は2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
-	static getWidthForCP932(text) {
-		return CP932.getWidthForCP932(text);
+	static getWidth(text) {
+		return Japanese.getWidth(text);
 	}
 
 	/**
-	 * 指定したテキストの横幅を CP932 で換算した場合の切り出し
+	 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
+	 * - 半角を1、全角を2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
 	 * @returns {String} 切り出したテキスト
+	 * @ignore
 	 */
-	static cutTextForCP932(text, offset, size) {
-		return CP932.cutTextForCP932(text, offset, size);
-	}
-	
-	/**
-	 * 指定したテキストの横幅を Shift_JIS-2004 で換算でカウント
-	 * - 半角を1、全角を2としてカウント
-	 * - Shift_JIS-2004 の範囲にない文字は2としてカウント
-	 * @param {String} text - カウントしたいテキスト
-	 * @returns {Number} 文字の横幅
-	 */
-	static getWidthForSJIS2004(text) {
-		return SJIS2004.getWidthForSJIS2004(text);
-	}
-
-	/**
-	 * 指定したテキストの横幅を Shift_JIS-2004 で換算した場合の切り出し
-	 * @param {String} text - 切り出したいテキスト
-	 * @param {Number} offset - 切り出し位置
-	 * @param {Number} size - 切り出す長さ
-	 * @returns {String} 切り出したテキスト
-	 */
-	static cutTextForSJIS2004(text, offset, size) {
-		return SJIS2004.cutTextForSJIS2004(text, offset, size);
+	static cutTextForWidth(text, offset, size) {
+		return Japanese.cutTextForWidth(text, offset, size);
 	}
 
 	// ---------------------------------

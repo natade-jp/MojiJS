@@ -6,12 +6,14 @@
 ### 機能改善
 - charset名の正規化の強化
 - eucJP-ms に対応
+- 文字コードに依存しない横幅用の関数 getWidth, cutTextForWidth を追加。
 
 ### 仕様変更
 - Unicodeへのエンコード時のBOM付きについて、未設定時のデフォルトをTRUEへ変更
 - charset に" with BOM" が入っている場合は優先的にBOM付きとする仕様に変更
 - EUC-JP 指定を EUC-JP-2004 と同等とみなすように変更
 - 使うかもと思い見せていたprivateなクラスを外に見せないように変更
+- getWidthForSJIS, cutTextForSJIS 等、文字コードに依存した横幅用の関数を削除。
 
 ### 不具合修正
 - 文字解析用のMojiAnalyzerクラスが、CharcterAnalyzerという名前になっていたのを修正

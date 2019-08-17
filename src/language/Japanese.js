@@ -8,6 +8,8 @@
  *  The MIT license https://opensource.org/licenses/MIT
  */
 
+import Unicode from "../encode/Unicode.js";
+
 /**
  * 日本語を扱うクラス
  * @ignore
@@ -895,6 +897,78 @@ export default class Japanese {
 	 */
 	static toRomajiFromKatakana(text) {
 		return Japanese.toRomajiFromHiragana(Japanese.toHiragana(text));
+	}
+
+	/**
+	 * 指定したテキストの横幅を半角／全角でカウント
+	 * - 半角を1、全角を2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * @param {String} text - カウントしたいテキスト
+	 * @returns {Number} 文字の横幅
+	 */
+	static getWidth(text) {
+		const utf32_array = Unicode.toUTF32Array(text);
+		let count = 0;
+		for(let i = 0; i < utf32_array.length; i++) {
+			const ch = utf32_array[i];
+			if((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) {
+				count++;
+			}
+			else {
+				count += 2;
+			}
+		}
+		return count;
+	}
+
+	/**
+	 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
+	 * - 半角を1、全角を2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 * @ignore
+	 */
+	static cutTextForWidth(text, offset, size) {
+		const utf32_array = Unicode.toUTF32Array(text);
+		const SPACE = 0x20 ; // ' '
+		const output = [];
+		let is_target = false;
+		let position = 0;
+		let cut_size = size;
+		if(offset < 0) {
+			cut_size += offset;
+			offset = 0;
+		}
+		if(cut_size <= 0) {
+			return "";
+		}
+		for(let i = 0; i < utf32_array.length; i++) {
+			const ch = utf32_array[i];
+			const ch_size = ((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) ? 1 : 2;
+			if(position >= offset) {
+				is_target = true;
+				if(cut_size >= ch_size) {
+					output.push(ch);
+				}
+				else {
+					output.push(SPACE);
+				}
+				cut_size -= ch_size;
+				if(cut_size <= 0) {
+					break;
+				}
+			}
+			position += ch_size;
+			// 2バイト文字の途中をoffset指定していた場合になる。
+			if(((position - 1) >= offset) && !is_target) {
+				cut_size--;
+				output.push(SPACE);
+			}
+		}
+		return Unicode.fromUTF32Array(output);
 	}
 
 }

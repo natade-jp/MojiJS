@@ -1434,26 +1434,4 @@ export default class CP932 {
 		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
 	}
 
-	/**
-	 * 指定したテキストの横幅を CP932 で換算でカウント
-	 * - 半角を1、全角を2としてカウント
-	 * - CP932 の範囲にない文字は2としてカウント
-	 * @param {String} text - カウントしたいテキスト
-	 * @returns {Number} 文字の横幅
-	 */
-	static getWidthForCP932(text) {
-		return SJIS.getWidthForSJIS(text, CP932MAP.UNICODE_TO_CP932);
-	}
-
-	/**
-	 * 指定したテキストの横幅を CP932 で換算した場合の切り出し
-	 * @param {String} text - 切り出したいテキスト
-	 * @param {Number} offset - 切り出し位置
-	 * @param {Number} size - 切り出す長さ
-	 * @returns {String} 切り出したテキスト
-	 */
-	static cutTextForCP932(text, offset, size) {
-		return SJIS.cutTextForSJIS(text, offset, size, CP932MAP.UNICODE_TO_CP932, CP932MAP.CP932_TO_UNICODE);
-	}
-
 }

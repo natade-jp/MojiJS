@@ -45,3 +45,23 @@ testOperator1("toRomajiFromHiragana", "ぐぁぐぃぐぅぐぇぐぉ", "gwagwig
 testOperator1("toRomajiFromHiragana", "ぴゃぴぃぴゅぴぇぴょ", "pyapyipyupyepyo");
 testOperator1("toRomajiFromHiragana", "かっこいい", "kakkoii");
 
+{
+	test("getWidth", () => { expect(Japanese.getWidth("ABCあいう高髙①")).toBe(15); });
+}
+
+{
+	const text = "ABCあいう高髙①";
+	test("cutTextForWidth  1", () => { expect(Japanese.cutTextForWidth(text,-1, 5)).toBe("ABC "); });
+	test("cutTextForWidth  2", () => { expect(Japanese.cutTextForWidth(text, 0, 5)).toBe("ABCあ"); });
+	test("cutTextForWidth  3", () => { expect(Japanese.cutTextForWidth(text, 1, 5)).toBe("BCあ "); });
+	test("cutTextForWidth  4", () => { expect(Japanese.cutTextForWidth(text, 2, 5)).toBe("Cあい"); });
+	test("cutTextForWidth  5", () => { expect(Japanese.cutTextForWidth(text, 3, 5)).toBe("あい "); });
+	test("cutTextForWidth  6", () => { expect(Japanese.cutTextForWidth(text, 4, 5)).toBe(" いう"); });
+	test("cutTextForWidth  7", () => { expect(Japanese.cutTextForWidth(text, 5, 5)).toBe("いう "); });
+	test("cutTextForWidth  8", () => { expect(Japanese.cutTextForWidth(text, 6, 5)).toBe(" う高"); });
+	test("cutTextForWidth  9", () => { expect(Japanese.cutTextForWidth(text, 7, 5)).toBe("う高 "); });
+	test("cutTextForWidth 10", () => { expect(Japanese.cutTextForWidth(text, 8, 5)).toBe(" 高髙"); });
+	test("cutTextForWidth 11", () => { expect(Japanese.cutTextForWidth(text, 9, 5)).toBe("高髙 "); });
+	test("cutTextForWidth 12", () => { expect(Japanese.cutTextForWidth(text,10, 5)).toBe(" 髙①"); });
+	test("cutTextForWidth 13", () => { expect(Japanese.cutTextForWidth(text,11, 5)).toBe("髙①"); });
+}
