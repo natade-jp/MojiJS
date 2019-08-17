@@ -260,7 +260,7 @@ export default class Unicode {
 	 * @returns {Array<number>} UTF8のデータが入った配列
 	 */
 	static toUTF8Array(text) {
-		return Unicode.toUTFBinaryFromCodePoint(Unicode.toUTF32Array(text), "utf-8");
+		return Unicode.toUTFBinaryFromCodePoint(Unicode.toUTF32Array(text), "utf-8", false);
 	}
 
 	/**
@@ -437,11 +437,15 @@ export default class Unicode {
 	 * UTF32配列からバイナリ配列に変換
 	 * @param {Array<number>} utf32_array - 変換したいUTF-32配列
 	 * @param {String} charset - UTFの種類
-	 * @param {boolean} [is_with_bom=false] - BOMをつけるかどうか
+	 * @param {boolean} [is_with_bom=true] - BOMをつけるかどうか
 	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
 	 */
 	static toUTFBinaryFromCodePoint(utf32_array, charset, is_with_bom) {
-		const is_with_bom_ = is_with_bom !== undefined ? is_with_bom : false;
+		let is_with_bom_ = is_with_bom !== undefined ? is_with_bom : true;
+		// charset に" with BOM" が入っている場合はBOM付きとする
+		if(/\s+with\s+bom$/i.test(charset)) {
+			is_with_bom_ = true;
+		}
 		/**
 		 * @type {Array<number>}
 		 */

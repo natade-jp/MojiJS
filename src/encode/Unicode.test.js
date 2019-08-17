@@ -124,18 +124,18 @@ const equalsArray = function(x, y) {
 		test("toCodePointFromUTFBinary 11", () => { expect(equalsArray(Unicode.toCodePointFromUTFBinary(utf_32be_bom), utf_32)).toBe(true); });
 		test("toCodePointFromUTFBinary 12", () => { expect(equalsArray(Unicode.toCodePointFromUTFBinary(utf_32le_bom), utf_32)).toBe(true); });
 	}
+
 	{
-		test("toUTFBinaryFromCodePoint 1", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-8"), utf_8)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 2", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-8", true), utf_8_bom)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 3", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-16"), utf_16le)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 4", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-16le"), utf_16le)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 1", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-8"), utf_8_bom)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 2", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-8", false), utf_8)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 3", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-8", true), utf_8_bom)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 4", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-16le", false), utf_16le)).toBe(true); });
 		test("toUTFBinaryFromCodePoint 5", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-16le", true), utf_16le_bom)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 6", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-16be"), utf_16be)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 6", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-16be", false), utf_16be)).toBe(true); });
 		test("toUTFBinaryFromCodePoint 7", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-16be", true), utf_16be_bom)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 8", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32"), utf_32le)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 9", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32le"), utf_32le)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 10", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32le", true), utf_32le_bom)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 11", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32be"), utf_32be)).toBe(true); });
-		test("toUTFBinaryFromCodePoint 12", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32be", true), utf_32be_bom)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 8", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32le", false), utf_32le)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 9", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32le", true), utf_32le_bom)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 10", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32be", false), utf_32be)).toBe(true); });
+		test("toUTFBinaryFromCodePoint 11", () => { expect(equalsArray(Unicode.toUTFBinaryFromCodePoint(utf_32, "utf-32be", true), utf_32be_bom)).toBe(true); });
 	}
 }

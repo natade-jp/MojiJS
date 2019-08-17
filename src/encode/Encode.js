@@ -11,7 +11,8 @@
 import Unicode from "./Unicode.js";
 import CP932 from "./CP932.js";
 import SJIS2004 from "./SJIS2004.js";
-import EUCJP from "./EUCJP.js";
+import EUCJPMS from "./EUCJPMS.js";
+import EUCJIS2004 from "./EUCJIS2004.js";
 
 /**
  * Encode用のツールクラス
@@ -25,34 +26,53 @@ class EncodeTools {
 	 * @returns {String} 
 	 */
 	static normalizeCharSetName(charset) {
-		if(/^(unicode-1-1-utf-8|UTF8)$/i.test(charset)) {
-			return "UTF-8";
+		let x1, x2;
+		let is_with_bom = false;
+		// BOM の文字がある場合は BOM 付きとする
+		if(/^bom\s+|\s+bom\s+|\s+bom$/i.test(x1)) {
+			is_with_bom = true;
+			x1 = charset.replace(/^bom\s+|(\s+with)?\s+bom\s+|(\s+with\s*)?\s+bom$/, "");
 		}
-		else if(/^(csunicode|iso-10646-ucs-2|ucs-2|Unicode|UnicodeFEFF|UTF-16|UTF16|UTF16LE)$/i.test(charset)) {
-			return "UTF-16LE";
+		else {
+			x1 = charset;
 		}
-		else if(/^(UnicodeFFFE|UTF16BE)$/i.test(charset)) {
-			return "UTF-16BE";
+		if(/^(unicode-1-1-utf-8|UTF[-_]?8)$/i.test(x1)) {
+			x2 = "UTF-8";
 		}
-		else if(/^(utf32_littleendian|UTF-32|UTF32|UTF32LE)$/i.test(charset)) {
-			return "UTF-32LE";
+		else if(/^(csunicode|iso-10646-ucs-2|ucs-2|Unicode|UnicodeFEFF|UTF[-_]?16([-_]?LE)?)$/i.test(x1)) {
+			x2 = "UTF-16LE";
 		}
-		else if(/^(utf32_bigendian|UTF32BE)$/i.test(charset)) {
-			return "UTF-32BE";
+		else if(/^(UnicodeFFFE|UTF[-_]?16[-_]?BE)$/i.test(x1)) {
+			x2 = "UTF-16BE";
 		}
-		else if(/^(csshiftjis|ms_kanji|cp932|ms932|shift-jis|sjis|Windows-31J|x-sjis)$/i.test(charset)) {
-			return "Shift_JIS";
+		else if(/^(utf32_littleendian|UTF[-_]?32([-_]?LE)?)$/i.test(x1)) {
+			x2 = "UTF-32LE";
 		}
-		else if(/^(sjis2004|sjis-2004|sjis_2004|shift_jis2004|shift-jis2004|shift-jis-2004)$/i.test(charset)) {
-			return "Shift_JIS-2004";
+		else if(/^(utf32_bigendian|UTF[-_]?32[-_]?BE)$/i.test(x1)) {
+			x2 = "UTF-32BE";
 		}
-		else if(/^(eucjp|cseucpkdfmtjapanese|x-euc-jp)$/i.test(charset)) {
-			return "EUC-JP";
+		else if(/^(csshiftjis|ms_kanji|(cp|ms)932|shift[-_]?jis|sjis|Windows[-_]?31J|x-sjis)$/i.test(x1)) {
+			x2 = "Shift_JIS";
 		}
-		else if(/^(eucjis2004|euc-jis2004|eucjis-2004|eucjp2004|euc-jp2004|eucjp-2004|euc-jp-2004)$/i.test(charset)) {
-			return "EUC-JIS-2004";
+		else if(/^(sjis[-_]?2004|shift[-_]?jis[-_]?2004)$/i.test(x1)) {
+			x2 = "Shift_JIS-2004";
 		}
-		return charset;
+		else if(/^(euc[-_]?JP[-_]?ms)$/i.test(x1)) {
+			x2 = "eucJP-ms";
+		}
+		else if(/^(euc[-_]?jp|cseucpkdfmtjapanese|x-euc-jp)$/i.test(x1)) {
+			x2 = "EUC-JP";
+		}
+		else if(/^(euc[-_]?jis[-_]?200|euc[-_]?jp[-_]?2004)$/i.test(x1)) {
+			x2 = "EUC-JIS-2004";
+		}
+		else {
+			x2 = x1;
+		}
+		if(is_with_bom) {
+			x2 += " with BOM";
+		}
+		return x2;
 	}
 
 	/**
@@ -110,7 +130,7 @@ export default class Encode {
 	 * 文字列からバイナリ配列にエンコードする
 	 * @param {String} text - 変換したいテキスト
 	 * @param {String} charset - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
-	 * @param {boolean} [is_with_bom=false] - BOMをつけるかどうか
+	 * @param {boolean} [is_with_bom=true] - BOMをつけるかどうか
 	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
 	 */
 	static encode(text, charset, is_with_bom) {
@@ -125,11 +145,11 @@ export default class Encode {
 		else if(/^Shift_JIS-2004$/i.test(ncharset)) {
 			return SJIS2004.toSJIS2004Binary(text);
 		}
-		else if(/^EUC-JP$/i.test(ncharset)) {
-			return EUCJP.toEUCJPBinary(text);
+		else if(/^eucJP-ms$/i.test(ncharset)) {
+			return EUCJPMS.toEUCJPMSBinary(text);
 		}
-		else if(/^EUC-JIS-2004$/i.test(ncharset)) {
-			return EUCJP.toEUCJIS2004Binary(text);
+		else if(/^(EUC-JP|EUC-JIS-2004)$/i.test(ncharset)) {
+			return EUCJIS2004.toEUCJIS2004Binary(text);
 		}
 		return null;
 	}
@@ -149,16 +169,16 @@ export default class Encode {
 			}
 		}
 		else if(/^Shift_JIS$/i.test(ncharset)) {
-			return CP932.fromCP932Array(binary).decode;
+			return CP932.fromCP932Array(binary);
 		}
 		else if(/^Shift_JIS-2004$/i.test(ncharset)) {
-			return SJIS2004.fromSJIS2004Array(binary).decode;
+			return SJIS2004.fromSJIS2004Array(binary);
 		}
-		else if(/^EUC-JP$/i.test(ncharset)) {
-			return EUCJP.fromEUCJPBinary(binary).decode;
+		else if(/^eucJP-ms$/i.test(ncharset)) {
+			return EUCJPMS.fromEUCJPMSBinary(binary);
 		}
-		else if(/^EUC-JIS-2004$/i.test(ncharset)) {
-			return EUCJP.fromEUCJIS2004Binary(binary).decode;
+		else if(/^(EUC-JP|EUC-JIS-2004)$/i.test(ncharset)) {
+			return EUCJIS2004.fromEUCJIS2004Binary(binary);
 		}
 		else if(/autodetect/i.test(ncharset)) {
 			// BOMが付いているか調べる
@@ -175,16 +195,25 @@ export default class Encode {
 			let max_count = -1;
 			// Shift_JIS
 			{
-				const text = CP932.fromCP932Array(binary).decode;
+				const text = CP932.fromCP932Array(binary);
 				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
 				if(max_count < count) {
 					max_data = text;
 					max_count = count;
 				}
 			}
-			// EUC-JP-2004
+			// eucJP-ms
 			{
-				const text = EUCJP.fromEUCJIS2004Binary(binary).decode;
+				const text = EUCJPMS.fromEUCJPMSBinary(binary);
+				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				if(max_count < count) {
+					max_data = text;
+					max_count = count;
+				}
+			}
+			// EUC-JP, EUC-JP-2004
+			{
+				const text = EUCJIS2004.fromEUCJIS2004Binary(binary);
 				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
 				if(max_count < count) {
 					max_data = text;

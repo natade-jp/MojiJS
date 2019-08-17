@@ -20,12 +20,12 @@ const equalsArray = function(x, y) {
 {
 	const text		= "圡①靁";
 	const sjis2004	= [0x8862, 0x8740, 0xFB9A];
-	test("toSJIS2004Array 1", () => { expect(equalsArray(SJIS2004.toSJIS2004Array(text).encode, sjis2004)).toBe(true); });
-	test("fromSJIS2004Array 1", () => { expect(SJIS2004.fromSJIS2004Array(sjis2004).decode).toBe(text); });
+	test("toSJIS2004Array 1", () => { expect(equalsArray(SJIS2004.toSJIS2004Array(text), sjis2004)).toBe(true); });
+	test("fromSJIS2004Array 1", () => { expect(SJIS2004.fromSJIS2004Array(sjis2004)).toBe(text); });
 }
 {
 	const text		= "謹𪘂麵";
 	const sjis2004	= [0xEEAE, 0xFCEE, 0xEFEE];
-	test("toSJIS2004Array 2", () => { expect(equalsArray(SJIS2004.toSJIS2004Array(text).encode, sjis2004)).toBe(true); });
-	test("fromSJIS2004Array 2", () => { expect(SJIS2004.fromSJIS2004Array(sjis2004).decode).toBe(text); });
+	test("toSJIS2004Array 2", () => { expect(equalsArray(SJIS2004.toSJIS2004Array(text), sjis2004)).toBe(true); });
+	test("fromSJIS2004Array 2", () => { expect(SJIS2004.fromSJIS2004Array(sjis2004)).toBe(text); });
 }

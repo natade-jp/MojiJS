@@ -10,10 +10,8 @@
 
 import Encode from "./encode/Encode.js";
 import Unicode from "./encode/Unicode.js";
-import SJIS from "./encode/SJIS.js";
 import CP932 from "./encode/CP932.js";
 import SJIS2004 from "./encode/SJIS2004.js";
-import EUCJP from "./encode/EUCJP.js";
 import Japanese from "./language/Japanese.js";
 import CharacterAnalyzer from "./tools/MojiAnalyzer.js";
 import StringComparator from "./tools/StringComparator.js";
@@ -406,63 +404,4 @@ export default class MojiJS {
 		return StringComparator.NATURAL;
 	}
 	
-	// ---------------------------------
-	// 内部で用いてる関数を利用する
-	// ---------------------------------
-
-	/**
-	 * Unicode専用の内部関数を利用する
-	 * 
-	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-	 * @returns {typeof Unicode}
-	 * @deprecated
-	 */
-	static get Unicode() {
-		return Unicode;
-	}
-
-	/**
-	 * Shift_JIS専用の内部関数を利用する
-	 * 
-	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-	 * @returns {typeof SJIS}
-	 * @deprecated
-	 */
-	static get SJIS() {
-		return SJIS;
-	}
-
-	/**
-	 * CP932専用の内部関数を利用する
-	 * 
-	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-	 * @returns {typeof CP932}
-	 * @deprecated
-	 */
-	static get CP932() {
-		return CP932;
-	}
-
-	/**
-	 * Shift_JIS-2004専用の内部関数を利用する
-	 * 
-	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-	 * @returns {typeof SJIS2004}
-	 * @deprecated
-	 */
-	static get SJIS2004() {
-		return SJIS2004;
-	}
-
-	/**
-	 * EUC-JP専用の内部関数を利用する
-	 * 
-	 * 内部処理用の関数のため変更する可能性が高く、直接利用することをお勧めしません。
-	 * @returns {typeof EUCJP}
-	 * @deprecated
-	 */
-	static get EUCJP() {
-		return EUCJP;
-	}
-
 }

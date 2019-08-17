@@ -31,7 +31,7 @@ export default class SJIS {
 	 * 文字列を Shift_JIS の配列に変換
 	 * @param {String} text - 変換したいテキスト
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
-	 * @returns {{encode : Array<number>, ng_count : number}} Shift_JIS のデータが入った配列
+	 * @returns {Array<number>} Shift_JIS のデータが入った配列
 	 * @ignore
 	 */
 	static toSJISArray(text, unicode_to_sjis) {
@@ -39,7 +39,6 @@ export default class SJIS {
 		const utf32 = Unicode.toUTF32Array(text);
 		const sjis = [];
 		const ng = "?".charCodeAt(0);
-		let ng_count = 0;
 		for(let i = 0; i < utf32.length; i++) {
 			const map_bin = map[utf32[i]];
 			if(map_bin) {
@@ -47,13 +46,9 @@ export default class SJIS {
 			}
 			else {
 				sjis.push(ng);
-				ng_count++;
 			}
 		}
-		return {
-			encode : sjis,
-			ng_count : ng_count
-		};
+		return sjis;
 	}
 
 	/**
@@ -65,7 +60,7 @@ export default class SJIS {
 	 * @ignore
 	 */
 	static toSJISBinary(text, unicode_to_sjis) {
-		const sjis = SJIS.toSJISArray(text, unicode_to_sjis).encode;
+		const sjis = SJIS.toSJISArray(text, unicode_to_sjis);
 		const sjisbin = [];
 		for(let i = 0; i < sjis.length; i++) {
 			if(sjis[i] < 0x100) {
@@ -83,14 +78,13 @@ export default class SJIS {
 	 * SJISの配列から文字列に変換
 	 * @param {Array<number>} sjis - 変換したいテキスト
 	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
-	 * @returns {{decode : String, ng_count : number}} 変換後のテキスト
+	 * @returns {String} 変換後のテキスト
 	 * @ignore
 	 */
 	static fromSJISArray(sjis, sjis_to_unicode) {
 		const map = sjis_to_unicode;
 		const utf16 = [];
 		const ng = "?".charCodeAt(0);
-		let ng_count = 0;
 		for(let i = 0; i < sjis.length; i++) {
 			let x = sjis[i];
 			/**
@@ -128,13 +122,9 @@ export default class SJIS {
 			}
 			else {
 				utf16.push(ng);
-				ng_count++;
 			}
 		}
-		return {
-			decode : Unicode.fromUTF32Array(utf16),
-			ng_count : ng_count
-		};
+		return Unicode.fromUTF32Array(utf16);
 	}
 
 	/**
@@ -220,7 +210,7 @@ export default class SJIS {
 				cut.push(x);
 			}
 		}
-		return SJIS.fromSJISArray(cut, sjis_to_unicode).decode;
+		return SJIS.fromSJISArray(cut, sjis_to_unicode);
 	}
 
 	/**
@@ -235,7 +225,7 @@ export default class SJIS {
 			return null;
 		}
 		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis).encode;
+		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis);
 		return sjis_array[0];
 	}
 
@@ -626,6 +616,8 @@ export default class SJIS {
 	 */
 	static isRegularMenKuten(menkuten) {
 		let m, k, t;
+
+		// 引数のテスト
 		if(menkuten instanceof Object) {
 			m = menkuten.men ? menkuten.men : 1;
 			k = menkuten.ku;
@@ -656,18 +648,22 @@ export default class SJIS {
 		 */
 		const kmap = {1:1,3:1,4:1,5:1,8:1,12:1,13:1,14:1,15:1};
 		if(m === 1) {
+			// 1面は1-94区まで存在
 			if(!((1 <= k) && (k <= 94))) {
 				return false;
 			}
 		}
 		else if(m === 2) {
+			// 2面は、1,3,4,5,8,12,13,14,15,78-94区まで存在
 			if(!((kmap[k]) || ((78 <= k) && (k <= 94)))) {
 				return false;
 			}
 		}
 		else {
+			// 面が不正
 			return false;
 		}
+		// 点は1-94点まで存在
 		if(!((1 <= t) && (t <= 94))) {
 			return false;
 		}

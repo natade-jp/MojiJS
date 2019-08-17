@@ -566,7 +566,7 @@ class MojiAnalizerTools {
  * 文字の解析用クラス
  * @ignore
  */
-export default class CharacterAnalyzer {
+export default class MojiAnalyzer {
 
 	/**
 	 * 初期化
@@ -652,7 +652,7 @@ export default class CharacterAnalyzer {
 		 * 出力データの箱を用意
 		 * @type {MojiData}
 		 */
-		const data = CharacterAnalyzer._createMojiData();
+		const data = MojiAnalyzer._createMojiData();
 		const encode = data.encode;
 		const type = data.type;
 		data.character = Unicode.fromCodePoint(unicode_codepoint);
@@ -694,24 +694,26 @@ export default class CharacterAnalyzer {
 		encode.sjis2004_array = sjis2004code ? ((sjis2004code >= 0x100) ? [sjis2004code >> 8, sjis2004code & 0xff] : [sjis2004code]) : [];
 
 		// ISO-2022-JP , EUC-JP
-		if(cp932code < 0xE0 || kuten) {
+		if(cp932code < 0xE0 || is_regular_sjis) {
 			if(cp932code < 0x80) {
 				encode.shift_jis_array = [cp932code];
 				encode.iso2022jp_array = [];
 				encode.eucjp_array = [cp932code];
 			}
-			else {
+			else if(cp932code < 0xE0) {
 				// 半角カタカナの扱い
-				if(cp932code < 0xE0) {
-					encode.shift_jis_array = [cp932code];
-					encode.iso2022jp_array = [];
-					encode.eucjp_array = [0x80, cp932code];
-				}
-				else {
-					encode.shift_jis_array = [encode.cp932_array[0], encode.cp932_array[1]];
-					encode.iso2022jp_array = [kuten.ku + 0x20, kuten.ten + 0x20];
-					encode.eucjp_array = [kuten.ku + 0xA0, kuten.ten + 0xA0];
-				}
+				encode.shift_jis_array = [cp932code];
+				encode.iso2022jp_array = [];
+				encode.eucjp_array = [0x8E, cp932code];
+			}
+			else if(kuten.ku <= 94) {
+				// 区点は94まで利用できる。
+				// つまり、最大でも 94 + 0xA0 = 0xFE となり 0xFF 以上にならない
+				// しかし、cp932を利用すると、IBM拡張文字が115区〜119区を利用しているためはみ出す。
+				// 従ってはみ出た場合は ? に変換する
+				encode.shift_jis_array = [encode.cp932_array[0], encode.cp932_array[1]];
+				encode.iso2022jp_array = [kuten.ku + 0x20, kuten.ten + 0x20];
+				encode.eucjp_array = [kuten.ku + 0xA0, kuten.ten + 0xA0];
 			}
 		}
 		else {
