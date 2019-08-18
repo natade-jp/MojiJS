@@ -1,100 +1,100 @@
-(function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global = global || self, global.MojiJS = factory());
-}(this, function () { 'use strict';
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * Unicode を扱うクラス
+ * @ignore
+ */
+class Unicode {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 上位のサロゲートペアの判定
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
+	 * @returns {Boolean} 確認結果
 	 */
-
-	/**
-	 * Unicode を扱うクラス
-	 * @ignore
-	 */
-	var Unicode = function Unicode () {};
-
-	Unicode.isHighSurrogateAt = function isHighSurrogateAt (text, index) {
-		var ch = text.charCodeAt(index);
+	static isHighSurrogateAt(text, index) {
+		const ch = text.charCodeAt(index);
 		return ((0xD800 <= ch) && (ch <= 0xDBFF));
-	};
+	}
 
 	/**
-		 * 下位のサロゲートペアの判定
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} index - インデックス
-		 * @returns {Boolean} 確認結果
-		 */
-	Unicode.isLowSurrogateAt = function isLowSurrogateAt (text, index) {
-		var ch = text.charCodeAt(index);
+	 * 下位のサロゲートペアの判定
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
+	 * @returns {Boolean} 確認結果
+	 */
+	static isLowSurrogateAt(text, index) {
+		const ch = text.charCodeAt(index);
 		return ((0xDC00 <= ch) && (ch <= 0xDFFF));
-	};
-		
+	}
+	
 	/**
-		 * サロゲートペアの判定
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} index - インデックス
-		 * @returns {Boolean} 確認結果
-		 */
-	Unicode.isSurrogatePairAt = function isSurrogatePairAt (text, index) {
-		var ch = text.charCodeAt(index);
+	 * サロゲートペアの判定
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
+	 * @returns {Boolean} 確認結果
+	 */
+	static isSurrogatePairAt(text, index) {
+		const ch = text.charCodeAt(index);
 		return ((0xD800 <= ch) && (ch <= 0xDFFF));
-	};
-		
+	}
+	
 	/**
-		 * サロゲートペア対応のコードポイント取得
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} [index = 0] - インデックス
-		 * @returns {Number} コードポイント
-		 */
-	Unicode.codePointAt = function codePointAt (text, index) {
-		var index_ = (index !== undefined) ? index : 0;
+	 * サロゲートペア対応のコードポイント取得
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} [index = 0] - インデックス
+	 * @returns {Number} コードポイント
+	 */
+	static codePointAt(text, index) {
+		const index_ = (index !== undefined) ? index : 0;
 		if(Unicode.isHighSurrogateAt(text, index_)) {
-			var high = text.charCodeAt(index_);
-			var low  = text.charCodeAt(index_ + 1);
+			const high = text.charCodeAt(index_);
+			const low  = text.charCodeAt(index_ + 1);
 			return ((((high - 0xD800) << 10) | (low - 0xDC00)) + 0x10000);
 		}
 		else {
 			return (text.charCodeAt(index_));
 		}
-	};
+	}
 
 	/**
-		 * インデックスの前にあるコードポイント
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} index - インデックス
-		 * @returns {Number} コードポイント
-		 */
-	Unicode.codePointBefore = function codePointBefore (text, index) {
+	 * インデックスの前にあるコードポイント
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - インデックス
+	 * @returns {Number} コードポイント
+	 */
+	static codePointBefore(text, index) {
 		if(!Unicode.isLowSurrogateAt(text, index - 1)) {
 			return (text.charCodeAt(index - 1));
 		}
 		else {
 			return (text.codePointAt(index - 2));
 		}
-	};
+	}
 
 	/**
-		 * コードポイント換算で文字列数をカウント
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} [beginIndex=0] - 最初のインデックス（省略可）
-		 * @param {Number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
-		 * @returns {Number} 文字数
-		 */
-	Unicode.codePointCount = function codePointCount (text, beginIndex, endIndex) {
+	 * コードポイント換算で文字列数をカウント
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} [beginIndex=0] - 最初のインデックス（省略可）
+	 * @param {Number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
+	 * @returns {Number} 文字数
+	 */
+	static codePointCount(text, beginIndex, endIndex) {
 		if(beginIndex === undefined) {
 			beginIndex = 0;
 		}
 		if(endIndex === undefined) {
 			endIndex = text.length;
 		}
-		var count = 0;
+		let count = 0;
 		for(;beginIndex < endIndex;beginIndex++) {
 			count++;
 			if(Unicode.isSurrogatePairAt(text, beginIndex)) {
@@ -102,17 +102,17 @@
 			}
 		}
 		return count;
-	};
+	}
 
 	/**
-		 * コードポイント換算で文字列配列の位置を計算
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} index - オフセット
-		 * @param {Number} codePointOffset - ずらすコードポイント数
-		 * @returns {Number} ずらしたインデックス
-		 */
-	Unicode.offsetByCodePoints = function offsetByCodePoints (text, index, codePointOffset) {
-		var count = 0;
+	 * コードポイント換算で文字列配列の位置を計算
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} index - オフセット
+	 * @param {Number} codePointOffset - ずらすコードポイント数
+	 * @returns {Number} ずらしたインデックス
+	 */
+	static offsetByCodePoints(text, index, codePointOffset) {
+		let count = 0;
 		if(codePointOffset === 0) {
 			return (index);
 		}
@@ -141,37 +141,35 @@
 			}
 		}
 		throw "error offsetByCodePoints";
-	};
+	}
 
 	/**
-		 * コードポイントの数値データをUTF16の配列に変換
-		 * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数
-		 * @returns {Array<number>} 変換後のテキスト
+	 * コードポイントの数値データをUTF16の配列に変換
+	 * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数
+	 * @returns {Array<number>} 変換後のテキスト
+	 */
+	static toUTF16ArrayfromCodePoint() {
+		/**
+		 * @type {Array<number>}
 		 */
-	Unicode.toUTF16ArrayfromCodePoint = function toUTF16ArrayfromCodePoint () {
-			var arguments$1 = arguments;
-
+		const utf16_array = [];
 		/**
-			 * @type {Array<number>}
-			 */
-		var utf16_array = [];
-		/**
-			 * @type {Array<number>}
-			 */
-		var codepoint_array = [];
+		 * @type {Array<number>}
+		 */
+		let codepoint_array = [];
 		if(arguments[0].length) {
 			codepoint_array = arguments[0];
 		}
 		else {
-			for(var i = 0;i < arguments.length;i++) {
-				codepoint_array[i] = arguments$1[i];
+			for(let i = 0;i < arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
 			}
 		}
-		for(var i$1 = 0;i$1 < codepoint_array.length;i$1++) {
-			var codepoint = codepoint_array[i$1];
+		for(let i = 0;i < codepoint_array.length;i++) {
+			const codepoint = codepoint_array[i];
 			if(0x10000 <= codepoint) {
-				var high = (( codepoint - 0x10000 ) >> 10) + 0xD800;
-				var low  = (codepoint & 0x3FF) + 0xDC00;
+				const high = (( codepoint - 0x10000 ) >> 10) + 0xD800;
+				const low  = (codepoint & 0x3FF) + 0xDC00;
 				utf16_array.push(high);
 				utf16_array.push(low);
 			}
@@ -180,123 +178,121 @@
 			}
 		}
 		return utf16_array;
-	};
+	}
 
 	/**
-		 * コードポイントの数値データを文字列に変換
-		 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
-		 * @returns {String} 変換後のテキスト
-		 */
-	Unicode.fromCodePoint = function fromCodePoint (codepoint) {
-			var arguments$1 = arguments;
-
-		var utf16_array = null;
+	 * コードポイントの数値データを文字列に変換
+	 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromCodePoint(codepoint) {
+		let utf16_array = null;
 		if(codepoint instanceof Array) {
 			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint);
 		}
 		else {
-			var codepoint_array = [];
-			for(var i = 0;i < arguments.length;i++) {
-				codepoint_array[i] = arguments$1[i];
+			const codepoint_array = [];
+			for(let i = 0;i < arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
 			}
 			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint_array);
 		}
-		var text = [];
-		for(var i$1 = 0;i$1 < utf16_array.length;i$1++) {
-			text[text.length] = String.fromCharCode(utf16_array[i$1]);
+		const text = [];
+		for(let i = 0;i < utf16_array.length;i++) {
+			text[text.length] = String.fromCharCode(utf16_array[i]);
 		}
 		return(text.join(""));
-	};
+	}
 
 	/**
-		 * 文字列をUTF32(コードポイント)の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列
-		 */
-	Unicode.toUTF32Array = function toUTF32Array (text) {
-		var utf32 = [];
-		for(var i = 0; i < text.length; i = Unicode.offsetByCodePoints(text, i, 1)) {
+	 * 文字列をUTF32(コードポイント)の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列
+	 */
+	static toUTF32Array(text) {
+		const utf32 = [];
+		for(let i = 0; i < text.length; i = Unicode.offsetByCodePoints(text, i, 1)) {
 			utf32.push(Unicode.codePointAt(text, i));
 		}
 		return utf32;
-	};
+	}
 
 	/**
-		 * UTF32の配列から文字列に変換
-		 * @param {Array<number>} utf32 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Unicode.fromUTF32Array = function fromUTF32Array (utf32) {
+	 * UTF32の配列から文字列に変換
+	 * @param {Array<number>} utf32 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF32Array(utf32) {
 		return Unicode.fromCodePoint(utf32);
-	};
+	}
 
 	/**
-		 * 文字列をUTF16の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} UTF16のデータが入った配列
-		 */
-	Unicode.toUTF16Array = function toUTF16Array (text) {
-		var utf16 = [];
-		for(var i = 0; i < text.length; i++) {
+	 * 文字列をUTF16の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF16のデータが入った配列
+	 */
+	static toUTF16Array(text) {
+		const utf16 = [];
+		for(let i = 0; i < text.length; i++) {
 			utf16[i] = text.charCodeAt(i);
 		}
 		return utf16;
-	};
+	}
 
 	/**
-		 * UTF16の配列から文字列に変換
-		 * @param {Array<number>} utf16 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Unicode.fromUTF16Array = function fromUTF16Array (utf16) {
-		var text = [];
-		for(var i = 0; i < utf16.length; i++) {
+	 * UTF16の配列から文字列に変換
+	 * @param {Array<number>} utf16 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF16Array(utf16) {
+		const text = [];
+		for(let i = 0; i < utf16.length; i++) {
 			text[i] = String.fromCharCode(utf16[i]);
 		}
 		return text.join("");
-	};
+	}
 
 	/**
-		 * 文字列をUTF8の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} UTF8のデータが入った配列
-		 */
-	Unicode.toUTF8Array = function toUTF8Array (text) {
+	 * 文字列をUTF8の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF8のデータが入った配列
+	 */
+	static toUTF8Array(text) {
 		return Unicode.toUTFBinaryFromCodePoint(Unicode.toUTF32Array(text), "utf-8", false);
-	};
+	}
 
 	/**
-		 * UTF8の配列から文字列に変換
-		 * @param {Array<number>} utf8 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Unicode.fromUTF8Array = function fromUTF8Array (utf8) {
+	 * UTF8の配列から文字列に変換
+	 * @param {Array<number>} utf8 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF8Array(utf8) {
 		return Unicode.fromCodePoint(Unicode.toCodePointFromUTFBinary(utf8, "utf-8"));
-	};
+	}
 
 	/**
-		 * 指定したテキストを切り出す
-		 * - 単位は文字数
-		 * @param {String} text - 切り出したいテキスト
-		 * @param {Number} offset - 切り出し位置
-		 * @param {Number} size - 切り出す長さ
-		 * @returns {String} 切り出したテキスト
-		 */
-	Unicode.cutTextForCodePoint = function cutTextForCodePoint (text, offset, size) {
-		var utf32 = Unicode.toUTF32Array(text);
-		var cut = [];
-		for(var i = 0, point = offset; ((i < size) && (point < utf32.length)); i++, point++) {
+	 * 指定したテキストを切り出す
+	 * - 単位は文字数
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 */
+	static cutTextForCodePoint(text, offset, size) {
+		const utf32 = Unicode.toUTF32Array(text);
+		const cut = [];
+		for(let i = 0, point = offset; ((i < size) && (point < utf32.length)); i++, point++) {
 			cut.push(utf32[point]);
 		}
 		return Unicode.fromUTF32Array(cut);
-	};
+	}
 
 	/**
-		 * UTFのバイナリ配列からバイトオーダーマーク(BOM)を調査する
-		 * @param {Array<number>} utfbinary - 調査するバイナリ配列
-		 * @returns {string} 符号化形式(不明時はnull)
-		 */
-	Unicode.getCharsetFromBOM = function getCharsetFromBOM (utfbinary) {
+	 * UTFのバイナリ配列からバイトオーダーマーク(BOM)を調査する
+	 * @param {Array<number>} utfbinary - 調査するバイナリ配列
+	 * @returns {string} 符号化形式(不明時はnull)
+	 */
+	static getCharsetFromBOM(utfbinary) {
 		if(utfbinary.length >= 4) {
 			if((utfbinary[0] === 0x00) && (utfbinary[1] === 0x00) && (utfbinary[2] === 0xFE) && (utfbinary[3] === 0xFF)) {
 				return "UTF-32BE";
@@ -319,20 +315,20 @@
 			}
 		}
 		return null;
-	};
+	}
 
 	/**
-		 * UTFのバイナリ配列からコードポイントに変換
-		 * @param {Array<number>} binary - 変換したいバイナリ配列
-		 * @param {String} [charset] - UTFの種類（省略した場合はBOM付きを期待する）
-		 * @returns {Array<number>} コードポイントの配列(失敗時はnull)
-		 */
-	Unicode.toCodePointFromUTFBinary = function toCodePointFromUTFBinary (binary, charset) {
-		var utf32_array = [];
-		var check_charset = charset;
-		var offset = 0;
+	 * UTFのバイナリ配列からコードポイントに変換
+	 * @param {Array<number>} binary - 変換したいバイナリ配列
+	 * @param {String} [charset] - UTFの種類（省略した場合はBOM付きを期待する）
+	 * @returns {Array<number>} コードポイントの配列(失敗時はnull)
+	 */
+	static toCodePointFromUTFBinary(binary, charset) {
+		const utf32_array = [];
+		let check_charset = charset;
+		let offset = 0;
 		// バイトオーダーマーク(BOM)がある場合は BOM を優先
-		var charset_for_bom = Unicode.getCharsetFromBOM(binary);
+		const charset_for_bom = Unicode.getCharsetFromBOM(binary);
 		if(charset_for_bom) {
 			check_charset = charset_for_bom;
 			if(/utf-?8/i.test(charset_for_bom)) {
@@ -351,10 +347,10 @@
 		}
 		// UTF-8
 		if(/utf-?8n?/i.test(check_charset)) {
-			var size = 0;
-			var write = 0;
-			for(var i = offset; i < binary.length; i++) {
-				var bin = binary[i];
+			let size = 0;
+			let write = 0;
+			for(let i = offset; i < binary.length; i++) {
+				const bin = binary[i];
 				if(size === 0) {
 					if(bin < 0x80) {
 						utf32_array.push(bin);
@@ -386,31 +382,31 @@
 		// UTF-16
 		else if(/utf-?16/i.test(check_charset)) {
 			// UTF-16 につめる
-			var utf16 = [];
+			const utf16 = [];
 			// UTF-16BE
 			if(/utf-?16(be)/i.test(check_charset)) {
-				for(var i$1 = offset; i$1 < binary.length; i$1 += 2) {
-					utf16.push((binary[i$1] << 8) | binary[i$1 + 1]);
+				for(let i = offset; i < binary.length; i += 2) {
+					utf16.push((binary[i] << 8) | binary[i + 1]);
 				}
 			}
 			// UTF-16LE
 			else if(/utf-?16(le)?/i.test(check_charset)) {
-				for(var i$2 = offset; i$2 < binary.length; i$2 += 2) {
-					utf16.push(binary[i$2] | (binary[i$2 + 1] << 8));
+				for(let i = offset; i < binary.length; i += 2) {
+					utf16.push(binary[i] | (binary[i + 1] << 8));
 				}
 			}
 			// UTF-32 につめる
-			for(var i$3 = 0; i$3 < utf16.length; i$3++) {
-				if((0xD800 <= utf16[i$3]) && (utf16[i$3] <= 0xDBFF)) {
-					if(i$3 + 2 <= utf16.length) {
-						var high = utf16[i$3];
-						var low  = utf16[i$3 + 1];
+			for(let i = 0; i < utf16.length; i++) {
+				if((0xD800 <= utf16[i]) && (utf16[i] <= 0xDBFF)) {
+					if(i + 2 <= utf16.length) {
+						const high = utf16[i];
+						const low  = utf16[i + 1];
 						utf32_array.push((((high - 0xD800) << 10) | (low - 0xDC00)) + 0x10000);
 					}
-					i$3++;
+					i++;
 				}
 				else {
-					utf32_array.push(utf16[i$3]);
+					utf32_array.push(utf16[i]);
 				}
 			}
 			return utf32_array;
@@ -419,39 +415,39 @@
 		else {
 			// UTF-32BE
 			if(/utf-?32(be)/i.test(check_charset)) {
-				for(var i$4 = offset; i$4 < binary.length; i$4 += 4) {
-					utf32_array.push((binary[i$4] << 24) | (binary[i$4 + 1] << 16) | (binary[i$4 + 2] << 8) | binary[i$4 + 3]);
+				for(let i = offset; i < binary.length; i += 4) {
+					utf32_array.push((binary[i] << 24) | (binary[i + 1] << 16) | (binary[i + 2] << 8) | binary[i + 3]);
 				}
 				return utf32_array;
 			}
 			// UTF-32LE
 			else if(/utf-?32(le)?/i.test(check_charset)) {
-				for(var i$5 = offset; i$5 < binary.length; i$5 += 4) {
-					utf32_array.push(binary[i$5] | (binary[i$5 + 1] << 8) | (binary[i$5 + 2] << 16) | (binary[i$5 + 3] << 24));
+				for(let i = offset; i < binary.length; i += 4) {
+					utf32_array.push(binary[i] | (binary[i + 1] << 8) | (binary[i + 2] << 16) | (binary[i + 3] << 24));
 				}
 				return utf32_array;
 			}
 		}
 		return null;
-	};
+	}
 
 	/**
-		 * UTF32配列からバイナリ配列に変換
-		 * @param {Array<number>} utf32_array - 変換したいUTF-32配列
-		 * @param {String} charset - UTFの種類
-		 * @param {boolean} [is_with_bom=true] - BOMをつけるかどうか
-		 * @returns {Array<number>} バイナリ配列(失敗時はnull)
-		 */
-	Unicode.toUTFBinaryFromCodePoint = function toUTFBinaryFromCodePoint (utf32_array, charset, is_with_bom) {
-		var is_with_bom_ = is_with_bom !== undefined ? is_with_bom : true;
+	 * UTF32配列からバイナリ配列に変換
+	 * @param {Array<number>} utf32_array - 変換したいUTF-32配列
+	 * @param {String} charset - UTFの種類
+	 * @param {boolean} [is_with_bom=true] - BOMをつけるかどうか
+	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
+	 */
+	static toUTFBinaryFromCodePoint(utf32_array, charset, is_with_bom) {
+		let is_with_bom_ = is_with_bom !== undefined ? is_with_bom : true;
 		// charset に" with BOM" が入っている場合はBOM付きとする
 		if(/\s+with\s+bom$/i.test(charset)) {
 			is_with_bom_ = true;
 		}
 		/**
-			 * @type {Array<number>}
-			 */
-		var binary = [];
+		 * @type {Array<number>}
+		 */
+		const binary = [];
 		// UTF-8
 		if(/utf-?8n?/i.test(charset)) {
 			// bom をつける
@@ -460,15 +456,15 @@
 				binary.push(0xBB);
 				binary.push(0xBF);
 			}
-			for(var i = 0; i < utf32_array.length; i++) {
-				var codepoint = utf32_array[i];
+			for(let i = 0; i < utf32_array.length; i++) {
+				let codepoint = utf32_array[i];
 				// 1バイト文字
 				if(codepoint <= 0x7F) {
 					binary.push(codepoint);
 					continue;
 				}
-				var buffer = [];
-				var size = 0;
+				const buffer = [];
+				let size = 0;
 				// 2バイト以上
 				if(codepoint < 0x800) {
 					size = 2;
@@ -479,8 +475,8 @@
 				else {
 					size = 4;
 				}
-				for(var j = 0; j < size; j++) {
-					var write = codepoint & ((1 << 6) - 1);
+				for(let j = 0; j < size; j++) {
+					let write = codepoint & ((1 << 6) - 1);
 					if(j === size - 1) {
 						if(size === 2) {
 							write |= 0xC0; // 1100 0000
@@ -498,8 +494,8 @@
 					codepoint = codepoint >> 6;
 				}
 				// 反転
-				for(var j$1 = buffer.length - 1; j$1 >= 0; j$1--) {
-					binary.push(buffer[j$1]);
+				for(let j = buffer.length - 1; j >= 0; j--) {
+					binary.push(buffer[j]);
 				}
 			}
 			return binary;
@@ -507,7 +503,7 @@
 		// UTF-16
 		else if(/utf-?16/i.test(charset)) {
 			// UTF-16 に詰め替える
-			var utf16_array = Unicode.toUTF16ArrayfromCodePoint(utf32_array);
+			const utf16_array = Unicode.toUTF16ArrayfromCodePoint(utf32_array);
 			// UTF-16BE
 			if(/utf-?16(be)/i.test(charset)) {
 				// bom をつける
@@ -515,9 +511,9 @@
 					binary.push(0xFE);
 					binary.push(0xFF);
 				}
-				for(var i$1 = 0; i$1 < utf16_array.length; i$1++ ) {
-					binary.push(utf16_array[i$1] >> 8);
-					binary.push(utf16_array[i$1] & 0xff);
+				for(let i = 0; i < utf16_array.length; i++ ) {
+					binary.push(utf16_array[i] >> 8);
+					binary.push(utf16_array[i] & 0xff);
 				}
 			}
 			// UTF-16LE
@@ -527,9 +523,9 @@
 					binary.push(0xFF);
 					binary.push(0xFE);
 				}
-				for(var i$2 = 0; i$2 < utf16_array.length; i$2++ ) {
-					binary.push(utf16_array[i$2] & 0xff);
-					binary.push(utf16_array[i$2] >> 8);
+				for(let i = 0; i < utf16_array.length; i++ ) {
+					binary.push(utf16_array[i] & 0xff);
+					binary.push(utf16_array[i] >> 8);
 				}
 			}
 			return binary;
@@ -545,11 +541,11 @@
 					binary.push(0xFE);
 					binary.push(0xFF);
 				}
-				for(var i$3 = 0; i$3 < utf32_array.length; i$3++) {
-					binary.push((utf32_array[i$3] >> 24) & 0xff);
-					binary.push((utf32_array[i$3] >> 16) & 0xff);
-					binary.push((utf32_array[i$3] >> 8) & 0xff);
-					binary.push(utf32_array[i$3] & 0xff);
+				for(let i = 0; i < utf32_array.length; i++) {
+					binary.push((utf32_array[i] >> 24) & 0xff);
+					binary.push((utf32_array[i] >> 16) & 0xff);
+					binary.push((utf32_array[i] >> 8) & 0xff);
+					binary.push(utf32_array[i] & 0xff);
 				}
 			}
 			// UTF-32LE
@@ -561,50 +557,59 @@
 					binary.push(0x00);
 					binary.push(0x00);
 				}
-				for(var i$4 = 0; i$4 < utf32_array.length; i$4++) {
-					binary.push(utf32_array[i$4] & 0xff);
-					binary.push((utf32_array[i$4] >> 8) & 0xff);
-					binary.push((utf32_array[i$4] >> 16) & 0xff);
-					binary.push((utf32_array[i$4] >> 24) & 0xff);
+				for(let i = 0; i < utf32_array.length; i++) {
+					binary.push(utf32_array[i] & 0xff);
+					binary.push((utf32_array[i] >> 8) & 0xff);
+					binary.push((utf32_array[i] >> 16) & 0xff);
+					binary.push((utf32_array[i] >> 24) & 0xff);
 				}
 			}
 			return binary;
 		}
 		return null;
-	};
+	}
+
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * 面区点情報
+ * @typedef {Object} MenKuTen
+ * @property {string} [text] 面-区-点
+ * @property {number} [men=1] 面
+ * @property {number} ku 区
+ * @property {number} ten 点
+ */
+
+/**
+ * Shift_JIS を扱うクラス
+ * @ignore
+ */
+class SJIS {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
-	 */
-
-	/**
-	 * 面区点情報
-	 * @typedef {Object} MenKuTen
-	 * @property {string} [text] 面-区-点
-	 * @property {number} [men=1] 面
-	 * @property {number} ku 区
-	 * @property {number} ten 点
-	 */
-
-	/**
-	 * Shift_JIS を扱うクラス
+	 * 文字列を Shift_JIS の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
+	 * @returns {Array<number>} Shift_JIS のデータが入った配列
 	 * @ignore
 	 */
-	var SJIS = function SJIS () {};
-
-	SJIS.toSJISArray = function toSJISArray (text, unicode_to_sjis) {
-		var map = unicode_to_sjis;
-		var utf32 = Unicode.toUTF32Array(text);
-		var sjis = [];
-		var ng = "?".charCodeAt(0);
-		for(var i = 0; i < utf32.length; i++) {
-			var map_bin = map[utf32[i]];
+	static toSJISArray(text, unicode_to_sjis) {
+		const map = unicode_to_sjis;
+		const utf32 = Unicode.toUTF32Array(text);
+		const sjis = [];
+		const ng = "?".charCodeAt(0);
+		for(let i = 0; i < utf32.length; i++) {
+			const map_bin = map[utf32[i]];
 			if(map_bin) {
 				sjis.push(map_bin);
 			}
@@ -613,20 +618,20 @@
 			}
 		}
 		return sjis;
-	};
+	}
 
 	/**
-		 * 文字列を Shift_JIS のバイナリ配列に変換
-		 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-		 * @param {String} text - 変換したいテキスト
-		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
-		 * @returns {Array<number>} Shift_JIS のデータが入ったバイナリ配列
-		 * @ignore
-		 */
-	SJIS.toSJISBinary = function toSJISBinary (text, unicode_to_sjis) {
-		var sjis = SJIS.toSJISArray(text, unicode_to_sjis);
-		var sjisbin = [];
-		for(var i = 0; i < sjis.length; i++) {
+	 * 文字列を Shift_JIS のバイナリ配列に変換
+	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
+	 * @param {String} text - 変換したいテキスト
+	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
+	 * @returns {Array<number>} Shift_JIS のデータが入ったバイナリ配列
+	 * @ignore
+	 */
+	static toSJISBinary(text, unicode_to_sjis) {
+		const sjis = SJIS.toSJISArray(text, unicode_to_sjis);
+		const sjisbin = [];
+		for(let i = 0; i < sjis.length; i++) {
 			if(sjis[i] < 0x100) {
 				sjisbin.push(sjis[i]);
 			}
@@ -636,25 +641,25 @@
 			}
 		}
 		return sjisbin;
-	};
+	}
 
 	/**
-		 * SJISの配列から文字列に変換
-		 * @param {Array<number>} sjis - 変換したいテキスト
-		 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
-		 * @returns {String} 変換後のテキスト
-		 * @ignore
-		 */
-	SJIS.fromSJISArray = function fromSJISArray (sjis, sjis_to_unicode) {
-		var map = sjis_to_unicode;
-		var utf16 = [];
-		var ng = "?".charCodeAt(0);
-		for(var i = 0; i < sjis.length; i++) {
-			var x = sjis[i];
+	 * SJISの配列から文字列に変換
+	 * @param {Array<number>} sjis - 変換したいテキスト
+	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
+	 * @returns {String} 変換後のテキスト
+	 * @ignore
+	 */
+	static fromSJISArray(sjis, sjis_to_unicode) {
+		const map = sjis_to_unicode;
+		const utf16 = [];
+		const ng = "?".charCodeAt(0);
+		for(let i = 0; i < sjis.length; i++) {
+			let x = sjis[i];
 			/**
-				 * @type {number|Array<number>}
-				 */
-			var y = [];
+			 * @type {number|Array<number>}
+			 */
+			let y = [];
 			if(x >= 0x100) {
 				// すでに1つの変数にまとめられている
 				y = map[x];
@@ -675,7 +680,7 @@
 				// 配列なら配列を結合
 				// ※ Unicodeの結合文字の可能性があるため
 				if(y instanceof Array) {
-					for(var j = 0; j < y.length; j++) {
+					for(let j = 0; j < y.length; j++) {
 						utf16.push(y[j]);
 					}
 				}
@@ -689,44 +694,44 @@
 			}
 		}
 		return Unicode.fromUTF32Array(utf16);
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの文字から Shift_JIS 上の符号化数値に変換
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
-		 * @returns {Number} 符号化数値(変換できない場合はnullとなる)
-		 * @ignore
-		 */
-	SJIS.toSJISCodeFromUnicode = function toSJISCodeFromUnicode (unicode_codepoint, unicode_to_sjis) {
+	 * 指定したコードポイントの文字から Shift_JIS 上の符号化数値に変換
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
+	 * @returns {Number} 符号化数値(変換できない場合はnullとなる)
+	 * @ignore
+	 */
+	static toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
 			return null;
 		}
-		var utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
-		var sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis);
+		const utf16_text = Unicode.fromUTF32Array([unicode_codepoint]);
+		const sjis_array = SJIS.toSJISArray(utf16_text, unicode_to_sjis);
 		return sjis_array[0];
-	};
+	}
 
 	/**
-		 * 指定した Shift_JIS-2004 のコードから面区点番号に変換
-		 * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
-		 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 */
-	SJIS.toMenKuTenFromSJIS2004Code = function toMenKuTenFromSJIS2004Code (sjis_code) {
+	 * 指定した Shift_JIS-2004 のコードから面区点番号に変換
+	 * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
+	 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTenFromSJIS2004Code(sjis_code) {
 		if(!sjis_code) {
 			return null;
 		}
-		var x = sjis_code;
+		const x = sjis_code;
 		if(x < 0x100) {
 			return null;
 		}
 		// アルゴリズムは面区点番号表からリバースエンジニアリング
 
-		var s1 = x >> 8;
-		var s2 = x & 0xFF;
-		var men = 0;
-		var ku = 0;
-		var ten = 0;
+		let s1 = x >> 8;
+		let s2 = x & 0xFF;
+		let men = 0;
+		let ku = 0;
+		let ten = 0;
 
 		// 面情報の位置判定
 		if(s1 < 0xF0) {
@@ -783,31 +788,31 @@
 			ku : ku,
 			ten : ten
 		};
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの文字から Shift_JIS-2004 上の面区点番号に変換
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS-2004 への変換マップ
-		 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 * @ignore
-		 */
-	SJIS.toMenKuTenFromUnicode = function toMenKuTenFromUnicode (unicode_codepoint, unicode_to_sjis) {
+	 * 指定したコードポイントの文字から Shift_JIS-2004 上の面区点番号に変換
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS-2004 への変換マップ
+	 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 * @ignore
+	 */
+	static toMenKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
 			return null;
 		}
-		var x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
 		return SJIS.toMenKuTenFromSJIS2004Code(x);
-	};
-		
+	}
+	
 	/**
-		 * 指定した面区点番号から Shift_JIS-2004 コードに変換
-		 * @param {MenKuTen|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
-		 * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
-		 */
-	SJIS.toSJIS2004CodeFromMenKuTen = function toSJIS2004CodeFromMenKuTen (menkuten) {
-		var m = null, k = null, t = null;
-		var text = null;
+	 * 指定した面区点番号から Shift_JIS-2004 コードに変換
+	 * @param {MenKuTen|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
+	 * @returns {Number} Shift_JIS-2004 のコードポイント(存在しない場合はnullを返す)
+	 */
+	static toSJIS2004CodeFromMenKuTen(menkuten) {
+		let m = null, k = null, t = null;
+		let text = null;
 		if(menkuten instanceof Object) {
 			if(menkuten.text && (typeof menkuten.text === "string")) {
 				text = menkuten.text;
@@ -822,7 +827,7 @@
 			text = menkuten;
 		}
 		if(text) {
-			var strmkt = text.split("-");
+			const strmkt = text.split("-");
 			if(strmkt.length === 3) {
 				m = parseInt(strmkt[0], 10);
 				k = parseInt(strmkt[1], 10);
@@ -838,13 +843,13 @@
 			throw "IllegalArgumentException";
 		}
 
-		var s1 = -1;
-		var s2 = -1;
+		let s1 = -1;
+		let s2 = -1;
 
 		/**
-			 * @type {Object<number, number>}
-			 */
-		var kmap = {1:1,3:1,4:1,5:1,8:1,12:1,13:1,14:1,15:1};
+		 * @type {Object<number, number>}
+		 */
+		const kmap = {1:1,3:1,4:1,5:1,8:1,12:1,13:1,14:1,15:1};
 
 		// 参考
 		// 2019/1/1 Shift JIS - Wikipedia
@@ -886,21 +891,21 @@
 			return null;
 		}
 		return (s1 << 8) | s2;
-	};
-		
+	}
+	
 	/**
-		 * 指定した面区点番号から Unicode コードポイントに変換
-		 * @param {MenKuTen|string} menkuten - 面区点番号
-		 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から Unicode への変換マップ
-		 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
-		 * @ignore
-		 */
-	SJIS.toUnicodeCodeFromMenKuTen = function toUnicodeCodeFromMenKuTen (menkuten, sjis_to_unicode) {
-		var sjis_code = SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
+	 * 指定した面区点番号から Unicode コードポイントに変換
+	 * @param {MenKuTen|string} menkuten - 面区点番号
+	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS-2004 から Unicode への変換マップ
+	 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
+	 * @ignore
+	 */
+	static toUnicodeCodeFromMenKuTen(menkuten, sjis_to_unicode) {
+		const sjis_code = SJIS.toSJIS2004CodeFromMenKuTen(menkuten);
 		if(!sjis_code) {
 			return null;
 		}
-		var unicode = sjis_to_unicode[sjis_code];
+		const unicode = sjis_to_unicode[sjis_code];
 		if(!unicode) {
 			return null;
 		}
@@ -910,27 +915,27 @@
 		else {
 			return [unicode];
 		}
-	};
+	}
 
 	/**
-		 * 指定した Shift_JIS のコードから区点番号に変換
-		 * @param {Number} sjis_code - Shift_JIS のコードポイント
-		 * @returns {MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 */
-	SJIS.toKuTenFromSJISCode = function toKuTenFromSJISCode (sjis_code) {
+	 * 指定した Shift_JIS のコードから区点番号に変換
+	 * @param {Number} sjis_code - Shift_JIS のコードポイント
+	 * @returns {MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toKuTenFromSJISCode(sjis_code) {
 		if(!sjis_code) {
 			return null;
 		}
-		var x = sjis_code;
+		const x = sjis_code;
 		if(x < 0x100) {
 			return null;
 		}
 		// アルゴリズムは区点番号表からリバースエンジニアリング
 
-		var s1 = x >> 8;
-		var s2 = x & 0xFF;
-		var ku = 0;
-		var ten = 0;
+		let s1 = x >> 8;
+		let s2 = x & 0xFF;
+		let ku = 0;
+		let ten = 0;
 
 		// 区の計算方法の切り替え
 		// 63区から、0x9F→0xE0に飛ぶ
@@ -967,48 +972,48 @@
 			ku : ku,
 			ten : ten
 		};
-	};
-		
+	}
+	
 	/**
-		 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号に変換
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
-		 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 * @ignore
-		 */
-	SJIS.toKuTenFromUnicode = function toKuTenFromUnicode (unicode_codepoint, unicode_to_sjis) {
+	 * 指定したコードポイントの文字から Shift_JIS 上の面区点番号に変換
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
+	 * @returns {MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 * @ignore
+	 */
+	static toKuTenFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
 			return null;
 		}
-		var x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
 		return SJIS.toKuTenFromSJISCode(x);
-	};
+	}
 
 	/**
-		 * 指定した面区点番号／区点番号から Shift_JIS コードに変換
-		 * @param {MenKuTen|string} kuten - 面区点番号／区点番号
-		 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
-		 */
-	SJIS.toSJISCodeFromKuTen = function toSJISCodeFromKuTen (kuten) {
+	 * 指定した面区点番号／区点番号から Shift_JIS コードに変換
+	 * @param {MenKuTen|string} kuten - 面区点番号／区点番号
+	 * @returns {Number} Shift_JIS のコードポイント(存在しない場合はnullを返す)
+	 */
+	static toSJISCodeFromKuTen(kuten) {
 		// 1～94区まで存在しているため面句点変換用で流用可能。
 		// ただ、CP932の場合、範囲外の区、115区〜119区にIBM拡張文字が存在している。
 		// 今回、toSJIS2004CodeFromMenKuTenでは区の範囲チェックをしないため問題なし。
 		return SJIS.toSJIS2004CodeFromMenKuTen(kuten);
-	};
-		
+	}
+	
 	/**
-		 * 指定した区点番号から Unicode コードポイントに変換
-		 * @param {MenKuTen|string} kuten - 区点番号
-		 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
-		 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
-		 * @ignore
-		 */
-	SJIS.toUnicodeCodeFromKuTen = function toUnicodeCodeFromKuTen (kuten, sjis_to_unicode) {
-		var sjis_code = SJIS.toSJISCodeFromKuTen(kuten);
+	 * 指定した区点番号から Unicode コードポイントに変換
+	 * @param {MenKuTen|string} kuten - 区点番号
+	 * @param {Object<number, number|Array<number>>} sjis_to_unicode - Shift_JIS から Unicode への変換マップ
+	 * @returns {Array<number>} UTF-32の配列(存在しない場合はnullを返す)
+	 * @ignore
+	 */
+	static toUnicodeCodeFromKuTen(kuten, sjis_to_unicode) {
+		const sjis_code = SJIS.toSJISCodeFromKuTen(kuten);
 		if(!sjis_code) {
 			return null;
 		}
-		var unicode = sjis_to_unicode[sjis_code];
+		const unicode = sjis_to_unicode[sjis_code];
 		if(!unicode) {
 			return null;
 		}
@@ -1018,18 +1023,18 @@
 		else {
 			return [unicode];
 		}
-	};
+	}
 
 	/**
-		 * Shift_JIS のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
-		 * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
-		 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
-		 */
-	SJIS.toJISKanjiSuijunFromSJISCode = function toJISKanjiSuijunFromSJISCode (sjis_code) {
+	 * Shift_JIS のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
+	 * @param {Number} sjis_code - Shift_JIS-2004 のコードポイント
+	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
+	 */
+	static toJISKanjiSuijunFromSJISCode(sjis_code) {
 		if(!sjis_code) {
 			return 0;
 		}
-		var menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis_code);
+		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis_code);
 		// アルゴリズムはJIS漢字一覧表からリバースエンジニアリング
 		if(!menkuten) {
 			return 0;
@@ -1076,30 +1081,30 @@
 			return 3;
 		}
 		return 0;
-	};
+	}
 
 	/**
-		 * Unicode のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
-		 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
-		 * @ignore
-		 */
-	SJIS.toJISKanjiSuijunFromUnicode = function toJISKanjiSuijunFromUnicode (unicode_codepoint, unicode_to_sjis) {
+	 * Unicode のコードポイントからJIS漢字水準（JIS Chinese character standard）に変換
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
+	 * @returns {Number} -1...変換不可, 0...水準なし, 1...第1水準, ...
+	 * @ignore
+	 */
+	static toJISKanjiSuijunFromUnicode(unicode_codepoint, unicode_to_sjis) {
 		if(!unicode_to_sjis[unicode_codepoint]) {
 			return -1;
 		}
-		var x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
+		const x = SJIS.toSJISCodeFromUnicode(unicode_codepoint, unicode_to_sjis);
 		return SJIS.toJISKanjiSuijunFromSJISCode(x);
-	};
+	}
 
 	/**
-		 * 指定した面区点番号から Shift_JIS の仕様上、正規な物か判定
-		 * @param {MenKuTen|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
-		 * @returns {Boolean} 正規なデータは true, 不正なデータは false
-		 */
-	SJIS.isRegularMenKuten = function isRegularMenKuten (menkuten) {
-		var m, k, t;
+	 * 指定した面区点番号から Shift_JIS の仕様上、正規な物か判定
+	 * @param {MenKuTen|string} menkuten - 面区点番号（面が省略された場合は、1とみなす）
+	 * @returns {Boolean} 正規なデータは true, 不正なデータは false
+	 */
+	static isRegularMenKuten(menkuten) {
+		let m, k, t;
 
 		// 引数のテスト
 		if(menkuten instanceof Object) {
@@ -1108,7 +1113,7 @@
 			t = menkuten.ten;
 		}
 		else if(typeof menkuten === "string") {
-			var strmkt = menkuten.split("-");
+			const strmkt = menkuten.split("-");
 			if(strmkt.length === 3) {
 				m = parseInt(strmkt[0], 10);
 				k = parseInt(strmkt[1], 10);
@@ -1128,9 +1133,9 @@
 		}
 
 		/**
-			 * @type {Object<number, number>}
-			 */
-		var kmap = {1:1,3:1,4:1,5:1,8:1,12:1,13:1,14:1,15:1};
+		 * @type {Object<number, number>}
+		 */
+		const kmap = {1:1,3:1,4:1,5:1,8:1,12:1,13:1,14:1,15:1};
 		if(m === 1) {
 			// 1面は1-94区まで存在
 			if(!((1 <= k) && (k <= 94))) {
@@ -1152,42 +1157,45 @@
 			return false;
 		}
 		return true;
-	};
+	}
+
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * CP932, Windows-31J の変換マップ作成用クラス
+ * @ignore
+ */
+class CP932MAP {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 変換マップを初期化
 	 */
-
-	/**
-	 * CP932, Windows-31J の変換マップ作成用クラス
-	 * @ignore
-	 */
-	var CP932MAP = function CP932MAP () {};
-
-	var staticAccessors = { CP932_TO_UNICODE: { configurable: true },UNICODE_TO_CP932: { configurable: true } };
-
-	CP932MAP.init = function init () {
+	static init() {
 		if(CP932MAP.is_initmap) {
 			return;
 		}
 		CP932MAP.is_initmap = true;
-				
+			
 		/**
-			 * 変換マップ
-			 * 
-			 * 
-			 * 参考：WideCharToMultiByte
-			 * メモ：今回は使っていないが、以下の文献も参考になるかもしれません。
-			 * ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
-			 * @type {Object<number, number>}
-			 */
-		var cp932_to_unicode_map = {
+		 * 変換マップ
+		 * 
+		 * 
+		 * 参考：WideCharToMultiByte
+		 * メモ：今回は使っていないが、以下の文献も参考になるかもしれません。
+		 * ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+		 * @type {Object<number, number>}
+		 */
+		const cp932_to_unicode_map = {
 			0x01: 0x01, 0x02: 0x02, 0x03: 0x03, 0x04: 0x04, 0x05: 0x05, 0x06: 0x06, 0x07: 0x07, 0x08: 0x08,
 			0x09: 0x09, 0x0a: 0x0a, 0x0b: 0x0b, 0x0c: 0x0c, 0x0d: 0x0d, 0x0e: 0x0e, 0x0f: 0x0f, 0x10: 0x10,
 			0x11: 0x11, 0x12: 0x12, 0x13: 0x13, 0x14: 0x14, 0x15: 0x15, 0x16: 0x16, 0x17: 0x17, 0x18: 0x18,
@@ -2417,10 +2425,10 @@
 		};
 
 		/**
-			 * 重複された CP932 のコード
-			 * @type {Array<number>}
-			 */
-		var duplicate_map_array = [
+		 * 重複された CP932 のコード
+		 * @type {Array<number>}
+		 */
+		const duplicate_map_array = [
 			0x8790, 0x8791, 0x8792, 0x8795, 0x8796, 0x8797, 0x879a, 0x879b, 0x879c, 0xed40, 0xed41, 0xed42, 0xed43, 0xed44, 0xed45, 0xed46,
 			0xed47, 0xed48, 0xed49, 0xed4a, 0xed4b, 0xed4c, 0xed4d, 0xed4e, 0xed4f, 0xed50, 0xed51, 0xed52, 0xed53, 0xed54, 0xed55, 0xed56,
 			0xed57, 0xed58, 0xed59, 0xed5a, 0xed5b, 0xed5c, 0xed5d, 0xed5e, 0xed5f, 0xed60, 0xed61, 0xed62, 0xed63, 0xed64, 0xed65, 0xed66,
@@ -2449,28 +2457,28 @@
 		];
 
 		/**
-			 * @type {Object<number, number>}
-			 */
-		var duplicate_map = {};
-			
+		 * @type {Object<number, number>}
+		 */
+		const duplicate_map = {};
+		
 		/**
-			 * @type {Object<number, number>}
-			 */
-		var unicode_to_cp932_map = {};
+		 * @type {Object<number, number>}
+		 */
+		const unicode_to_cp932_map = {};
 
-		for(var key in duplicate_map_array) {
+		for(const key in duplicate_map_array) {
 			duplicate_map[duplicate_map_array[key]] = 1;
 		}
-		for(var key$1 in cp932_to_unicode_map) {
+		for(const key in cp932_to_unicode_map) {
 			// 重複登録された文字
 			// IBM拡張文字 と NEC特殊文字 と NEC選定IBM拡張文字 で
 			// マッピング先が一部重複している。
 			// WideCharToMultiByte の仕様に基づき、登録しない。
-			if(duplicate_map[key$1]) {
+			if(duplicate_map[key]) {
 				continue;
 			}
-			var x = cp932_to_unicode_map[key$1];
-			unicode_to_cp932_map[x] = parseInt(key$1, 10);
+			const x = cp932_to_unicode_map[key];
+			unicode_to_cp932_map[x] = parseInt(key, 10);
 		}
 
 		// 逆引きの注意点
@@ -2496,149 +2504,156 @@
 
 		CP932MAP.cp932_to_unicode_map = cp932_to_unicode_map;
 		CP932MAP.unicode_to_cp932_map = unicode_to_cp932_map;
-	};
+	}
 
 	/**
-		 * @returns {Object<number, number>}
-		 */
-	staticAccessors.CP932_TO_UNICODE.get = function () {
+	 * @returns {Object<number, number>}
+	 */
+	static get CP932_TO_UNICODE() {
 		CP932MAP.init();
 		return CP932MAP.cp932_to_unicode_map;
-	};
-		
+	}
+	
 	/**
-		 * @returns {Object<number, number>}
-		 */
-	staticAccessors.UNICODE_TO_CP932.get = function () {
+	 * @returns {Object<number, number>}
+	 */
+	static get UNICODE_TO_CP932() {
 		CP932MAP.init();
 		return CP932MAP.unicode_to_cp932_map;
-	};
+	}
+}
 
-	Object.defineProperties( CP932MAP, staticAccessors );
+/**
+ * 変換マップを初期化したかどうか
+ * @type {boolean}
+ */
+CP932MAP.is_initmap = false;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
+CP932MAP.cp932_to_unicode_map = null;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
+CP932MAP.unicode_to_cp932_map = null;
+
+/**
+ * CP932, Windows-31J を扱うクラス
+ * @ignore
+ */
+class CP932 {
 
 	/**
-	 * 変換マップを初期化したかどうか
-	 * @type {boolean}
+	 * Unicode のコードから CP932 のコードに変換
+	 * @param {Number} unicode_codepoint - Unicode のコードポイント
+	 * @returns {Number} CP932 のコードポイント (存在しない場合は undefined)
 	 */
-	CP932MAP.is_initmap = false;
-
-	/**
-	 * 変換用マップ
-	 * @type {Object<number, number>}
-	 */
-	CP932MAP.cp932_to_unicode_map = null;
-
-	/**
-	 * 変換用マップ
-	 * @type {Object<number, number>}
-	 */
-	CP932MAP.unicode_to_cp932_map = null;
-
-	/**
-	 * CP932, Windows-31J を扱うクラス
-	 * @ignore
-	 */
-	var CP932 = function CP932 () {};
-
-	CP932.toCP932FromUnicode = function toCP932FromUnicode (unicode_codepoint) {
+	static toCP932FromUnicode(unicode_codepoint) {
 		return CP932MAP.UNICODE_TO_CP932[unicode_codepoint];
-	};
+	}
 
 	/**
-		 * CP932 のコードから Unicode のコードに変換
-		 * @param {Number} cp932_codepoint - CP932 のコードポイント
-		 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
-		 */
-	CP932.toUnicodeFromCP932 = function toUnicodeFromCP932 (cp932_codepoint) {
+	 * CP932 のコードから Unicode のコードに変換
+	 * @param {Number} cp932_codepoint - CP932 のコードポイント
+	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
+	 */
+	static toUnicodeFromCP932(cp932_codepoint) {
 		return CP932MAP.CP932_TO_UNICODE[cp932_codepoint];
-	};
-		
+	}
+	
 	/**
-		 * 文字列を CP932 の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} CP932 のデータが入った配列
-		 */
-	CP932.toCP932Array = function toCP932Array (text) {
+	 * 文字列を CP932 の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} CP932 のデータが入った配列
+	 */
+	static toCP932Array(text) {
 		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
-	};
+	}
 
 	/**
-		 * 文字列を CP932 のバイナリ配列に変換
-		 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
-		 */
-	CP932.toCP932Binary = function toCP932Binary (text) {
+	 * 文字列を CP932 のバイナリ配列に変換
+	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
+	 */
+	static toCP932Binary(text) {
 		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932);
-	};
+	}
 
 	/**
-		 * CP932 の配列から文字列に変換
-		 * @param {Array<number>} cp932 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	CP932.fromCP932Array = function fromCP932Array (cp932) {
+	 * CP932 の配列から文字列に変換
+	 * @param {Array<number>} cp932 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromCP932Array(cp932) {
 		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
-	};
+	}
 
 	/**
-		 * 指定した文字から Windows-31J 上の区点番号に変換
-		 * - 2文字以上を指定した場合は、1文字目のみを変換する
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {import("./SJIS.js").MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 */
-	CP932.toKuTen = function toKuTen (text) {
+	 * 指定した文字から Windows-31J 上の区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./SJIS.js").MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toKuTen(text) {
 		if(text.length === 0) {
 			return null;
 		}
-		var cp932_code = CP932.toCP932FromUnicode(Unicode.toUTF32Array(text)[0]);
+		const cp932_code = CP932.toCP932FromUnicode(Unicode.toUTF32Array(text)[0]);
 		return cp932_code ? SJIS.toKuTenFromSJISCode(cp932_code) : null;
-	};
-		
+	}
+	
 	/**
-		 * Windows-31J 上の区点番号から文字列に変換
-		 * @param {import("./SJIS.js").MenKuTen|string} kuten - 区点番号
-		 * @returns {String} 変換後のテキスト
-		 */
-	CP932.fromKuTen = function fromKuTen (kuten) {
-		var code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE);
+	 * Windows-31J 上の区点番号から文字列に変換
+	 * @param {import("./SJIS.js").MenKuTen|string} kuten - 区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromKuTen(kuten) {
+		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE);
 		return code ? Unicode.fromUTF32Array(code) : "";
-	};
+	}
 
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * Shift_JIS-2004 の変換マップ作成用クラス
+ * @ignore
+ */
+class SJIS2004MAP {
+    
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 変換マップを初期化
 	 */
-
-	/**
-	 * Shift_JIS-2004 の変換マップ作成用クラス
-	 * @ignore
-	 */
-	var SJIS2004MAP = function SJIS2004MAP () {};
-
-	var staticAccessors$1 = { SJIS2004_TO_UNICODE: { configurable: true },UNICODE_TO_SJIS2004: { configurable: true } };
-
-	SJIS2004MAP.init = function init () {
+	static init() {
 		if(SJIS2004MAP.is_initmap) {
 			return;
 		}
 		SJIS2004MAP.is_initmap = true;
 
 		/**
-			 * 変換マップ
-			 * - 2文字に変換される場合もあるので注意
-			 * 
-			 * 
-			 * 参考：JIS X 0213 - Wikipedia (2019/1/1)
-			 * https://ja.wikipedia.org/wiki/JIS_X_0213
-			 * @type {Object<number, number|Array<number>>}
-			 */
-		var sjis2004_to_unicode_map = {
+		 * 変換マップ
+		 * - 2文字に変換される場合もあるので注意
+		 * 
+		 * 
+		 * 参考：JIS X 0213 - Wikipedia (2019/1/1)
+		 * https://ja.wikipedia.org/wiki/JIS_X_0213
+		 * @type {Object<number, number|Array<number>>}
+		 */
+		const sjis2004_to_unicode_map = {
 			// ASCII コード部分は CP932 を参考
 			0x00: 0x00, 
 			0x01: 0x01, 0x02: 0x02, 0x03: 0x03, 0x04: 0x04, 0x05: 0x05, 0x06: 0x06, 0x07: 0x07, 0x08: 0x08,
@@ -4075,15 +4090,15 @@
 		};
 
 		/**
-			 * 全角用の文字がある場合は、全角へ変換できるようにする。
-			 * 以下のリストは、上記のマッピングデータのUnicodeのコードポイントが0x100未満のデータを抜き出して、
-			 * 全角になっていない部分をCP932を参考に直したものです。
-			 * 
-			 * メモ：今回は使っていませんが、以下の文献も参考になるかもしれません。
-			 * ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
-			 * @type {Object<number, number>}
-			 */
-		var sjis2004_to_unicode_map_2 = {
+		 * 全角用の文字がある場合は、全角へ変換できるようにする。
+		 * 以下のリストは、上記のマッピングデータのUnicodeのコードポイントが0x100未満のデータを抜き出して、
+		 * 全角になっていない部分をCP932を参考に直したものです。
+		 * 
+		 * メモ：今回は使っていませんが、以下の文献も参考になるかもしれません。
+		 * ftp://www.unicode.org/Public/MAPPINGS/OBSOLETE/EASTASIA/JIS/JIS0208.TXT
+		 * @type {Object<number, number>}
+		 */
+		const sjis2004_to_unicode_map_2 = {
 			0x8143: 0xff0c, 0x8144: 0xff0e, 0x8146: 0xff1a, 0x8147: 0xff1b, 0x8148: 0xff1f, 0x8149: 0xff01, 0x814c: 0x00b4, 0x814d: 0xff40, 
 			0x814e: 0x00a8, 0x814f: 0xff3e, 0x8151: 0xff3f, 0x815e: 0xff0f, 0x815f: 0xff3c, 0x8162: 0xff5c, 0x8169: 0xff08, 0x816a: 0xff09, 
 			0x816d: 0xff3b, 0x816e: 0xff3d, 0x816f: 0xff5b, 0x8170: 0xff5d, 0x817b: 0xff0b, 0x817d: 0x00b1, 0x817e: 0x00d7, 0x8180: 0x00f7, 
@@ -4109,18 +4124,18 @@
 		// ～,0x8160,0x81b0,0x007e,0xff5e
 
 		// マップデータを上書きする
-		for(var key in sjis2004_to_unicode_map_2) {
+		for(const key in sjis2004_to_unicode_map_2) {
 			sjis2004_to_unicode_map[key] = sjis2004_to_unicode_map_2[key];
 		}
 
 		/**
-			 * 逆引きマップ作成。重複がある場合は、小さい数値を優先させる。
-			 * @type {Object<number, number>}
-			 */
-		var unicode_to_sjis2004_map = {};
-		for(var key$1 in sjis2004_to_unicode_map) {
-			var x = sjis2004_to_unicode_map[key$1];
-			var key_num = parseInt(key$1, 10);
+		 * 逆引きマップ作成。重複がある場合は、小さい数値を優先させる。
+		 * @type {Object<number, number>}
+		 */
+		const unicode_to_sjis2004_map = {};
+		for(const key in sjis2004_to_unicode_map) {
+			const x = sjis2004_to_unicode_map[key];
+			const key_num = parseInt(key, 10);
 			if(!(x instanceof Array)) {
 				if(unicode_to_sjis2004_map[x]) {
 					if(x > key_num) {
@@ -4138,146 +4153,152 @@
 
 		SJIS2004MAP.sjis2004_to_unicode_map = sjis2004_to_unicode_map;
 		SJIS2004MAP.unicode_to_sjis2004_map = unicode_to_sjis2004_map;
-	};
-		
+	}
+	
 	/**
-		 * @returns {Object<number, number|Array<number>>}
-		 */
-	staticAccessors$1.SJIS2004_TO_UNICODE.get = function () {
+	 * @returns {Object<number, number|Array<number>>}
+	 */
+	static get SJIS2004_TO_UNICODE() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.sjis2004_to_unicode_map;
-	};
-		
+	}
+	
 	/**
-		 * @returns {Object<number, number>}
-		 */
-	staticAccessors$1.UNICODE_TO_SJIS2004.get = function () {
+	 * @returns {Object<number, number>}
+	 */
+	static get UNICODE_TO_SJIS2004() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.unicode_to_sjis2004_map;
-	};
+	}
+}
 
-	Object.defineProperties( SJIS2004MAP, staticAccessors$1 );
+/**
+ * 変換マップを初期化したかどうか
+ * @type {boolean}
+ */
+SJIS2004MAP.is_initmap = false;
 
+/**
+ * 変換用マップ
+ * @type {Object<number, number|Array<number>>}
+ */
+SJIS2004MAP.sjis2004_to_unicode_map = null;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
+SJIS2004MAP.unicode_to_sjis2004_map = null;
+
+/**
+ * Shift_JIS-2004 を扱うクラス
+ * @ignore
+ */
+class SJIS2004 {
+	
 	/**
-	 * 変換マップを初期化したかどうか
-	 * @type {boolean}
+	 * Unicode のコードから Shift_JIS-2004 のコードに変換
+	 * @param {Number} unicode_codepoint - Unicode のコードポイント
+	 * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
 	 */
-	SJIS2004MAP.is_initmap = false;
-
-	/**
-	 * 変換用マップ
-	 * @type {Object<number, number|Array<number>>}
-	 */
-	SJIS2004MAP.sjis2004_to_unicode_map = null;
-
-	/**
-	 * 変換用マップ
-	 * @type {Object<number, number>}
-	 */
-	SJIS2004MAP.unicode_to_sjis2004_map = null;
-
-	/**
-	 * Shift_JIS-2004 を扱うクラス
-	 * @ignore
-	 */
-	var SJIS2004 = function SJIS2004 () {};
-
-	SJIS2004.toSJIS2004FromUnicode = function toSJIS2004FromUnicode (unicode_codepoint) {
+	static toSJIS2004FromUnicode(unicode_codepoint) {
 		return SJIS2004MAP.UNICODE_TO_SJIS2004[unicode_codepoint];
-	};
+	}
 
 	/**
-		 * Shift_JIS-2004 のコードから Unicode のコードに変換
-		 * @param {Number} sjis2004_codepoint - Shift_JIS-2004 のコードポイント
-		 * @returns {number|Array<number>} Unicode のコードポイント (存在しない場合は undefined)
-		 */
-	SJIS2004.toUnicodeFromSJIS2004 = function toUnicodeFromSJIS2004 (sjis2004_codepoint) {
+	 * Shift_JIS-2004 のコードから Unicode のコードに変換
+	 * @param {Number} sjis2004_codepoint - Shift_JIS-2004 のコードポイント
+	 * @returns {number|Array<number>} Unicode のコードポイント (存在しない場合は undefined)
+	 */
+	static toUnicodeFromSJIS2004(sjis2004_codepoint) {
 		return SJIS2004MAP.SJIS2004_TO_UNICODE[sjis2004_codepoint];
-	};
-		
+	}
+	
 	/**
-		 * 文字列を Shift_JIS-2004 の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} Shift_JIS-2004 のデータが入った配列
-		 */
-	SJIS2004.toSJIS2004Array = function toSJIS2004Array (text) {
+	 * 文字列を Shift_JIS-2004 の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} Shift_JIS-2004 のデータが入った配列
+	 */
+	static toSJIS2004Array(text) {
 		return SJIS.toSJISArray(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
-	};
+	}
 
 	/**
-		 * 文字列を Shift_JIS-2004 のバイナリ配列に変換
-		 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
-		 */
-	SJIS2004.toSJIS2004Binary = function toSJIS2004Binary (text) {
+	 * 文字列を Shift_JIS-2004 のバイナリ配列に変換
+	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
+	 */
+	static toSJIS2004Binary(text) {
 		return SJIS.toSJISBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
-	};
+	}
 
 	/**
-		 * Shift_JIS-2004 の配列から文字列に変換
-		 * @param {Array<number>} sjis2004 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	SJIS2004.fromSJIS2004Array = function fromSJIS2004Array (sjis2004) {
+	 * Shift_JIS-2004 の配列から文字列に変換
+	 * @param {Array<number>} sjis2004 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromSJIS2004Array(sjis2004) {
 		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
-	};
+	}
 
 	/**
-		 * 指定した文字から Shift_JIS-2004 上の面区点番号に変換
-		 * - 2文字以上を指定した場合は、1文字目のみを変換する
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {import("./SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 * @ignore
-		 */
-	SJIS2004.toMenKuTen = function toMenKuTen (text) {
+	 * 指定した文字から Shift_JIS-2004 上の面区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTen(text) {
 		if(text.length === 0) {
 			return null;
 		}
-		var sjis2004_code = SJIS2004.toSJIS2004FromUnicode(Unicode.toUTF32Array(text)[0]);
+		const sjis2004_code = SJIS2004.toSJIS2004FromUnicode(Unicode.toUTF32Array(text)[0]);
 		return sjis2004_code ? SJIS.toMenKuTenFromSJIS2004Code(sjis2004_code) : null;
-	};
-		
+	}
+	
 	/**
-		 * Shift_JIS-2004 上の面区点番号から文字列に変換
-		 * @param {import("./SJIS.js").MenKuTen|string} menkuten - 面区点番号
-		 * @returns {String} 変換後のテキスト
-		 */
-	SJIS2004.fromMenKuTen = function fromMenKuTen (menkuten) {
-		var code = SJIS.toUnicodeCodeFromKuTen(menkuten, SJIS2004MAP.SJIS2004_TO_UNICODE);
+	 * Shift_JIS-2004 上の面区点番号から文字列に変換
+	 * @param {import("./SJIS.js").MenKuTen|string} menkuten - 面区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromMenKuTen(menkuten) {
+		const code = SJIS.toUnicodeCodeFromKuTen(menkuten, SJIS2004MAP.SJIS2004_TO_UNICODE);
 		return code ? Unicode.fromUTF32Array(code) : "";
-	};
+	}
+	
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * eucJP-ms の変換マップ作成用クラス
+ * @ignore
+ */
+class EUCJPMSMAP {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 変換マップを初期化
 	 */
-
-	/**
-	 * eucJP-ms の変換マップ作成用クラス
-	 * @ignore
-	 */
-	var EUCJPMSMAP = function EUCJPMSMAP () {};
-
-	var staticAccessors$2 = { CP932_TO_EUCJPMS: { configurable: true },EUCJPMS_TO_CP932: { configurable: true } };
-
-	EUCJPMSMAP.init = function init () {
+	static init() {
 		if(EUCJPMSMAP.is_initmap) {
 			return;
 		}
 		EUCJPMSMAP.is_initmap = true;
 
 		/**
-			 * 変換マップ
-			 * CP932のIBM拡張文字の一部は、eucJP-msのG3の83区から84区に配列されている。
-			 * @type {Object<number, number>}
-			 */
-		var eucjpms_to_cp932_map = {
+		 * 変換マップ
+		 * CP932のIBM拡張文字の一部は、eucJP-msのG3の83区から84区に配列されている。
+		 * @type {Object<number, number>}
+		 */
+		const eucjpms_to_cp932_map = {
 			0xf3f3: 0xfa40, 0xf3f4: 0xfa41, 0xf3f5: 0xfa42, 0xf3f6: 0xfa43, 0xf3f7: 0xfa44,
 			0xf3f8: 0xfa45, 0xf3f9: 0xfa46, 0xf3fa: 0xfa47, 0xf3fb: 0xfa48, 0xf3fc: 0xfa49, 0xf3fd: 0x8754, 0xf3fe: 0x8755,
 			0xf4a1: 0x8756, 0xf4a2: 0x8757, 0xf4a3: 0x8758, 0xf4a4: 0x8759, 0xf4a5: 0x875a, 0xf4a6: 0x875b, 0xf4a7: 0x875c,
@@ -4295,70 +4316,76 @@
 		};
 
 		/**
-			 * @type {Object<number, number>}
-			 */
-		var cp932_to_eucjpms_map = {};
-			
-		for(var key in eucjpms_to_cp932_map) {
-			var x = eucjpms_to_cp932_map[key];
+		 * @type {Object<number, number>}
+		 */
+		const cp932_to_eucjpms_map = {};
+		
+		for(const key in eucjpms_to_cp932_map) {
+			const x = eucjpms_to_cp932_map[key];
 			cp932_to_eucjpms_map[x] = parseInt(key, 10);
 		}
 
 		EUCJPMSMAP.cp932_to_eucjpms_map = cp932_to_eucjpms_map;
 		EUCJPMSMAP.eucjpms_to_cp932_map = eucjpms_to_cp932_map;
-	};
-		
+	}
+	
 	/**
-		 * @returns {Object<number, number>}
-		 */
-	staticAccessors$2.CP932_TO_EUCJPMS.get = function () {
+	 * @returns {Object<number, number>}
+	 */
+	static get CP932_TO_EUCJPMS() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.cp932_to_eucjpms_map;
-	};
-		
+	}
+	
 	/**
-		 * @returns {Object<number, number>}
-		 */
-	staticAccessors$2.EUCJPMS_TO_CP932.get = function () {
+	 * @returns {Object<number, number>}
+	 */
+	static get EUCJPMS_TO_CP932() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.eucjpms_to_cp932_map;
-	};
+	}
 
-	Object.defineProperties( EUCJPMSMAP, staticAccessors$2 );
+}
+
+/**
+ * 変換マップを初期化したかどうか
+ * @type {boolean}
+ */
+EUCJPMSMAP.is_initmap = false;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
+EUCJPMSMAP.cp932_to_eucjpms_map = null;
+
+/**
+ * 変換用マップ
+ * @type {Object<number, number>}
+ */
+EUCJPMSMAP.eucjpms_to_cp932_map = null;
+
+/**
+ * eucJP-ms を扱うクラス
+ * @ignore
+ */
+class EUCJPMS {
 
 	/**
-	 * 変換マップを初期化したかどうか
-	 * @type {boolean}
+	 * 文字列を eucJP-ms のバイナリ配列に変換
+	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} eucJP-ms のデータが入ったバイナリ配列
 	 */
-	EUCJPMSMAP.is_initmap = false;
-
-	/**
-	 * 変換用マップ
-	 * @type {Object<number, number>}
-	 */
-	EUCJPMSMAP.cp932_to_eucjpms_map = null;
-
-	/**
-	 * 変換用マップ
-	 * @type {Object<number, number>}
-	 */
-	EUCJPMSMAP.eucjpms_to_cp932_map = null;
-
-	/**
-	 * eucJP-ms を扱うクラス
-	 * @ignore
-	 */
-	var EUCJPMS = function EUCJPMS () {};
-
-	EUCJPMS.toEUCJPMSBinary = function toEUCJPMSBinary (text) {
-		var sjis_array = CP932.toCP932Array(text);
-		var bin = [];
-		var map = EUCJPMSMAP.CP932_TO_EUCJPMS;
-		var SS2 = 0x8E; // C1制御文字 シングルシフト2
-		var SS3 = 0x8F; // C1制御文字 シングルシフト3
-		for(var i = 0; i < sjis_array.length; i++) {
-			var code = sjis_array[i];
-			var kuten = SJIS.toKuTenFromSJISCode(code);
+	static toEUCJPMSBinary(text) {
+		const sjis_array = CP932.toCP932Array(text);
+		const bin = [];
+		const map = EUCJPMSMAP.CP932_TO_EUCJPMS;
+		const SS2 = 0x8E; // C1制御文字 シングルシフト2
+		const SS3 = 0x8F; // C1制御文字 シングルシフト3
+		for(let i = 0; i < sjis_array.length; i++) {
+			const code = sjis_array[i];
+			const kuten = SJIS.toKuTenFromSJISCode(code);
 			if(code < 0x80) {
 				// G0 ASCII
 				bin.push(code);
@@ -4369,7 +4396,7 @@
 				bin.push(code);
 			}
 			else {
-				var eucjpms_code = map[code];
+				const eucjpms_code = map[code];
 				if(!eucjpms_code) {
 					// G1 
 					bin.push(kuten.ku + 0xA0);
@@ -4385,21 +4412,21 @@
 			}
 		}
 		return bin;
-	};
+	}
 
 	/**
-		 * eucJP-ms の配列から文字列に変換
-		 * @param {Array<number>} eucjp - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	EUCJPMS.fromEUCJPMSBinary = function fromEUCJPMSBinary (eucjp) {
-		var sjis_array = [];
-		var ng = "?".charCodeAt(0);
-		var map = EUCJPMSMAP.EUCJPMS_TO_CP932;
-		var SS2 = 0x8E; // C1制御文字 シングルシフト2
-		var SS3 = 0x8F; // C1制御文字 シングルシフト3
-		for(var i = 0; i < eucjp.length; i++) {
-			var x1 = (void 0), x2 = (void 0);
+	 * eucJP-ms の配列から文字列に変換
+	 * @param {Array<number>} eucjp - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromEUCJPMSBinary(eucjp) {
+		const sjis_array = [];
+		const ng = "?".charCodeAt(0);
+		const map = EUCJPMSMAP.EUCJPMS_TO_CP932;
+		const SS2 = 0x8E; // C1制御文字 シングルシフト2
+		const SS3 = 0x8F; // C1制御文字 シングルシフト3
+		for(let i = 0; i < eucjp.length; i++) {
+			let x1, x2;
 			x1 = eucjp[i];
 			// ASCII
 			if(x1 < 0x80) {
@@ -4421,7 +4448,7 @@
 					x2 = eucjp[i + 2];
 					// シングルシフト SS3 で G3 を呼び出す。
 					// G3 は、eucJP-ms の場合 IBM拡張文字 を表す。
-					var nec_code = map[(x1 << 8 | x2)];
+					const nec_code = map[(x1 << 8 | x2)];
 					if(nec_code) {
 						sjis_array.push(nec_code);
 					}
@@ -4445,7 +4472,7 @@
 
 			// 日本語
 			if((0xA1 <= x1) && (x1 <= 0xFE) && (0xA1 <= x2) && (x2 <= 0xFE)) {
-				var kuten = {
+				const kuten = {
 					ku : x1 - 0xA0,
 					ten : x2 - 0xA0
 				};
@@ -4456,33 +4483,41 @@
 			}
 		}
 		return CP932.fromCP932Array(sjis_array);
-	};
+	}
+
+
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * EUC-JIS-2004 を扱うクラス
+ * @ignore
+ */
+class EUCJIS2004 {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 文字列を EUC-JIS-2004 のバイナリ配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} EUC-JIS-2004 のデータが入ったバイナリ配列
 	 */
-
-	/**
-	 * EUC-JIS-2004 を扱うクラス
-	 * @ignore
-	 */
-	var EUCJIS2004 = function EUCJIS2004 () {};
-
-	EUCJIS2004.toEUCJIS2004Binary = function toEUCJIS2004Binary (text) {
-		var sjis_array = SJIS2004.toSJIS2004Array(text);
-		var bin = [];
-		var ng = "?".charCodeAt(0);
-		var SS2 = 0x8E; // C1制御文字 シングルシフト2
-		var SS3 = 0x8F; // C1制御文字 シングルシフト3
-		for(var i = 0; i < sjis_array.length; i++) {
-			var code = sjis_array[i];
-			var kuten = SJIS.toMenKuTenFromSJIS2004Code(code);
+	static toEUCJIS2004Binary(text) {
+		const sjis_array = SJIS2004.toSJIS2004Array(text);
+		const bin = [];
+		const ng = "?".charCodeAt(0);
+		const SS2 = 0x8E; // C1制御文字 シングルシフト2
+		const SS3 = 0x8F; // C1制御文字 シングルシフト3
+		for(let i = 0; i < sjis_array.length; i++) {
+			const code = sjis_array[i];
+			const kuten = SJIS.toMenKuTenFromSJIS2004Code(code);
 			if(code < 0x80) {
 				// G0 ASCII
 				bin.push(code);
@@ -4511,20 +4546,20 @@
 			}
 		}
 		return bin;
-	};
+	}
 
 	/**
-		 * EUC-JIS-2004 の配列から文字列に変換
-		 * @param {Array<number>} eucjp - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	EUCJIS2004.fromEUCJIS2004Binary = function fromEUCJIS2004Binary (eucjp) {
-		var sjis_array = [];
-		var ng = "?".charCodeAt(0);
-		var SS2 = 0x8E; // C1制御文字 シングルシフト2
-		var SS3 = 0x8F; // C1制御文字 シングルシフト3
-		for(var i = 0; i < eucjp.length; i++) {
-			var x1 = (void 0), x2 = (void 0);
+	 * EUC-JIS-2004 の配列から文字列に変換
+	 * @param {Array<number>} eucjp - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromEUCJIS2004Binary(eucjp) {
+		const sjis_array = [];
+		const ng = "?".charCodeAt(0);
+		const SS2 = 0x8E; // C1制御文字 シングルシフト2
+		const SS3 = 0x8F; // C1制御文字 シングルシフト3
+		for(let i = 0; i < eucjp.length; i++) {
+			let x1, x2;
 			x1 = eucjp[i];
 			// ASCII
 			if(x1 < 0x80) {
@@ -4535,7 +4570,7 @@
 				// 文字が足りない
 				break;
 			}
-			var men = 1;
+			let men = 1;
 			{
 				// 3バイト読み込み(G3)
 				if(x1 === SS3) {
@@ -4565,7 +4600,7 @@
 			if((0xA1 <= x1) && (x1 <= 0xFE) && (0xA1 <= x2) && (x2 <= 0xFE)) {
 				// EUC-JIS-2000 JIS X 0213:2004 の2面に対応
 				// 日本語
-				var kuten = {
+				const kuten = {
 					men : men,
 					ku : x1 - 0xA0,
 					ten : x2 - 0xA0
@@ -4577,27 +4612,34 @@
 			}
 		}
 		return SJIS2004.fromSJIS2004Array(sjis_array);
-	};
+	}
+
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * Encode用のツールクラス
+ * @ignore
+ */
+class EncodeTools {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * キャラセット名の正規化
+	 * @param {String} charset 
+	 * @returns {String} 
 	 */
-
-	/**
-	 * Encode用のツールクラス
-	 * @ignore
-	 */
-	var EncodeTools = function EncodeTools () {};
-
-	EncodeTools.normalizeCharSetName = function normalizeCharSetName (charset) {
-		var x1, x2;
-		var is_with_bom = false;
+	static normalizeCharSetName(charset) {
+		let x1, x2;
+		let is_with_bom = false;
 		// BOM の文字がある場合は BOM 付きとする
 		if(/^bom\s+|\s+bom\s+|\s+bom$/i.test(x1)) {
 			is_with_bom = true;
@@ -4643,19 +4685,19 @@
 			x2 += " with BOM";
 		}
 		return x2;
-	};
+	}
 
 	/**
-		 * 同一の種別の文字列の重なりをカウントする
-		 * @param {Array<number>} utf32_array 
-		 * @returns {number} 
-		 */
-	EncodeTools.countWord = function countWord (utf32_array) {
-		var count = 0;
-		var type = 0;
-		var old_type = -1;
-		for(var i = 0; i < utf32_array.length; i++) {
-			var ch = utf32_array[i];
+	 * 同一の種別の文字列の重なりをカウントする
+	 * @param {Array<number>} utf32_array 
+	 * @returns {number} 
+	 */
+	static countWord(utf32_array) {
+		let count = 0;
+		let type = 0;
+		let old_type = -1;
+		for(let i = 0; i < utf32_array.length; i++) {
+			const ch = utf32_array[i];
 			// a-zA-Z
 			if(((0x41 <= ch) && (ch <= 0x5A)) || ((0x61 <= ch) && (ch <= 0x6A))) {
 				type = 1;
@@ -4698,18 +4740,27 @@
 			old_type = type;
 		}
 		return count;
-	};
+	}
+
+}
+
+/**
+ * 文字データのバイナリへのエンコード、文字列へのデコードを扱うクラス
+ * @ignore
+ */
+class Encode {
 
 	/**
-	 * 文字データのバイナリへのエンコード、文字列へのデコードを扱うクラス
-	 * @ignore
+	 * 文字列からバイナリ配列にエンコードする
+	 * @param {String} text - 変換したいテキスト
+	 * @param {String} charset - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @param {boolean} [is_with_bom=true] - BOMをつけるかどうか
+	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
 	 */
-	var Encode = function Encode () {};
-
-	Encode.encode = function encode (text, charset, is_with_bom) {
-		var ncharset = charset ? EncodeTools.normalizeCharSetName(charset) : "autodetect";
+	static encode(text, charset, is_with_bom) {
+		const ncharset = charset ? EncodeTools.normalizeCharSetName(charset) : "autodetect";
 		if(/^UTF-(8|16|32)/i.test(ncharset)) {
-			var utf32_array = Unicode.toUTF32Array(text);
+			const utf32_array = Unicode.toUTF32Array(text);
 			return Unicode.toUTFBinaryFromCodePoint(utf32_array, ncharset, is_with_bom);
 		}
 		else if(/^Shift_JIS$/i.test(ncharset)) {
@@ -4725,18 +4776,18 @@
 			return EUCJIS2004.toEUCJIS2004Binary(text);
 		}
 		return null;
-	};
+	}
 
 	/**
-		 * バイナリ配列から文字列にデコードする
-		 * @param {Array<number>} binary - 変換したいバイナリ配列
-		 * @param {String} [charset="autodetect"] - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
-		 * @returns {String} 変換した文字列（失敗したらnull）
-		 */
-	Encode.decode = function decode (binary, charset) {
-		var ncharset = charset ? EncodeTools.normalizeCharSetName(charset) : "autodetect";
+	 * バイナリ配列から文字列にデコードする
+	 * @param {Array<number>} binary - 変換したいバイナリ配列
+	 * @param {String} [charset="autodetect"] - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @returns {String} 変換した文字列（失敗したらnull）
+	 */
+	static decode(binary, charset) {
+		const ncharset = charset ? EncodeTools.normalizeCharSetName(charset) : "autodetect";
 		if(/^UTF-(8|16|32)/i.test(ncharset)) {
-			var ret = Unicode.toCodePointFromUTFBinary(binary, charset);
+			const ret = Unicode.toCodePointFromUTFBinary(binary, charset);
 			if(ret) {
 				return Unicode.fromUTF32Array(ret);
 			}
@@ -4755,21 +4806,21 @@
 		}
 		else if(/autodetect/i.test(ncharset)) {
 			// BOMが付いているか調べる
-			var withbom = Unicode.getCharsetFromBOM(binary);
+			const withbom = Unicode.getCharsetFromBOM(binary);
 			if(withbom) {
 				// BOM が付いている場合はUnicodeで変換する
-				var ret$1 = Unicode.toCodePointFromUTFBinary(binary, charset);
-				if(ret$1) {
-					return Unicode.fromUTF32Array(ret$1);
+				const ret = Unicode.toCodePointFromUTFBinary(binary, charset);
+				if(ret) {
+					return Unicode.fromUTF32Array(ret);
 				}
 			}
 			// 有名な文字コードで試す
-			var max_data = "";
-			var max_count = -1;
+			let max_data = "";
+			let max_count = -1;
 			// Shift_JIS
 			{
-				var text = CP932.fromCP932Array(binary);
-				var count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				const text = CP932.fromCP932Array(binary);
+				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
 				if(max_count < count) {
 					max_data = text;
 					max_count = count;
@@ -4777,317 +4828,324 @@
 			}
 			// eucJP-ms
 			{
-				var text$1 = EUCJPMS.fromEUCJPMSBinary(binary);
-				var count$1 = EncodeTools.countWord(Unicode.toUTF32Array(text$1));
-				if(max_count < count$1) {
-					max_data = text$1;
-					max_count = count$1;
+				const text = EUCJPMS.fromEUCJPMSBinary(binary);
+				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				if(max_count < count) {
+					max_data = text;
+					max_count = count;
 				}
 			}
 			// EUC-JP, EUC-JP-2004
 			{
-				var text$2 = EUCJIS2004.fromEUCJIS2004Binary(binary);
-				var count$2 = EncodeTools.countWord(Unicode.toUTF32Array(text$2));
-				if(max_count < count$2) {
-					max_data = text$2;
-					max_count = count$2;
+				const text = EUCJIS2004.fromEUCJIS2004Binary(binary);
+				const count = EncodeTools.countWord(Unicode.toUTF32Array(text));
+				if(max_count < count) {
+					max_data = text;
+					max_count = count;
 				}
 			}
 			// UTF-8
 			{
-				var utf32 = Unicode.toCodePointFromUTFBinary(binary, "utf-8");
-				var count$3 = EncodeTools.countWord(utf32);
-				if(max_count < count$3) {
+				const utf32 = Unicode.toCodePointFromUTFBinary(binary, "utf-8");
+				const count = EncodeTools.countWord(utf32);
+				if(max_count < count) {
 					max_data = Unicode.fromUTF32Array(utf32);
-					max_count = count$3;
+					max_count = count;
 				}
 			}
 			// UTF-16LE
 			{
-				var utf32$1 = Unicode.toCodePointFromUTFBinary(binary, "utf-16");
-				var count$4 = EncodeTools.countWord(utf32$1);
-				if(max_count < count$4) {
-					max_data = Unicode.fromUTF32Array(utf32$1);
-					max_count = count$4;
+				const utf32 = Unicode.toCodePointFromUTFBinary(binary, "utf-16");
+				const count = EncodeTools.countWord(utf32);
+				if(max_count < count) {
+					max_data = Unicode.fromUTF32Array(utf32);
+					max_count = count;
 				}
 			}
 			return max_data;
 		}
 		return null;
-	};
+	}
+
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * 日本語を扱うクラス
+ * @ignore
+ */
+class Japanese {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * カタカナをひらがなに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
 	 */
-
-	/**
-	 * 日本語を扱うクラス
-	 * @ignore
-	 */
-	var Japanese = function Japanese () {};
-
-	Japanese.toHiragana = function toHiragana (text) {
+	static toHiragana(text) {
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) - 0x0060));
 		};
 		return (text.replace(/[\u30A1-\u30F6]/g, func));
-	};
+	}
 
 	/**
-		 * ひらがなをカタカナに変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toKatakana = function toKatakana (text) {
+	 * ひらがなをカタカナに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toKatakana(text) {
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) + 0x0060));
 		};
 		return (text.replace(/[\u3041-\u3096]/g, func));
-	};
-		
+	}
+	
 	/**
-		 * スペースを半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toHalfWidthSpace = function toHalfWidthSpace (text) {
+	 * スペースを半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthSpace(text) {
 		return (text.replace(/\u3000/g, String.fromCharCode(0x0020)));
-	};
-		
+	}
+	
 	/**
-		 * スペースを全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toFullWidthSpace = function toFullWidthSpace (text) {
+	 * スペースを全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthSpace(text) {
 		return (text.replace(/\u0020/g, String.fromCharCode(0x3000)));
-	};
-		
+	}
+	
 	/**
-		 * 英数記号を半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toHalfWidthAsciiCode = function toHalfWidthAsciiCode (text) {
-		var out = text;
-		out = out.replace(/\u3000/g, "\u0020");			//全角スペース
-		out = out.replace(/[\u2018-\u201B]/g, "\u0027");//シングルクォーテーション
-		out = out.replace(/[\u201C-\u201F]/g, "\u0022");//ダブルクォーテーション
+	 * 英数記号を半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthAsciiCode(text) {
+		let out = text;
+		out = out.replace(/\u3000/g, "\u0020");				//全角スペース
+		out = out.replace(/[\u2018-\u201B]/g, "\u0027");	//シングルクォーテーション
+		out = out.replace(/[\u201C-\u201F]/g, "\u0022");	//ダブルクォーテーション
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
-			var code = ch.charCodeAt(0);
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			const code = ch.charCodeAt(0);
 			return (String.fromCharCode(code - 0xFEE0));
 		};
 		return (out.replace(/[\uFF01-\uFF5E]/g, func));
-	};
-		
+	}
+	
 	/**
-		 * 英数記号を全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toFullWidthAsciiCode = function toFullWidthAsciiCode (text) {
-		var out = text;
-		out = out.replace(/\u0020/g, "\u3000");//全角スペース
-		out = out.replace(/\u0022/g, "\u201D");//ダブルクォーテーション
-		out = out.replace(/\u0027/g, "\u2019");//アポストロフィー
+	 * 英数記号を全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthAsciiCode(text) {
+		let out = text;
+		out = out.replace(/\u0020/g, "\u3000");	//全角スペース
+		out = out.replace(/\u0022/g, "\u201D");	//ダブルクォーテーション
+		out = out.replace(/\u0027/g, "\u2019");	//アポストロフィー
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
-			var code = ch.charCodeAt(0);
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
+			const code = ch.charCodeAt(0);
 			return (String.fromCharCode(code + 0xFEE0));
 		};
 		return (out.replace(/[\u0020-\u007E]/g, func));
-	};
-		
+	}
+	
 	/**
-		 * アルファベットを半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toHalfWidthAlphabet = function toHalfWidthAlphabet (text) {
+	 * アルファベットを半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthAlphabet(text) {
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
 			return (String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
 		};
 		return (text.replace(/[\uFF21-\uFF3A\uFF41-\uFF5A]/g, func));
-	};
-		
+	}
+	
 	/**
-		 * アルファベットを全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toFullWidthAlphabet = function toFullWidthAlphabet (text) {
+	 * アルファベットを全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthAlphabet(text) {
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
 			return (String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
 		};
 		return (text.replace(/[A-Za-z]/g, func));
-	};
-		
+	}
+	
 	/**
-		 * 数値を半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toHalfWidthNumber = function toHalfWidthNumber (text) {
+	 * 数値を半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthNumber(text) {
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) - 0xFEE0));
 		};
 		return (text.replace(/[\uFF10-\uFF19]/g, func));
-	};
-		
+	}
+	
 	/**
-		 * 数値を全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toFullWidthNumber = function toFullWidthNumber (text) {
+	 * 数値を全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthNumber(text) {
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
 			return(String.fromCharCode(ch.charCodeAt(0) + 0xFEE0));
 		};
 		return (text.replace(/[0-9]/g, func));
-	};
-		
+	}
+	
 	/**
-		 * カタカナを半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toHalfWidthKana = function toHalfWidthKana (text) {
+	 * カタカナを半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthKana(text) {
 		/**
-			 * @type {Object<number, string>}
-			 */
-		var map = {
-			0x3001:"\uFF64",//､
-			0x3002:"\uFF61",//。｡
-			0x300C:"\uFF62",//「｢
-			0x300D:"\uFF63",//」｣
-			0x309B:"\uFF9E",//゛ﾞ
-			0x309C:"\uFF9F",//゜ﾟ
-			0x30A1:"\uFF67",//ァｧ
-			0x30A2:"\uFF71",//アｱ
-			0x30A3:"\uFF68",//ィｨ
-			0x30A4:"\uFF72",//イｲ
-			0x30A5:"\uFF69",//ゥｩ
-			0x30A6:"\uFF73",//ウｳ
-			0x30A7:"\uFF6A",//ェｪ
-			0x30A8:"\uFF74",//エｴ
-			0x30A9:"\uFF6B",//ォｫ
-			0x30AA:"\uFF75",//オｵ
-			0x30AB:"\uFF76",//カｶ
-			0x30AC:"\uFF76\uFF9E",//ガｶﾞ
-			0x30AD:"\uFF77",//キｷ
-			0x30AE:"\uFF77\uFF9E",//ギｷﾞ
-			0x30AF:"\uFF78",//クｸ
-			0x30B0:"\uFF78\uFF9E",//グｸﾞ
-			0x30B1:"\uFF79",//ケｹ
-			0x30B2:"\uFF79\uFF9E",//ゲｹﾞ
-			0x30B3:"\uFF7A",//コｺ
-			0x30B4:"\uFF7A\uFF9E",//ゴｺﾞ
-			0x30B5:"\uFF7B",//サｻ
-			0x30B6:"\uFF7B\uFF9E",//ザｻﾞ
-			0x30B7:"\uFF7C",//シｼ
-			0x30B8:"\uFF7C\uFF9E",//ジｼﾞ
-			0x30B9:"\uFF7D",//スｽ
-			0x30BA:"\uFF7D\uFF9E",//ズｽﾞ
-			0x30BB:"\uFF7E",//セｾ
-			0x30BC:"\uFF7E\uFF9E",//ゼｾﾞ
-			0x30BD:"\uFF7F",//ソｿ
-			0x30BE:"\uFF7F\uFF9E",//ゾｿﾞ
-			0x30BF:"\uFF80",//タﾀ
-			0x30C0:"\uFF80\uFF9E",//ダﾀﾞ
-			0x30C1:"\uFF81",//チﾁ
-			0x30C2:"\uFF81\uFF9E",//ヂﾁﾞ
-			0x30C3:"\uFF6F",//ッｯ
-			0x30C4:"\uFF82",//ツﾂ
-			0x30C5:"\uFF82\uFF9E",//ヅﾂﾞ
-			0x30C6:"\uFF83",//テﾃ
-			0x30C7:"\uFF83\uFF9E",//デﾃﾞ
-			0x30C8:"\uFF84",//トﾄ
-			0x30C9:"\uFF84\uFF9E",//ドﾄﾞ
-			0x30CA:"\uFF85",//ナﾅ
-			0x30CB:"\uFF86",//ニﾆ
-			0x30CC:"\uFF87",//ヌﾇ
-			0x30CD:"\uFF88",//ネﾈ
-			0x30CE:"\uFF89",//ノﾉ
-			0x30CF:"\uFF8A",//ハﾊ
-			0x30D0:"\uFF8A\uFF9E",//バﾊﾞ
-			0x30D1:"\uFF8A\uFF9F",//パﾊﾟ
-			0x30D2:"\uFF8B",//ヒﾋ
-			0x30D3:"\uFF8B\uFF9E",//ビﾋﾞ
-			0x30D4:"\uFF8B\uFF9F",//ピﾋﾟ
-			0x30D5:"\uFF8C",//フﾌ
-			0x30D6:"\uFF8C\uFF9E",//ブﾌﾞ
-			0x30D7:"\uFF8C\uFF9F",//プﾌﾟ
-			0x30D8:"\uFF8D",//ヘﾍ
-			0x30D9:"\uFF8D\uFF9E",//ベﾍﾞ
-			0x30DA:"\uFF8D\uFF9F",//ペﾍﾟ
-			0x30DB:"\uFF8E",//ホﾎ
-			0x30DC:"\uFF8E\uFF9E",//ボﾎﾞ
-			0x30DD:"\uFF8E\uFF9F",//ポﾎﾟ
-			0x30DE:"\uFF8F",//マﾏ
-			0x30DF:"\uFF90",//ミﾐ
-			0x30E0:"\uFF91",//ムﾑ
-			0x30E1:"\uFF92",//メﾒ
-			0x30E2:"\uFF93",//モﾓ
-			0x30E3:"\uFF6C",//ャｬ
-			0x30E4:"\uFF94",//ヤﾔ
-			0x30E5:"\uFF6D",//ュｭ
-			0x30E6:"\uFF95",//ユﾕ
-			0x30E7:"\uFF6E",//ョｮ
-			0x30E8:"\uFF96",//ヨﾖ
-			0x30E9:"\uFF97",//ラﾗ
-			0x30EA:"\uFF98",//リﾘ
-			0x30EB:"\uFF99",//ルﾙ
-			0x30EC:"\uFF9A",//レﾚ
-			0x30ED:"\uFF9B",//ロﾛ
-			0x30EE:"\uFF9C",//ヮﾜ
-			0x30EF:"\uFF9C",//ワﾜ
-			0x30F0:"\uFF72",//ヰｲ
-			0x30F1:"\uFF74",//ヱｴ
-			0x30F2:"\uFF66",//ヲｦ
-			0x30F3:"\uFF9D",//ンﾝ
-			0x30F4:"\uFF73\uFF9E",//ヴｳﾞ
-			0x30F5:"\uFF76",//ヵｶ
-			0x30F6:"\uFF79",//ヶｹ
-			0x30F7:"\uFF9C\uFF9E",//ヷﾜﾞ
-			0x30F8:"\uFF72\uFF9E",//ヸｲﾞ
-			0x30F9:"\uFF74\uFF9E",//ヹｴﾞ
-			0x30FA:"\uFF66\uFF9E",//ヺｦﾞ
-			0x30FB:"\uFF65",//・･
-			0x30FC:"\uFF70"	//ーｰ
+		 * @type {Object<number, string>}
+		 */
+		const map = {
+			0x3001	:	"\uFF64"	,	//	､
+			0x3002	:	"\uFF61"	,	//	。	｡
+			0x300C	:	"\uFF62"	,	//	「	｢
+			0x300D	:	"\uFF63"	,	//	」	｣
+			0x309B	:	"\uFF9E"	,	//	゛	ﾞ
+			0x309C	:	"\uFF9F"	,	//	゜	ﾟ
+			0x30A1	:	"\uFF67"	,	//	ァ	ｧ
+			0x30A2	:	"\uFF71"	,	//	ア	ｱ
+			0x30A3	:	"\uFF68"	,	//	ィ	ｨ
+			0x30A4	:	"\uFF72"	,	//	イ	ｲ
+			0x30A5	:	"\uFF69"	,	//	ゥ	ｩ
+			0x30A6	:	"\uFF73"	,	//	ウ	ｳ
+			0x30A7	:	"\uFF6A"	,	//	ェ	ｪ
+			0x30A8	:	"\uFF74"	,	//	エ	ｴ
+			0x30A9	:	"\uFF6B"	,	//	ォ	ｫ
+			0x30AA	:	"\uFF75"	,	//	オ	ｵ
+			0x30AB	:	"\uFF76"	,	//	カ	ｶ
+			0x30AC	:	"\uFF76\uFF9E"	,	//	ガ	ｶﾞ
+			0x30AD	:	"\uFF77"	,	//	キ	ｷ
+			0x30AE	:	"\uFF77\uFF9E"	,	//	ギ	ｷﾞ
+			0x30AF	:	"\uFF78"	,	//	ク	ｸ
+			0x30B0	:	"\uFF78\uFF9E"	,	//	グ	ｸﾞ
+			0x30B1	:	"\uFF79"	,	//	ケ	ｹ
+			0x30B2	:	"\uFF79\uFF9E"	,	//	ゲ	ｹﾞ
+			0x30B3	:	"\uFF7A"	,	//	コ	ｺ
+			0x30B4	:	"\uFF7A\uFF9E"	,	//	ゴ	ｺﾞ
+			0x30B5	:	"\uFF7B"	,	//	サ	ｻ
+			0x30B6	:	"\uFF7B\uFF9E"	,	//	ザ	ｻﾞ
+			0x30B7	:	"\uFF7C"	,	//	シ	ｼ
+			0x30B8	:	"\uFF7C\uFF9E"	,	//	ジ	ｼﾞ
+			0x30B9	:	"\uFF7D"	,	//	ス	ｽ
+			0x30BA	:	"\uFF7D\uFF9E"	,	//	ズ	ｽﾞ
+			0x30BB	:	"\uFF7E"	,	//	セ	ｾ
+			0x30BC	:	"\uFF7E\uFF9E"	,	//	ゼ	ｾﾞ
+			0x30BD	:	"\uFF7F"	,	//	ソ	ｿ
+			0x30BE	:	"\uFF7F\uFF9E"	,	//	ゾ	ｿﾞ
+			0x30BF	:	"\uFF80"	,	//	タ	ﾀ
+			0x30C0	:	"\uFF80\uFF9E"	,	//	ダ	ﾀﾞ
+			0x30C1	:	"\uFF81"	,	//	チ	ﾁ
+			0x30C2	:	"\uFF81\uFF9E"	,	//	ヂ	ﾁﾞ
+			0x30C3	:	"\uFF6F"	,	//	ッ	ｯ
+			0x30C4	:	"\uFF82"	,	//	ツ	ﾂ
+			0x30C5	:	"\uFF82\uFF9E"	,	//	ヅ	ﾂﾞ
+			0x30C6	:	"\uFF83"	,	//	テ	ﾃ
+			0x30C7	:	"\uFF83\uFF9E"	,	//	デ	ﾃﾞ
+			0x30C8	:	"\uFF84"	,	//	ト	ﾄ
+			0x30C9	:	"\uFF84\uFF9E"	,	//	ド	ﾄﾞ
+			0x30CA	:	"\uFF85"	,	//	ナ	ﾅ
+			0x30CB	:	"\uFF86"	,	//	ニ	ﾆ
+			0x30CC	:	"\uFF87"	,	//	ヌ	ﾇ
+			0x30CD	:	"\uFF88"	,	//	ネ	ﾈ
+			0x30CE	:	"\uFF89"	,	//	ノ	ﾉ
+			0x30CF	:	"\uFF8A"	,	//	ハ	ﾊ
+			0x30D0	:	"\uFF8A\uFF9E"	,	//	バ	ﾊﾞ
+			0x30D1	:	"\uFF8A\uFF9F"	,	//	パ	ﾊﾟ
+			0x30D2	:	"\uFF8B"	,	//	ヒ	ﾋ
+			0x30D3	:	"\uFF8B\uFF9E"	,	//	ビ	ﾋﾞ
+			0x30D4	:	"\uFF8B\uFF9F"	,	//	ピ	ﾋﾟ
+			0x30D5	:	"\uFF8C"	,	//	フ	ﾌ
+			0x30D6	:	"\uFF8C\uFF9E"	,	//	ブ	ﾌﾞ
+			0x30D7	:	"\uFF8C\uFF9F"	,	//	プ	ﾌﾟ
+			0x30D8	:	"\uFF8D"	,	//	ヘ	ﾍ
+			0x30D9	:	"\uFF8D\uFF9E"	,	//	ベ	ﾍﾞ
+			0x30DA	:	"\uFF8D\uFF9F"	,	//	ペ	ﾍﾟ
+			0x30DB	:	"\uFF8E"	,	//	ホ	ﾎ
+			0x30DC	:	"\uFF8E\uFF9E"	,	//	ボ	ﾎﾞ
+			0x30DD	:	"\uFF8E\uFF9F"	,	//	ポ	ﾎﾟ
+			0x30DE	:	"\uFF8F"	,	//	マ	ﾏ
+			0x30DF	:	"\uFF90"	,	//	ミ	ﾐ
+			0x30E0	:	"\uFF91"	,	//	ム	ﾑ
+			0x30E1	:	"\uFF92"	,	//	メ	ﾒ
+			0x30E2	:	"\uFF93"	,	//	モ	ﾓ
+			0x30E3	:	"\uFF6C"	,	//	ャ	ｬ
+			0x30E4	:	"\uFF94"	,	//	ヤ	ﾔ
+			0x30E5	:	"\uFF6D"	,	//	ュ	ｭ
+			0x30E6	:	"\uFF95"	,	//	ユ	ﾕ
+			0x30E7	:	"\uFF6E"	,	//	ョ	ｮ
+			0x30E8	:	"\uFF96"	,	//	ヨ	ﾖ
+			0x30E9	:	"\uFF97"	,	//	ラ	ﾗ
+			0x30EA	:	"\uFF98"	,	//	リ	ﾘ
+			0x30EB	:	"\uFF99"	,	//	ル	ﾙ
+			0x30EC	:	"\uFF9A"	,	//	レ	ﾚ
+			0x30ED	:	"\uFF9B"	,	//	ロ	ﾛ
+			0x30EE	:	"\uFF9C"	,	//	ヮ	ﾜ
+			0x30EF	:	"\uFF9C"	,	//	ワ	ﾜ
+			0x30F0	:	"\uFF72"	,	//	ヰ	ｲ
+			0x30F1	:	"\uFF74"	,	//	ヱ	ｴ
+			0x30F2	:	"\uFF66"	,	//	ヲ	ｦ
+			0x30F3	:	"\uFF9D"	,	//	ン	ﾝ
+			0x30F4	:	"\uFF73\uFF9E"	,	//	ヴ	ｳﾞ
+			0x30F5	:	"\uFF76"	,	//	ヵ	ｶ
+			0x30F6	:	"\uFF79"	,	//	ヶ	ｹ
+			0x30F7	:	"\uFF9C\uFF9E"	,	//	ヷ	ﾜﾞ
+			0x30F8	:	"\uFF72\uFF9E"	,	//	ヸ	ｲﾞ
+			0x30F9	:	"\uFF74\uFF9E"	,	//	ヹ	ｴﾞ
+			0x30FA	:	"\uFF66\uFF9E"	,	//	ヺ	ｦﾞ
+			0x30FB	:	"\uFF65"	,	//	・	･
+			0x30FC	:	"\uFF70"		//	ー	ｰ
 		};
 		/**
-			 * @param {string} ch 
-			 */
-		var func = function(ch) {
+		 * @param {string} ch 
+		 */
+		const func = function(ch) {
 			if(ch.length === 1) {
 				return(map[ch.charCodeAt(0)]);
 			}
@@ -5096,92 +5154,92 @@
 			}
 		};
 		return (text.replace(/[\u3001\u3002\u300C\u300D\u309B\u309C\u30A1-\u30FC][\u309B\u309C]?/g, func));
-	};
+	}
 
 	/**
-		 * カタカナを全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toFullWidthKana = function toFullWidthKana (text) {
+	 * カタカナを全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthKana(text) {
 		/**
-			 * @type {Object<number, number>}
-			 */
-		var map = {
-			0xFF61:0x3002,//。｡
-			0xFF62:0x300C,//「｢
-			0xFF63:0x300D,//」｣
-			0xFF64:0x3001,//､
-			0xFF65:0x30FB,//・･
-			0xFF66:0x30F2,//ヲｦ
-			0xFF67:0x30A1,//ァｧ
-			0xFF68:0x30A3,//ィｨ
-			0xFF69:0x30A5,//ゥｩ
-			0xFF6A:0x30A7,//ェｪ
-			0xFF6B:0x30A9,//ォｫ
-			0xFF6C:0x30E3,//ャｬ
-			0xFF6D:0x30E5,//ュｭ
-			0xFF6E:0x30E7,//ョｮ
-			0xFF6F:0x30C3,//ッｯ
-			0xFF70:0x30FC,//ーｰ
-			0xFF71:0x30A2,//アｱ
-			0xFF72:0x30A4,//イｲ
-			0xFF73:0x30A6,//ウｳ
-			0xFF74:0x30A8,//エｴ
-			0xFF75:0x30AA,//オｵ
-			0xFF76:0x30AB,//カｶ
-			0xFF77:0x30AD,//キｷ
-			0xFF78:0x30AF,//クｸ
-			0xFF79:0x30B1,//ケｹ
-			0xFF7A:0x30B3,//コｺ
-			0xFF7B:0x30B5,//サｻ
-			0xFF7C:0x30B7,//シｼ
-			0xFF7D:0x30B9,//スｽ
-			0xFF7E:0x30BB,//セｾ
-			0xFF7F:0x30BD,//ソｿ
-			0xFF80:0x30BF,//タﾀ
-			0xFF81:0x30C1,//チﾁ
-			0xFF82:0x30C4,//ツﾂ
-			0xFF83:0x30C6,//テﾃ
-			0xFF84:0x30C8,//トﾄ
-			0xFF85:0x30CA,//ナﾅ
-			0xFF86:0x30CB,//ニﾆ
-			0xFF87:0x30CC,//ヌﾇ
-			0xFF88:0x30CD,//ネﾈ
-			0xFF89:0x30CE,//ノﾉ
-			0xFF8A:0x30CF,//ハﾊ
-			0xFF8B:0x30D2,//ヒﾋ
-			0xFF8C:0x30D5,//フﾌ
-			0xFF8D:0x30D8,//ヘﾍ
-			0xFF8E:0x30DB,//ホﾎ
-			0xFF8F:0x30DE,//マﾏ
-			0xFF90:0x30DF,//ミﾐ
-			0xFF91:0x30E0,//ムﾑ
-			0xFF92:0x30E1,//メﾒ
-			0xFF93:0x30E2,//モﾓ
-			0xFF94:0x30E4,//ヤﾔ
-			0xFF95:0x30E6,//ユﾕ
-			0xFF96:0x30E8,//ヨﾖ
-			0xFF97:0x30E9,//ラﾗ
-			0xFF98:0x30EA,//リﾘ
-			0xFF99:0x30EB,//ルﾙ
-			0xFF9A:0x30EC,//レﾚ
-			0xFF9B:0x30ED,//ロﾛ
-			0xFF9C:0x30EF,//ワﾜ
-			0xFF9D:0x30F3,//ンﾝ
-			0xFF9E:0x309B,//゛ﾞ
-			0xFF9F:0x309C	//゜ﾟ
+		 * @type {Object<number, number>}
+		 */
+		const map = {
+			0xFF61	:	0x3002	,	//	。	｡
+			0xFF62	:	0x300C	,	//	「	｢
+			0xFF63	:	0x300D	,	//	」	｣
+			0xFF64	:	0x3001	,	//	､
+			0xFF65	:	0x30FB	,	//	・	･
+			0xFF66	:	0x30F2	,	//	ヲ	ｦ
+			0xFF67	:	0x30A1	,	//	ァ	ｧ
+			0xFF68	:	0x30A3	,	//	ィ	ｨ
+			0xFF69	:	0x30A5	,	//	ゥ	ｩ
+			0xFF6A	:	0x30A7	,	//	ェ	ｪ
+			0xFF6B	:	0x30A9	,	//	ォ	ｫ
+			0xFF6C	:	0x30E3	,	//	ャ	ｬ
+			0xFF6D	:	0x30E5	,	//	ュ	ｭ
+			0xFF6E	:	0x30E7	,	//	ョ	ｮ
+			0xFF6F	:	0x30C3	,	//	ッ	ｯ
+			0xFF70	:	0x30FC	,	//	ー	ｰ
+			0xFF71	:	0x30A2	,	//	ア	ｱ
+			0xFF72	:	0x30A4	,	//	イ	ｲ
+			0xFF73	:	0x30A6	,	//	ウ	ｳ
+			0xFF74	:	0x30A8	,	//	エ	ｴ
+			0xFF75	:	0x30AA	,	//	オ	ｵ
+			0xFF76	:	0x30AB	,	//	カ	ｶ
+			0xFF77	:	0x30AD	,	//	キ	ｷ
+			0xFF78	:	0x30AF	,	//	ク	ｸ
+			0xFF79	:	0x30B1	,	//	ケ	ｹ
+			0xFF7A	:	0x30B3	,	//	コ	ｺ
+			0xFF7B	:	0x30B5	,	//	サ	ｻ
+			0xFF7C	:	0x30B7	,	//	シ	ｼ
+			0xFF7D	:	0x30B9	,	//	ス	ｽ
+			0xFF7E	:	0x30BB	,	//	セ	ｾ
+			0xFF7F	:	0x30BD	,	//	ソ	ｿ
+			0xFF80	:	0x30BF	,	//	タ	ﾀ
+			0xFF81	:	0x30C1	,	//	チ	ﾁ
+			0xFF82	:	0x30C4	,	//	ツ	ﾂ
+			0xFF83	:	0x30C6	,	//	テ	ﾃ
+			0xFF84	:	0x30C8	,	//	ト	ﾄ
+			0xFF85	:	0x30CA	,	//	ナ	ﾅ
+			0xFF86	:	0x30CB	,	//	ニ	ﾆ
+			0xFF87	:	0x30CC	,	//	ヌ	ﾇ
+			0xFF88	:	0x30CD	,	//	ネ	ﾈ
+			0xFF89	:	0x30CE	,	//	ノ	ﾉ
+			0xFF8A	:	0x30CF	,	//	ハ	ﾊ
+			0xFF8B	:	0x30D2	,	//	ヒ	ﾋ
+			0xFF8C	:	0x30D5	,	//	フ	ﾌ
+			0xFF8D	:	0x30D8	,	//	ヘ	ﾍ
+			0xFF8E	:	0x30DB	,	//	ホ	ﾎ
+			0xFF8F	:	0x30DE	,	//	マ	ﾏ
+			0xFF90	:	0x30DF	,	//	ミ	ﾐ
+			0xFF91	:	0x30E0	,	//	ム	ﾑ
+			0xFF92	:	0x30E1	,	//	メ	ﾒ
+			0xFF93	:	0x30E2	,	//	モ	ﾓ
+			0xFF94	:	0x30E4	,	//	ヤ	ﾔ
+			0xFF95	:	0x30E6	,	//	ユ	ﾕ
+			0xFF96	:	0x30E8	,	//	ヨ	ﾖ
+			0xFF97	:	0x30E9	,	//	ラ	ﾗ
+			0xFF98	:	0x30EA	,	//	リ	ﾘ
+			0xFF99	:	0x30EB	,	//	ル	ﾙ
+			0xFF9A	:	0x30EC	,	//	レ	ﾚ
+			0xFF9B	:	0x30ED	,	//	ロ	ﾛ
+			0xFF9C	:	0x30EF	,	//	ワ	ﾜ
+			0xFF9D	:	0x30F3	,	//	ン	ﾝ
+			0xFF9E	:	0x309B	,	//	゛	ﾞ
+			0xFF9F	:	0x309C		//	゜	ﾟ
 		};
 		/**
-			 * @param {string} str 
-			 */
-		var func = function(str) {
+		 * @param {string} str 
+		 */
+		const func = function(str) {
 			if(str.length === 1) {
 				return (String.fromCharCode(map[str.charCodeAt(0)]));
 			}
 			else {
-				var next = str.charCodeAt(1);
-				var ch   = str.charCodeAt(0);
+				const next = str.charCodeAt(1);
+				const ch   = str.charCodeAt(0);
 				if(next === 0xFF9E) {
 					// Shift-JISにない濁点（ヷ、ヸ、ヹ、ヺ）は意図的に無視
 					// ヴ
@@ -5191,7 +5249,7 @@
 					// ガ-ド、バ-ボ
 					else if(
 						((0xFF76 <= ch) && (ch <= 0xFF84)) ||
-						((0xFF8A <= ch) && (ch <= 0xFF8E))) {
+						((0xFF8A <= ch) && (ch <= 0xFF8E))	) {
 						return (String.fromCharCode(map[ch] + 1));
 					}
 				}
@@ -5206,38 +5264,38 @@
 			}
 		};
 		return (text.replace(/[\uFF61-\uFF9F][\uFF9E\uFF9F]?/g, func));
-	};
-		
+	}
+	
 	/**
-		 * 半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toHalfWidth = function toHalfWidth (text) {
+	 * 半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidth(text) {
 		return Japanese.toHalfWidthKana(Japanese.toHalfWidthAsciiCode(text));
-	};
-		
+	}
+	
 	/**
-		 * 全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toFullWidth = function toFullWidth (text) {
+	 * 全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidth(text) {
 		return Japanese.toFullWidthKana(Japanese.toFullWidthAsciiCode(text));
-	};
+	}
 
 	/**
-		 * ローマ字からひらがなに変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toHiraganaFromRomaji = function toHiraganaFromRomaji (text) {
+	 * ローマ字からひらがなに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHiraganaFromRomaji(text) {
 		/**
-			 * ローマ字から変換マップ
-			 * .y[aiuoe] は除いている
-			 * @type {Object<string, string>}
-			 */
-		var map = {
+		 * ローマ字から変換マップ
+		 * .y[aiuoe] は除いている
+		 * @type {Object<string, string>}
+		 */
+		const map = {
 			"a" : "あ" ,
 			"i" : "い" ,
 			"u" : "う" ,
@@ -5392,10 +5450,10 @@
 			"." : "。" 
 		};
 		/**
-			 * ya, yi, yu, ye, yo
-			 * @type {Object<string, string>}
-			 */
-		var y_komoji_map = {
+		 * ya, yi, yu, ye, yo
+		 * @type {Object<string, string>}
+		 */
+		const y_komoji_map = {
 			"a" : "ゃ",
 			"i" : "ぃ",
 			"u" : "ゅ",
@@ -5403,12 +5461,12 @@
 			"o" : "ょ"
 		};
 		/**
-			 * @param {string} str 
-			 */
-		var func = function(str) {
-			var output = [];
-			var y_komoji = null;
-			var romaji = str.toLowerCase();
+		 * @param {string} str 
+		 */
+		const func = function(str) {
+			const output = [];
+			let y_komoji = null;
+			let romaji = str.toLowerCase();
 			if(romaji.length > 2) {
 				// 同じ文字の繰り返しなら「っ」に変更
 				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
@@ -5417,8 +5475,8 @@
 				}
 			}
 			if(romaji.length === 3) {
-				var char_1 = romaji.substr(0, 1);
-				var char_2 = romaji.substr(1, 1);
+				const char_1 = romaji.substr(0, 1);
+				const char_2 = romaji.substr(1, 1);
 				// 2文字目がyで始まる場合（ただし、lya, xya などを除く）は
 				// 小文字リストから選んで、最後に小文字をつける
 				// sya -> si につけかえて辞書から探す
@@ -5427,7 +5485,7 @@
 					romaji = romaji.substr(0, 1) + "i";
 				}
 			}
-			var data = map[romaji];
+			const data = map[romaji];
 			if(!data) {
 				return str;
 			}
@@ -5442,28 +5500,28 @@
 		// nn? ... ん
 		// [?!-] ... 記号
 		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
-	};
+	}
 
 	/**
-		 * ローマ字からカタカナに変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toKatakanaFromRomaji = function toKatakanaFromRomaji (text) {
+	 * ローマ字からカタカナに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toKatakanaFromRomaji(text) {
 		return Japanese.toKatakana(Japanese.toHiraganaFromRomaji(text));
-	};
+	}
 
 	/**
-		 * ひらがなからローマ字に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toRomajiFromHiragana = function toRomajiFromHiragana (text) {
+	 * ひらがなからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromHiragana(text) {
 		/**
-			 * ひらがなからローマ字への変換マップ
-			 * @type {Object<string, string>}
-			 */
-		var map = {
+		 * ひらがなからローマ字への変換マップ
+		 * @type {Object<string, string>}
+		 */
+		const map = {
 			"あ" : "a" ,
 			"い" : "i" ,
 			"う" : "u" ,
@@ -5641,9 +5699,9 @@
 		};
 
 		/**
-			 * @type {Object<string, string>}
-			 */
-		var komoji_map = {
+		 * @type {Object<string, string>}
+		 */
+		const komoji_map = {
 			"ぁ" : "la",
 			"ぃ" : "li",
 			"ぅ" : "lu",
@@ -5655,33 +5713,33 @@
 		};
 
 		/**
-			 * @param {string} str 
-			 */
-		var func = function(str) {
-			var tgt = str;
-			var is_xtu = false; 
+		 * @param {string} str 
+		 */
+		const func = function(str) {
+			let tgt = str;
+			let is_xtu = false; 
 			// 1文字目に「っ」があるか
 			if(/^っ/.test(tgt)) {
 				is_xtu = true;
 				tgt = tgt.replace(/^っ*/, "");
 			}
 			// 変換
-			var trans = map[tgt];
+			let trans = map[tgt];
 			// 変換に失敗した場合は
 			if(!trans) {
 				if(trans.length === 1) {
 					// 1文字なのでこれ以上変換不能
 					return str;
 				}
-				var char_1 = trans.substr(0, 1);
-				var char_2 = trans.substr(1, 1);
+				const char_1 = trans.substr(0, 1);
+				const char_2 = trans.substr(1, 1);
 				// 最後の文字が小文字である
 				if(!komoji_map[char_2]) {
 					// これ以上変換不能
 					return str;
 				}
 				tgt = char_1;
-				var last_text = komoji_map[char_2];
+				const last_text = komoji_map[char_2];
 				// 再度変換テスト
 				trans = map[tgt];
 				if(!trans) {
@@ -5699,29 +5757,29 @@
 		// [ぁぃぅぇぉゃゅょゎっ] ... 小文字のみ
 		// [？！－。、] ... 記号
 		return (text.replace(/[っ]*[あいうえおか-ぢつ-もやゆよら-ろわゐゑをんヴゔ][ぁぃぅぇぉゃゅょ]?|[ぁぃぅぇぉゃゅょゎっ]|[？！－。、]/g, func));
-	};
+	}
 
 	/**
-		 * カタカナからローマ字に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	Japanese.toRomajiFromKatakana = function toRomajiFromKatakana (text) {
+	 * カタカナからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromKatakana(text) {
 		return Japanese.toRomajiFromHiragana(Japanese.toHiragana(text));
-	};
+	}
 
 	/**
-		 * 指定したテキストの横幅を半角／全角でカウント
-		 * - 半角を1、全角を2としてカウント
-		 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
-		 * @param {String} text - カウントしたいテキスト
-		 * @returns {Number} 文字の横幅
-		 */
-	Japanese.getWidth = function getWidth (text) {
-		var utf32_array = Unicode.toUTF32Array(text);
-		var count = 0;
-		for(var i = 0; i < utf32_array.length; i++) {
-			var ch = utf32_array[i];
+	 * 指定したテキストの横幅を半角／全角でカウント
+	 * - 半角を1、全角を2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * @param {String} text - カウントしたいテキスト
+	 * @returns {Number} 文字の横幅
+	 */
+	static getWidth(text) {
+		const utf32_array = Unicode.toUTF32Array(text);
+		let count = 0;
+		for(let i = 0; i < utf32_array.length; i++) {
+			const ch = utf32_array[i];
 			if((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) {
 				count++;
 			}
@@ -5730,25 +5788,25 @@
 			}
 		}
 		return count;
-	};
+	}
 
 	/**
-		 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
-		 * - 半角を1、全角を2としてカウント
-		 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
-		 * @param {String} text - 切り出したいテキスト
-		 * @param {Number} offset - 切り出し位置
-		 * @param {Number} size - 切り出す長さ
-		 * @returns {String} 切り出したテキスト
-		 * @ignore
-		 */
-	Japanese.cutTextForWidth = function cutTextForWidth (text, offset, size) {
-		var utf32_array = Unicode.toUTF32Array(text);
-		var SPACE = 0x20 ; // ' '
-		var output = [];
-		var is_target = false;
-		var position = 0;
-		var cut_size = size;
+	 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
+	 * - 半角を1、全角を2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 * @ignore
+	 */
+	static cutTextForWidth(text, offset, size) {
+		const utf32_array = Unicode.toUTF32Array(text);
+		const SPACE = 0x20 ; // ' '
+		const output = [];
+		let is_target = false;
+		let position = 0;
+		let cut_size = size;
 		if(offset < 0) {
 			cut_size += offset;
 			offset = 0;
@@ -5756,9 +5814,9 @@
 		if(cut_size <= 0) {
 			return "";
 		}
-		for(var i = 0; i < utf32_array.length; i++) {
-			var ch = utf32_array[i];
-			var ch_size = ((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) ? 1 : 2;
+		for(let i = 0; i < utf32_array.length; i++) {
+			const ch = utf32_array[i];
+			const ch_size = ((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) ? 1 : 2;
 			if(position >= offset) {
 				is_target = true;
 				if(cut_size >= ch_size) {
@@ -5780,107 +5838,110 @@
 			}
 		}
 		return Unicode.fromUTF32Array(output);
-	};
+	}
 
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * 制御文字マップ
+ * @type {Object<number, string>}
+ * @ignore
+ */
+let control_charcter_map = null;
+
+/**
+ * 1981年より前に常用漢字とされているか
+ * @type {Object<number, number>}
+ * @ignore
+ */
+let joyokanji_before_1981_map = null;
+
+/**
+ * 1981年時点で追加された常用漢字か
+ * @type {Object<number, number>}
+ * @ignore
+ */
+let joyokanji_add_1981_map = null;
+
+/**
+ * 2010年時点で追加された常用漢字か
+ * @type {Object<number, number>}
+ * @ignore
+ */
+let joyokanji_add_2010_map = null;
+
+/**
+ * 2010年時点で削除された常用漢字か
+ * @type {Object<number, number>}
+ * @ignore
+ */
+let joyokanji_delete_2010_map = null;
+
+/**
+ * 2017年時点で常用漢字でかつ人名用漢字か
+ * @type {Object<number, number>}
+ * @ignore
+ */
+let jinmeiyokanji_joyokanji_isetai_2017_map = null;
+
+/**
+ * 2017年時点で常用漢字でないが人名用漢字か（異性体なし）
+ * @type {Object<number, number>}
+ * @ignore
+ */
+let jinmeiyokanji_notjoyokanji_2017_map = null;
+
+/**
+ * 2017年時点で異性体がある人名漢字
+ * @type {Object<number, number>}
+ * @ignore
+ */
+let jinmeiyokanji_notjoyokanji_isetai_2017_map = null;
+
+/**
+ * コードポイントからUnicodeのブロック名に変換する
+ * @type {function(number): string}
+ * @ignore
+ */
+let to_block_name_from_unicode = null;
+
+/**
+ * 調査用マップを作成するクラス
+ * @ignore
+ */
+class MOJI_CHAR_MAP {
+	
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 初期化
 	 */
-
-	/**
-	 * 制御文字マップ
-	 * @type {Object<number, string>}
-	 * @ignore
-	 */
-	var control_charcter_map = null;
-
-	/**
-	 * 1981年より前に常用漢字とされているか
-	 * @type {Object<number, number>}
-	 * @ignore
-	 */
-	var joyokanji_before_1981_map = null;
-
-	/**
-	 * 1981年時点で追加された常用漢字か
-	 * @type {Object<number, number>}
-	 * @ignore
-	 */
-	var joyokanji_add_1981_map = null;
-
-	/**
-	 * 2010年時点で追加された常用漢字か
-	 * @type {Object<number, number>}
-	 * @ignore
-	 */
-	var joyokanji_add_2010_map = null;
-
-	/**
-	 * 2010年時点で削除された常用漢字か
-	 * @type {Object<number, number>}
-	 * @ignore
-	 */
-	var joyokanji_delete_2010_map = null;
-
-	/**
-	 * 2017年時点で常用漢字でかつ人名用漢字か
-	 * @type {Object<number, number>}
-	 * @ignore
-	 */
-	var jinmeiyokanji_joyokanji_isetai_2017_map = null;
-
-	/**
-	 * 2017年時点で常用漢字でないが人名用漢字か（異性体なし）
-	 * @type {Object<number, number>}
-	 * @ignore
-	 */
-	var jinmeiyokanji_notjoyokanji_2017_map = null;
-
-	/**
-	 * 2017年時点で異性体がある人名漢字
-	 * @type {Object<number, number>}
-	 * @ignore
-	 */
-	var jinmeiyokanji_notjoyokanji_isetai_2017_map = null;
-
-	/**
-	 * コードポイントからUnicodeのブロック名に変換する
-	 * @type {function(number): string}
-	 * @ignore
-	 */
-	var to_block_name_from_unicode = null;
-
-	/**
-	 * 調査用マップを作成するクラス
-	 * @ignore
-	 */
-	var MOJI_CHAR_MAP = function MOJI_CHAR_MAP () {};
-
-	var staticAccessors$3 = { CONTROL_CHARCTER: { configurable: true },JOYOJANJI_BEFORE_1981: { configurable: true },JOYOKANJI_ADD_1981: { configurable: true },JOYOKANJI_ADD_2010: { configurable: true },JOYOKANJI_DELETE_2010: { configurable: true },JINMEIYOKANJI_JOYOKANJI_ISETAI_2017: { configurable: true },JINMEIYOKANJI_NOTJOYOKANJI_2017: { configurable: true },JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017: { configurable: true } };
-
-	MOJI_CHAR_MAP.init = function init () {
+	static init() {
 		if(MOJI_CHAR_MAP.is_initmap) {
 			return;
 		}
 		MOJI_CHAR_MAP.is_initmap = true;
 
 		/**
-			 * 文字列から、UTF32の存在マップを作成
-			 * @param {string} string_data 
-			 * @returns {Object<number, number>}
-			 */
-		var createMap = function(string_data) {
-			var utf32_array = Unicode.toUTF32Array(string_data);
+		 * 文字列から、UTF32の存在マップを作成
+		 * @param {string} string_data 
+		 * @returns {Object<number, number>}
+		 */
+		const createMap = function(string_data) {
+			const utf32_array = Unicode.toUTF32Array(string_data);
 			/**
-				 * @type {Object<number, number>}
-				 */
-			var map = {};
-			for(var key in utf32_array) {
+			 * @type {Object<number, number>}
+			 */
+			const map = {};
+			for(const key in utf32_array) {
 				map[utf32_array[key]] = 1;
 			}
 			return map;
@@ -5891,7 +5952,7 @@
 		// https://ja.wikipedia.org/wiki/%E5%B8%B8%E7%94%A8%E6%BC%A2%E5%AD%97%E4%B8%80%E8%A6%A7
 
 		{
-			var map = "";
+			let map = "";
 			map += "亜哀愛悪握圧扱安案暗以衣位囲医依委威為胃尉異移偉意違維慰遺緯域育一壱逸芋引印因姻";
 			map += "員院陰飲隠韻右宇羽雨畝浦運雲永泳英映栄営詠影鋭衛易疫益液駅悦越謁閲円延沿炎宴援園";
 			map += "煙遠鉛塩演縁汚王央応往押欧殴桜翁奥横屋億憶虞乙卸音恩温穏下化火加可仮何花佳価果河";
@@ -5943,74 +6004,74 @@
 		}
 
 		{
-			var map$1 = "";
-			map$1 += "猿凹渦靴稼拐涯垣殻潟喝褐缶頑挟矯襟隅渓蛍嫌洪溝昆崎皿桟傘肢遮蛇酌汁塾尚宵縄壌唇甚";
-			map$1 += "据杉斉逝仙栓挿曹槽藻駄濯棚挑眺釣塚漬亭偵泥搭棟洞凸屯把覇漠肌鉢披扉猫頻瓶雰塀泡俸";
-			map$1 += "褒朴僕堀磨抹岬妄厄癒悠羅竜戻枠";
-			joyokanji_add_1981_map = createMap(map$1);
+			let map = "";
+			map += "猿凹渦靴稼拐涯垣殻潟喝褐缶頑挟矯襟隅渓蛍嫌洪溝昆崎皿桟傘肢遮蛇酌汁塾尚宵縄壌唇甚";
+			map += "据杉斉逝仙栓挿曹槽藻駄濯棚挑眺釣塚漬亭偵泥搭棟洞凸屯把覇漠肌鉢披扉猫頻瓶雰塀泡俸";
+			map += "褒朴僕堀磨抹岬妄厄癒悠羅竜戻枠";
+			joyokanji_add_1981_map = createMap(map);
 		}
 
 		{
-			var map$2 = "";
-			map$2 += "通用字体挨曖宛嵐畏萎椅彙茨咽淫唄鬱怨媛艶旺岡臆俺苛牙瓦楷潰諧崖蓋骸柿顎葛釜鎌韓玩";
-			map$2 += "伎亀毀畿臼嗅巾僅錦惧串窟熊詣憬稽隙桁拳鍵舷股虎錮勾梗喉乞傲駒頃痕沙挫采塞埼柵刹拶";
-			map$2 += "斬恣摯餌鹿嫉腫呪袖羞蹴憧拭尻芯腎須裾凄醒脊戚煎羨腺詮箋膳狙遡曽爽痩踪捉遜汰唾堆戴";
-			map$2 += "誰旦綻緻酎貼嘲捗椎爪鶴諦溺塡妬賭藤瞳栃頓貪丼那奈梨謎鍋匂虹捻罵剝箸氾汎阪斑眉膝肘";
-			map$2 += "阜訃蔽餅璧蔑哺蜂貌頰睦勃昧枕蜜冥麺冶弥闇喩湧妖瘍沃拉辣藍璃慄侶瞭瑠呂賂弄籠麓脇";
-			joyokanji_add_2010_map = createMap(map$2);
+			let map = "";
+			map += "通用字体挨曖宛嵐畏萎椅彙茨咽淫唄鬱怨媛艶旺岡臆俺苛牙瓦楷潰諧崖蓋骸柿顎葛釜鎌韓玩";
+			map += "伎亀毀畿臼嗅巾僅錦惧串窟熊詣憬稽隙桁拳鍵舷股虎錮勾梗喉乞傲駒頃痕沙挫采塞埼柵刹拶";
+			map += "斬恣摯餌鹿嫉腫呪袖羞蹴憧拭尻芯腎須裾凄醒脊戚煎羨腺詮箋膳狙遡曽爽痩踪捉遜汰唾堆戴";
+			map += "誰旦綻緻酎貼嘲捗椎爪鶴諦溺塡妬賭藤瞳栃頓貪丼那奈梨謎鍋匂虹捻罵剝箸氾汎阪斑眉膝肘";
+			map += "阜訃蔽餅璧蔑哺蜂貌頰睦勃昧枕蜜冥麺冶弥闇喩湧妖瘍沃拉辣藍璃慄侶瞭瑠呂賂弄籠麓脇";
+			joyokanji_add_2010_map = createMap(map);
 		}
 
 		{
-			var map$3 = "";
-			map$3 += "勺錘銑脹匁";
-			joyokanji_delete_2010_map = createMap(map$3);
+			let map = "";
+			map += "勺錘銑脹匁";
+			joyokanji_delete_2010_map = createMap(map);
 		}
-			
+		
 		// 参考
 		// 人名用漢字一覧 - Wikipedia (2019/1/1)
 		// https://ja.wikipedia.org/wiki/%E4%BA%BA%E5%90%8D%E7%94%A8%E6%BC%A2%E5%AD%97%E4%B8%80%E8%A6%A7
 
 		{
-			var map$4 = "";
-			map$4 += "亞亜惡悪爲為逸逸榮栄衞衛謁謁圓円緣縁薗園應応櫻桜奧奥橫横溫温價価禍禍悔悔海海壞壊";
-			map$4 += "懷懐樂楽渴渇卷巻陷陥寬寛漢漢氣気祈祈器器僞偽戲戯虛虚峽峡狹狭響響曉暁勤勤謹謹駈駆";
-			map$4 += "勳勲薰薫惠恵揭掲鷄鶏藝芸擊撃縣県儉倹劍剣險険圈圏檢検顯顕驗験嚴厳廣広恆恒黃黄國国";
-			map$4 += "黑黒穀穀碎砕雜雑祉祉視視兒児濕湿實実社社者者煮煮壽寿收収臭臭從従澁渋獸獣縱縦祝祝";
-			map$4 += "暑暑署署緖緒諸諸敍叙將将祥祥涉渉燒焼奬奨條条狀状乘乗淨浄剩剰疊畳孃嬢讓譲釀醸神神";
-			map$4 += "眞真寢寝愼慎盡尽粹粋醉酔穗穂瀨瀬齊斉靜静攝摂節節專専戰戦纖繊禪禅祖祖壯壮爭争莊荘";
-			map$4 += "搜捜巢巣曾曽裝装僧僧層層瘦痩騷騒增増憎憎藏蔵贈贈臟臓卽即帶帯滯滞瀧滝單単嘆嘆團団";
-			map$4 += "彈弾晝昼鑄鋳著著廳庁徵徴聽聴懲懲鎭鎮轉転傳伝都都嶋島燈灯盜盗稻稲德徳突突難難拜拝";
-			map$4 += "盃杯賣売梅梅髮髪拔抜繁繁晚晩卑卑祕秘碑碑賓賓敏敏冨富侮侮福福拂払佛仏勉勉步歩峯峰";
-			map$4 += "墨墨飜翻每毎萬万默黙埜野彌弥藥薬與与搖揺樣様謠謡來来賴頼覽覧欄欄龍竜虜虜凉涼綠緑";
-			map$4 += "淚涙壘塁類類禮礼曆暦歷歴練練鍊錬郞郎朗朗廊廊錄録";
-			jinmeiyokanji_joyokanji_isetai_2017_map = createMap(map$4);
+			let map = "";
+			map += "亞亜惡悪爲為逸逸榮栄衞衛謁謁圓円緣縁薗園應応櫻桜奧奥橫横溫温價価禍禍悔悔海海壞壊";
+			map += "懷懐樂楽渴渇卷巻陷陥寬寛漢漢氣気祈祈器器僞偽戲戯虛虚峽峡狹狭響響曉暁勤勤謹謹駈駆";
+			map += "勳勲薰薫惠恵揭掲鷄鶏藝芸擊撃縣県儉倹劍剣險険圈圏檢検顯顕驗験嚴厳廣広恆恒黃黄國国";
+			map += "黑黒穀穀碎砕雜雑祉祉視視兒児濕湿實実社社者者煮煮壽寿收収臭臭從従澁渋獸獣縱縦祝祝";
+			map += "暑暑署署緖緒諸諸敍叙將将祥祥涉渉燒焼奬奨條条狀状乘乗淨浄剩剰疊畳孃嬢讓譲釀醸神神";
+			map += "眞真寢寝愼慎盡尽粹粋醉酔穗穂瀨瀬齊斉靜静攝摂節節專専戰戦纖繊禪禅祖祖壯壮爭争莊荘";
+			map += "搜捜巢巣曾曽裝装僧僧層層瘦痩騷騒增増憎憎藏蔵贈贈臟臓卽即帶帯滯滞瀧滝單単嘆嘆團団";
+			map += "彈弾晝昼鑄鋳著著廳庁徵徴聽聴懲懲鎭鎮轉転傳伝都都嶋島燈灯盜盗稻稲德徳突突難難拜拝";
+			map += "盃杯賣売梅梅髮髪拔抜繁繁晚晩卑卑祕秘碑碑賓賓敏敏冨富侮侮福福拂払佛仏勉勉步歩峯峰";
+			map += "墨墨飜翻每毎萬万默黙埜野彌弥藥薬與与搖揺樣様謠謡來来賴頼覽覧欄欄龍竜虜虜凉涼綠緑";
+			map += "淚涙壘塁類類禮礼曆暦歷歴練練鍊錬郞郎朗朗廊廊錄録";
+			jinmeiyokanji_joyokanji_isetai_2017_map = createMap(map);
 		}
 
 		{
-			var map$5 = "";
-			map$5 += "丑丞乃之乎也云些亦亥亨亮仔伊伍伽佃佑伶侃侑俄俠俣俐倭俱倦倖偲傭儲允兎兜其冴凌凧凪";
-			map$5 += "凰凱函劉劫勁勺勿匁匡廿卜卯卿厨厩叉叡叢叶只吾吞吻哉哨啄哩喬喧喰喋嘩嘉嘗噌噂圃圭坐";
-			map$5 += "坦埴堰堺堵塙壕壬夷奄奎套娃姪姥娩嬉孟宏宋宕宥寅寓寵尖尤屑峨峻崚嵯嵩嶺巫已巳巴巷巽";
-			map$5 += "帖幌幡庄庇庚庵廟廻弘弛彗彦彪彬徠忽怜恢恰恕悌惟惚悉惇惹惺惣慧憐戊或戟托按挺挽掬捲";
-			map$5 += "捷捺捧掠揃摑摺撒撰撞播撫擢孜敦斐斡斧斯於旭昂昊昏昌昴晏晒晋晟晦晨智暉暢曙曝曳朋朔";
-			map$5 += "杏杖杜李杭杵杷枇柑柴柘柊柏柾柚栞桔桂栖桐栗梧梓梢梛梯桶梶椛梁棲椋椀楯楚楕椿楠楓椰";
-			map$5 += "楢楊榎樺榊榛槍槌樫槻樟樋橘樽橙檎檀櫂櫛櫓欣欽歎此殆毅毘毬汀汝汐汲沌沓沫洸洲洵洛浩";
-			map$5 += "浬淵淳淀淋渥渾湘湊湛溢滉溜漱漕漣澪濡瀕灘灸灼烏焰焚煌煤煉熙燕燎燦燭燿爾牒牟牡牽犀";
-			map$5 += "狼獅玖珂珈珊珀玲琉瑛琥琶琵琳瑚瑞瑶瑳瓜瓢甥甫畠畢疋疏皐皓眸瞥矩砦砥砧硯碓碗碩碧磐";
-			map$5 += "磯祇禽禾秦秤稀稔稟稜穹穿窄窪窺竣竪竺竿笈笹笙笠筈筑箕箔篇篠簞簾籾粥粟糊紘紗紐絃紬";
-			map$5 += "絆絢綺綜綴緋綾綸縞徽繫繡纂纏羚翔翠耀而耶耽聡肇肋肴胤胡脩腔脹膏臥舜舵芥芹芭芙芦苑";
-			map$5 += "茄苔苺茅茉茸茜莞荻莫莉菅菫菖萄菩萊菱葦葵萱葺萩董葡蓑蒔蒐蒼蒲蒙蓉蓮蔭蔣蔦蓬蔓蕎蕨";
-			map$5 += "蕉蕃蕪薙蕾蕗藁薩蘇蘭蝦蝶螺蟬蟹蠟衿袈袴裡裟裳襖訊訣註詢詫誼諏諄諒謂諺讃豹貰賑赳跨";
-			map$5 += "蹄蹟輔輯輿轟辰辻迂迄辿迪迦這逞逗逢遁遼邑祁郁鄭酉醇醐醍醬釉釘釧銑鋒鋸錘錐錆錫鍬鎧";
-			map$5 += "閃閏閤阿陀隈隼雀雁雛雫霞靖鞄鞍鞘鞠鞭頁頌頗顚颯饗馨馴馳駕駿驍魁魯鮎鯉鯛鰯鱒鱗鳩鳶";
-			map$5 += "鳳鴨鴻鵜鵬鷗鷲鷺鷹麒麟麿黎黛鼎";
-			jinmeiyokanji_notjoyokanji_2017_map = createMap(map$5);
+			let map = "";
+			map += "丑丞乃之乎也云些亦亥亨亮仔伊伍伽佃佑伶侃侑俄俠俣俐倭俱倦倖偲傭儲允兎兜其冴凌凧凪";
+			map += "凰凱函劉劫勁勺勿匁匡廿卜卯卿厨厩叉叡叢叶只吾吞吻哉哨啄哩喬喧喰喋嘩嘉嘗噌噂圃圭坐";
+			map += "坦埴堰堺堵塙壕壬夷奄奎套娃姪姥娩嬉孟宏宋宕宥寅寓寵尖尤屑峨峻崚嵯嵩嶺巫已巳巴巷巽";
+			map += "帖幌幡庄庇庚庵廟廻弘弛彗彦彪彬徠忽怜恢恰恕悌惟惚悉惇惹惺惣慧憐戊或戟托按挺挽掬捲";
+			map += "捷捺捧掠揃摑摺撒撰撞播撫擢孜敦斐斡斧斯於旭昂昊昏昌昴晏晒晋晟晦晨智暉暢曙曝曳朋朔";
+			map += "杏杖杜李杭杵杷枇柑柴柘柊柏柾柚栞桔桂栖桐栗梧梓梢梛梯桶梶椛梁棲椋椀楯楚楕椿楠楓椰";
+			map += "楢楊榎樺榊榛槍槌樫槻樟樋橘樽橙檎檀櫂櫛櫓欣欽歎此殆毅毘毬汀汝汐汲沌沓沫洸洲洵洛浩";
+			map += "浬淵淳淀淋渥渾湘湊湛溢滉溜漱漕漣澪濡瀕灘灸灼烏焰焚煌煤煉熙燕燎燦燭燿爾牒牟牡牽犀";
+			map += "狼獅玖珂珈珊珀玲琉瑛琥琶琵琳瑚瑞瑶瑳瓜瓢甥甫畠畢疋疏皐皓眸瞥矩砦砥砧硯碓碗碩碧磐";
+			map += "磯祇禽禾秦秤稀稔稟稜穹穿窄窪窺竣竪竺竿笈笹笙笠筈筑箕箔篇篠簞簾籾粥粟糊紘紗紐絃紬";
+			map += "絆絢綺綜綴緋綾綸縞徽繫繡纂纏羚翔翠耀而耶耽聡肇肋肴胤胡脩腔脹膏臥舜舵芥芹芭芙芦苑";
+			map += "茄苔苺茅茉茸茜莞荻莫莉菅菫菖萄菩萊菱葦葵萱葺萩董葡蓑蒔蒐蒼蒲蒙蓉蓮蔭蔣蔦蓬蔓蕎蕨";
+			map += "蕉蕃蕪薙蕾蕗藁薩蘇蘭蝦蝶螺蟬蟹蠟衿袈袴裡裟裳襖訊訣註詢詫誼諏諄諒謂諺讃豹貰賑赳跨";
+			map += "蹄蹟輔輯輿轟辰辻迂迄辿迪迦這逞逗逢遁遼邑祁郁鄭酉醇醐醍醬釉釘釧銑鋒鋸錘錐錆錫鍬鎧";
+			map += "閃閏閤阿陀隈隼雀雁雛雫霞靖鞄鞍鞘鞠鞭頁頌頗顚颯饗馨馴馳駕駿驍魁魯鮎鯉鯛鰯鱒鱗鳩鳶";
+			map += "鳳鴨鴻鵜鵬鷗鷲鷺鷹麒麟麿黎黛鼎";
+			jinmeiyokanji_notjoyokanji_2017_map = createMap(map);
 		}
 
 		{
-			var map$6 = "";
-			map$6 += "亙亘凛凜堯尭巖巌晄晃檜桧槇槙渚渚猪猪琢琢禰祢祐祐禱祷祿禄禎禎穰穣萠萌遙遥";
-			jinmeiyokanji_notjoyokanji_isetai_2017_map = createMap(map$6);
+			let map = "";
+			map += "亙亘凛凜堯尭巖巌晄晃檜桧槇槙渚渚猪猪琢琢禰祢祐祐禱祷祿禄禎禎穰穣萠萌遙遥";
+			jinmeiyokanji_notjoyokanji_isetai_2017_map = createMap(map);
 		}
 
 		control_charcter_map = {
@@ -6027,7 +6088,7 @@
 			65037: "VS14", 65038: "VS15", 65039: "VS16", 65529: "IAA", 65530: "IAS", 65531: "IAT",
 		};
 
-		var unicode_blockname_array = [
+		const unicode_blockname_array = [
 			"Basic Latin", "Latin-1 Supplement", "Latin Extended-A", "Latin Extended-B", "IPA Extensions", "Spacing Modifier Letters", "Combining Diacritical Marks", "Greek and Coptic",
 			"Cyrillic", "Cyrillic Supplement", "Armenian", "Hebrew", "Arabic", "Syriac", "Arabic Supplement", "Thaana",
 			"NKo", "Samaritan", "Mandaic", "Syriac Supplement", "Arabic Extended-A", "Devanagari", "Bengali", "Gurmukhi",
@@ -6066,7 +6127,7 @@
 			"Chess Symbols", "CJK Unified Ideographs Extension B", "CJK Unified Ideographs Extension C", "CJK Unified Ideographs Extension D", "CJK Unified Ideographs Extension E", "CJK Unified Ideographs Extension F", "CJK Compatibility Ideographs Supplement"
 		];
 
-		var unicode_blockaddress_array = [
+		const unicode_blockaddress_array = [
 			0x007F, 0x00FF, 0x017F, 0x024F, 0x02AF, 0x02FF, 0x036F, 0x03FF, 0x04FF, 0x052F, 0x058F, 0x05FF, 0x06FF, 0x074F, 0x077F, 0x07BF,
 			0x07FF, 0x083F, 0x085F, 0x086F, 0x08FF, 0x097F, 0x09FF, 0x0A7F, 0x0AFF, 0x0B7F, 0x0BFF, 0x0C7F, 0x0CFF, 0x0D7F, 0x0DFF, 0x0E7F,
 			0x0EFF, 0x0FFF, 0x109F, 0x10FF, 0x11FF, 0x137F, 0x139F, 0x13FF, 0x167F, 0x169F, 0x16FF, 0x171F, 0x173F, 0x175F, 0x177F, 0x17FF,
@@ -6089,7 +6150,7 @@
 		];
 
 		to_block_name_from_unicode = function(unicode_codepoint) {
-			for(var i = 0; i < unicode_blockname_array.length; i++) {
+			for(let i = 0; i < unicode_blockname_array.length; i++) {
 				if(unicode_codepoint <= unicode_blockaddress_array[i]) {
 					return unicode_blockname_array[i];
 				}
@@ -6097,255 +6158,267 @@
 			return "-";
 		};
 
-	};
+	}
 
 	/**
-		 * コードポイントからUnicodeのブロック名に変換する
-		 * @param {number} unicode_codepoint 
-		 * @returns {string}
-		 */
-	MOJI_CHAR_MAP.toBlockNameFromUnicode = function toBlockNameFromUnicode (unicode_codepoint) {
+	 * コードポイントからUnicodeのブロック名に変換する
+	 * @param {number} unicode_codepoint 
+	 * @returns {string}
+	 */
+	static toBlockNameFromUnicode(unicode_codepoint) {
 		MOJI_CHAR_MAP.init();
 		return to_block_name_from_unicode(unicode_codepoint);
-	};
+	}
 
 	/**
-		 * 変換用マップ
-		 */
-	staticAccessors$3.CONTROL_CHARCTER.get = function () {
+	 * 変換用マップ
+	 */
+	static get CONTROL_CHARCTER() {
 		MOJI_CHAR_MAP.init();
 		return control_charcter_map;
-	};
+	}
 
 	/**
-		 * チェック用マップ
-		 */
-	staticAccessors$3.JOYOJANJI_BEFORE_1981.get = function () {
+	 * チェック用マップ
+	 */
+	static get JOYOJANJI_BEFORE_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_before_1981_map;
-	};
-		
+	}
+	
 	/**
-		 * チェック用マップ
-		 */
-	staticAccessors$3.JOYOKANJI_ADD_1981.get = function () {
+	 * チェック用マップ
+	 */
+	static get JOYOKANJI_ADD_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_1981_map;
-	};
-		
+	}
+	
 	/**
-		 * チェック用マップ
-		 */
-	staticAccessors$3.JOYOKANJI_ADD_2010.get = function () {
+	 * チェック用マップ
+	 */
+	static get JOYOKANJI_ADD_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_2010_map;
-	};
-		
+	}
+	
 	/**
-		 * チェック用マップ
-		 */
-	staticAccessors$3.JOYOKANJI_DELETE_2010.get = function () {
+	 * チェック用マップ
+	 */
+	static get JOYOKANJI_DELETE_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_delete_2010_map;
-	};
-		
+	}
+	
 	/**
-		 * チェック用マップ
-		 */
-	staticAccessors$3.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017.get = function () {
+	 * チェック用マップ
+	 */
+	static get JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_joyokanji_isetai_2017_map;
-	};
-		
+	}
+	
 	/**
-		 * チェック用マップ
-		 */
-	staticAccessors$3.JINMEIYOKANJI_NOTJOYOKANJI_2017.get = function () {
+	 * チェック用マップ
+	 */
+	static get JINMEIYOKANJI_NOTJOYOKANJI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_2017_map;
-	};
-		
+	}
+	
 	/**
-		 * チェック用マップ
-		 */
-	staticAccessors$3.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017.get = function () {
+	 * チェック用マップ
+	 */
+	static get JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_isetai_2017_map;
-	};
+	}
+	
+}
 
-	Object.defineProperties( MOJI_CHAR_MAP, staticAccessors$3 );
+/**
+ * マップを初期化した否か
+ */
+MOJI_CHAR_MAP.is_initmap = false;
 
+/**
+ * 文字の解析用クラス
+ * @ignore
+ */
+class MojiAnalizerTools {
+	
 	/**
-	 * マップを初期化した否か
+	 * 指定したコードポイントが制御文字であれば、制御文字の名前を返す
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {String} 制御文字名、違う場合は null 
 	 */
-	MOJI_CHAR_MAP.is_initmap = false;
-
-	/**
-	 * 文字の解析用クラス
-	 * @ignore
-	 */
-	var MojiAnalizerTools = function MojiAnalizerTools () {};
-
-	MojiAnalizerTools.getControlCharcterName = function getControlCharcterName (unicode_codepoint) {
-		var control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER;
-		var name = control_charcter_map[unicode_codepoint];
+	static getControlCharcterName(unicode_codepoint) {
+		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER;
+		const name = control_charcter_map[unicode_codepoint];
 		return name ? name : null;
-	};
-		
+	}
+	
 	/**
-		 * 指定したコードポイントの漢字は1981年より前に常用漢字とされているか判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isJoyoKanjiBefore1981 = function isJoyoKanjiBefore1981 (unicode_codepoint) {
-		var joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
+	 * 指定したコードポイントの漢字は1981年より前に常用漢字とされているか判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanjiBefore1981(unicode_codepoint) {
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
 		return !!joyokanji_before_1981_map[unicode_codepoint];
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの漢字は1981年時点で常用漢字かを判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isJoyoKanji1981 = function isJoyoKanji1981 (unicode_codepoint) {
-		var joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
-		var joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981;
+	 * 指定したコードポイントの漢字は1981年時点で常用漢字かを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanji1981(unicode_codepoint) {
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981;
 		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの漢字は2010年時点で常用漢字かを判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isJoyoKanji2010 = function isJoyoKanji2010 (unicode_codepoint) {
-		var joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010;
-		var joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010;
+	 * 指定したコードポイントの漢字は2010年時点で常用漢字かを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanji2010(unicode_codepoint) {
+		const joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010;
+		const joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010;
 		if(joyokanji_delete_2010_map[unicode_codepoint]) {
 			return false;
 		}
-		var x = MojiAnalizerTools.isJoyoKanji1981(unicode_codepoint);
+		const x = MojiAnalizerTools.isJoyoKanji1981(unicode_codepoint);
 		return x || (!!joyokanji_add_2010_map[unicode_codepoint]);
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの漢字は2017年時点で人名漢字でのみ存在するかを判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isOnlyJinmeiyoKanji2017 = function isOnlyJinmeiyoKanji2017 (unicode_codepoint) {
+	 * 指定したコードポイントの漢字は2017年時点で人名漢字でのみ存在するかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isOnlyJinmeiyoKanji2017(unicode_codepoint) {
 		if(MojiAnalizerTools.isJoyoKanji2010(unicode_codepoint)) {
 			return false;
 		}
-		var jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
-		var jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
-		var jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
+		const jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
 		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの漢字は2017年時点で人名漢字で許可されているかを判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isJinmeiyoKanji2017 = function isJinmeiyoKanji2017 (unicode_codepoint) {
+	 * 指定したコードポイントの漢字は2017年時点で人名漢字で許可されているかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJinmeiyoKanji2017(unicode_codepoint) {
 		return MojiAnalizerTools.isJoyoKanji2010(unicode_codepoint) || MojiAnalizerTools.isOnlyJinmeiyoKanji2017(unicode_codepoint);
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの漢字は本ソースコードの最新の時点で常用漢字かを判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isJoyoKanji = function isJoyoKanji (unicode_codepoint) {
+	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で常用漢字かを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJoyoKanji(unicode_codepoint) {
 		return MojiAnalizerTools.isJoyoKanji2010(unicode_codepoint);
-	};
-		
+	}
+	
 	/**
-		 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字でのみ存在するかを判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isOnlyJinmeiyoKanji = function isOnlyJinmeiyoKanji (unicode_codepoint) {
+	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字でのみ存在するかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isOnlyJinmeiyoKanji(unicode_codepoint) {
 		return MojiAnalizerTools.isOnlyJinmeiyoKanji2017(unicode_codepoint);
-	};
+	}
 
 	/**
-		 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字で許可されているかを判定する
-		 * @param {Number} unicode_codepoint - Unicodeのコードポイント
-		 * @returns {boolean} 判定結果
-		 */
-	MojiAnalizerTools.isJinmeiyoKanji = function isJinmeiyoKanji (unicode_codepoint) {
+	 * 指定したコードポイントの漢字は本ソースコードの最新の時点で人名漢字で許可されているかを判定する
+	 * @param {Number} unicode_codepoint - Unicodeのコードポイント
+	 * @returns {boolean} 判定結果
+	 */
+	static isJinmeiyoKanji(unicode_codepoint) {
 		return MojiAnalizerTools.isJinmeiyoKanji2017(unicode_codepoint);
-	};
+	}
+
+}
+
+/**
+ * 文字のエンコード情報
+ * @typedef {Object} MojiEncodeData
+ * @property {import("../encode/SJIS.js").MenKuTen} kuten 区点 コード
+ * @property {import("../encode/SJIS.js").MenKuTen} menkuten 面区点 コード
+ * @property {number} cp932_code CP932(Windows-31J) コード
+ * @property {number} sjis2004_code Shift_JIS-2004 コード
+ * @property {Array<number>} utf8_array UTF-8 配列
+ * @property {Array<number>} utf16_array UTF-16 配列
+ * @property {Array<number>} utf32_array UTF-32 配列
+ * @property {Array<number>} cp932_array CP932(Windows-31J) バイト配列
+ * @property {Array<number>} sjis2004_array Shift_JIS-2004 コード バイト配列
+ * @property {Array<number>} shift_jis_array Shift_JIS バイト配列
+ * @property {Array<number>} iso2022jp_array ISO-2022-JP バイト配列
+ * @property {Array<number>} eucjpms_array eucJP-ms バイト配列
+ * @property {Array<number>} eucjis2004_array EUC-JP-2004 バイト配列
+ */
+
+/**
+ * 文字の種別情報
+ * @typedef {Object} MojiTypeData
+ * @property {boolean} is_regular_sjis Shift_JIS に登録された文字
+ * @property {boolean} is_regular_sjis2004 Shift_JIS-2004 に登録された文字
+ * @property {boolean} is_joyo_kanji 常用漢字
+ * @property {boolean} is_jinmeiyo_kanji 人名用漢字
+ * @property {boolean} is_gaiji_cp932 Windows-31J(CP932) 外字
+ * @property {boolean} is_IBM_extended_character Windows-31J(CP932) IBM拡張文字
+ * @property {boolean} is_NEC_selection_IBM_extended_character Windows-31J(CP932) NEC選定IBM拡張文字
+ * @property {boolean} is_NEC_special_character Windows-31J(CP932) NEC特殊文字
+ * @property {number} kanji_suijun Shift_JIS-2004 を使用して漢字の水準調査(1未満だと水準調査失敗)
+ * @property {boolean} is_surrogate_pair 要 Unicode サロゲートペア
+ * @property {string} control_name 制御文字名（制御文字ではない場合は null）
+ * @property {boolean} is_control_charcter 制御文字
+ * @property {string} blockname Unicodeブロック名
+ * @property {boolean} is_kanji 漢字
+ * @property {boolean} is_hiragana ひらがな
+ * @property {boolean} is_katakana カタカナ
+ * @property {boolean} is_fullwidth_ascii 全角ASCII
+ * @property {boolean} is_halfwidth_katakana 半角カタカナ
+ * @property {boolean} is_emoji 絵文字
+ * @property {boolean} is_emoticons 顔文字
+ * @property {boolean} is_gaiji 外字
+ */
+
+/**
+ * 文字の種別情報
+ * @typedef {Object} MojiData
+ * @property {MojiEncodeData} encode 文字のエンコード情報
+ * @property {MojiTypeData} type 文字の種別情報
+ * @property {string} character 解析した文字
+ * @property {number} codepoint 解析した文字のコードポイント
+ */
+
+/**
+ * 文字の解析用クラス
+ * @ignore
+ */
+class MojiAnalyzer {
 
 	/**
-	 * 文字のエンコード情報
-	 * @typedef {Object} MojiEncodeData
-	 * @property {import("../encode/SJIS.js").MenKuTen} kuten 区点 コード
-	 * @property {import("../encode/SJIS.js").MenKuTen} menkuten 面区点 コード
-	 * @property {number} cp932_code CP932(Windows-31J) コード
-	 * @property {number} sjis2004_code Shift_JIS-2004 コード
-	 * @property {Array<number>} utf8_array UTF-8 配列
-	 * @property {Array<number>} utf16_array UTF-16 配列
-	 * @property {Array<number>} utf32_array UTF-32 配列
-	 * @property {Array<number>} cp932_array CP932(Windows-31J) バイト配列
-	 * @property {Array<number>} sjis2004_array Shift_JIS-2004 コード バイト配列
-	 * @property {Array<number>} shift_jis_array Shift_JIS バイト配列
-	 * @property {Array<number>} iso2022jp_array ISO-2022-JP バイト配列
-	 * @property {Array<number>} eucjpms_array eucJP-ms バイト配列
-	 * @property {Array<number>} eucjis2004_array EUC-JP-2004 バイト配列
-	 */
-
-	/**
-	 * 文字の種別情報
-	 * @typedef {Object} MojiTypeData
-	 * @property {boolean} is_regular_sjis Shift_JIS に登録された文字
-	 * @property {boolean} is_regular_sjis2004 Shift_JIS-2004 に登録された文字
-	 * @property {boolean} is_joyo_kanji 常用漢字
-	 * @property {boolean} is_jinmeiyo_kanji 人名用漢字
-	 * @property {boolean} is_gaiji_cp932 Windows-31J(CP932) 外字
-	 * @property {boolean} is_IBM_extended_character Windows-31J(CP932) IBM拡張文字
-	 * @property {boolean} is_NEC_selection_IBM_extended_character Windows-31J(CP932) NEC選定IBM拡張文字
-	 * @property {boolean} is_NEC_special_character Windows-31J(CP932) NEC特殊文字
-	 * @property {number} kanji_suijun Shift_JIS-2004 を使用して漢字の水準調査(1未満だと水準調査失敗)
-	 * @property {boolean} is_surrogate_pair 要 Unicode サロゲートペア
-	 * @property {string} control_name 制御文字名（制御文字ではない場合は null）
-	 * @property {boolean} is_control_charcter 制御文字
-	 * @property {string} blockname Unicodeブロック名
-	 * @property {boolean} is_kanji 漢字
-	 * @property {boolean} is_hiragana ひらがな
-	 * @property {boolean} is_katakana カタカナ
-	 * @property {boolean} is_fullwidth_ascii 全角ASCII
-	 * @property {boolean} is_halfwidth_katakana 半角カタカナ
-	 * @property {boolean} is_emoji 絵文字
-	 * @property {boolean} is_emoticons 顔文字
-	 * @property {boolean} is_gaiji 外字
-	 */
-
-	/**
-	 * 文字の種別情報
-	 * @typedef {Object} MojiData
-	 * @property {MojiEncodeData} encode 文字のエンコード情報
-	 * @property {MojiTypeData} type 文字の種別情報
-	 * @property {string} character 解析した文字
-	 * @property {number} codepoint 解析した文字のコードポイント
-	 */
-
-	/**
-	 * 文字の解析用クラス
+	 * 初期化
+	 * @returns {MojiData}
 	 * @ignore
 	 */
-	var MojiAnalyzer = function MojiAnalyzer () {};
-
-	MojiAnalyzer._createMojiData = function _createMojiData () {
+	static _createMojiData() {
 
 		/**
-			 * @type {MojiEncodeData}
-			 */
-		var encode = {
+		 * @type {MojiEncodeData}
+		 */
+		const encode = {
 			kuten : null,
 			menkuten : null,
 			cp932_code : 0,
@@ -6360,21 +6433,21 @@
 			eucjpms_array : [],
 			eucjis2004_array : []
 		};
-			
+		
 		/**
-			 * @type {MojiTypeData}
-			 */
-		var type = {
-			is_regular_sjis: false,
+		 * @type {MojiTypeData}
+		 */
+		const type = {
+			is_regular_sjis	: false,
 			is_regular_sjis2004 : false,
-			is_joyo_kanji	: false,
-			is_jinmeiyo_kanji: false,
-			is_gaiji_cp932: false,
-			is_IBM_extended_character: false,
-			is_NEC_selection_IBM_extended_character: false,
-			is_NEC_special_character: false,
+			is_joyo_kanji		: false,
+			is_jinmeiyo_kanji	: false,
+			is_gaiji_cp932	: false,
+			is_IBM_extended_character	: false,
+			is_NEC_selection_IBM_extended_character	: false,
+			is_NEC_special_character	: false,
 			kanji_suijun : -1,
-			is_surrogate_pair: false,
+			is_surrogate_pair	: false,
 			control_name : null,
 			is_control_charcter : false,
 			blockname : "",
@@ -6389,9 +6462,9 @@
 		};
 
 		/**
-			 * @type {MojiData}
-			 */
-		var data = {
+		 * @type {MojiData}
+		 */
+		const data = {
 			encode : encode,
 			type : type,
 			character : null,
@@ -6399,55 +6472,55 @@
 		};
 
 		return data;
-	};
+	}
 
 	/**
-		 * 指定した1つの文字に関して、解析を行い情報を返します
-		 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-		 * @returns {MojiData} 文字の情報がつまったオブジェクト
-		 */
-	MojiAnalyzer.getMojiData = function getMojiData (unicode_codepoint) {
+	 * 指定した1つの文字に関して、解析を行い情報を返します
+	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
+	 * @returns {MojiData} 文字の情報がつまったオブジェクト
+	 */
+	static getMojiData(unicode_codepoint) {
 
 		// 基本情報取得
-		var cp932code = CP932.toCP932FromUnicode(unicode_codepoint);
-		var sjis2004code = SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
-		var kuten = SJIS.toKuTenFromSJISCode(cp932code);
-		var menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis2004code);
-		var is_regular_sjis = cp932code < 0x100 || SJIS.isRegularMenKuten(kuten);
-		var is_regular_sjis2004 = sjis2004code < 0x100 || SJIS.isRegularMenKuten(menkuten);
+		const cp932code = CP932.toCP932FromUnicode(unicode_codepoint);
+		const sjis2004code = SJIS2004.toSJIS2004FromUnicode(unicode_codepoint);
+		const kuten = SJIS.toKuTenFromSJISCode(cp932code);
+		const menkuten = SJIS.toMenKuTenFromSJIS2004Code(sjis2004code);
+		const is_regular_sjis = cp932code < 0x100 || SJIS.isRegularMenKuten(kuten);
+		const is_regular_sjis2004 = sjis2004code < 0x100 || SJIS.isRegularMenKuten(menkuten);
 
 		/**
-			 * 出力データの箱を用意
-			 * @type {MojiData}
-			 */
-		var data = MojiAnalyzer._createMojiData();
-		var encode = data.encode;
-		var type = data.type;
-		var character = Unicode.fromCodePoint(unicode_codepoint);
+		 * 出力データの箱を用意
+		 * @type {MojiData}
+		 */
+		const data = MojiAnalyzer._createMojiData();
+		const encode = data.encode;
+		const type = data.type;
+		const character = Unicode.fromCodePoint(unicode_codepoint);
 		data.character = character;
 		data.codepoint = unicode_codepoint;
 
 		// 句点と面区点情報(ない場合はnullになる)
-		encode.kuten		= kuten;
-		encode.menkuten		= menkuten;
+		encode.kuten			= kuten;
+		encode.menkuten			= menkuten;
 		// コードの代入
-		encode.cp932_code	= cp932code ? cp932code : -1;
-		encode.sjis2004_code= sjis2004code ? sjis2004code : -1;
+		encode.cp932_code		= cp932code ? cp932code : -1;
+		encode.sjis2004_code	= sjis2004code ? sjis2004code : -1;
 
 		// Shift_JIS として許容されるか
-		type.is_regular_sjis= is_regular_sjis;
+		type.is_regular_sjis	= is_regular_sjis;
 		type.is_regular_sjis2004 = is_regular_sjis2004;
 
 		// 漢字が常用漢字か、人名用漢字かなど
-		type.is_joyo_kanji	= MojiAnalizerTools.isJoyoKanji(unicode_codepoint);
-		type.is_jinmeiyo_kanji= MojiAnalizerTools.isJinmeiyoKanji(unicode_codepoint);
+		type.is_joyo_kanji		= MojiAnalizerTools.isJoyoKanji(unicode_codepoint);
+		type.is_jinmeiyo_kanji	= MojiAnalizerTools.isJinmeiyoKanji(unicode_codepoint);
 
 		// Windows-31J(CP932) に関しての調査 
 		// 外字, IBM拡張文字, NEC選定IBM拡張文字, NEC特殊文字
-		type.is_gaiji_cp932			= cp932code ? (0xf040 <= cp932code) && (cp932code <= 0xf9fc) : false;
-		type.is_IBM_extended_character= cp932code ? (0xfa40 <= cp932code) && (cp932code <= 0xfc4b) : false;
+		type.is_gaiji_cp932				= cp932code ? (0xf040 <= cp932code) && (cp932code <= 0xf9fc) : false;
+		type.is_IBM_extended_character	= cp932code ? (0xfa40 <= cp932code) && (cp932code <= 0xfc4b) : false;
 		type.is_NEC_selection_IBM_extended_character= cp932code ? (0xed40 <= cp932code) && (cp932code <= 0xeefc) : false;
-		type.is_NEC_special_character= cp932code ? (0x8740 <= cp932code) && (cp932code <= 0x879C) : false;
+		type.is_NEC_special_character	= cp932code ? (0x8740 <= cp932code) && (cp932code <= 0x879C) : false;
 
 		// Shift_JIS-2004 を使用して漢字の水準調査(ない場合はnullになる)
 		type.kanji_suijun = SJIS.toJISKanjiSuijunFromSJISCode(sjis2004code);
@@ -6514,28 +6587,35 @@
 		type.is_gaiji = /Private Use Area/.test(type.blockname);
 		// 他に外字チェック
 		type.is_gaiji = type.is_gaiji || ((0xF0000 <= unicode_codepoint) && (unicode_codepoint <= 0x10FFFF));
-			
+		
 		return data;
-	};
+	}
+
+}
+
+/**
+ * The script is part of MojiJS.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * 文字列比較関数を作成用のツールクラス
+ * @ignore
+ */
+class ComparatorTool {
 
 	/**
-	 * The script is part of MojiJS.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 文字列の揺れを除去し正規化します。
+	 * @param {String} string_data - 正規化したいテキスト
+	 * @returns {String} 正規化後のテキスト
 	 */
-
-	/**
-	 * 文字列比較関数を作成用のツールクラス
-	 * @ignore
-	 */
-	var ComparatorTool = function ComparatorTool () {};
-
-	ComparatorTool.toNormalizeString = function toNormalizeString (string_data) {
-		var normalize_text = null;
+	static toNormalizeString(string_data) {
+		let normalize_text = null;
 		// NORM_IGNOREWIDTH 半角全角区別しない（半角英数記号と全角カタカナに統一）
 		normalize_text = Japanese.toHalfWidthAsciiCode(Japanese.toHalfWidthAsciiCode(string_data));
 		// LCMAP_LOWERCASE 半角に統一
@@ -6547,51 +6627,51 @@
 		// NORM_IGNORESYMBOLS 英文法の記号を無視
 		normalize_text = normalize_text.replace(/["'-]/g, "");
 		return normalize_text;
-	};
+	}
 
 	/**
-		 * ASCIIコードが半角数値かどうかを判定する
-		 * @param {number} string_number - ASCIIコード
-		 * @returns {Boolean} 数値ならTRUE
-		 */
-	ComparatorTool.isNumberAscii = function isNumberAscii (string_number) {
-		var ASCII_0 = 0x30;
-		var ASCII_9 = 0x39;
+	 * ASCIIコードが半角数値かどうかを判定する
+	 * @param {number} string_number - ASCIIコード
+	 * @returns {Boolean} 数値ならTRUE
+	 */
+	static isNumberAscii(string_number) {
+		const ASCII_0 = 0x30;
+		const ASCII_9 = 0x39;
 		return (ASCII_0 <= string_number) && (string_number <= ASCII_9);
-	};
+	}
 
 	/**
-		 * ASCIIコード配列の中で指定した位置から数値が何バイト続くか
-		 * @param {Array<number>} string_number_array - ASCIIコードの配列
-		 * @param {number} offset - どの位置から調べるか
-		 * @returns {number} 数値ならTRUE
-		 */
-	ComparatorTool.getNumberAsciiLength = function getNumberAsciiLength (string_number_array, offset) {
-		for(var i = offset; i < string_number_array.length; i++) {
+	 * ASCIIコード配列の中で指定した位置から数値が何バイト続くか
+	 * @param {Array<number>} string_number_array - ASCIIコードの配列
+	 * @param {number} offset - どの位置から調べるか
+	 * @returns {number} 数値ならTRUE
+	 */
+	static getNumberAsciiLength(string_number_array, offset) {
+		for(let i = offset; i < string_number_array.length; i++) {
 			if(!ComparatorTool.isNumberAscii(string_number_array[i])) {
 				return (i - offset);
 			}
 		}
 		return (string_number_array.length - offset);
-	};
+	}
 
 	/**
-		 * ASCIIコード配列の中の指定した位置にある数値データ同士をCompareする
-		 * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
-		 * @param {number} t1off - どの位置から調べるか
-		 * @param {number} t1size - 調べるサイズ
-		 * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
-		 * @param {number} t2off - どの位置から調べるか
-		 * @param {number} t2size - 調べるサイズ
-		 * @returns {number} Compare結果
-		 */
-	ComparatorTool.compareNumber = function compareNumber (t1, t1off, t1size, t2, t2off, t2size) {
-		var ASCII_0 = 0x30;
-		var t1end = t1off + t1size;
-		var t2end = t2off + t2size;
+	 * ASCIIコード配列の中の指定した位置にある数値データ同士をCompareする
+	 * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
+	 * @param {number} t1off - どの位置から調べるか
+	 * @param {number} t1size - 調べるサイズ
+	 * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
+	 * @param {number} t2off - どの位置から調べるか
+	 * @param {number} t2size - 調べるサイズ
+	 * @returns {number} Compare結果
+	 */
+	static compareNumber(t1, t1off, t1size, t2, t2off, t2size) {
+		const ASCII_0 = 0x30;
+		const t1end = t1off + t1size;
+		const t2end = t2off + t2size;
 		// 前方から調査
-		var t1p = t1off;
-		var t2p = t2off;
+		let t1p = t1off;
+		let t2p = t2off;
 		// 先頭の0は飛ばして比較したい
 		// 0以外の数値がどこに含まれているか調査
 		for(;t1p < t1end;t1p++) {
@@ -6617,8 +6697,8 @@
 			}
 		}
 		// 桁数のみでどちらが大きいか比較
-		var t1keta = t1size - (t1p - t1off);
-		var t2keta = t2size - (t2p - t2off);
+		const t1keta = t1size - (t1p - t1off);
+		const t2keta = t2size - (t2p - t2off);
 		if(t1keta > t2keta) {
 			return 1;
 		}
@@ -6637,17 +6717,17 @@
 			t2p++;
 		}
 		return 0;
-	};
+	}
 
 	/**
-		 * ASCIIコード配列の同士をCompareする
-		 * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
-		 * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
-		 * @returns {number} Compare結果
-		 */
-	ComparatorTool.compareText = function compareText (t1, t2) {
-		var l1 = t1.length;
-		var l2 = t2.length;
+	 * ASCIIコード配列の同士をCompareする
+	 * @param {Array<number>} t1 - ASCIIコードの配列（比較元）
+	 * @param {Array<number>} t2 - ASCIIコードの配列（比較先）
+	 * @returns {number} Compare結果
+	 */
+	static compareText(t1, t2) {
+		const l1 = t1.length;
+		const l2 = t2.length;
 		if((l1 === 0) && (l2 === 0)) {
 			return 0;
 		}
@@ -6658,11 +6738,11 @@
 			return 1;
 		}
 		//この地点で両方とも長さが1より大きい
-		var t1off = 0;
-		var t2off = 0;
+		let t1off = 0;
+		let t2off = 0;
 		while(t1off <= l1 && t2off <= l2) {
-			var t1isnum = ComparatorTool.isNumberAscii(t1[t1off]);
-			var t2isnum = ComparatorTool.isNumberAscii(t2[t2off]);
+			const t1isnum = ComparatorTool.isNumberAscii(t1[t1off]);
+			const t2isnum = ComparatorTool.isNumberAscii(t2[t2off]);
 			//文字目の種類が違う
 			if(t1isnum !== t2isnum) {
 				if(t1isnum) {
@@ -6674,9 +6754,9 @@
 			}
 			//両方とも数値
 			if(t1isnum) {
-				var t1size = ComparatorTool.getNumberAsciiLength(t1, t1off);
-				var t2size = ComparatorTool.getNumberAsciiLength(t2, t2off);
-				var r = ComparatorTool.compareNumber(t1,t1off,t1size,t2,t2off,t2size);
+				const t1size = ComparatorTool.getNumberAsciiLength(t1, t1off);
+				const t2size = ComparatorTool.getNumberAsciiLength(t2, t2off);
+				const r = ComparatorTool.compareNumber(t1,t1off,t1size,t2,t2off,t2size);
 				if(r !== 0) {
 					return r;
 				}
@@ -6717,15 +6797,15 @@
 		}
 		// ※ここには達成しない
 		return 0;
-	};
+	}
 
 	/**
-		 * 2つの文字列を比較する
-		 * @param {String} a - 比較元
-		 * @param {String} b - 比較先
-		 * @returns {number} Compare結果
-		 */
-	ComparatorTool.compareToForDefault = function compareToForDefault (a, b) {
+	 * 2つの文字列を比較する
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
+	 */
+	static compareToForDefault(a, b) {
 		if(a === b) {
 			return 0;
 		}
@@ -6733,465 +6813,473 @@
 			return (a < b ? -1 : 1);
 		}
 		return ((typeof a < typeof b) ? -1 : 1);
-	};
+	}
 
 	/**
-		 * 2つの文字列を自然順に比較を行う（自然順ソート（Natural Sort）用）
-		 * @param {String} a - 比較元
-		 * @param {String} b - 比較先
-		 * @returns {number} Compare結果
-		 */
-	ComparatorTool.compareToForNatural = function compareToForNatural (a, b) {
+	 * 2つの文字列を自然順に比較を行う（自然順ソート（Natural Sort）用）
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
+	 */
+	static compareToForNatural(a, b) {
 		if((typeof a === typeof b) && (typeof a === "string")) {
-			var a_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(a));
-			var b_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(b));
+			const a_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(a));
+			const b_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(b));
 			return ComparatorTool.compareText(a_str, b_str);
 		}
 		else {
 			return ComparatorTool.compareToForDefault(a, b);
 		}
-	};
+	}
+
+}
+
+/**
+ * 日本語の文字列比較用の関数
+ * - sortの引数で利用できます
+ * @ignore
+ */
+class StringComparator {
 
 	/**
-	 * 日本語の文字列比較用の関数
-	 * - sortの引数で利用できます
-	 * @ignore
+	 * 2つの文字列を比較する関数
+	 * @returns {function(string, string): number}
 	 */
-	var StringComparator = function StringComparator () {};
-
-	var staticAccessors$4 = { DEFAULT: { configurable: true },NATURAL: { configurable: true } };
-
-	staticAccessors$4.DEFAULT.get = function () {
+	static get DEFAULT() {
 		return ComparatorTool.compareToForDefault;
-	};
+	}
 
 	/**
-		 * 2つの文字列を自然順ソートで比較する関数
-		 * @returns {function(string, string): number}
-		 */
-	staticAccessors$4.NATURAL.get = function () {
+	 * 2つの文字列を自然順ソートで比較する関数
+	 * @returns {function(string, string): number}
+	 */
+	static get NATURAL() {
 		return ComparatorTool.compareToForNatural;
-	};
+	}
 
-	Object.defineProperties( StringComparator, staticAccessors$4 );
+}
+
+/**
+ * The script is part of jptext.
+ * 
+ * AUTHOR:
+ *  natade (http://twitter.com/natadea)
+ * 
+ * LICENSE:
+ *  The MIT license https://opensource.org/licenses/MIT
+ */
+
+/**
+ * 日本語を扱うための様々な機能を提供します
+ */
+class MojiJS {
+
+	// ---------------------------------
+	// 文字列のエンコードとデコードを扱う関数
+	// ---------------------------------
 
 	/**
-	 * The script is part of jptext.
-	 * 
-	 * AUTHOR:
-	 *  natade (http://twitter.com/natadea)
-	 * 
-	 * LICENSE:
-	 *  The MIT license https://opensource.org/licenses/MIT
+	 * 文字列からバイナリ配列にエンコードする
+	 * @param {String} text - 変換したいテキスト
+	 * @param {String} charset - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @param {boolean} [is_with_bom=false] - BOMをつけるかどうか
+	 * @returns {Array<number>} バイナリ配列(失敗時はnull)
 	 */
-
-	/**
-	 * 日本語を扱うための様々な機能を提供します
-	 */
-	var MojiJS = function MojiJS () {};
-
-	var staticAccessors$5 = { COMPARE_DEFAULT: { configurable: true },COMPARE_NATURAL: { configurable: true } };
-
-	MojiJS.encode = function encode (text, charset, is_with_bom) {
+	static encode(text, charset, is_with_bom) {
 		return Encode.encode(text, charset, is_with_bom);
-	};
+	}
 
 	/**
-		 * バイナリ配列から文字列にデコードする
-		 * @param {Array<number>} binary - 変換したいバイナリ配列
-		 * @param {String} [charset="autodetect"] - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
-		 * @returns {String} 変換した文字列（失敗したらnull）
-		 */
-	MojiJS.decode = function decode (binary, charset) {
+	 * バイナリ配列から文字列にデコードする
+	 * @param {Array<number>} binary - 変換したいバイナリ配列
+	 * @param {String} [charset="autodetect"] - キャラセット(UTF-8/16/32,Shift_JIS,Windows-31J,Shift_JIS-2004,EUC-JP,EUC-JP-2004)
+	 * @returns {String} 変換した文字列（失敗したらnull）
+	 */
+	static decode(binary, charset) {
 		return Encode.decode(binary, charset);
-	};
+	}
 
 	// ---------------------------------
 	// Unicode を扱う関数群
 	// ---------------------------------
-		
+	
 	/**
-		 * サロゲートペア対応のコードポイント取得
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} [index = 0] - インデックス
-		 * @returns {Number} コードポイント
-		 */
-	MojiJS.codePointAt = function codePointAt (text, index) {
+	 * サロゲートペア対応のコードポイント取得
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} [index = 0] - インデックス
+	 * @returns {Number} コードポイント
+	 */
+	static codePointAt(text, index) {
 		return Unicode.codePointAt(text, index);
-	};
+	}
 
 	/**
-		 * コードポイントの数値データを文字列に変換
-		 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.fromCodePoint = function fromCodePoint (codepoint) {
-			var arguments$1 = arguments;
-
+	 * コードポイントの数値データを文字列に変換
+	 * @param {...(number|Array<number>)} codepoint - 変換したいコードポイントの数値配列、又は数値を並べた可変引数
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromCodePoint(codepoint) {
 		if(codepoint instanceof Array) {
 			return Unicode.fromCodePoint(codepoint);
 		}
 		else {
-			var codepoint_array = [];
-			for(var i = 0;i < arguments.length;i++) {
-				codepoint_array[i] = arguments$1[i];
+			const codepoint_array = [];
+			for(let i = 0;i < arguments.length;i++) {
+				codepoint_array[i] = arguments[i];
 			}
 			return Unicode.fromCodePoint(codepoint_array);
 		}
-	};
+	}
 
 	/**
-		 * コードポイント換算で文字列数をカウント
-		 * @param {String} text - 対象テキスト
-		 * @param {Number} [beginIndex=0] - 最初のインデックス（省略可）
-		 * @param {Number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
-		 * @returns {Number} 文字数
-		 */
-	MojiJS.codePointCount = function codePointCount (text, beginIndex, endIndex) {
+	 * コードポイント換算で文字列数をカウント
+	 * @param {String} text - 対象テキスト
+	 * @param {Number} [beginIndex=0] - 最初のインデックス（省略可）
+	 * @param {Number} [endIndex] - 最後のインデックス（ここは含めない）（省略可）
+	 * @returns {Number} 文字数
+	 */
+	static codePointCount(text, beginIndex, endIndex) {
 		return Unicode.codePointCount(text, beginIndex, endIndex);
-	};
+	}
 
 	/**
-		 * 文字列をUTF32(コードポイント)の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列
-		 */
-	MojiJS.toUTF32Array = function toUTF32Array (text) {
+	 * 文字列をUTF32(コードポイント)の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF32(コードポイント)のデータが入った配列
+	 */
+	static toUTF32Array(text) {
 		return Unicode.toUTF32Array(text);
-	};
+	}
 
 	/**
-		 * UTF32の配列から文字列に変換
-		 * @param {Array<number>} utf32 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.fromUTF32Array = function fromUTF32Array (utf32) {
+	 * UTF32の配列から文字列に変換
+	 * @param {Array<number>} utf32 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF32Array(utf32) {
 		return Unicode.fromUTF32Array(utf32);
-	};
+	}
 
 	/**
-		 * 文字列をUTF16の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} UTF16のデータが入った配列
-		 */
-	MojiJS.toUTF16Array = function toUTF16Array (text) {
+	 * 文字列をUTF16の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF16のデータが入った配列
+	 */
+	static toUTF16Array(text) {
 		return Unicode.toUTF16Array(text);
-	};
+	}
 
 	/**
-		 * UTF16の配列から文字列に変換
-		 * @param {Array<number>} utf16 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.fromUTF16Array = function fromUTF16Array (utf16) {
+	 * UTF16の配列から文字列に変換
+	 * @param {Array<number>} utf16 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF16Array(utf16) {
 		return Unicode.fromUTF16Array(utf16);
-	};
+	}
 
 	/**
-		 * 文字列をUTF8の配列に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {Array<number>} UTF8のデータが入った配列
-		 */
-	MojiJS.toUTF8Array = function toUTF8Array (text) {
+	 * 文字列をUTF8の配列に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<number>} UTF8のデータが入った配列
+	 */
+	static toUTF8Array(text) {
 		return Unicode.toUTF8Array(text);
-	};
+	}
 
 	/**
-		 * UTF8の配列から文字列に変換
-		 * @param {Array<number>} utf8 - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.fromUTF8Array = function fromUTF8Array (utf8) {
+	 * UTF8の配列から文字列に変換
+	 * @param {Array<number>} utf8 - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromUTF8Array(utf8) {
 		return Unicode.fromUTF8Array(utf8);
-	};
+	}
 
 	// ---------------------------------
 	// 切り出しを扱う関数群
 	// ---------------------------------
 
 	/**
-		 * 指定したテキストを切り出す
-		 * - 単位は文字数
-		 * @param {String} text - 切り出したいテキスト
-		 * @param {Number} offset - 切り出し位置
-		 * @param {Number} size - 切り出す長さ
-		 * @returns {String} 切り出したテキスト
-		 */
-	MojiJS.cutTextForCodePoint = function cutTextForCodePoint (text, offset, size) {
+	 * 指定したテキストを切り出す
+	 * - 単位は文字数
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 */
+	static cutTextForCodePoint(text, offset, size) {
 		return Unicode.cutTextForCodePoint(text, offset, size);
-	};
+	}
 
 	/**
-		 * 指定したテキストの横幅を半角／全角でカウント
-		 * - 半角を1、全角を2としてカウント
-		 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
-		 * @param {String} text - カウントしたいテキスト
-		 * @returns {Number} 文字の横幅
-		 */
-	MojiJS.getWidth = function getWidth (text) {
+	 * 指定したテキストの横幅を半角／全角でカウント
+	 * - 半角を1、全角を2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * @param {String} text - カウントしたいテキスト
+	 * @returns {Number} 文字の横幅
+	 */
+	static getWidth(text) {
 		return Japanese.getWidth(text);
-	};
+	}
 
 	/**
-		 * 指定したテキストを切り出す
-		 * - 単位は半角／全角で換算した文字の横幅
-		 * - 半角を1、全角を2としてカウント
-		 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
-		 * @param {String} text - 切り出したいテキスト
-		 * @param {Number} offset - 切り出し位置
-		 * @param {Number} size - 切り出す長さ
-		 * @returns {String} 切り出したテキスト
-		 */
-	MojiJS.cutTextForWidth = function cutTextForWidth (text, offset, size) {
+	 * 指定したテキストを切り出す
+	 * - 単位は半角／全角で換算した文字の横幅
+	 * - 半角を1、全角を2としてカウント
+	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * @param {String} text - 切り出したいテキスト
+	 * @param {Number} offset - 切り出し位置
+	 * @param {Number} size - 切り出す長さ
+	 * @returns {String} 切り出したテキスト
+	 */
+	static cutTextForWidth(text, offset, size) {
 		return Japanese.cutTextForWidth(text, offset, size);
-	};
+	}
 
 	// ---------------------------------
 	// 面区点コードの変換用
 	// ---------------------------------
 
 	/**
-		 * 指定した文字から Windows-31J 上の区点番号に変換
-		 * - 2文字以上を指定した場合は、1文字目のみを変換する
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {import("./encode/SJIS.js").MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 */
-	MojiJS.toKuTen = function toKuTen (text) {
+	 * 指定した文字から Windows-31J 上の区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./encode/SJIS.js").MenKuTen} 区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toKuTen(text) {
 		return CP932.toKuTen(text);
-	};
-		
+	}
+	
 	/**
-		 * Windows-31J 上の区点番号から文字列に変換
-		 * @param {import("./encode/SJIS.js").MenKuTen|string} kuten - 区点番号
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.fromKuTen = function fromKuTen (kuten) {
+	 * Windows-31J 上の区点番号から文字列に変換
+	 * @param {import("./encode/SJIS.js").MenKuTen|string} kuten - 区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromKuTen(kuten) {
 		return CP932.fromKuTen(kuten);
-	};
+	}
 
 	/**
-		 * 指定した文字から Shift_JIS-2004 上の面区点番号に変換
-		 * - 2文字以上を指定した場合は、1文字目のみを変換する
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {import("./encode/SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
-		 * @ignore
-		 */
-	MojiJS.toMenKuTen = function toMenKuTen (text) {
+	 * 指定した文字から Shift_JIS-2004 上の面区点番号に変換
+	 * - 2文字以上を指定した場合は、1文字目のみを変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {import("./encode/SJIS.js").MenKuTen} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+	 */
+	static toMenKuTen(text) {
 		return SJIS2004.toMenKuTen(text);
-	};
-		
+	}
+	
 	/**
-		 * Shift_JIS-2004 上の面区点番号から文字列に変換
-		 * @param {import("./encode/SJIS.js").MenKuTen|string} menkuten - 面区点番号
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.fromMenKuTen = function fromMenKuTen (menkuten) {
+	 * Shift_JIS-2004 上の面区点番号から文字列に変換
+	 * @param {import("./encode/SJIS.js").MenKuTen|string} menkuten - 面区点番号
+	 * @returns {String} 変換後のテキスト
+	 */
+	static fromMenKuTen(menkuten) {
 		return SJIS2004.fromMenKuTen(menkuten);
-	};
+	}
 
 	// ---------------------------------
 	// 日本語の変換用の関数群
 	// ---------------------------------
 
 	/**
-		 * カタカナをひらがなに変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHiragana = function toHiragana (text) {
+	 * カタカナをひらがなに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHiragana(text) {
 		return Japanese.toHiragana(text);
-	};
+	}
 
 	/**
-		 * ひらがなをカタカナに変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toKatakana = function toKatakana (text) {
+	 * ひらがなをカタカナに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toKatakana(text) {
 		return Japanese.toKatakana(text);
-	};
-		
+	}
+	
 	/**
-		 * スペースを半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHalfWidthSpace = function toHalfWidthSpace (text) {
+	 * スペースを半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthSpace(text) {
 		return Japanese.toHalfWidthSpace(text);
-	};
-		
+	}
+	
 	/**
-		 * スペースを全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toFullWidthSpace = function toFullWidthSpace (text) {
+	 * スペースを全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthSpace(text) {
 		return Japanese.toFullWidthSpace(text);
-	};
-		
+	}
+	
 	/**
-		 * 英数記号を半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHalfWidthAsciiCode = function toHalfWidthAsciiCode (text) {
+	 * 英数記号を半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthAsciiCode(text) {
 		return Japanese.toHalfWidthAsciiCode(text);
-	};
-		
+	}
+	
 	/**
-		 * 英数記号を全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toFullWidthAsciiCode = function toFullWidthAsciiCode (text) {
+	 * 英数記号を全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthAsciiCode(text) {
 		return Japanese.toFullWidthAsciiCode(text);
-	};
-		
+	}
+	
 	/**
-		 * アルファベットを半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHalfWidthAlphabet = function toHalfWidthAlphabet (text) {
+	 * アルファベットを半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthAlphabet(text) {
 		return Japanese.toHalfWidthAlphabet(text);
-	};
-		
+	}
+	
 	/**
-		 * アルファベットを全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toFullWidthAlphabet = function toFullWidthAlphabet (text) {
+	 * アルファベットを全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthAlphabet(text) {
 		return Japanese.toFullWidthAlphabet(text);
-	};
-		
+	}
+	
 	/**
-		 * 数値を半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHalfWidthNumber = function toHalfWidthNumber (text) {
+	 * 数値を半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthNumber(text) {
 		return Japanese.toHalfWidthNumber(text);
-	};
-		
+	}
+	
 	/**
-		 * 数値を全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toFullWidthNumber = function toFullWidthNumber (text) {
+	 * 数値を全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthNumber(text) {
 		return Japanese.toFullWidthNumber(text);
-	};
-		
+	}
+	
 	/**
-		 * カタカナを半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHalfWidthKana = function toHalfWidthKana (text) {
+	 * カタカナを半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidthKana(text) {
 		return Japanese.toHalfWidthKana(text);
-	};
+	}
 
 	/**
-		 * カタカナを全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toFullWidthKana = function toFullWidthKana (text) {
+	 * カタカナを全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidthKana(text) {
 		return Japanese.toFullWidthKana(text);
-	};
-		
+	}
+	
 	/**
-		 * 半角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHalfWidth = function toHalfWidth (text) {
+	 * 半角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHalfWidth(text) {
 		return Japanese.toHalfWidth(text);
-	};
-		
+	}
+	
 	/**
-		 * 全角に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toFullWidth = function toFullWidth (text) {
+	 * 全角に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toFullWidth(text) {
 		return Japanese.toFullWidth(text);
-	};
+	}
 
 	/**
-		 * ローマ字からひらがなに変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toHiraganaFromRomaji = function toHiraganaFromRomaji (text) {
+	 * ローマ字からひらがなに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toHiraganaFromRomaji(text) {
 		return Japanese.toHiraganaFromRomaji(text);
-	};
+	}
 
 	/**
-		 * ローマ字からカタカナに変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toKatakanaFromRomaji = function toKatakanaFromRomaji (text) {
+	 * ローマ字からカタカナに変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toKatakanaFromRomaji(text) {
 		return Japanese.toKatakanaFromRomaji(text);
-	};
+	}
 
 	/**
-		 * ひらがなからローマ字に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toRomajiFromHiragana = function toRomajiFromHiragana (text) {
+	 * ひらがなからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromHiragana(text) {
 		return Japanese.toRomajiFromHiragana(text);
-	};
+	}
 
 	/**
-		 * カタカナからローマ字に変換
-		 * @param {String} text - 変換したいテキスト
-		 * @returns {String} 変換後のテキスト
-		 */
-	MojiJS.toRomajiFromKatakana = function toRomajiFromKatakana (text) {
+	 * カタカナからローマ字に変換
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {String} 変換後のテキスト
+	 */
+	static toRomajiFromKatakana(text) {
 		return Japanese.toRomajiFromKatakana(text);
-	};
+	}
 
 	// ---------------------------------
 	// 1つの文字データに対して調査を行う
 	// ---------------------------------
 
 	/**
-		 * 指定した1つの文字に関して、解析を行い情報を返します
-		 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
-		 * @returns {import("./tools/MojiAnalyzer.js").MojiData} 文字の情報がつまったオブジェクト
-		 */
-	MojiJS.getMojiData = function getMojiData (unicode_codepoint) {
+	 * 指定した1つの文字に関して、解析を行い情報を返します
+	 * @param {Number} unicode_codepoint - UTF-32 のコードポイント
+	 * @returns {import("./tools/MojiAnalyzer.js").MojiData} 文字の情報がつまったオブジェクト
+	 */
+	static getMojiData(unicode_codepoint) {
 		return MojiAnalyzer.getMojiData(unicode_codepoint);
-	};
+	}
 
 	// ---------------------------------
 	// 比較関数
 	// ---------------------------------
 
 	/**
-		 * 2つの文字列を比較する関数
-		 * - sortの引数で利用できます
-		 * @returns {function(string, string): number}
-		 */
-	staticAccessors$5.COMPARE_DEFAULT.get = function () {
+	 * 2つの文字列を比較する関数
+	 * - sortの引数で利用できます
+	 * @returns {function(string, string): number}
+	 */
+	static get COMPARE_DEFAULT() {
 		return StringComparator.DEFAULT;
-	};
+	}
 
 	/**
-		 * 2つの文字列を自然順ソートで比較する関数
-		 * - sortの引数で利用できます
-		 * @returns {function(string, string): number}
-		 */
-	staticAccessors$5.COMPARE_NATURAL.get = function () {
+	 * 2つの文字列を自然順ソートで比較する関数
+	 * - sortの引数で利用できます
+	 * @returns {function(string, string): number}
+	 */
+	static get COMPARE_NATURAL() {
 		return StringComparator.NATURAL;
-	};
+	}
+	
+}
 
-	Object.defineProperties( MojiJS, staticAccessors$5 );
-
-	return MojiJS;
-
-}));
+module.exports = MojiJS;

@@ -1,5 +1,10 @@
 # History
 
+## v3.0.1
+
+### 変更
+- "package.json" の "main" で指定しているファイルを、UMD形式からCommonJS形式に変更
+
 ### 不具合修正
 - 誤って"@ignore"指定がついていた箇所を削除
 

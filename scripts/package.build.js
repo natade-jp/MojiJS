@@ -35,6 +35,13 @@ for(const key in target_file) {
 	addHeader(target_file[key]);
 }
 
+// ES6用のモジュールをnode.jsで利用できるように修正する
+{
+	let text = File.loadTextFile("./build/CommonJS/index.js");
+	text = text.replace("export default MojiJS;", "module.exports = MojiJS;");
+	File.saveTextFile("./build/CommonJS/index.js", text);
+}
+
 // サンプルファイルはbuild内のデータと関連付ける
 File.saveTextFile(
 	"./html/examples/libs/MojiJS.js",

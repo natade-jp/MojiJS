@@ -44,7 +44,7 @@ const createData = function(moduleName, input_name, output_name, isES6, isUglify
 const data = [];
 
 data.push(createData("MojiJS", "./src/MojiJS.js", "./build/esm/index.js", true, false));
-data.push(createData("MojiJS", "./src/MojiJS.js", "./build/umd/index.js", false, false));
+data.push(createData("MojiJS", "./src/MojiJS.js", "./build/CommonJS/index.js", true, false));
 data.push(createData("MojiJS", "./src/MojiJS.js", "./build/mojijs.esm.min.js", true, true));
 data.push(createData("MojiJS", "./src/MojiJS.js", "./build/mojijs.umd.min.js", false, true));
 
