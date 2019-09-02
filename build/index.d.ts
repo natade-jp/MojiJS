@@ -131,6 +131,13 @@ declare class MojiJS {
      */
     static fromKuTen(kuten: any): string;
     /**
+     * 指定した文字から Shift_JIS-2004 上の面区点番号に変換
+     * - 2文字以上を指定した場合は、1文字目のみを変換する
+     * @param {String} text - 変換したいテキスト
+     * @returns {_MenKuTen_} 面区点番号(存在しない場合（1バイトのJISコードなど）はnullを返す)
+     */
+    static toMenKuTen(text: string): _MenKuTen_;
+    /**
      * Shift_JIS-2004 上の面区点番号から文字列に変換
      * @param {_MenKuTen_|string} menkuten - 面区点番号
      * @returns {String} 変換後のテキスト

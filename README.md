@@ -69,4 +69,4 @@ console.log(["３", "02", "あ", "イ", "う", "1"].sort(MojiJS.COMPARE_NATURAL)
 ```
 
 ## Author ##
-- [natade](https://twitter.com/natadea)
+- [natade-jp](https://github.com/natade-jp/)
