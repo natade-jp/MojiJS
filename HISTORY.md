@@ -1,5 +1,10 @@
 # History
 
+## v3.0.3
+
+### 変更
+- "dependencies" に入っていた "eslint" を "devDependencies" に移動
+
 ## v3.0.2
 
 ### 不具合修正

@@ -1,6 +1,6 @@
 {
 	"name": "mojijs",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"description": "To convert or to analyze the character data of the Japanese.",
 	"author": "natade-jp <natade3@gmail.com> (https://github.com/natade-jp)",
 	"repository": {
@@ -73,7 +73,8 @@
 		"babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
 		"esdoc": "^1.1.0",
 		"esdoc-standard-plugin": "^1.0.0",
-		"eslint-plugin-jest": "^22.15.0",
+		"eslint": "^6.4.0",
+		"eslint-plugin-jest": "^22.17.0",
 		"jest": "^24.8.0",
 		"jsdoc": "^3.6.3",
 		"jsdoc-export-default-interop": "^0.3.1",
@@ -83,7 +84,5 @@
 		"rollup-plugin-uglify-es": "0.0.1",
 		"tsd-jsdoc": "^2.3.1"
 	},
-	"dependencies": {
-		"eslint": "^6.1.0"
-	}
+	"dependencies": {}
 }
