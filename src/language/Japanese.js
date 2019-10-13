@@ -461,7 +461,7 @@ export default class Japanese {
 			"di" : "ぢ" ,
 			"du" : "づ" ,
 			"de" : "で" ,
-			"do" : "ど" ,
+			"d\u006f" : "ど" ,	// "do" を予約語の do に変換される場合があるため
 			"na" : "な" ,
 			"ni" : "に" ,
 			"nu" : "ぬ" ,
@@ -687,7 +687,7 @@ export default class Japanese {
 			"ぢ" : "di" ,
 			"づ" : "du" ,
 			"で" : "de" ,
-			"ど" : "do" ,
+			"ど" : "d\u006f" ,	// "do" を予約語の do に変換される場合があるため
 			"な" : "na" ,
 			"に" : "ni" ,
 			"ぬ" : "nu" ,

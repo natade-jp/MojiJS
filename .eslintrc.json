@@ -30,6 +30,7 @@
             "error",
             "always"
         ],
+        "comma-dangle": ["error", "never"],
         "no-constant-condition": 1,
         "no-unused-vars": 1,
         "no-console": 1,
