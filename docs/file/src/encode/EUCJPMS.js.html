@@ -106,7 +106,7 @@ class EUCJPMSMAP {
 	/**
 	 * @returns {Object&lt;number, number&gt;}
 	 */
-	static get CP932_TO_EUCJPMS() {
+	static CP932_TO_EUCJPMS() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.cp932_to_eucjpms_map;
 	}
@@ -114,7 +114,7 @@ class EUCJPMSMAP {
 	/**
 	 * @returns {Object&lt;number, number&gt;}
 	 */
-	static get EUCJPMS_TO_CP932() {
+	static EUCJPMS_TO_CP932() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.eucjpms_to_cp932_map;
 	}
@@ -154,7 +154,7 @@ export default class EUCJPMS {
 	static toEUCJPMSBinary(text) {
 		const sjis_array = CP932.toCP932Array(text);
 		const bin = [];
-		const map = EUCJPMSMAP.CP932_TO_EUCJPMS;
+		const map = EUCJPMSMAP.CP932_TO_EUCJPMS();
 		const SS2 = 0x8E; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;2
 		const SS3 = 0x8F; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;3
 		for(let i = 0; i &lt; sjis_array.length; i++) {
@@ -196,7 +196,7 @@ export default class EUCJPMS {
 	static fromEUCJPMSBinary(eucjp) {
 		const sjis_array = [];
 		const ng = &quot;?&quot;.charCodeAt(0);
-		const map = EUCJPMSMAP.EUCJPMS_TO_CP932;
+		const map = EUCJPMSMAP.EUCJPMS_TO_CP932();
 		const SS2 = 0x8E; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;2
 		const SS3 = 0x8F; // C1&#x5236;&#x5FA1;&#x6587;&#x5B57; &#x30B7;&#x30F3;&#x30B0;&#x30EB;&#x30B7;&#x30D5;&#x30C8;3
 		for(let i = 0; i &lt; eucjp.length; i++) {

@@ -1,7 +1,7 @@
 {
   "coverage": "100%",
-  "expectCount": 181,
-  "actualCount": 181,
+  "expectCount": 179,
+  "actualCount": 179,
   "files": {
     "src/encode/CP932.js": {
       "expectCount": 12,
@@ -54,8 +54,8 @@
       "undocumentLines": []
     },
     "src/tools/StringComparator.js": {
-      "expectCount": 11,
-      "actualCount": 11,
+      "expectCount": 9,
+      "actualCount": 9,
       "undocumentLines": []
     }
   }

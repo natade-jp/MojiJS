@@ -412,19 +412,23 @@ export default class MojiJS {
 	/**
 	 * 2つの文字列を比較する関数
 	 * - sortの引数で利用できます
-	 * @returns {function(string, string): number}
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
 	 */
-	static get COMPARE_DEFAULT() {
-		return StringComparator.DEFAULT;
+	static compareToForDefault(a, b) {
+		return StringComparator.DEFAULT(a, b);
 	}
-
+	
 	/**
 	 * 2つの文字列を自然順ソートで比較する関数
 	 * - sortの引数で利用できます
-	 * @returns {function(string, string): number}
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
 	 */
-	static get COMPARE_NATURAL() {
-		return StringComparator.NATURAL;
+	static compareToForNatural(a, b) {
+		return StringComparator.NATURAL(a, b);
 	}
-	
+
 }

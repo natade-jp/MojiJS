@@ -65,7 +65,7 @@ class EUCJPMSMAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get CP932_TO_EUCJPMS() {
+	static CP932_TO_EUCJPMS() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.cp932_to_eucjpms_map;
 	}
@@ -73,7 +73,7 @@ class EUCJPMSMAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get EUCJPMS_TO_CP932() {
+	static EUCJPMS_TO_CP932() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.eucjpms_to_cp932_map;
 	}
@@ -113,7 +113,7 @@ export default class EUCJPMS {
 	static toEUCJPMSBinary(text) {
 		const sjis_array = CP932.toCP932Array(text);
 		const bin = [];
-		const map = EUCJPMSMAP.CP932_TO_EUCJPMS;
+		const map = EUCJPMSMAP.CP932_TO_EUCJPMS();
 		const SS2 = 0x8E; // C1制御文字 シングルシフト2
 		const SS3 = 0x8F; // C1制御文字 シングルシフト3
 		for(let i = 0; i < sjis_array.length; i++) {
@@ -155,7 +155,7 @@ export default class EUCJPMS {
 	static fromEUCJPMSBinary(eucjp) {
 		const sjis_array = [];
 		const ng = "?".charCodeAt(0);
-		const map = EUCJPMSMAP.EUCJPMS_TO_CP932;
+		const map = EUCJPMSMAP.EUCJPMS_TO_CP932();
 		const SS2 = 0x8E; // C1制御文字 シングルシフト2
 		const SS3 = 0x8F; // C1制御文字 シングルシフト3
 		for(let i = 0; i < eucjp.length; i++) {

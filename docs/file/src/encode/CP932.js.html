@@ -1390,7 +1390,7 @@ class CP932MAP {
 	/**
 	 * @returns {Object&lt;number, number&gt;}
 	 */
-	static get CP932_TO_UNICODE() {
+	static CP932_TO_UNICODE() {
 		CP932MAP.init();
 		return CP932MAP.cp932_to_unicode_map;
 	}
@@ -1398,7 +1398,7 @@ class CP932MAP {
 	/**
 	 * @returns {Object&lt;number, number&gt;}
 	 */
-	static get UNICODE_TO_CP932() {
+	static UNICODE_TO_CP932() {
 		CP932MAP.init();
 		return CP932MAP.unicode_to_cp932_map;
 	}
@@ -1434,7 +1434,7 @@ export default class CP932 {
 	 * @returns {Number} CP932 &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8; (&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; undefined)
 	 */
 	static toCP932FromUnicode(unicode_codepoint) {
-		return CP932MAP.UNICODE_TO_CP932[unicode_codepoint];
+		return CP932MAP.UNICODE_TO_CP932()[unicode_codepoint];
 	}
 
 	/**
@@ -1443,7 +1443,7 @@ export default class CP932 {
 	 * @returns {Number} Unicode &#x306E;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8; (&#x5B58;&#x5728;&#x3057;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; undefined)
 	 */
 	static toUnicodeFromCP932(cp932_codepoint) {
-		return CP932MAP.CP932_TO_UNICODE[cp932_codepoint];
+		return CP932MAP.CP932_TO_UNICODE()[cp932_codepoint];
 	}
 	
 	/**
@@ -1452,7 +1452,7 @@ export default class CP932 {
 	 * @returns {Array&lt;number&gt;} CP932 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
 	 */
 	static toCP932Array(text) {
-		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
+		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932());
 	}
 
 	/**
@@ -1462,7 +1462,7 @@ export default class CP932 {
 	 * @returns {Array&lt;number&gt;} CP932 &#x306E;&#x30C7;&#x30FC;&#x30BF;&#x304C;&#x5165;&#x3063;&#x305F;&#x30D0;&#x30A4;&#x30CA;&#x30EA;&#x914D;&#x5217;
 	 */
 	static toCP932Binary(text) {
-		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932);
+		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932());
 	}
 
 	/**
@@ -1471,7 +1471,7 @@ export default class CP932 {
 	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
 	static fromCP932Array(cp932) {
-		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
+		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE());
 	}
 
 	/**
@@ -1494,7 +1494,7 @@ export default class CP932 {
 	 * @returns {String} &#x5909;&#x63DB;&#x5F8C;&#x306E;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 */
 	static fromKuTen(kuten) {
-		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE);
+		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE());
 		return code ? Unicode.fromUTF32Array(code) : &quot;&quot;;
 	}
 

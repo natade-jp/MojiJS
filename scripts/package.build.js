@@ -42,6 +42,23 @@ for(const key in target_file) {
 	File.saveTextFile("./build/CommonJS/index.js", text);
 }
 
+// 一部のファイルの情報を修正する
+{
+	const correctionReservedWords = function(filename) {
+		let text = File.loadTextFile(filename);
+		// "do" を予約語の do に変換される場合があるため
+		text = text.replace(/,do:/g, ",\"do\":");
+		File.saveTextFile(filename, text);
+	};
+	const files = [
+		"./build/mojijs.esm.min.js",
+		"./build/mojijs.umd.min.js"
+	];
+	for(let i = 0; i < files.length; i++) {
+		correctionReservedWords(files[i]);
+	}
+}
+
 // サンプルファイルはbuild内のデータと関連付ける
 File.saveTextFile(
 	"./html/examples/libs/MojiJS.js",

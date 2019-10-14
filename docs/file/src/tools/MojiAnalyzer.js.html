@@ -289,7 +289,7 @@ class MOJI_CHAR_MAP {
 			151: &quot;EPA&quot;, 152: &quot;SOS&quot;, 153: &quot;SGCI&quot;, 154: &quot;SCI&quot;, 155: &quot;CSI&quot;, 156: &quot;ST&quot;, 157: &quot;OSC&quot;, 158: &quot;PM&quot;,
 			159: &quot;APC&quot;, 160: &quot;NBSP&quot;, 173: &quot;SHY&quot;, 65024: &quot;VS1&quot;, 65025: &quot;VS2&quot;, 65026: &quot;VS3&quot;, 65027: &quot;VS4&quot;, 65028: &quot;VS5&quot;,
 			65029: &quot;VS6&quot;, 65030: &quot;VS7&quot;, 65031: &quot;VS8&quot;, 65032: &quot;VS9&quot;, 65033: &quot;VS10&quot;, 65034: &quot;VS11&quot;, 65035: &quot;VS12&quot;, 65036: &quot;VS13&quot;,
-			65037: &quot;VS14&quot;, 65038: &quot;VS15&quot;, 65039: &quot;VS16&quot;, 65529: &quot;IAA&quot;, 65530: &quot;IAS&quot;, 65531: &quot;IAT&quot;,
+			65037: &quot;VS14&quot;, 65038: &quot;VS15&quot;, 65039: &quot;VS16&quot;, 65529: &quot;IAA&quot;, 65530: &quot;IAS&quot;, 65531: &quot;IAT&quot;
 		};
 
 		const unicode_blockname_array = [
@@ -377,7 +377,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x5909;&#x63DB;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get CONTROL_CHARCTER() {
+	static CONTROL_CHARCTER() {
 		MOJI_CHAR_MAP.init();
 		return control_charcter_map;
 	}
@@ -385,7 +385,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get JOYOJANJI_BEFORE_1981() {
+	static JOYOJANJI_BEFORE_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_before_1981_map;
 	}
@@ -393,7 +393,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get JOYOKANJI_ADD_1981() {
+	static JOYOKANJI_ADD_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_1981_map;
 	}
@@ -401,7 +401,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get JOYOKANJI_ADD_2010() {
+	static JOYOKANJI_ADD_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_2010_map;
 	}
@@ -409,7 +409,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get JOYOKANJI_DELETE_2010() {
+	static JOYOKANJI_DELETE_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_delete_2010_map;
 	}
@@ -417,7 +417,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
+	static JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_joyokanji_isetai_2017_map;
 	}
@@ -425,7 +425,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get JINMEIYOKANJI_NOTJOYOKANJI_2017() {
+	static JINMEIYOKANJI_NOTJOYOKANJI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_2017_map;
 	}
@@ -433,7 +433,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * &#x30C1;&#x30A7;&#x30C3;&#x30AF;&#x7528;&#x30DE;&#x30C3;&#x30D7;
 	 */
-	static get JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
+	static JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_isetai_2017_map;
 	}
@@ -457,7 +457,7 @@ class MojiAnalizerTools {
 	 * @returns {String} &#x5236;&#x5FA1;&#x6587;&#x5B57;&#x540D;&#x3001;&#x9055;&#x3046;&#x5834;&#x5408;&#x306F; null 
 	 */
 	static getControlCharcterName(unicode_codepoint) {
-		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER;
+		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER();
 		const name = control_charcter_map[unicode_codepoint];
 		return name ? name : null;
 	}
@@ -468,7 +468,7 @@ class MojiAnalizerTools {
 	 * @returns {boolean} &#x5224;&#x5B9A;&#x7D50;&#x679C;
 	 */
 	static isJoyoKanjiBefore1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981();
 		return !!joyokanji_before_1981_map[unicode_codepoint];
 	}
 
@@ -478,8 +478,8 @@ class MojiAnalizerTools {
 	 * @returns {boolean} &#x5224;&#x5B9A;&#x7D50;&#x679C;
 	 */
 	static isJoyoKanji1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
-		const joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981;
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981();
+		const joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981();
 		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
 	}
 
@@ -489,8 +489,8 @@ class MojiAnalizerTools {
 	 * @returns {boolean} &#x5224;&#x5B9A;&#x7D50;&#x679C;
 	 */
 	static isJoyoKanji2010(unicode_codepoint) {
-		const joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010;
-		const joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010;
+		const joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010();
+		const joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010();
 		if(joyokanji_delete_2010_map[unicode_codepoint]) {
 			return false;
 		}
@@ -507,9 +507,9 @@ class MojiAnalizerTools {
 		if(MojiAnalizerTools.isJoyoKanji2010(unicode_codepoint)) {
 			return false;
 		}
-		const jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
-		const jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
-		const jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017();
+		const jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017();
+		const jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017();
 		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);

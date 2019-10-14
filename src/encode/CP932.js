@@ -1349,7 +1349,7 @@ class CP932MAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get CP932_TO_UNICODE() {
+	static CP932_TO_UNICODE() {
 		CP932MAP.init();
 		return CP932MAP.cp932_to_unicode_map;
 	}
@@ -1357,7 +1357,7 @@ class CP932MAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get UNICODE_TO_CP932() {
+	static UNICODE_TO_CP932() {
 		CP932MAP.init();
 		return CP932MAP.unicode_to_cp932_map;
 	}
@@ -1393,7 +1393,7 @@ export default class CP932 {
 	 * @returns {Number} CP932 のコードポイント (存在しない場合は undefined)
 	 */
 	static toCP932FromUnicode(unicode_codepoint) {
-		return CP932MAP.UNICODE_TO_CP932[unicode_codepoint];
+		return CP932MAP.UNICODE_TO_CP932()[unicode_codepoint];
 	}
 
 	/**
@@ -1402,7 +1402,7 @@ export default class CP932 {
 	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
 	 */
 	static toUnicodeFromCP932(cp932_codepoint) {
-		return CP932MAP.CP932_TO_UNICODE[cp932_codepoint];
+		return CP932MAP.CP932_TO_UNICODE()[cp932_codepoint];
 	}
 	
 	/**
@@ -1411,7 +1411,7 @@ export default class CP932 {
 	 * @returns {Array<number>} CP932 のデータが入った配列
 	 */
 	static toCP932Array(text) {
-		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
+		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932());
 	}
 
 	/**
@@ -1421,7 +1421,7 @@ export default class CP932 {
 	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
 	 */
 	static toCP932Binary(text) {
-		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932);
+		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932());
 	}
 
 	/**
@@ -1430,7 +1430,7 @@ export default class CP932 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromCP932Array(cp932) {
-		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
+		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE());
 	}
 
 	/**
@@ -1453,7 +1453,7 @@ export default class CP932 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromKuTen(kuten) {
-		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE);
+		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE());
 		return code ? Unicode.fromUTF32Array(code) : "";
 	}
 

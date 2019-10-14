@@ -1540,7 +1540,7 @@ class SJIS2004MAP {
 	/**
 	 * @returns {Object<number, number|Array<number>>}
 	 */
-	static get SJIS2004_TO_UNICODE() {
+	static SJIS2004_TO_UNICODE() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.sjis2004_to_unicode_map;
 	}
@@ -1548,7 +1548,7 @@ class SJIS2004MAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get UNICODE_TO_SJIS2004() {
+	static UNICODE_TO_SJIS2004() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.unicode_to_sjis2004_map;
 	}
@@ -1584,7 +1584,7 @@ export default class SJIS2004 {
 	 * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
 	 */
 	static toSJIS2004FromUnicode(unicode_codepoint) {
-		return SJIS2004MAP.UNICODE_TO_SJIS2004[unicode_codepoint];
+		return SJIS2004MAP.UNICODE_TO_SJIS2004()[unicode_codepoint];
 	}
 
 	/**
@@ -1593,7 +1593,7 @@ export default class SJIS2004 {
 	 * @returns {number|Array<number>} Unicode のコードポイント (存在しない場合は undefined)
 	 */
 	static toUnicodeFromSJIS2004(sjis2004_codepoint) {
-		return SJIS2004MAP.SJIS2004_TO_UNICODE[sjis2004_codepoint];
+		return SJIS2004MAP.SJIS2004_TO_UNICODE()[sjis2004_codepoint];
 	}
 	
 	/**
@@ -1602,7 +1602,7 @@ export default class SJIS2004 {
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入った配列
 	 */
 	static toSJIS2004Array(text) {
-		return SJIS.toSJISArray(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		return SJIS.toSJISArray(text, SJIS2004MAP.UNICODE_TO_SJIS2004());
 	}
 
 	/**
@@ -1612,7 +1612,7 @@ export default class SJIS2004 {
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
 	 */
 	static toSJIS2004Binary(text) {
-		return SJIS.toSJISBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		return SJIS.toSJISBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004());
 	}
 
 	/**
@@ -1621,7 +1621,7 @@ export default class SJIS2004 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromSJIS2004Array(sjis2004) {
-		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
+		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE());
 	}
 
 	/**
@@ -1644,7 +1644,7 @@ export default class SJIS2004 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromMenKuTen(menkuten) {
-		const code = SJIS.toUnicodeCodeFromKuTen(menkuten, SJIS2004MAP.SJIS2004_TO_UNICODE);
+		const code = SJIS.toUnicodeCodeFromKuTen(menkuten, SJIS2004MAP.SJIS2004_TO_UNICODE());
 		return code ? Unicode.fromUTF32Array(code) : "";
 	}
 	

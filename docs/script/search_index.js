@@ -294,18 +294,6 @@ window.esdocSearchIndex = [
     "file"
   ],
   [
-    "src/mojijs.js~mojijs.compare_default",
-    "class/src/MojiJS.js~MojiJS.html#static-get-COMPARE_DEFAULT",
-    "src/MojiJS.js~MojiJS.COMPARE_DEFAULT",
-    "member"
-  ],
-  [
-    "src/mojijs.js~mojijs.compare_natural",
-    "class/src/MojiJS.js~MojiJS.html#static-get-COMPARE_NATURAL",
-    "src/MojiJS.js~MojiJS.COMPARE_NATURAL",
-    "member"
-  ],
-  [
     "src/mojijs.js~mojijs.codepointat",
     "class/src/MojiJS.js~MojiJS.html#static-method-codePointAt",
     "src/MojiJS.js~MojiJS.codePointAt",
@@ -315,6 +303,18 @@ window.esdocSearchIndex = [
     "src/mojijs.js~mojijs.codepointcount",
     "class/src/MojiJS.js~MojiJS.html#static-method-codePointCount",
     "src/MojiJS.js~MojiJS.codePointCount",
+    "method"
+  ],
+  [
+    "src/mojijs.js~mojijs.comparetofordefault",
+    "class/src/MojiJS.js~MojiJS.html#static-method-compareToForDefault",
+    "src/MojiJS.js~MojiJS.compareToForDefault",
+    "method"
+  ],
+  [
+    "src/mojijs.js~mojijs.comparetofornatural",
+    "class/src/MojiJS.js~MojiJS.html#static-method-compareToForNatural",
+    "src/MojiJS.js~MojiJS.compareToForNatural",
     "method"
   ],
   [

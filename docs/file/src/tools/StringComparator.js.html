@@ -288,25 +288,23 @@ class ComparatorTool {
  * - sort&#x306E;&#x5F15;&#x6570;&#x3067;&#x5229;&#x7528;&#x3067;&#x304D;&#x307E;&#x3059;
  * @ignore
  */
-export default class StringComparator {
+const StringComparator = {
 
 	/**
 	 * 2&#x3064;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x6BD4;&#x8F03;&#x3059;&#x308B;&#x95A2;&#x6570;
-	 * @returns {function(string, string): number}
+	 * @type {function(string, string): number}
 	 */
-	static get DEFAULT() {
-		return ComparatorTool.compareToForDefault;
-	}
+	DEFAULT : ComparatorTool.compareToForDefault,
 
 	/**
 	 * 2&#x3064;&#x306E;&#x6587;&#x5B57;&#x5217;&#x3092;&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;&#x3067;&#x6BD4;&#x8F03;&#x3059;&#x308B;&#x95A2;&#x6570;
-	 * @returns {function(string, string): number}
+	 * @type {function(string, string): number}
 	 */
-	static get NATURAL() {
-		return ComparatorTool.compareToForNatural;
-	}
+	NATURAL : ComparatorTool.compareToForNatural
 
-}
+};
+
+export default StringComparator;
 
 </code></pre>
 

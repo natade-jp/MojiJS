@@ -336,7 +336,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * 変換用マップ
 	 */
-	static get CONTROL_CHARCTER() {
+	static CONTROL_CHARCTER() {
 		MOJI_CHAR_MAP.init();
 		return control_charcter_map;
 	}
@@ -344,7 +344,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOJANJI_BEFORE_1981() {
+	static JOYOJANJI_BEFORE_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_before_1981_map;
 	}
@@ -352,7 +352,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOKANJI_ADD_1981() {
+	static JOYOKANJI_ADD_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_1981_map;
 	}
@@ -360,7 +360,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOKANJI_ADD_2010() {
+	static JOYOKANJI_ADD_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_2010_map;
 	}
@@ -368,7 +368,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOKANJI_DELETE_2010() {
+	static JOYOKANJI_DELETE_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_delete_2010_map;
 	}
@@ -376,7 +376,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
+	static JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_joyokanji_isetai_2017_map;
 	}
@@ -384,7 +384,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JINMEIYOKANJI_NOTJOYOKANJI_2017() {
+	static JINMEIYOKANJI_NOTJOYOKANJI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_2017_map;
 	}
@@ -392,7 +392,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
+	static JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_isetai_2017_map;
 	}
@@ -416,7 +416,7 @@ class MojiAnalizerTools {
 	 * @returns {String} 制御文字名、違う場合は null 
 	 */
 	static getControlCharcterName(unicode_codepoint) {
-		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER;
+		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER();
 		const name = control_charcter_map[unicode_codepoint];
 		return name ? name : null;
 	}
@@ -427,7 +427,7 @@ class MojiAnalizerTools {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanjiBefore1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981();
 		return !!joyokanji_before_1981_map[unicode_codepoint];
 	}
 
@@ -437,8 +437,8 @@ class MojiAnalizerTools {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
-		const joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981;
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981();
+		const joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981();
 		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
 	}
 
@@ -448,8 +448,8 @@ class MojiAnalizerTools {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji2010(unicode_codepoint) {
-		const joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010;
-		const joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010;
+		const joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010();
+		const joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010();
 		if(joyokanji_delete_2010_map[unicode_codepoint]) {
 			return false;
 		}
@@ -466,9 +466,9 @@ class MojiAnalizerTools {
 		if(MojiAnalizerTools.isJoyoKanji2010(unicode_codepoint)) {
 			return false;
 		}
-		const jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
-		const jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
-		const jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017();
+		const jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017();
+		const jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017();
 		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);

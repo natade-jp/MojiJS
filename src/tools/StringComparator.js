@@ -247,23 +247,21 @@ class ComparatorTool {
  * - sortの引数で利用できます
  * @ignore
  */
-export default class StringComparator {
+const StringComparator = {
 
 	/**
 	 * 2つの文字列を比較する関数
-	 * @returns {function(string, string): number}
+	 * @type {function(string, string): number}
 	 */
-	static get DEFAULT() {
-		return ComparatorTool.compareToForDefault;
-	}
+	DEFAULT : ComparatorTool.compareToForDefault,
 
 	/**
 	 * 2つの文字列を自然順ソートで比較する関数
-	 * @returns {function(string, string): number}
+	 * @type {function(string, string): number}
 	 */
-	static get NATURAL() {
-		return ComparatorTool.compareToForNatural;
-	}
+	NATURAL : ComparatorTool.compareToForNatural
 
-}
+};
+
+export default StringComparator;
 

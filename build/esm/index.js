@@ -2509,7 +2509,7 @@ class CP932MAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get CP932_TO_UNICODE() {
+	static CP932_TO_UNICODE() {
 		CP932MAP.init();
 		return CP932MAP.cp932_to_unicode_map;
 	}
@@ -2517,7 +2517,7 @@ class CP932MAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get UNICODE_TO_CP932() {
+	static UNICODE_TO_CP932() {
 		CP932MAP.init();
 		return CP932MAP.unicode_to_cp932_map;
 	}
@@ -2553,7 +2553,7 @@ class CP932 {
 	 * @returns {Number} CP932 のコードポイント (存在しない場合は undefined)
 	 */
 	static toCP932FromUnicode(unicode_codepoint) {
-		return CP932MAP.UNICODE_TO_CP932[unicode_codepoint];
+		return CP932MAP.UNICODE_TO_CP932()[unicode_codepoint];
 	}
 
 	/**
@@ -2562,7 +2562,7 @@ class CP932 {
 	 * @returns {Number} Unicode のコードポイント (存在しない場合は undefined)
 	 */
 	static toUnicodeFromCP932(cp932_codepoint) {
-		return CP932MAP.CP932_TO_UNICODE[cp932_codepoint];
+		return CP932MAP.CP932_TO_UNICODE()[cp932_codepoint];
 	}
 	
 	/**
@@ -2571,7 +2571,7 @@ class CP932 {
 	 * @returns {Array<number>} CP932 のデータが入った配列
 	 */
 	static toCP932Array(text) {
-		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932);
+		return SJIS.toSJISArray(text, CP932MAP.UNICODE_TO_CP932());
 	}
 
 	/**
@@ -2581,7 +2581,7 @@ class CP932 {
 	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列
 	 */
 	static toCP932Binary(text) {
-		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932);
+		return SJIS.toSJISBinary(text, CP932MAP.UNICODE_TO_CP932());
 	}
 
 	/**
@@ -2590,7 +2590,7 @@ class CP932 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromCP932Array(cp932) {
-		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE);
+		return SJIS.fromSJISArray(cp932, CP932MAP.CP932_TO_UNICODE());
 	}
 
 	/**
@@ -2613,7 +2613,7 @@ class CP932 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromKuTen(kuten) {
-		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE);
+		const code = SJIS.toUnicodeCodeFromKuTen(kuten, CP932MAP.CP932_TO_UNICODE());
 		return code ? Unicode.fromUTF32Array(code) : "";
 	}
 
@@ -4158,7 +4158,7 @@ class SJIS2004MAP {
 	/**
 	 * @returns {Object<number, number|Array<number>>}
 	 */
-	static get SJIS2004_TO_UNICODE() {
+	static SJIS2004_TO_UNICODE() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.sjis2004_to_unicode_map;
 	}
@@ -4166,7 +4166,7 @@ class SJIS2004MAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get UNICODE_TO_SJIS2004() {
+	static UNICODE_TO_SJIS2004() {
 		SJIS2004MAP.init();
 		return SJIS2004MAP.unicode_to_sjis2004_map;
 	}
@@ -4202,7 +4202,7 @@ class SJIS2004 {
 	 * @returns {Number} Shift_JIS-2004 のコードポイント (存在しない場合は undefined)
 	 */
 	static toSJIS2004FromUnicode(unicode_codepoint) {
-		return SJIS2004MAP.UNICODE_TO_SJIS2004[unicode_codepoint];
+		return SJIS2004MAP.UNICODE_TO_SJIS2004()[unicode_codepoint];
 	}
 
 	/**
@@ -4211,7 +4211,7 @@ class SJIS2004 {
 	 * @returns {number|Array<number>} Unicode のコードポイント (存在しない場合は undefined)
 	 */
 	static toUnicodeFromSJIS2004(sjis2004_codepoint) {
-		return SJIS2004MAP.SJIS2004_TO_UNICODE[sjis2004_codepoint];
+		return SJIS2004MAP.SJIS2004_TO_UNICODE()[sjis2004_codepoint];
 	}
 	
 	/**
@@ -4220,7 +4220,7 @@ class SJIS2004 {
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入った配列
 	 */
 	static toSJIS2004Array(text) {
-		return SJIS.toSJISArray(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		return SJIS.toSJISArray(text, SJIS2004MAP.UNICODE_TO_SJIS2004());
 	}
 
 	/**
@@ -4230,7 +4230,7 @@ class SJIS2004 {
 	 * @returns {Array<number>} Shift_JIS-2004 のデータが入ったバイナリ配列
 	 */
 	static toSJIS2004Binary(text) {
-		return SJIS.toSJISBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004);
+		return SJIS.toSJISBinary(text, SJIS2004MAP.UNICODE_TO_SJIS2004());
 	}
 
 	/**
@@ -4239,7 +4239,7 @@ class SJIS2004 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromSJIS2004Array(sjis2004) {
-		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE);
+		return SJIS.fromSJISArray(sjis2004, SJIS2004MAP.SJIS2004_TO_UNICODE());
 	}
 
 	/**
@@ -4262,7 +4262,7 @@ class SJIS2004 {
 	 * @returns {String} 変換後のテキスト
 	 */
 	static fromMenKuTen(menkuten) {
-		const code = SJIS.toUnicodeCodeFromKuTen(menkuten, SJIS2004MAP.SJIS2004_TO_UNICODE);
+		const code = SJIS.toUnicodeCodeFromKuTen(menkuten, SJIS2004MAP.SJIS2004_TO_UNICODE());
 		return code ? Unicode.fromUTF32Array(code) : "";
 	}
 	
@@ -4332,7 +4332,7 @@ class EUCJPMSMAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get CP932_TO_EUCJPMS() {
+	static CP932_TO_EUCJPMS() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.cp932_to_eucjpms_map;
 	}
@@ -4340,7 +4340,7 @@ class EUCJPMSMAP {
 	/**
 	 * @returns {Object<number, number>}
 	 */
-	static get EUCJPMS_TO_CP932() {
+	static EUCJPMS_TO_CP932() {
 		EUCJPMSMAP.init();
 		return EUCJPMSMAP.eucjpms_to_cp932_map;
 	}
@@ -4380,7 +4380,7 @@ class EUCJPMS {
 	static toEUCJPMSBinary(text) {
 		const sjis_array = CP932.toCP932Array(text);
 		const bin = [];
-		const map = EUCJPMSMAP.CP932_TO_EUCJPMS;
+		const map = EUCJPMSMAP.CP932_TO_EUCJPMS();
 		const SS2 = 0x8E; // C1制御文字 シングルシフト2
 		const SS3 = 0x8F; // C1制御文字 シングルシフト3
 		for(let i = 0; i < sjis_array.length; i++) {
@@ -4422,7 +4422,7 @@ class EUCJPMS {
 	static fromEUCJPMSBinary(eucjp) {
 		const sjis_array = [];
 		const ng = "?".charCodeAt(0);
-		const map = EUCJPMSMAP.EUCJPMS_TO_CP932;
+		const map = EUCJPMSMAP.EUCJPMS_TO_CP932();
 		const SS2 = 0x8E; // C1制御文字 シングルシフト2
 		const SS3 = 0x8F; // C1制御文字 シングルシフト3
 		for(let i = 0; i < eucjp.length; i++) {
@@ -6090,7 +6090,7 @@ class MOJI_CHAR_MAP {
 			151: "EPA", 152: "SOS", 153: "SGCI", 154: "SCI", 155: "CSI", 156: "ST", 157: "OSC", 158: "PM",
 			159: "APC", 160: "NBSP", 173: "SHY", 65024: "VS1", 65025: "VS2", 65026: "VS3", 65027: "VS4", 65028: "VS5",
 			65029: "VS6", 65030: "VS7", 65031: "VS8", 65032: "VS9", 65033: "VS10", 65034: "VS11", 65035: "VS12", 65036: "VS13",
-			65037: "VS14", 65038: "VS15", 65039: "VS16", 65529: "IAA", 65530: "IAS", 65531: "IAT",
+			65037: "VS14", 65038: "VS15", 65039: "VS16", 65529: "IAA", 65530: "IAS", 65531: "IAT"
 		};
 
 		const unicode_blockname_array = [
@@ -6178,7 +6178,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * 変換用マップ
 	 */
-	static get CONTROL_CHARCTER() {
+	static CONTROL_CHARCTER() {
 		MOJI_CHAR_MAP.init();
 		return control_charcter_map;
 	}
@@ -6186,7 +6186,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOJANJI_BEFORE_1981() {
+	static JOYOJANJI_BEFORE_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_before_1981_map;
 	}
@@ -6194,7 +6194,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOKANJI_ADD_1981() {
+	static JOYOKANJI_ADD_1981() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_1981_map;
 	}
@@ -6202,7 +6202,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOKANJI_ADD_2010() {
+	static JOYOKANJI_ADD_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_add_2010_map;
 	}
@@ -6210,7 +6210,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JOYOKANJI_DELETE_2010() {
+	static JOYOKANJI_DELETE_2010() {
 		MOJI_CHAR_MAP.init();
 		return joyokanji_delete_2010_map;
 	}
@@ -6218,7 +6218,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
+	static JINMEIYOKANJI_JOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_joyokanji_isetai_2017_map;
 	}
@@ -6226,7 +6226,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JINMEIYOKANJI_NOTJOYOKANJI_2017() {
+	static JINMEIYOKANJI_NOTJOYOKANJI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_2017_map;
 	}
@@ -6234,7 +6234,7 @@ class MOJI_CHAR_MAP {
 	/**
 	 * チェック用マップ
 	 */
-	static get JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
+	static JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017() {
 		MOJI_CHAR_MAP.init();
 		return jinmeiyokanji_notjoyokanji_isetai_2017_map;
 	}
@@ -6258,7 +6258,7 @@ class MojiAnalizerTools {
 	 * @returns {String} 制御文字名、違う場合は null 
 	 */
 	static getControlCharcterName(unicode_codepoint) {
-		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER;
+		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER();
 		const name = control_charcter_map[unicode_codepoint];
 		return name ? name : null;
 	}
@@ -6269,7 +6269,7 @@ class MojiAnalizerTools {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanjiBefore1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981();
 		return !!joyokanji_before_1981_map[unicode_codepoint];
 	}
 
@@ -6279,8 +6279,8 @@ class MojiAnalizerTools {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji1981(unicode_codepoint) {
-		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981;
-		const joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981;
+		const joyokanji_before_1981_map = MOJI_CHAR_MAP.JOYOJANJI_BEFORE_1981();
+		const joyokanji_add_1981_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_1981();
 		return (!!joyokanji_before_1981_map[unicode_codepoint]) || (!!joyokanji_add_1981_map[unicode_codepoint]);
 	}
 
@@ -6290,8 +6290,8 @@ class MojiAnalizerTools {
 	 * @returns {boolean} 判定結果
 	 */
 	static isJoyoKanji2010(unicode_codepoint) {
-		const joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010;
-		const joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010;
+		const joyokanji_add_2010_map = MOJI_CHAR_MAP.JOYOKANJI_ADD_2010();
+		const joyokanji_delete_2010_map = MOJI_CHAR_MAP.JOYOKANJI_DELETE_2010();
 		if(joyokanji_delete_2010_map[unicode_codepoint]) {
 			return false;
 		}
@@ -6308,9 +6308,9 @@ class MojiAnalizerTools {
 		if(MojiAnalizerTools.isJoyoKanji2010(unicode_codepoint)) {
 			return false;
 		}
-		const jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017;
-		const jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017;
-		const jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017;
+		const jinmeiyokanji_joyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_JOYOKANJI_ISETAI_2017();
+		const jinmeiyokanji_notjoyokanji_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_2017();
+		const jinmeiyokanji_notjoyokanji_isetai_map = MOJI_CHAR_MAP.JINMEIYOKANJI_NOTJOYOKANJI_ISETAI_2017();
 		return (!!jinmeiyokanji_joyokanji_isetai_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_map[unicode_codepoint])
 				|| (!!jinmeiyokanji_notjoyokanji_isetai_map[unicode_codepoint]);
@@ -6844,25 +6844,21 @@ class ComparatorTool {
  * - sortの引数で利用できます
  * @ignore
  */
-class StringComparator {
+const StringComparator = {
 
 	/**
 	 * 2つの文字列を比較する関数
-	 * @returns {function(string, string): number}
+	 * @type {function(string, string): number}
 	 */
-	static get DEFAULT() {
-		return ComparatorTool.compareToForDefault;
-	}
+	DEFAULT : ComparatorTool.compareToForDefault,
 
 	/**
 	 * 2つの文字列を自然順ソートで比較する関数
-	 * @returns {function(string, string): number}
+	 * @type {function(string, string): number}
 	 */
-	static get NATURAL() {
-		return ComparatorTool.compareToForNatural;
-	}
+	NATURAL : ComparatorTool.compareToForNatural
 
-}
+};
 
 /**
  * The script is part of jptext.
@@ -7270,21 +7266,25 @@ class MojiJS {
 	/**
 	 * 2つの文字列を比較する関数
 	 * - sortの引数で利用できます
-	 * @returns {function(string, string): number}
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
 	 */
-	static get COMPARE_DEFAULT() {
-		return StringComparator.DEFAULT;
+	static compareToForDefault(a, b) {
+		return StringComparator.DEFAULT(a, b);
 	}
-
+	
 	/**
 	 * 2つの文字列を自然順ソートで比較する関数
 	 * - sortの引数で利用できます
-	 * @returns {function(string, string): number}
+	 * @param {String} a - 比較元
+	 * @param {String} b - 比較先
+	 * @returns {number} Compare結果
 	 */
-	static get COMPARE_NATURAL() {
-		return StringComparator.NATURAL;
+	static compareToForNatural(a, b) {
+		return StringComparator.NATURAL(a, b);
 	}
-	
+
 }
 
 export default MojiJS;
