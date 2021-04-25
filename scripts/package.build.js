@@ -59,8 +59,17 @@ for(const key in target_file) {
 	}
 }
 
+// JScript用のソースコードも作成
+{
+	const MojiJS = require("../build/CommonJS/index.js");
+	const text = File.loadTextFile("./build/mojijs.umd.min.js");
+	const output_data = MojiJS.encode(text.replace(/\n/g, "\r\n"), "UTF16-LE");
+	File.saveBinaryFile("./build/mojijs.wsh.js", output_data);
+}
+
 // サンプルファイルはbuild内のデータと関連付ける
 File.saveTextFile(
 	"./html/examples/libs/MojiJS.js",
 	"import MojiJS from \"../../../build/mojijs.esm.min.js\";export default MojiJS;"
 );
+

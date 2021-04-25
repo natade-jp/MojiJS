@@ -54,6 +54,33 @@ class File {
 	}
 
 	/**
+	 * バイナリデータを書き込む
+	 * @param {string} path 
+	 * @param {number[]} binary 
+	 */
+	static saveBinaryFile(path, binary) {
+		const buffer = new Uint8Array(binary.length);
+		for(let i = 0; i < buffer.length; i++) {
+			buffer[i] = binary[i];
+		}
+		fs.writeFileSync(path, buffer);
+	}
+
+	/**
+	 * バイナリデータを読み込む
+	 * @param {string} path
+	 * @returns {number[]} バイナリデータ 
+	 */
+	static loadBinaryFile(path) {
+		const buffer = fs.readFileSync(path);
+		const binary = new Array(buffer.length);
+		for(let i = 0; i < buffer.length; i++) {
+			binary[i] = buffer.readUInt8(i);
+		}
+		return binary;
+	}
+
+	/**
 	 * 実行する
 	 * @param {string} command 
 	 */
