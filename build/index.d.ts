@@ -260,19 +260,22 @@ declare class MojiJS {
     /**
      * 2つの文字列を比較する関数
      * - sortの引数で利用できます
-     * @param {String} a - 比較元
-     * @param {String} b - 比較先
+     *
+     * @param {any} a - 比較元
+     * @param {any} b - 比較先
      * @returns {number} Compare結果
      */
-    static compareToForDefault(a: string, b: string): number;
+    static compareToForDefault(a: any, b: any): number;
     /**
      * 2つの文字列を自然順ソートで比較する関数
      * - sortの引数で利用できます
-     * @param {String} a - 比較元
-     * @param {String} b - 比較先
+     * - 入力引数は文字列化して比較します
+     *
+     * @param {any} a - 比較元
+     * @param {any} b - 比較先
      * @returns {number} Compare結果
      */
-    static compareToForNatural(a: string, b: string): number;
+    static compareToForNatural(a: any, b: any): number;
 }
 
 /**

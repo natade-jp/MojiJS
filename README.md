@@ -64,7 +64,7 @@ console.log("面区点：" + data3.encode.menkuten.text + ", 漢字水準：" + 
 ```javascript
 const MojiJS = require("mojijs");
 
-console.log(["３", "02", "あ", "イ", "う", "1"].sort(MojiJS.COMPARE_NATURAL));
+console.log(["３", "02", "あ", "イ", "う", "1"].sort(MojiJS.compareToForNatural));
 -> [ '1', '02', '３', 'あ', 'イ', 'う' ]
 ```
 

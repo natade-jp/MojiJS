@@ -202,10 +202,10 @@ const testStringComparator = function() {
 	a.sort();
 	Log.println(a.join(", "));
 	Log.println("通常文字列ソート");
-	a.sort(MojiJS.COMPARE_DEFAULT);
+	a.sort(MojiJS.compareToForDefault);
 	Log.println(a.join(", "));
 	Log.println("自然順ソート (Natural Sort)");
-	a.sort(MojiJS.COMPARE_NATURAL);
+	a.sort(MojiJS.compareToForNatural);
 	Log.println(a.join(", "));
 
 };

@@ -1,5 +1,14 @@
 # History
 
+## v3.1.0
+
+### 変更
+
+- `MojiJS.compareToForDefault`, `MojiJS.compareToForNatural` ともに入力を `string` から `any` へ変更
+- `MojiJS.compareToForNatural` の入力値に対して `toString` で文字列化して比較するように改善
+- 例では、`MojiJS.COMPARE_DEFAULT`, `MojiJS.COMPARE_NATURAL` と紹介していましたが、正しくは、`MojiJS.compareToForDefault`, `MojiJS.compareToForNatural` であったのを修正
+
+
 ## v3.0.5
 
 ### 変更

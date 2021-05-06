@@ -4592,8 +4592,9 @@ class ComparatorTool {
 
 	/**
 	 * 2つの文字列を比較する
-	 * @param {String} a - 比較元
-	 * @param {String} b - 比較先
+	 * 
+	 * @param {any} a - 比較元
+	 * @param {any} b - 比較先
 	 * @returns {number} Compare結果
 	 */
 	static compareToForDefault(a, b) {
@@ -4608,19 +4609,19 @@ class ComparatorTool {
 
 	/**
 	 * 2つの文字列を自然順に比較を行う（自然順ソート（Natural Sort）用）
-	 * @param {String} a - 比較元
-	 * @param {String} b - 比較先
+	 * - 入力引数は文字列化して比較します
+	 * 
+	 * @param {any} a - 比較元
+	 * @param {any} b - 比較先
 	 * @returns {number} Compare結果
 	 */
 	static compareToForNatural(a, b) {
-		if((typeof a === typeof b) && (typeof a === "string")) {
-			const a_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(a));
-			const b_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(b));
-			return ComparatorTool.compareText(a_str, b_str);
+		if((a.toString === undefined) || (b.toString === undefined)) {
+			return 0;
 		}
-		else {
-			return ComparatorTool.compareToForDefault(a, b);
-		}
+		const a_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(a.toString()));
+		const b_str = Unicode.toUTF16Array(ComparatorTool.toNormalizeString(b.toString()));
+		return ComparatorTool.compareText(a_str, b_str);
 	}
 
 }
@@ -4634,13 +4635,15 @@ const StringComparator = {
 
 	/**
 	 * 2つの文字列を比較する関数
-	 * @type {function(string, string): number}
+	 * @type {function(any, any): number}
 	 */
 	DEFAULT : ComparatorTool.compareToForDefault,
 
 	/**
 	 * 2つの文字列を自然順ソートで比較する関数
-	 * @type {function(string, string): number}
+	 * - 入力引数は文字列化して比較します
+	 * 
+	 * @type {function(any, any): number}
 	 */
 	NATURAL : ComparatorTool.compareToForNatural
 
@@ -5052,8 +5055,9 @@ class MojiJS {
 	/**
 	 * 2つの文字列を比較する関数
 	 * - sortの引数で利用できます
-	 * @param {String} a - 比較元
-	 * @param {String} b - 比較先
+	 * 
+	 * @param {any} a - 比較元
+	 * @param {any} b - 比較先
 	 * @returns {number} Compare結果
 	 */
 	static compareToForDefault(a, b) {
@@ -5063,8 +5067,10 @@ class MojiJS {
 	/**
 	 * 2つの文字列を自然順ソートで比較する関数
 	 * - sortの引数で利用できます
-	 * @param {String} a - 比較元
-	 * @param {String} b - 比較先
+	 * - 入力引数は文字列化して比較します
+	 * 
+	 * @param {any} a - 比較元
+	 * @param {any} b - 比較先
 	 * @returns {number} Compare結果
 	 */
 	static compareToForNatural(a, b) {
