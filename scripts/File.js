@@ -46,7 +46,7 @@ class File {
 	static loadTextFile(path) {
 		const text = fs.readFileSync(path, "utf-8");
 		if (text.length > 0 && text.charAt(0) === "\uFEFF") {
-			return text.substr(1);
+			return text.substring(1);
 		}
 		else {
 			return text;

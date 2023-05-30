@@ -39,7 +39,9 @@ testOperator1("toKatakanaFromRomaji", "kyapi-nn!shi!chi!tsu!tha!xtsu!ltu!xxa!", 
 testOperator1("toHiraganaFromRomaji", "gwagwigwugwegwo", "ぐぁぐぃぐぅぐぇぐぉ");
 testOperator1("toHiraganaFromRomaji", "pyapyipyupyepyo", "ぴゃぴぃぴゅぴぇぴょ");
 testOperator1("toHiraganaFromRomaji", "kakkoii", "かっこいい");
+testOperator1("toHiraganaFromRomaji", "onnatsu", "おんあつ");
 testOperator1("toKatakanaFromRomaji", "myougonichi", "ミョウゴニチ");
+testOperator1("toKatakanaFromRomaji", "tsatwugua", "ツァトゥグア");
 
 testOperator1("toRomajiFromHiragana", "こんにちわ", "konnichiwa");
 testOperator1("toRomajiFromHiragana", "ぐぁぐぃぐぅぐぇぐぉ", "gwagwigwugwegwo");

@@ -537,6 +537,11 @@ export default class Japanese {
 			"qu" : "く" ,
 			"qe" : "くぇ" ,
 			"qo" : "くぉ" ,
+			"qwa" : "くぁ" ,
+			"qwi" : "くぃ" ,
+			"qwu" : "くぅ" ,
+			"qwe" : "くぇ" ,
+			"qwo" : "くぉ" ,
 			"gwa" : "ぐぁ" ,
 			"gwi" : "ぐぃ" ,
 			"gwu" : "ぐぅ" ,
@@ -547,6 +552,11 @@ export default class Japanese {
 			"shu" : "しゅ" ,
 			"she" : "しぇ" ,
 			"sho" : "しょ" ,
+			"swa" : "すぁ" ,
+			"swi" : "すぃ" ,
+			"swu" : "すぅ" ,
+			"swe" : "すぇ" ,
+			"swo" : "すぉ" ,
 			"cha" : "ちゃ" ,
 			"chi" : "ち" ,
 			"chu" : "ちゅ" ,
@@ -562,11 +572,21 @@ export default class Japanese {
 			"tsu" : "つ" ,
 			"tse" : "つぇ" ,
 			"tso" : "つぉ" ,
+			"twa" : "とぁ" ,
+			"twi" : "とぃ" ,
+			"twu" : "とぅ" ,
+			"twe" : "とぇ" ,
+			"two" : "とぉ" ,
 			"fa" : "ふぁ" ,
 			"fi" : "ふぃ" ,
 			"fu" : "ふ" ,
 			"fe" : "ふぇ" ,
 			"fo" : "ふぉ" ,
+			"fwa" : "ふぁ" ,
+			"fwi" : "ふぃ" ,
+			"fwu" : "ふぅ" ,
+			"fwe" : "ふぇ" ,
+			"fwo" : "ふぉ" ,
 			"ja" : "じゃ" ,
 			"ji" : "じ" ,
 			"ju" : "じゅ" ,
@@ -601,19 +621,26 @@ export default class Japanese {
 			if(romaji.length > 2) {
 				// 同じ文字の繰り返しなら「っ」に変更
 				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
-					output.push("っ");
-					romaji = romaji.substr(1);
+					// ただし繰り返し文字がnの場合は「ん」として扱う
+					if(romaji.substring(0, 1) === "n") {
+						output.push("ん");
+						romaji = romaji.substring(2);
+					}
+					else {
+						output.push("っ");
+						romaji = romaji.substring(1);
+					}
 				}
 			}
 			if(romaji.length === 3) {
-				const char_1 = romaji.substr(0, 1);
-				const char_2 = romaji.substr(1, 1);
+				const char_1 = romaji.substring(0, 1);
+				const char_2 = romaji.substring(1, 2);
 				// 2文字目がyで始まる場合（ただし、lya, xya などを除く）は
 				// 小文字リストから選んで、最後に小文字をつける
 				// sya -> si につけかえて辞書から探す
 				if((char_2 === "y") && (char_1 !== "l") && (char_1 !== "x")) {
-					y_komoji = y_komoji_map[romaji.substr(2)];
-					romaji = romaji.substr(0, 1) + "i";
+					y_komoji = y_komoji_map[romaji.substring(2)];
+					romaji = romaji.substring(0, 1) + "i";
 				}
 			}
 			const data = map[romaji];
@@ -626,11 +653,12 @@ export default class Japanese {
 			}
 			return output.join("");
 		};
+		// 上から下への優先度で変換する。
 		// ([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe] ... yが入り込む可能性がある文字。前の文字を繰り返して「tta -> った」にも対応。
 		// [xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe] ... yを使用しない文字
 		// nn? ... ん
 		// [?!-] ... 記号
-		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
+		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?([gqstf]w|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
 	}
 
 	/**
@@ -867,8 +895,8 @@ export default class Japanese {
 					// 1文字なのでこれ以上変換不能
 					return str;
 				}
-				const char_1 = trans.substr(0, 1);
-				const char_2 = trans.substr(1, 1);
+				const char_1 = trans.substring(0, 1);
+				const char_2 = trans.substring(1, 2);
 				// 最後の文字が小文字である
 				if(!komoji_map[char_2]) {
 					// これ以上変換不能
@@ -885,7 +913,7 @@ export default class Japanese {
 				trans += last_text;
 			}
 			if(is_xtu) {
-				trans = trans.substr(0, 1) + trans;
+				trans = trans.substring(0, 1) + trans;
 			}
 			return trans;
 		};
