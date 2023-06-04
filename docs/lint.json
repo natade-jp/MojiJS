@@ -1,6 +1,6 @@
 [
   {
-    "name": "Unicode.toUTF16ArrayfromCodePoint",
+    "name": "Unicode.toUTF16ArrayFromCodePoint",
     "filePath": "src/encode/Unicode.js",
     "lines": [
       {
@@ -25,7 +25,7 @@
       },
       {
         "lineNumber": 150,
-        "line": "\tstatic toUTF16ArrayfromCodePoint() {"
+        "line": "\tstatic toUTF16ArrayFromCodePoint() {"
       }
     ],
     "codeParams": [],

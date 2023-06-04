@@ -148,7 +148,7 @@ class Unicode {
 	 * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数
 	 * @returns {Array<number>} 変換後のテキスト
 	 */
-	static toUTF16ArrayfromCodePoint() {
+	static toUTF16ArrayFromCodePoint() {
 		/**
 		 * @type {Array<number>}
 		 */
@@ -188,14 +188,14 @@ class Unicode {
 	static fromCodePoint(codepoint) {
 		let utf16_array = null;
 		if(codepoint instanceof Array) {
-			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint);
+			utf16_array = Unicode.toUTF16ArrayFromCodePoint(codepoint);
 		}
 		else {
 			const codepoint_array = [];
 			for(let i = 0;i < arguments.length;i++) {
 				codepoint_array[i] = arguments[i];
 			}
-			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint_array);
+			utf16_array = Unicode.toUTF16ArrayFromCodePoint(codepoint_array);
 		}
 		const text = [];
 		for(let i = 0;i < utf16_array.length;i++) {
@@ -503,7 +503,7 @@ class Unicode {
 		// UTF-16
 		else if(/utf-?16/i.test(charset)) {
 			// UTF-16 に詰め替える
-			const utf16_array = Unicode.toUTF16ArrayfromCodePoint(utf32_array);
+			const utf16_array = Unicode.toUTF16ArrayFromCodePoint(utf32_array);
 			// UTF-16BE
 			if(/utf-?16(be)/i.test(charset)) {
 				// bom をつける
@@ -568,6 +568,46 @@ class Unicode {
 		}
 		return null;
 	}
+
+	/**
+	 * コードポイントから異体字セレクタの判定
+	 * @param {Number} codepoint - コードポイント
+	 * @returns {boolean} 確認結果
+	 */
+	static isVariationSelectorFromCodePoint(codepoint) {
+		return (
+			// モンゴル自由字形選択子 U+180B〜U+180D (3個)
+			((0x180B <= codepoint) && (codepoint <= 0x180D)) ||
+			// SVSで利用される異体字セレクタ U+FE00〜U+FE0F (VS1～VS16) (16個)
+			((0xFE00 <= codepoint) && (codepoint <= 0xFE0F)) ||
+			// IVSで利用される異体字セレクタ U+E0100〜U+E01EF (VS17～VS256) (240個)
+			((0xE0100 <= codepoint) && (codepoint <= 0xE01EF))
+		);
+	}
+
+	/**
+	 * コードポイントから結合文字の判定
+	 * @param {Number} codepoint - コードポイント
+	 * @returns {boolean} 確認結果
+	 */
+	static isCombiningMarkFromCodePoint(codepoint) {
+		return (
+			// Combining Diacritical Marks
+			((0x0300 <= codepoint) && (codepoint <= 0x036F)) ||
+			// Combining Diacritical Marks Extended
+			((0x1AB0 <= codepoint) && (codepoint <= 0x1AFF)) ||
+			// Combining Diacritical Marks Supplement
+			((0x1DC0 <= codepoint) && (codepoint <= 0x1DFF)) ||
+			// Combining Diacritical Marks for Symbols
+			((0x20D0 <= codepoint) && (codepoint <= 0x20FF)) ||
+			// Hiragana 含まれる4種類の文字
+			((0x3099 <= codepoint) && (codepoint <= 0x309C)) ||
+			// Combining Half Marks
+			((0xFE20 <= codepoint) && (codepoint <= 0xFE2F))
+		);
+	}
+
+
 
 }
 
@@ -3192,6 +3232,11 @@ class Japanese {
 			"qu" : "く" ,
 			"qe" : "くぇ" ,
 			"qo" : "くぉ" ,
+			"qwa" : "くぁ" ,
+			"qwi" : "くぃ" ,
+			"qwu" : "くぅ" ,
+			"qwe" : "くぇ" ,
+			"qwo" : "くぉ" ,
 			"gwa" : "ぐぁ" ,
 			"gwi" : "ぐぃ" ,
 			"gwu" : "ぐぅ" ,
@@ -3202,6 +3247,11 @@ class Japanese {
 			"shu" : "しゅ" ,
 			"she" : "しぇ" ,
 			"sho" : "しょ" ,
+			"swa" : "すぁ" ,
+			"swi" : "すぃ" ,
+			"swu" : "すぅ" ,
+			"swe" : "すぇ" ,
+			"swo" : "すぉ" ,
 			"cha" : "ちゃ" ,
 			"chi" : "ち" ,
 			"chu" : "ちゅ" ,
@@ -3217,11 +3267,21 @@ class Japanese {
 			"tsu" : "つ" ,
 			"tse" : "つぇ" ,
 			"tso" : "つぉ" ,
+			"twa" : "とぁ" ,
+			"twi" : "とぃ" ,
+			"twu" : "とぅ" ,
+			"twe" : "とぇ" ,
+			"two" : "とぉ" ,
 			"fa" : "ふぁ" ,
 			"fi" : "ふぃ" ,
 			"fu" : "ふ" ,
 			"fe" : "ふぇ" ,
 			"fo" : "ふぉ" ,
+			"fwa" : "ふぁ" ,
+			"fwi" : "ふぃ" ,
+			"fwu" : "ふぅ" ,
+			"fwe" : "ふぇ" ,
+			"fwo" : "ふぉ" ,
 			"ja" : "じゃ" ,
 			"ji" : "じ" ,
 			"ju" : "じゅ" ,
@@ -3256,19 +3316,26 @@ class Japanese {
 			if(romaji.length > 2) {
 				// 同じ文字の繰り返しなら「っ」に変更
 				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
-					output.push("っ");
-					romaji = romaji.substr(1);
+					// ただし繰り返し文字がnの場合は「ん」として扱う
+					if(romaji.substring(0, 1) === "n") {
+						output.push("ん");
+						romaji = romaji.substring(2);
+					}
+					else {
+						output.push("っ");
+						romaji = romaji.substring(1);
+					}
 				}
 			}
 			if(romaji.length === 3) {
-				const char_1 = romaji.substr(0, 1);
-				const char_2 = romaji.substr(1, 1);
+				const char_1 = romaji.substring(0, 1);
+				const char_2 = romaji.substring(1, 2);
 				// 2文字目がyで始まる場合（ただし、lya, xya などを除く）は
 				// 小文字リストから選んで、最後に小文字をつける
 				// sya -> si につけかえて辞書から探す
 				if((char_2 === "y") && (char_1 !== "l") && (char_1 !== "x")) {
-					y_komoji = y_komoji_map[romaji.substr(2)];
-					romaji = romaji.substr(0, 1) + "i";
+					y_komoji = y_komoji_map[romaji.substring(2)];
+					romaji = romaji.substring(0, 1) + "i";
 				}
 			}
 			const data = map[romaji];
@@ -3281,11 +3348,12 @@ class Japanese {
 			}
 			return output.join("");
 		};
+		// 上から下への優先度で変換する。
 		// ([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe] ... yが入り込む可能性がある文字。前の文字を繰り返して「tta -> った」にも対応。
 		// [xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe] ... yを使用しない文字
 		// nn? ... ん
 		// [?!-] ... 記号
-		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
+		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?([gqstf]w|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
 	}
 
 	/**
@@ -3522,8 +3590,8 @@ class Japanese {
 					// 1文字なのでこれ以上変換不能
 					return str;
 				}
-				const char_1 = trans.substr(0, 1);
-				const char_2 = trans.substr(1, 1);
+				const char_1 = trans.substring(0, 1);
+				const char_2 = trans.substring(1, 2);
 				// 最後の文字が小文字である
 				if(!komoji_map[char_2]) {
 					// これ以上変換不能
@@ -3540,7 +3608,7 @@ class Japanese {
 				trans += last_text;
 			}
 			if(is_xtu) {
-				trans = trans.substr(0, 1) + trans;
+				trans = trans.substring(0, 1) + trans;
 			}
 			return trans;
 		};
@@ -3560,9 +3628,30 @@ class Japanese {
 	}
 
 	/**
+	 * 指定したコードポイントの横幅を取得します
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
+	 * @param {Number} cp 調査するコードポイント
+	 * @returns {Number} 文字の横幅
+	 */
+	static getWidthFromCodePoint(cp) {
+		if(Unicode.isCombiningMarkFromCodePoint(cp) || Unicode.isVariationSelectorFromCodePoint(cp)) {
+			return 0;
+		}
+		else if((cp < 0x80) || ((0xFF61 <= cp) && (cp < 0xFFA0))) {
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+
+	/**
 	 * 指定したテキストの横幅を半角／全角でカウント
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -3570,21 +3659,58 @@ class Japanese {
 		const utf32_array = Unicode.toUTF32Array(text);
 		let count = 0;
 		for(let i = 0; i < utf32_array.length; i++) {
-			const ch = utf32_array[i];
-			if((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) {
-				count++;
-			}
-			else {
-				count += 2;
-			}
+			count += Japanese.getWidthFromCodePoint(utf32_array[i]);
 		}
 		return count;
 	}
 
 	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toMojiArrayFromString(text) {
+		const utf32 = Unicode.toUTF32Array(text);
+		/**
+		 * @type {Array<Array<number>>}
+		 */
+		const mojiarray = [];
+		let moji = [];
+		for(let i = 0; i < utf32.length; i++) {
+			const cp = utf32[i];
+			if((i > 0) && !Unicode.isVariationSelectorFromCodePoint(cp) && !Unicode.isCombiningMarkFromCodePoint(cp)) {
+				mojiarray.push(moji);
+				moji = [];
+			}
+			moji.push(cp);
+		}
+		mojiarray.push(moji);
+		return mojiarray;
+	}
+
+	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
+	 * @returns {string} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toStringFromMojiArray(mojiarray) {
+		/**
+		 * @type {Array<number>}
+		 */
+		const utf32 = [];
+		for(let i = 0; i < mojiarray.length; i++) {
+			for(let j = 0; j < mojiarray[i].length; j++) {
+				utf32.push(mojiarray[i][j]);
+			}
+		}
+		return Unicode.fromUTF32Array(utf32);
+	}
+
+	/**
 	 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
@@ -3592,8 +3718,11 @@ class Japanese {
 	 * @ignore
 	 */
 	static cutTextForWidth(text, offset, size) {
-		const utf32_array = Unicode.toUTF32Array(text);
-		const SPACE = 0x20 ; // ' '
+		const moji_array = Japanese.toMojiArrayFromString(text);
+		const SPACE = [ 0x20 ] ; // ' '
+		/**
+		 * @type {Array<Array<number>>}
+		 */
 		const output = [];
 		let is_target = false;
 		let position = 0;
@@ -3605,13 +3734,13 @@ class Japanese {
 		if(cut_size <= 0) {
 			return "";
 		}
-		for(let i = 0; i < utf32_array.length; i++) {
-			const ch = utf32_array[i];
+		for(let i = 0; i < moji_array.length; i++) {
+			const ch = moji_array[i][0];
 			const ch_size = ((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) ? 1 : 2;
 			if(position >= offset) {
 				is_target = true;
 				if(cut_size >= ch_size) {
-					output.push(ch);
+					output.push(moji_array[i]);
 				}
 				else {
 					output.push(SPACE);
@@ -3628,7 +3757,7 @@ class Japanese {
 				output.push(SPACE);
 			}
 		}
-		return Unicode.fromUTF32Array(output);
+		return Japanese.toStringFromMojiArray(output);
 	}
 
 }
@@ -3865,6 +3994,8 @@ class MOJI_CHAR_MAP {
 			jinmeiyokanji_notjoyokanji_isetai_2017_map = createMap(map);
 		}
 
+		// 制御文字、VSは多いため含めていない
+
 		control_charcter_map = {
 			0: "NUL", 1: "SOH", 2: "STX", 3: "ETX", 4: "EOT", 5: "ENQ", 6: "ACK", 7: "BEL",
 			8: "BS", 9: "HT", 10: "LF", 11: "VT", 12: "FF", 13: "CR", 14: "SO", 15: "SI",
@@ -3874,70 +4005,75 @@ class MOJI_CHAR_MAP {
 			135: "ESA", 136: "HTS", 137: "HTJ", 138: "VTS", 139: "PLD", 140: "PLU", 141: "RI", 142: "SS2",
 			143: "SS3", 144: "DCS", 145: "PU1", 146: "PU2", 147: "STS", 148: "CCH", 149: "MW", 150: "SPA",
 			151: "EPA", 152: "SOS", 153: "SGCI", 154: "SCI", 155: "CSI", 156: "ST", 157: "OSC", 158: "PM",
-			159: "APC", 160: "NBSP", 173: "SHY", 65024: "VS1", 65025: "VS2", 65026: "VS3", 65027: "VS4", 65028: "VS5",
-			65029: "VS6", 65030: "VS7", 65031: "VS8", 65032: "VS9", 65033: "VS10", 65034: "VS11", 65035: "VS12", 65036: "VS13",
-			65037: "VS14", 65038: "VS15", 65039: "VS16", 65529: "IAA", 65530: "IAS", 65531: "IAT"
+			159: "APC", 160: "NBSP", 173: "SHY", 65529: "IAA", 65530: "IAS", 65531: "IAT"
 		};
 
 		const unicode_blockname_array = [
-			"Basic Latin", "Latin-1 Supplement", "Latin Extended-A", "Latin Extended-B", "IPA Extensions", "Spacing Modifier Letters", "Combining Diacritical Marks", "Greek and Coptic",
-			"Cyrillic", "Cyrillic Supplement", "Armenian", "Hebrew", "Arabic", "Syriac", "Arabic Supplement", "Thaana",
-			"NKo", "Samaritan", "Mandaic", "Syriac Supplement", "Arabic Extended-A", "Devanagari", "Bengali", "Gurmukhi",
-			"Gujarati", "Oriya", "Tamil", "Telugu", "Kannada", "Malayalam", "Sinhala", "Thai",
-			"Lao", "Tibetan", "Myanmar", "Georgian", "Hangul Jamo", "Ethiopic", "Ethiopic Supplement", "Cherokee",
-			"Unified Canadian Aboriginal Syllabics", "Ogham", "Runic", "Tagalog", "Hanunoo", "Buhid", "Tagbanwa", "Khmer",
-			"Mongolian", "Unified Canadian Aboriginal Syllabics Extended", "Limbu", "Tai Le", "New Tai Lue", "Khmer Symbols", "Buginese", "Tai Tham",
-			"Combining Diacritical Marks Extended", "Balinese", "Sundanese", "Batak", "Lepcha", "Ol Chiki", "Cyrillic Extended-C", "Georgian Extended",
-			"Sundanese Supplement", "Vedic Extensions", "Phonetic Extensions", "Phonetic Extensions Supplement", "Combining Diacritical Marks Supplement", "Latin Extended Additional", "Greek Extended", "General Punctuation",
-			"Superscripts and Subscripts", "Currency Symbols", "Combining Diacritical Marks for Symbols", "Letterlike Symbols", "Number Forms", "Arrows", "Mathematical Operators", "Miscellaneous Technical",
-			"Control Pictures", "Optical Character Recognition", "Enclosed Alphanumerics", "Box Drawing", "Block Elements", "Geometric Shapes", "Miscellaneous Symbols", "Dingbats",
-			"Miscellaneous Mathematical Symbols-A", "Supplemental Arrows-A", "Braille Patterns", "Supplemental Arrows-B", "Miscellaneous Mathematical Symbols-B", "Supplemental Mathematical Operators", "Miscellaneous Symbols and Arrows", "Glagolitic",
-			"Latin Extended-C", "Coptic", "Georgian Supplement", "Tifinagh", "Ethiopic Extended", "Cyrillic Extended-A", "Supplemental Punctuation", "CJK Radicals Supplement",
-			"Kangxi Radicals", "Ideographic Description Characters", "CJK Symbols and Punctuation", "Hiragana", "Katakana", "Bopomofo", "Hangul Compatibility Jamo", "Kanbun",
-			"Bopomofo Extended", "CJK Strokes", "Katakana Phonetic Extensions", "Enclosed CJK Letters and Months", "CJK Compatibility", "CJK Unified Ideographs Extension A", "Yijing Hexagram Symbols", "CJK Unified Ideographs",
-			"Yi Syllables", "Yi Radicals", "Lisu", "Vai", "Cyrillic Extended-B", "Bamum", "Modifier Tone Letters", "Latin Extended-D",
-			"Syloti Nagri", "Common Indic Number Forms", "Phags-pa", "Saurashtra", "Devanagari Extended", "Kayah Li", "Rejang", "Hangul Jamo Extended-A",
-			"Javanese", "Myanmar Extended-B", "Cham", "Myanmar Extended-A", "Tai Viet", "Meetei Mayek Extensions", "Ethiopic Extended-A", "Latin Extended-E",
-			"Cherokee Supplement", "Meetei Mayek", "Hangul Syllables", "Hangul Jamo Extended-B", "High Surrogates", "High Private Use Surrogates", "Low Surrogates", "Private Use Area",
-			"CJK Compatibility Ideographs", "Alphabetic Presentation Forms", "Arabic Presentation Forms-A", "Variation Selectors", "Vertical Forms", "Combining Half Marks", "CJK Compatibility Forms", "Small Form Variants",
-			"Arabic Presentation Forms-B", "Halfwidth and Fullwidth Forms", "Specials", "Linear B Syllabary", "Linear B Ideograms", "Aegean Numbers", "Ancient Greek Numbers", "Ancient Symbols",
-			"Phaistos Disc", "Lycian", "Carian", "Coptic Epact Numbers", "Old Italic", "Gothic", "Old Permic", "Ugaritic",
-			"Old Persian", "Deseret", "Shavian", "Osmanya", "Osage", "Elbasan", "Caucasian Albanian", "Linear A",
-			"Cypriot Syllabary", "Imperial Aramaic", "Palmyrene", "Nabataean", "Hatran", "Phoenician", "Lydian", "Meroitic Hieroglyphs",
-			"Meroitic Cursive", "Kharoshthi", "Old South Arabian", "Old North Arabian", "Manichaean", "Avestan", "Inscriptional Parthian", "Inscriptional Pahlavi",
-			"Psalter Pahlavi", "Old Turkic", "Old Hungarian", "Hanifi Rohingya", "Rumi Numeral Symbols", "Old Sogdian", "Sogdian", "Brahmi",
-			"Kaithi", "Sora Sompeng", "Chakma", "Mahajani", "Sharada", "Sinhala Archaic Numbers", "Khojki", "Multani",
-			"Khudawadi", "Grantha", "Newa", "Tirhuta", "Siddham", "Modi", "Mongolian Supplement", "Takri",
-			"Ahom", "Dogra", "Warang Citi", "Zanabazar Square", "Soyombo", "Pau Cin Hau", "Bhaiksuki", "Marchen",
-			"Masaram Gondi", "Gunjala Gondi", "Makasar", "Cuneiform", "Cuneiform Numbers and Punctuation", "Early Dynastic Cuneiform", "Egyptian Hieroglyphs", "Anatolian Hieroglyphs",
-			"Bamum Supplement", "Mro", "Bassa Vah", "Pahawh Hmong", "Medefaidrin", "Miao", "Ideographic Symbols and Punctuation", "Tangut",
-			"Tangut Components", "Kana Supplement", "Kana Extended-A", "Nushu", "Duployan", "Shorthand Format Controls", "Byzantine Musical Symbols", "Musical Symbols",
-			"Ancient Greek Musical Notation", "Mayan Numerals", "Tai Xuan Jing Symbols", "Counting Rod Numerals", "Mathematical Alphanumeric Symbols", "Sutton SignWriting", "Glagolitic Supplement", "Mende Kikakui",
-			"Adlam", "Indic Siyaq Numbers", "Arabic Mathematical Alphabetic Symbols", "Mahjong Tiles", "Domino Tiles", "Playing Cards", "Enclosed Alphanumeric Supplement", "Enclosed Ideographic Supplement",
-			"Miscellaneous Symbols and Pictographs", "Emoticons", "Ornamental Dingbats", "Transport and Map Symbols", "Alchemical Symbols", "Geometric Shapes Extended", "Supplemental Arrows-C", "Supplemental Symbols and Pictographs",
-			"Chess Symbols", "CJK Unified Ideographs Extension B", "CJK Unified Ideographs Extension C", "CJK Unified Ideographs Extension D", "CJK Unified Ideographs Extension E", "CJK Unified Ideographs Extension F", "CJK Compatibility Ideographs Supplement"
+			"Basic Latin", "Latin-1 Supplement", "Latin Extended-A", "Latin Extended-B", "IPA Extensions", "Spacing Modifier Letters", "Combining Diacritical Marks", "Greek and Coptic", 
+			"Cyrillic", "Cyrillic Supplement", "Armenian", "Hebrew", "Arabic", "Syriac", "Arabic Supplement", "Thaana", 
+			"NKo", "Samaritan", "Mandaic", "Syriac Supplement", "Arabic Extended-B", "Arabic Extended-A", "Devanagari", "Bengali", 
+			"Gurmukhi", "Gujarati", "Oriya", "Tamil", "Telugu", "Kannada", "Malayalam", "Sinhala", 
+			"Thai", "Lao", "Tibetan", "Myanmar", "Georgian", "Hangul Jamo", "Ethiopic", "Ethiopic Supplement", 
+			"Cherokee", "Unified Canadian Aboriginal Syllabics", "Ogham", "Runic", "Tagalog", "Hanunoo", "Buhid", "Tagbanwa", 
+			"Khmer", "Mongolian", "Unified Canadian Aboriginal Syllabics Extended", "Limbu", "Tai Le", "New Tai Lue", "Khmer Symbols", "Buginese", 
+			"Tai Tham", "Combining Diacritical Marks Extended", "Balinese", "Sundanese", "Batak", "Lepcha", "Ol Chiki", "Cyrillic Extended-C", 
+			"Georgian Extended", "Sundanese Supplement", "Vedic Extensions", "Phonetic Extensions", "Phonetic Extensions Supplement", "Combining Diacritical Marks Supplement", "Latin Extended Additional", "Greek Extended", 
+			"General Punctuation", "Superscripts and Subscripts", "Currency Symbols", "Combining Diacritical Marks for Symbols", "Letterlike Symbols", "Number Forms", "Arrows", "Mathematical Operators", 
+			"Miscellaneous Technical", "Control Pictures", "Optical Character Recognition", "Enclosed Alphanumerics", "Box Drawing", "Block Elements", "Geometric Shapes", "Miscellaneous Symbols", 
+			"Dingbats", "Miscellaneous Mathematical Symbols-A", "Supplemental Arrows-A", "Braille Patterns", "Supplemental Arrows-B", "Miscellaneous Mathematical Symbols-B", "Supplemental Mathematical Operators", "Miscellaneous Symbols and Arrows", 
+			"Glagolitic", "Latin Extended-C", "Coptic", "Georgian Supplement", "Tifinagh", "Ethiopic Extended", "Cyrillic Extended-A", "Supplemental Punctuation", 
+			"CJK Radicals Supplement", "Kangxi Radicals", "Ideographic Description Characters", "CJK Symbols and Punctuation", "Hiragana", "Katakana", "Bopomofo", "Hangul Compatibility Jamo", 
+			"Kanbun", "Bopomofo Extended", "CJK Strokes", "Katakana Phonetic Extensions", "Enclosed CJK Letters and Months", "CJK Compatibility", "CJK Unified Ideographs Extension A", "Yijing Hexagram Symbols", 
+			"CJK Unified Ideographs", "Yi Syllables", "Yi Radicals", "Lisu", "Vai", "Cyrillic Extended-B", "Bamum", "Modifier Tone Letters", 
+			"Latin Extended-D", "Syloti Nagri", "Common Indic Number Forms", "Phags-pa", "Saurashtra", "Devanagari Extended", "Kayah Li", "Rejang", 
+			"Hangul Jamo Extended-A", "Javanese", "Myanmar Extended-B", "Cham", "Myanmar Extended-A", "Tai Viet", "Meetei Mayek Extensions", "Ethiopic Extended-A", 
+			"Latin Extended-E", "Cherokee Supplement", "Meetei Mayek", "Hangul Syllables", "Hangul Jamo Extended-B", "High Surrogates", "High Private Use Surrogates", "Low Surrogates", 
+			"Private Use Area", "CJK Compatibility Ideographs", "Alphabetic Presentation Forms", "Arabic Presentation Forms-A", "Variation Selectors", "Vertical Forms", "Combining Half Marks", "CJK Compatibility Forms", 
+			"Small Form Variants", "Arabic Presentation Forms-B", "Halfwidth and Fullwidth Forms", "Specials", "Linear B Syllabary", "Linear B Ideograms", "Aegean Numbers", "Ancient Greek Numbers", 
+			"Ancient Symbols", "Phaistos Disc", "Lycian", "Carian", "Coptic Epact Numbers", "Old Italic", "Gothic", "Old Permic", 
+			"Ugaritic", "Old Persian", "Deseret", "Shavian", "Osmanya", "Osage", "Elbasan", "Caucasian Albanian", 
+			"Vithkuqi", "Linear A", "Latin Extended-F", "Cypriot Syllabary", "Imperial Aramaic", "Palmyrene", "Nabataean", "Hatran", 
+			"Phoenician", "Lydian", "Meroitic Hieroglyphs", "Meroitic Cursive", "Kharoshthi", "Old South Arabian", "Old North Arabian", "Manichaean", 
+			"Avestan", "Inscriptional Parthian", "Inscriptional Pahlavi", "Psalter Pahlavi", "Old Turkic", "Old Hungarian", "Hanifi Rohingya", "Rumi Numeral Symbols", 
+			"Yezidi", "Arabic Extended-C", "Old Sogdian", "Sogdian", "Old Uyghur", "Chorasmian", "Elymaic", "Brahmi", 
+			"Kaithi", "Sora Sompeng", "Chakma", "Mahajani", "Sharada", "Sinhala Archaic Numbers", "Khojki", "Multani", 
+			"Khudawadi", "Grantha", "Newa", "Tirhuta", "Siddham", "Modi", "Mongolian Supplement", "Takri", 
+			"Ahom", "Dogra", "Warang Citi", "Dives Akuru", "Nandinagari", "Zanabazar Square", "Soyombo", "Unified Canadian Aboriginal Syllabics Extended-A", 
+			"Pau Cin Hau", "Devanagari Extended-A", "Bhaiksuki", "Marchen", "Masaram Gondi", "Gunjala Gondi", "Makasar", "Kawi", 
+			"Lisu Supplement", "Tamil Supplement", "Cuneiform", "Cuneiform Numbers and Punctuation", "Early Dynastic Cuneiform", "Cypro-Minoan", "Egyptian Hieroglyphs", "Egyptian Hieroglyph Format Controls", 
+			"Anatolian Hieroglyphs", "Bamum Supplement", "Mro", "Tangsa", "Bassa Vah", "Pahawh Hmong", "Medefaidrin", "Miao", 
+			"Ideographic Symbols and Punctuation", "Tangut", "Tangut Components", "Khitan Small Script", "Tangut Supplement", "Kana Extended-B", "Kana Supplement", "Kana Extended-A", 
+			"Small Kana Extension", "Nushu", "Duployan", "Shorthand Format Controls", "Znamenny Musical Notation", "Byzantine Musical Symbols", "Musical Symbols", "Ancient Greek Musical Notation", 
+			"Kaktovik Numerals", "Mayan Numerals", "Tai Xuan Jing Symbols", "Counting Rod Numerals", "Mathematical Alphanumeric Symbols", "Sutton SignWriting", "Latin Extended-G", "Glagolitic Supplement", 
+			"Cyrillic Extended-D", "Nyiakeng Puachue Hmong", "Toto", "Wancho", "Nag Mundari", "Ethiopic Extended-B", "Mende Kikakui", "Adlam", 
+			"Indic Siyaq Numbers", "Ottoman Siyaq Numbers", "Arabic Mathematical Alphabetic Symbols", "Mahjong Tiles", "Domino Tiles", "Playing Cards", "Enclosed Alphanumeric Supplement", "Enclosed Ideographic Supplement", 
+			"Miscellaneous Symbols and Pictographs", "Emoticons", "Ornamental Dingbats", "Transport and Map Symbols", "Alchemical Symbols", "Geometric Shapes Extended", "Supplemental Arrows-C", "Supplemental Symbols and Pictographs", 
+			"Chess Symbols", "Symbols and Pictographs Extended-A", "Symbols for Legacy Computing", "CJK Unified Ideographs Extension B", "CJK Unified Ideographs Extension C", "CJK Unified Ideographs Extension D", "CJK Unified Ideographs Extension E", "CJK Unified Ideographs Extension F", 
+			"CJK Compatibility Ideographs Supplement", "CJK Unified Ideographs Extension G", "CJK Unified Ideographs Extension H", "Tags", "Variation Selectors Supplement", "Supplementary Private Use Area-A", "Supplementary Private Use Area-B"
 		];
 
 		const unicode_blockaddress_array = [
 			0x007F, 0x00FF, 0x017F, 0x024F, 0x02AF, 0x02FF, 0x036F, 0x03FF, 0x04FF, 0x052F, 0x058F, 0x05FF, 0x06FF, 0x074F, 0x077F, 0x07BF,
-			0x07FF, 0x083F, 0x085F, 0x086F, 0x08FF, 0x097F, 0x09FF, 0x0A7F, 0x0AFF, 0x0B7F, 0x0BFF, 0x0C7F, 0x0CFF, 0x0D7F, 0x0DFF, 0x0E7F,
-			0x0EFF, 0x0FFF, 0x109F, 0x10FF, 0x11FF, 0x137F, 0x139F, 0x13FF, 0x167F, 0x169F, 0x16FF, 0x171F, 0x173F, 0x175F, 0x177F, 0x17FF,
-			0x18AF, 0x18FF, 0x194F, 0x197F, 0x19DF, 0x19FF, 0x1A1F, 0x1AAF, 0x1AFF, 0x1B7F, 0x1BBF, 0x1BFF, 0x1C4F, 0x1C7F, 0x1C8F, 0x1CBF,
-			0x1CCF, 0x1CFF, 0x1D7F, 0x1DBF, 0x1DFF, 0x1EFF, 0x1FFF, 0x206F, 0x209F, 0x20CF, 0x20FF, 0x214F, 0x218F, 0x21FF, 0x22FF, 0x23FF,
-			0x243F, 0x245F, 0x24FF, 0x257F, 0x259F, 0x25FF, 0x26FF, 0x27BF, 0x27EF, 0x27FF, 0x28FF, 0x297F, 0x29FF, 0x2AFF, 0x2BFF, 0x2C5F,
-			0x2C7F, 0x2CFF, 0x2D2F, 0x2D7F, 0x2DDF, 0x2DFF, 0x2E7F, 0x2EFF, 0x2FDF, 0x2FFF, 0x303F, 0x309F, 0x30FF, 0x312F, 0x318F, 0x319F,
-			0x31BF, 0x31EF, 0x31FF, 0x32FF, 0x33FF, 0x4DBF, 0x4DFF, 0x9FFF, 0xA48F, 0xA4CF, 0xA4FF, 0xA63F, 0xA69F, 0xA6FF, 0xA71F, 0xA7FF,
-			0xA82F, 0xA83F, 0xA87F, 0xA8DF, 0xA8FF, 0xA92F, 0xA95F, 0xA97F, 0xA9DF, 0xA9FF, 0xAA5F, 0xAA7F, 0xAADF, 0xAAFF, 0xAB2F, 0xAB6F,
-			0xABBF, 0xABFF, 0xD7AF, 0xD7FF, 0xDB7F, 0xDBFF, 0xDFFF, 0xF8FF, 0xFAFF, 0xFB4F, 0xFDFF, 0xFE0F, 0xFE1F, 0xFE2F, 0xFE4F, 0xFE6F,
-			0xFEFF, 0xFFEF, 0xFFFF,
-			0x1007F, 0x100FF, 0x1013F, 0x1018F, 0x101CF, 0x101FF, 0x1029F, 0x102DF, 0x102FF, 0x1032F, 0x1034F, 0x1037F, 0x1039F, 0x103DF, 0x1044F, 0x1047F,
-			0x104AF, 0x104FF, 0x1052F, 0x1056F, 0x1077F, 0x1083F, 0x1085F, 0x1087F, 0x108AF, 0x108FF, 0x1091F, 0x1093F, 0x1099F, 0x109FF, 0x10A5F, 0x10A7F,
-			0x10A9F, 0x10AFF, 0x10B3F, 0x10B5F, 0x10B7F, 0x10BAF, 0x10C4F, 0x10CFF, 0x10D3F, 0x10E7F, 0x10F2F, 0x10F6F, 0x1107F, 0x110CF, 0x110FF, 0x1114F,
-			0x1117F, 0x111DF, 0x111FF, 0x1124F, 0x112AF, 0x112FF, 0x1137F, 0x1147F, 0x114DF, 0x115FF, 0x1165F, 0x1167F, 0x116CF, 0x1173F, 0x1184F, 0x118FF,
-			0x11A4F, 0x11AAF, 0x11AFF, 0x11C6F, 0x11CBF, 0x11D5F, 0x11DAF, 0x11EFF, 0x123FF, 0x1247F, 0x1254F, 0x1342F, 0x1467F, 0x16A3F, 0x16A6F, 0x16AFF,
-			0x16B8F, 0x16E9F, 0x16F9F, 0x16FFF, 0x187FF, 0x18AFF, 0x1B0FF, 0x1B12F, 0x1B2FF, 0x1BC9F, 0x1BCAF, 0x1D0FF, 0x1D1FF, 0x1D24F, 0x1D2FF, 0x1D35F,
-			0x1D37F, 0x1D7FF, 0x1DAAF, 0x1E02F, 0x1E8DF, 0x1E95F, 0x1ECBF, 0x1EEFF, 0x1F02F, 0x1F09F, 0x1F0FF, 0x1F1FF, 0x1F2FF, 0x1F5FF, 0x1F64F, 0x1F67F,
-			0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF, 0x2FA1F
+			0x07FF, 0x083F, 0x085F, 0x086F, 0x089F, 0x08FF, 0x097F, 0x09FF, 0x0A7F, 0x0AFF, 0x0B7F, 0x0BFF, 0x0C7F, 0x0CFF, 0x0D7F, 0x0DFF,
+			0x0E7F, 0x0EFF, 0x0FFF, 0x109F, 0x10FF, 0x11FF, 0x137F, 0x139F, 0x13FF, 0x167F, 0x169F, 0x16FF, 0x171F, 0x173F, 0x175F, 0x177F,
+			0x17FF, 0x18AF, 0x18FF, 0x194F, 0x197F, 0x19DF, 0x19FF, 0x1A1F, 0x1AAF, 0x1AFF, 0x1B7F, 0x1BBF, 0x1BFF, 0x1C4F, 0x1C7F, 0x1C8F,
+			0x1CBF, 0x1CCF, 0x1CFF, 0x1D7F, 0x1DBF, 0x1DFF, 0x1EFF, 0x1FFF, 0x206F, 0x209F, 0x20CF, 0x20FF, 0x214F, 0x218F, 0x21FF, 0x22FF,
+			0x23FF, 0x243F, 0x245F, 0x24FF, 0x257F, 0x259F, 0x25FF, 0x26FF, 0x27BF, 0x27EF, 0x27FF, 0x28FF, 0x297F, 0x29FF, 0x2AFF, 0x2BFF,
+			0x2C5F, 0x2C7F, 0x2CFF, 0x2D2F, 0x2D7F, 0x2DDF, 0x2DFF, 0x2E7F, 0x2EFF, 0x2FDF, 0x2FFF, 0x303F, 0x309F, 0x30FF, 0x312F, 0x318F,
+			0x319F, 0x31BF, 0x31EF, 0x31FF, 0x32FF, 0x33FF, 0x4DBF, 0x4DFF, 0x9FFF, 0xA48F, 0xA4CF, 0xA4FF, 0xA63F, 0xA69F, 0xA6FF, 0xA71F,
+			0xA7FF, 0xA82F, 0xA83F, 0xA87F, 0xA8DF, 0xA8FF, 0xA92F, 0xA95F, 0xA97F, 0xA9DF, 0xA9FF, 0xAA5F, 0xAA7F, 0xAADF, 0xAAFF, 0xAB2F,
+			0xAB6F, 0xABBF, 0xABFF, 0xD7AF, 0xD7FF, 0xDB7F, 0xDBFF, 0xDFFF, 0xF8FF, 0xFAFF, 0xFB4F, 0xFDFF, 0xFE0F, 0xFE1F, 0xFE2F, 0xFE4F,
+			0xFE6F, 0xFEFF, 0xFFEF, 0xFFFF, 0x1007F, 0x100FF, 0x1013F, 0x1018F, 0x101CF, 0x101FF, 0x1029F, 0x102DF, 0x102FF, 0x1032F, 0x1034F, 0x1037F,
+			0x1039F, 0x103DF, 0x1044F, 0x1047F, 0x104AF, 0x104FF, 0x1052F, 0x1056F, 0x105BF, 0x1077F, 0x107BF, 0x1083F, 0x1085F, 0x1087F, 0x108AF, 0x108FF,
+			0x1091F, 0x1093F, 0x1099F, 0x109FF, 0x10A5F, 0x10A7F, 0x10A9F, 0x10AFF, 0x10B3F, 0x10B5F, 0x10B7F, 0x10BAF, 0x10C4F, 0x10CFF, 0x10D3F, 0x10E7F,
+			0x10EBF, 0x10EFF, 0x10F2F, 0x10F6F, 0x10FAF, 0x10FDF, 0x10FFF, 0x1107F, 0x110CF, 0x110FF, 0x1114F, 0x1117F, 0x111DF, 0x111FF, 0x1124F, 0x112AF,
+			0x112FF, 0x1137F, 0x1147F, 0x114DF, 0x115FF, 0x1165F, 0x1167F, 0x116CF, 0x1174F, 0x1184F, 0x118FF, 0x1195F, 0x119FF, 0x11A4F, 0x11AAF, 0x11ABF,
+			0x11AFF, 0x11B5F, 0x11C6F, 0x11CBF, 0x11D5F, 0x11DAF, 0x11EFF, 0x11F5F, 0x11FBF, 0x11FFF, 0x123FF, 0x1247F, 0x1254F, 0x12FFF, 0x1342F, 0x1345F,
+			0x1467F, 0x16A3F, 0x16A6F, 0x16ACF, 0x16AFF, 0x16B8F, 0x16E9F, 0x16F9F, 0x16FFF, 0x187FF, 0x18AFF, 0x18CFF, 0x18D7F, 0x1AFFF, 0x1B0FF, 0x1B12F,
+			0x1B16F, 0x1B2FF, 0x1BC9F, 0x1BCAF, 0x1CFCF, 0x1D0FF, 0x1D1FF, 0x1D24F, 0x1D2DF, 0x1D2FF, 0x1D35F, 0x1D37F, 0x1D7FF, 0x1DAAF, 0x1DFFF, 0x1E02F,
+			0x1E08F, 0x1E14F, 0x1E2BF, 0x1E2FF, 0x1E4FF, 0x1E7FF, 0x1E8DF, 0x1E95F, 0x1ECBF, 0x1ED4F, 0x1EEFF, 0x1F02F, 0x1F09F, 0x1F0FF, 0x1F1FF, 0x1F2FF,
+			0x1F5FF, 0x1F64F, 0x1F67F, 0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x1FAFF, 0x1FBFF, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF,
+			0x2FA1F, 0x3134F, 0x323AF, 0xE007F, 0xE01EF, 0xFFFFF, 0x10FFFF
 		];
 
 		to_block_name_from_unicode = function(unicode_codepoint) {
@@ -4037,6 +4173,27 @@ MOJI_CHAR_MAP.is_initmap = false;
  * @ignore
  */
 class MojiAnalizerTools {
+
+	/**
+	 * コードポイントから異体字セレクタの判定
+	 * @param {Number} codepoint - コードポイント
+	 * @returns {string|null} 確認結果(異体字セレクタではない場合はNULLを返す)
+	 */
+	static getVariationSelectorsNumberFromCodePoint(codepoint) {
+		// モンゴル自由字形選択子 U+180B〜U+180D (3個)
+		if((0x180B <= codepoint) && (codepoint <= 0x180D)) {
+			return "FVS" + ((codepoint - 0x180B) + 1);
+		}
+		// SVSで利用される異体字セレクタ U+FE00〜U+FE0F (VS1～VS16) (16個)
+		if((0xFE00 <= codepoint) && (codepoint <= 0xFE0F)) {
+			return "VS" + (codepoint - 0xFE00) + 1;
+		}
+		// IVSで利用される異体字セレクタ U+E0100〜U+E01EF (VS17～VS256) (240個)
+		else if((0xE0100 <= codepoint) && (codepoint <= 0xE01EF)) {
+			return "VS" + (codepoint - 0xE0100) + 17;
+		}
+		return null;
+	}
 	
 	/**
 	 * 指定したコードポイントが制御文字であれば、制御文字の名前を返す
@@ -4044,6 +4201,10 @@ class MojiAnalizerTools {
 	 * @returns {String} 制御文字名、違う場合は null 
 	 */
 	static getControlCharcterName(unicode_codepoint) {
+		const info_variation_selectors_number = MojiAnalizerTools.getVariationSelectorsNumberFromCodePoint(unicode_codepoint);
+		if(info_variation_selectors_number !== null) {
+			return info_variation_selectors_number;
+		}
 		const control_charcter_map = MOJI_CHAR_MAP.CONTROL_CHARCTER();
 		const name = control_charcter_map[unicode_codepoint];
 		return name ? name : null;
@@ -4182,6 +4343,8 @@ class MojiAnalizerTools {
  * @property {boolean} is_emoji 絵文字
  * @property {boolean} is_emoticons 顔文字
  * @property {boolean} is_gaiji 外字
+ * @property {boolean} is_combining_mark 結合文字
+ * @property {boolean} is_variation_selector 異体字セレクタ
  */
 
 /**
@@ -4249,7 +4412,9 @@ class MojiAnalyzer {
 			is_halfwidth_katakana : false,
 			is_emoji : false,
 			is_emoticons : false,
-			is_gaiji : false
+			is_gaiji : false,
+			is_combining_mark : false,
+			is_variation_selector : false
 		};
 
 		/**
@@ -4376,9 +4541,10 @@ class MojiAnalyzer {
 		type.is_emoticons = /Emoticons/.test(type.blockname);
 		// 外字
 		type.is_gaiji = /Private Use Area/.test(type.blockname);
-		// 他に外字チェック
-		type.is_gaiji = type.is_gaiji || ((0xF0000 <= unicode_codepoint) && (unicode_codepoint <= 0x10FFFF));
-		
+		// 結合文字
+		type.is_combining_mark = Unicode.isCombiningMarkFromCodePoint(unicode_codepoint);
+		// 異体字セレクタ
+		type.is_variation_selector = Unicode.isVariationSelectorFromCodePoint(unicode_codepoint);
 		return data;
 	}
 
@@ -4787,12 +4953,35 @@ class MojiJS {
 	}
 
 	// ---------------------------------
+	// 文字を扱う関数群
+	// ---------------------------------
+
+	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toMojiArrayFromString(text) {
+		return Japanese.toMojiArrayFromString(text);
+	}
+
+	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
+	 * @returns {string} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toStringFromMojiArray(mojiarray) {
+		return Japanese.toStringFromMojiArray(mojiarray);
+	}
+
+	// ---------------------------------
 	// 切り出しを扱う関数群
 	// ---------------------------------
 
 	/**
 	 * 指定したテキストを切り出す
-	 * - 単位は文字数
+	 * - 単位はコードポイントの文字数
+	 * - 結合文字と異体字セレクタを区別しません
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
@@ -4804,8 +4993,9 @@ class MojiJS {
 
 	/**
 	 * 指定したテキストの横幅を半角／全角でカウント
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -4815,9 +5005,9 @@ class MojiJS {
 
 	/**
 	 * 指定したテキストを切り出す
-	 * - 単位は半角／全角で換算した文字の横幅
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
@@ -4827,6 +5017,7 @@ class MojiJS {
 		return Japanese.cutTextForWidth(text, offset, size);
 	}
 
+	
 	// ---------------------------------
 	// 面区点コードの変換用
 	// ---------------------------------

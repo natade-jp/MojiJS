@@ -578,6 +578,11 @@ export default class Japanese {
 			&quot;qu&quot; : &quot;&#x304F;&quot; ,
 			&quot;qe&quot; : &quot;&#x304F;&#x3047;&quot; ,
 			&quot;qo&quot; : &quot;&#x304F;&#x3049;&quot; ,
+			&quot;qwa&quot; : &quot;&#x304F;&#x3041;&quot; ,
+			&quot;qwi&quot; : &quot;&#x304F;&#x3043;&quot; ,
+			&quot;qwu&quot; : &quot;&#x304F;&#x3045;&quot; ,
+			&quot;qwe&quot; : &quot;&#x304F;&#x3047;&quot; ,
+			&quot;qwo&quot; : &quot;&#x304F;&#x3049;&quot; ,
 			&quot;gwa&quot; : &quot;&#x3050;&#x3041;&quot; ,
 			&quot;gwi&quot; : &quot;&#x3050;&#x3043;&quot; ,
 			&quot;gwu&quot; : &quot;&#x3050;&#x3045;&quot; ,
@@ -588,6 +593,11 @@ export default class Japanese {
 			&quot;shu&quot; : &quot;&#x3057;&#x3085;&quot; ,
 			&quot;she&quot; : &quot;&#x3057;&#x3047;&quot; ,
 			&quot;sho&quot; : &quot;&#x3057;&#x3087;&quot; ,
+			&quot;swa&quot; : &quot;&#x3059;&#x3041;&quot; ,
+			&quot;swi&quot; : &quot;&#x3059;&#x3043;&quot; ,
+			&quot;swu&quot; : &quot;&#x3059;&#x3045;&quot; ,
+			&quot;swe&quot; : &quot;&#x3059;&#x3047;&quot; ,
+			&quot;swo&quot; : &quot;&#x3059;&#x3049;&quot; ,
 			&quot;cha&quot; : &quot;&#x3061;&#x3083;&quot; ,
 			&quot;chi&quot; : &quot;&#x3061;&quot; ,
 			&quot;chu&quot; : &quot;&#x3061;&#x3085;&quot; ,
@@ -603,11 +613,21 @@ export default class Japanese {
 			&quot;tsu&quot; : &quot;&#x3064;&quot; ,
 			&quot;tse&quot; : &quot;&#x3064;&#x3047;&quot; ,
 			&quot;tso&quot; : &quot;&#x3064;&#x3049;&quot; ,
+			&quot;twa&quot; : &quot;&#x3068;&#x3041;&quot; ,
+			&quot;twi&quot; : &quot;&#x3068;&#x3043;&quot; ,
+			&quot;twu&quot; : &quot;&#x3068;&#x3045;&quot; ,
+			&quot;twe&quot; : &quot;&#x3068;&#x3047;&quot; ,
+			&quot;two&quot; : &quot;&#x3068;&#x3049;&quot; ,
 			&quot;fa&quot; : &quot;&#x3075;&#x3041;&quot; ,
 			&quot;fi&quot; : &quot;&#x3075;&#x3043;&quot; ,
 			&quot;fu&quot; : &quot;&#x3075;&quot; ,
 			&quot;fe&quot; : &quot;&#x3075;&#x3047;&quot; ,
 			&quot;fo&quot; : &quot;&#x3075;&#x3049;&quot; ,
+			&quot;fwa&quot; : &quot;&#x3075;&#x3041;&quot; ,
+			&quot;fwi&quot; : &quot;&#x3075;&#x3043;&quot; ,
+			&quot;fwu&quot; : &quot;&#x3075;&#x3045;&quot; ,
+			&quot;fwe&quot; : &quot;&#x3075;&#x3047;&quot; ,
+			&quot;fwo&quot; : &quot;&#x3075;&#x3049;&quot; ,
 			&quot;ja&quot; : &quot;&#x3058;&#x3083;&quot; ,
 			&quot;ji&quot; : &quot;&#x3058;&quot; ,
 			&quot;ju&quot; : &quot;&#x3058;&#x3085;&quot; ,
@@ -642,19 +662,26 @@ export default class Japanese {
 			if(romaji.length &gt; 2) {
 				// &#x540C;&#x3058;&#x6587;&#x5B57;&#x306E;&#x7E70;&#x308A;&#x8FD4;&#x3057;&#x306A;&#x3089;&#x300C;&#x3063;&#x300D;&#x306B;&#x5909;&#x66F4;
 				if(romaji.charCodeAt(0) === romaji.charCodeAt(1)) {
-					output.push(&quot;&#x3063;&quot;);
-					romaji = romaji.substr(1);
+					// &#x305F;&#x3060;&#x3057;&#x7E70;&#x308A;&#x8FD4;&#x3057;&#x6587;&#x5B57;&#x304C;n&#x306E;&#x5834;&#x5408;&#x306F;&#x300C;&#x3093;&#x300D;&#x3068;&#x3057;&#x3066;&#x6271;&#x3046;
+					if(romaji.substring(0, 1) === &quot;n&quot;) {
+						output.push(&quot;&#x3093;&quot;);
+						romaji = romaji.substring(2);
+					}
+					else {
+						output.push(&quot;&#x3063;&quot;);
+						romaji = romaji.substring(1);
+					}
 				}
 			}
 			if(romaji.length === 3) {
-				const char_1 = romaji.substr(0, 1);
-				const char_2 = romaji.substr(1, 1);
+				const char_1 = romaji.substring(0, 1);
+				const char_2 = romaji.substring(1, 2);
 				// 2&#x6587;&#x5B57;&#x76EE;&#x304C;y&#x3067;&#x59CB;&#x307E;&#x308B;&#x5834;&#x5408;&#xFF08;&#x305F;&#x3060;&#x3057;&#x3001;lya, xya &#x306A;&#x3069;&#x3092;&#x9664;&#x304F;&#xFF09;&#x306F;
 				// &#x5C0F;&#x6587;&#x5B57;&#x30EA;&#x30B9;&#x30C8;&#x304B;&#x3089;&#x9078;&#x3093;&#x3067;&#x3001;&#x6700;&#x5F8C;&#x306B;&#x5C0F;&#x6587;&#x5B57;&#x3092;&#x3064;&#x3051;&#x308B;
 				// sya -&gt; si &#x306B;&#x3064;&#x3051;&#x304B;&#x3048;&#x3066;&#x8F9E;&#x66F8;&#x304B;&#x3089;&#x63A2;&#x3059;
 				if((char_2 === &quot;y&quot;) &amp;&amp; (char_1 !== &quot;l&quot;) &amp;&amp; (char_1 !== &quot;x&quot;)) {
-					y_komoji = y_komoji_map[romaji.substr(2)];
-					romaji = romaji.substr(0, 1) + &quot;i&quot;;
+					y_komoji = y_komoji_map[romaji.substring(2)];
+					romaji = romaji.substring(0, 1) + &quot;i&quot;;
 				}
 			}
 			const data = map[romaji];
@@ -667,11 +694,12 @@ export default class Japanese {
 			}
 			return output.join(&quot;&quot;);
 		};
+		// &#x4E0A;&#x304B;&#x3089;&#x4E0B;&#x3078;&#x306E;&#x512A;&#x5148;&#x5EA6;&#x3067;&#x5909;&#x63DB;&#x3059;&#x308B;&#x3002;
 		// ([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe] ... y&#x304C;&#x5165;&#x308A;&#x8FBC;&#x3080;&#x53EF;&#x80FD;&#x6027;&#x304C;&#x3042;&#x308B;&#x6587;&#x5B57;&#x3002;&#x524D;&#x306E;&#x6587;&#x5B57;&#x3092;&#x7E70;&#x308A;&#x8FD4;&#x3057;&#x3066;&#x300C;tta -&gt; &#x3063;&#x305F;&#x300D;&#x306B;&#x3082;&#x5BFE;&#x5FDC;&#x3002;
 		// [xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe] ... y&#x3092;&#x4F7F;&#x7528;&#x3057;&#x306A;&#x3044;&#x6587;&#x5B57;
 		// nn? ... &#x3093;
 		// [?!-] ... &#x8A18;&#x53F7;
-		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?(gw|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
+		return (text.replace(/([xl]?[kgsztdnhbpmyrwlxvqfj])(\1)?y?[aiuoe]|[xl]?([gqstf]w|ch|cch|sh|ssh|ts|tts|th|tth)?[aiuoe]|nn?|[?!-.,]/gi, func));
 	}
 
 	/**
@@ -908,8 +936,8 @@ export default class Japanese {
 					// 1&#x6587;&#x5B57;&#x306A;&#x306E;&#x3067;&#x3053;&#x308C;&#x4EE5;&#x4E0A;&#x5909;&#x63DB;&#x4E0D;&#x80FD;
 					return str;
 				}
-				const char_1 = trans.substr(0, 1);
-				const char_2 = trans.substr(1, 1);
+				const char_1 = trans.substring(0, 1);
+				const char_2 = trans.substring(1, 2);
 				// &#x6700;&#x5F8C;&#x306E;&#x6587;&#x5B57;&#x304C;&#x5C0F;&#x6587;&#x5B57;&#x3067;&#x3042;&#x308B;
 				if(!komoji_map[char_2]) {
 					// &#x3053;&#x308C;&#x4EE5;&#x4E0A;&#x5909;&#x63DB;&#x4E0D;&#x80FD;
@@ -926,7 +954,7 @@ export default class Japanese {
 				trans += last_text;
 			}
 			if(is_xtu) {
-				trans = trans.substr(0, 1) + trans;
+				trans = trans.substring(0, 1) + trans;
 			}
 			return trans;
 		};
@@ -946,9 +974,30 @@ export default class Japanese {
 	}
 
 	/**
+	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092;&#x53D6;&#x5F97;&#x3057;&#x307E;&#x3059;
+	 * - &#x7D50;&#x5408;&#x6587;&#x5B57;&#x3068;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306F;&#x3001;0&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x534A;&#x89D2;&#x306F;1&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;&#x3053;&#x308C;&#x3089;&#x306F;&#x3001;ASCII&#x6587;&#x5B57;&#x3001;&#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x5168;&#x89D2;&#x306F;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;&#x4E0A;&#x8A18;&#x4EE5;&#x5916;&#x3092;&#x5168;&#x89D2;&#x3068;&#x3057;&#x3066;&#x51E6;&#x7406;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * @param {Number} cp &#x8ABF;&#x67FB;&#x3059;&#x308B;&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @returns {Number} &#x6587;&#x5B57;&#x306E;&#x6A2A;&#x5E45;
+	 */
+	static getWidthFromCodePoint(cp) {
+		if(Unicode.isCombiningMarkFromCodePoint(cp) || Unicode.isVariationSelectorFromCodePoint(cp)) {
+			return 0;
+		}
+		else if((cp &lt; 0x80) || ((0xFF61 &lt;= cp) &amp;&amp; (cp &lt; 0xFFA0))) {
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+
+	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092;&#x534A;&#x89D2;&#xFF0F;&#x5168;&#x89D2;&#x3067;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
-	 * - &#x534A;&#x89D2;&#x3092;1&#x3001;&#x5168;&#x89D2;&#x3092;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
-	 * - &#x534A;&#x89D2;&#x306F;&#x3001;ASCII&#x6587;&#x5B57;&#x3001;&#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3002;&#x5168;&#x89D2;&#x306F;&#x305D;&#x308C;&#x4EE5;&#x5916;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x7D50;&#x5408;&#x6587;&#x5B57;&#x3068;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306F;&#x3001;0&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x534A;&#x89D2;&#x306F;1&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;&#x3053;&#x308C;&#x3089;&#x306F;&#x3001;ASCII&#x6587;&#x5B57;&#x3001;&#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x5168;&#x89D2;&#x306F;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;&#x4E0A;&#x8A18;&#x4EE5;&#x5916;&#x3092;&#x5168;&#x89D2;&#x3068;&#x3057;&#x3066;&#x51E6;&#x7406;&#x3057;&#x307E;&#x3059;&#x3002;
 	 * @param {String} text - &#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @returns {Number} &#x6587;&#x5B57;&#x306E;&#x6A2A;&#x5E45;
 	 */
@@ -956,21 +1005,58 @@ export default class Japanese {
 		const utf32_array = Unicode.toUTF32Array(text);
 		let count = 0;
 		for(let i = 0; i &lt; utf32_array.length; i++) {
-			const ch = utf32_array[i];
-			if((ch &lt; 0x80) || ((0xFF61 &lt;= ch) &amp;&amp; (ch &lt; 0xFFA0))) {
-				count++;
-			}
-			else {
-				count += 2;
-			}
+			count += Japanese.getWidthFromCodePoint(utf32_array[i]);
 		}
 		return count;
 	}
 
 	/**
+	 * &#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x3068;&#x7D50;&#x5408;&#x6587;&#x5B57;&#x3092;&#x8003;&#x616E;&#x3057;&#x3066;&#x6587;&#x5B57;&#x5217;&#x3092;&#x6587;&#x5B57;&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;&#x3059;&#x308B;
+	 * @param {String} text - &#x5909;&#x63DB;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
+	 * @returns {Array&lt;Array&lt;number&gt;&gt;} UTF32(&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;)&#x306E;&#x914D;&#x5217;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 */
+	static toMojiArrayFromString(text) {
+		const utf32 = Unicode.toUTF32Array(text);
+		/**
+		 * @type {Array&lt;Array&lt;number&gt;&gt;}
+		 */
+		const mojiarray = [];
+		let moji = [];
+		for(let i = 0; i &lt; utf32.length; i++) {
+			const cp = utf32[i];
+			if((i &gt; 0) &amp;&amp; !Unicode.isVariationSelectorFromCodePoint(cp) &amp;&amp; !Unicode.isCombiningMarkFromCodePoint(cp)) {
+				mojiarray.push(moji);
+				moji = [];
+			}
+			moji.push(cp);
+		}
+		mojiarray.push(moji);
+		return mojiarray;
+	}
+
+	/**
+	 * &#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x3068;&#x7D50;&#x5408;&#x6587;&#x5B57;&#x3092;&#x8003;&#x616E;&#x3057;&#x3066;&#x6587;&#x5B57;&#x5217;&#x3092;&#x6587;&#x5B57;&#x306E;&#x914D;&#x5217;&#x306B;&#x5909;&#x63DB;&#x3059;&#x308B;
+	 * @param {Array&lt;Array&lt;number&gt;&gt;} mojiarray - UTF32(&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;)&#x306E;&#x914D;&#x5217;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 * @returns {string} UTF32(&#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;)&#x306E;&#x914D;&#x5217;&#x304C;&#x5165;&#x3063;&#x305F;&#x914D;&#x5217;
+	 */
+	static toStringFromMojiArray(mojiarray) {
+		/**
+		 * @type {Array&lt;number&gt;}
+		 */
+		const utf32 = [];
+		for(let i = 0; i &lt; mojiarray.length; i++) {
+			for(let j = 0; j &lt; mojiarray[i].length; j++) {
+				utf32.push(mojiarray[i][j]);
+			}
+		}
+		return Unicode.fromUTF32Array(utf32);
+	}
+
+	/**
 	 * &#x6307;&#x5B9A;&#x3057;&#x305F;&#x30C6;&#x30AD;&#x30B9;&#x30C8;&#x306E;&#x6A2A;&#x5E45;&#x3092;&#x534A;&#x89D2;&#xFF0F;&#x5168;&#x89D2;&#x3067;&#x63DB;&#x7B97;&#x3057;&#x305F;&#x5834;&#x5408;&#x306E;&#x5207;&#x308A;&#x51FA;&#x3057;
-	 * - &#x534A;&#x89D2;&#x3092;1&#x3001;&#x5168;&#x89D2;&#x3092;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;
-	 * - &#x534A;&#x89D2;&#x306F;&#x3001;ASCII&#x6587;&#x5B57;&#x3001;&#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3002;&#x5168;&#x89D2;&#x306F;&#x305D;&#x308C;&#x4EE5;&#x5916;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x7D50;&#x5408;&#x6587;&#x5B57;&#x3068;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306F;&#x3001;0&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x534A;&#x89D2;&#x306F;1&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;&#x3053;&#x308C;&#x3089;&#x306F;&#x3001;ASCII&#x6587;&#x5B57;&#x3001;&#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;&#x3068;&#x3057;&#x307E;&#x3059;&#x3002;
+	 * - &#x5168;&#x89D2;&#x306F;2&#x3068;&#x3057;&#x3066;&#x30AB;&#x30A6;&#x30F3;&#x30C8;&#x3057;&#x307E;&#x3059;&#x3002;&#x4E0A;&#x8A18;&#x4EE5;&#x5916;&#x3092;&#x5168;&#x89D2;&#x3068;&#x3057;&#x3066;&#x51E6;&#x7406;&#x3057;&#x307E;&#x3059;&#x3002;
 	 * @param {String} text - &#x5207;&#x308A;&#x51FA;&#x3057;&#x305F;&#x3044;&#x30C6;&#x30AD;&#x30B9;&#x30C8;
 	 * @param {Number} offset - &#x5207;&#x308A;&#x51FA;&#x3057;&#x4F4D;&#x7F6E;
 	 * @param {Number} size - &#x5207;&#x308A;&#x51FA;&#x3059;&#x9577;&#x3055;
@@ -978,8 +1064,11 @@ export default class Japanese {
 	 * @ignore
 	 */
 	static cutTextForWidth(text, offset, size) {
-		const utf32_array = Unicode.toUTF32Array(text);
-		const SPACE = 0x20 ; // &apos; &apos;
+		const moji_array = Japanese.toMojiArrayFromString(text);
+		const SPACE = [ 0x20 ] ; // &apos; &apos;
+		/**
+		 * @type {Array&lt;Array&lt;number&gt;&gt;}
+		 */
 		const output = [];
 		let is_target = false;
 		let position = 0;
@@ -991,13 +1080,13 @@ export default class Japanese {
 		if(cut_size &lt;= 0) {
 			return &quot;&quot;;
 		}
-		for(let i = 0; i &lt; utf32_array.length; i++) {
-			const ch = utf32_array[i];
+		for(let i = 0; i &lt; moji_array.length; i++) {
+			const ch = moji_array[i][0];
 			const ch_size = ((ch &lt; 0x80) || ((0xFF61 &lt;= ch) &amp;&amp; (ch &lt; 0xFFA0))) ? 1 : 2;
 			if(position &gt;= offset) {
 				is_target = true;
 				if(cut_size &gt;= ch_size) {
-					output.push(ch);
+					output.push(moji_array[i]);
 				}
 				else {
 					output.push(SPACE);
@@ -1014,7 +1103,7 @@ export default class Japanese {
 				output.push(SPACE);
 			}
 		}
-		return Unicode.fromUTF32Array(output);
+		return Japanese.toStringFromMojiArray(output);
 	}
 
 }

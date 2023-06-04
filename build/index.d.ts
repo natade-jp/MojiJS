@@ -90,8 +90,21 @@ declare class MojiJS {
      */
     static fromUTF8Array(utf8: number[]): string;
     /**
+     * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+     * @param {String} text - 変換したいテキスト
+     * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
+     */
+    static toMojiArrayFromString(text: string): number[][];
+    /**
+     * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+     * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
+     * @returns {string} UTF32(コードポイント)の配列が入った配列
+     */
+    static toStringFromMojiArray(mojiarray: number[][]): string;
+    /**
      * 指定したテキストを切り出す
-     * - 単位は文字数
+     * - 単位はコードポイントの文字数
+     * - 結合文字と異体字セレクタを区別しません
      * @param {String} text - 切り出したいテキスト
      * @param {Number} offset - 切り出し位置
      * @param {Number} size - 切り出す長さ
@@ -100,17 +113,18 @@ declare class MojiJS {
     static cutTextForCodePoint(text: string, offset: number, size: number): string;
     /**
      * 指定したテキストの横幅を半角／全角でカウント
-     * - 半角を1、全角を2としてカウント
-     * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+     * - 結合文字と異体字セレクタは、0としてカウントします。
+     * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+     * - 全角は2としてカウントします。上記以外を全角として処理します。
      * @param {String} text - カウントしたいテキスト
      * @returns {Number} 文字の横幅
      */
     static getWidth(text: string): number;
     /**
      * 指定したテキストを切り出す
-     * - 単位は半角／全角で換算した文字の横幅
-     * - 半角を1、全角を2としてカウント
-     * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+     * - 結合文字と異体字セレクタは、0としてカウントします。
+     * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+     * - 全角は2としてカウントします。上記以外を全角として処理します。
      * @param {String} text - 切り出したいテキスト
      * @param {Number} offset - 切り出し位置
      * @param {Number} size - 切り出す長さ
@@ -333,6 +347,8 @@ declare type _MojiEncodeData_ = {
  * @property {boolean} is_emoji 絵文字
  * @property {boolean} is_emoticons 顔文字
  * @property {boolean} is_gaiji 外字
+ * @property {boolean} is_combining_mark 結合文字
+ * @property {boolean} is_variation_selector 異体字セレクタ
  */
 declare type _MojiTypeData_ = {
     is_regular_sjis: boolean;
@@ -356,6 +372,8 @@ declare type _MojiTypeData_ = {
     is_emoji: boolean;
     is_emoticons: boolean;
     is_gaiji: boolean;
+    is_combining_mark: boolean;
+    is_variation_selector: boolean;
 };
 
 /**

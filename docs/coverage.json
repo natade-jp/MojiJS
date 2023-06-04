@@ -1,7 +1,7 @@
 {
   "coverage": "100%",
-  "expectCount": 179,
-  "actualCount": 179,
+  "expectCount": 187,
+  "actualCount": 187,
   "files": {
     "src/encode/CP932.js": {
       "expectCount": 12,
@@ -34,23 +34,23 @@
       "undocumentLines": []
     },
     "src/encode/Unicode.js": {
-      "expectCount": 20,
-      "actualCount": 20,
+      "expectCount": 22,
+      "actualCount": 22,
       "undocumentLines": []
     },
     "src/language/Japanese.js": {
-      "expectCount": 21,
-      "actualCount": 21,
+      "expectCount": 24,
+      "actualCount": 24,
       "undocumentLines": []
     },
     "src/MojiJS.js": {
-      "expectCount": 40,
-      "actualCount": 40,
+      "expectCount": 42,
+      "actualCount": 42,
       "undocumentLines": []
     },
     "src/tools/MojiAnalyzer.js": {
-      "expectCount": 33,
-      "actualCount": 33,
+      "expectCount": 34,
+      "actualCount": 34,
       "undocumentLines": []
     },
     "src/tools/StringComparator.js": {

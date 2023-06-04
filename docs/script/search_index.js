@@ -498,6 +498,12 @@ window.esdocSearchIndex = [
     "method"
   ],
   [
+    "src/mojijs.js~mojijs.tomojiarrayfromstring",
+    "class/src/MojiJS.js~MojiJS.html#static-method-toMojiArrayFromString",
+    "src/MojiJS.js~MojiJS.toMojiArrayFromString",
+    "method"
+  ],
+  [
     "src/mojijs.js~mojijs.toromajifromhiragana",
     "class/src/MojiJS.js~MojiJS.html#static-method-toRomajiFromHiragana",
     "src/MojiJS.js~MojiJS.toRomajiFromHiragana",
@@ -507,6 +513,12 @@ window.esdocSearchIndex = [
     "src/mojijs.js~mojijs.toromajifromkatakana",
     "class/src/MojiJS.js~MojiJS.html#static-method-toRomajiFromKatakana",
     "src/MojiJS.js~MojiJS.toRomajiFromKatakana",
+    "method"
+  ],
+  [
+    "src/mojijs.js~mojijs.tostringfrommojiarray",
+    "class/src/MojiJS.js~MojiJS.html#static-method-toStringFromMojiArray",
+    "src/MojiJS.js~MojiJS.toStringFromMojiArray",
     "method"
   ],
   [

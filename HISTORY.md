@@ -1,5 +1,26 @@
 # History
 
+## v4.0.0
+
+### 機能改善
+
+- ローマ字で `*w[aiueo]` のパターンで足りていない箇所があったのを改善
+- 文字解析用の `MojiAnalyzer` に定義されているUnicodeの面情報を最新版へ更新
+- 文字解析用の `MojiAnalyzer` に結合文字判定を追加
+- 文字解析用の `MojiAnalyzer` に異体字セレクタ判定を追加
+- 結合文字と異体字セレクタを含めて1文字と判定して切り出す `MojiJS.toMojiArrayFromString`, `MojiJS.toStringFromMojiArray` を追加
+ - 結合文字と異体字セレクタがあると `UTF-32` への変換だと1文字を1数値への変換に対応できないため
+
+### 変更
+
+- `substr` が使用されている箇所を `substring` へ改善
+- 内部用メソッド名で `toUTF16ArrayfromCodePoint` となっていた個所を `toUTF16ArrayFromCodePoint` へ変更
+- `MojiJS.getWidth`, `MojiJS.cutTextForWidth` にて結合文字と異体字セレクタは文字数を`0`としてカウントするように変更
+
+### 不具合修正
+
+- ローマ字で「`nn`」があった場合に繰り返しの「`っ`」に判定される場合があるのを修正
+
 ## v3.1.0
 
 ### 変更
@@ -7,7 +28,6 @@
 - `MojiJS.compareToForDefault`, `MojiJS.compareToForNatural` ともに入力を `string` から `any` へ変更
 - `MojiJS.compareToForNatural` の入力値に対して `toString` で文字列化して比較するように改善
 - 例では、`MojiJS.COMPARE_DEFAULT`, `MojiJS.COMPARE_NATURAL` と紹介していましたが、正しくは、`MojiJS.compareToForDefault`, `MojiJS.compareToForNatural` であったのを修正
-
 
 ## v3.0.5
 

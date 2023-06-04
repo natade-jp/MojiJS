@@ -144,12 +144,35 @@ export default class MojiJS {
 	}
 
 	// ---------------------------------
+	// 文字を扱う関数群
+	// ---------------------------------
+
+	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toMojiArrayFromString(text) {
+		return Japanese.toMojiArrayFromString(text);
+	}
+
+	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
+	 * @returns {string} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toStringFromMojiArray(mojiarray) {
+		return Japanese.toStringFromMojiArray(mojiarray);
+	}
+
+	// ---------------------------------
 	// 切り出しを扱う関数群
 	// ---------------------------------
 
 	/**
 	 * 指定したテキストを切り出す
-	 * - 単位は文字数
+	 * - 単位はコードポイントの文字数
+	 * - 結合文字と異体字セレクタを区別しません
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
@@ -161,8 +184,9 @@ export default class MojiJS {
 
 	/**
 	 * 指定したテキストの横幅を半角／全角でカウント
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -172,9 +196,9 @@ export default class MojiJS {
 
 	/**
 	 * 指定したテキストを切り出す
-	 * - 単位は半角／全角で換算した文字の横幅
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
@@ -184,6 +208,7 @@ export default class MojiJS {
 		return Japanese.cutTextForWidth(text, offset, size);
 	}
 
+	
 	// ---------------------------------
 	// 面区点コードの変換用
 	// ---------------------------------

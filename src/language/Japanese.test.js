@@ -51,6 +51,11 @@ testOperator1("toRomajiFromKatakana", "ミョウゴニチ", "myougonichi");
 
 {
 	test("getWidth", () => { expect(Japanese.getWidth("ABCあいう高髙①")).toBe(15); });
+	test("getWidth", () => { expect(Japanese.getWidth("禰豆子")).toBe(6); });
+	test("getWidth", () => { expect(Japanese.getWidth("襧豆子")).toBe(6); });
+	test("getWidth", () => { expect(Japanese.getWidth("禰󠄀豆子")).toBe(6); });
+	test("getWidth", () => { expect(Japanese.getWidth("Åström")).toBe(6); });
+	test("getWidth", () => { expect(Japanese.getWidth("あ゙")).toBe(2); });
 }
 
 {
@@ -68,4 +73,11 @@ testOperator1("toRomajiFromKatakana", "ミョウゴニチ", "myougonichi");
 	test("cutTextForWidth 11", () => { expect(Japanese.cutTextForWidth(text, 9, 5)).toBe("高髙 "); });
 	test("cutTextForWidth 12", () => { expect(Japanese.cutTextForWidth(text,10, 5)).toBe(" 髙①"); });
 	test("cutTextForWidth 13", () => { expect(Japanese.cutTextForWidth(text,11, 5)).toBe("髙①"); });
+}
+
+{
+	const text = "Åあ゙禰󠄀";
+	test("cutTextForWidth Ex1", () => { expect(Japanese.cutTextForWidth(text, 0, 3)).toBe("Åあ゙"); });
+	test("cutTextForWidth Ex2", () => { expect(Japanese.cutTextForWidth(text, 1, 3)).toBe("あ゙ "); });
+	test("cutTextForWidth Ex3", () => { expect(Japanese.cutTextForWidth(text, 2, 3)).toBe(" 禰󠄀"); });
 }

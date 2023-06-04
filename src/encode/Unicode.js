@@ -148,7 +148,7 @@ export default class Unicode {
 	 * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数
 	 * @returns {Array<number>} 変換後のテキスト
 	 */
-	static toUTF16ArrayfromCodePoint() {
+	static toUTF16ArrayFromCodePoint() {
 		/**
 		 * @type {Array<number>}
 		 */
@@ -188,14 +188,14 @@ export default class Unicode {
 	static fromCodePoint(codepoint) {
 		let utf16_array = null;
 		if(codepoint instanceof Array) {
-			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint);
+			utf16_array = Unicode.toUTF16ArrayFromCodePoint(codepoint);
 		}
 		else {
 			const codepoint_array = [];
 			for(let i = 0;i < arguments.length;i++) {
 				codepoint_array[i] = arguments[i];
 			}
-			utf16_array = Unicode.toUTF16ArrayfromCodePoint(codepoint_array);
+			utf16_array = Unicode.toUTF16ArrayFromCodePoint(codepoint_array);
 		}
 		const text = [];
 		for(let i = 0;i < utf16_array.length;i++) {
@@ -503,7 +503,7 @@ export default class Unicode {
 		// UTF-16
 		else if(/utf-?16/i.test(charset)) {
 			// UTF-16 に詰め替える
-			const utf16_array = Unicode.toUTF16ArrayfromCodePoint(utf32_array);
+			const utf16_array = Unicode.toUTF16ArrayFromCodePoint(utf32_array);
 			// UTF-16BE
 			if(/utf-?16(be)/i.test(charset)) {
 				// bom をつける
@@ -568,5 +568,45 @@ export default class Unicode {
 		}
 		return null;
 	}
+
+	/**
+	 * コードポイントから異体字セレクタの判定
+	 * @param {Number} codepoint - コードポイント
+	 * @returns {boolean} 確認結果
+	 */
+	static isVariationSelectorFromCodePoint(codepoint) {
+		return (
+			// モンゴル自由字形選択子 U+180B〜U+180D (3個)
+			((0x180B <= codepoint) && (codepoint <= 0x180D)) ||
+			// SVSで利用される異体字セレクタ U+FE00〜U+FE0F (VS1～VS16) (16個)
+			((0xFE00 <= codepoint) && (codepoint <= 0xFE0F)) ||
+			// IVSで利用される異体字セレクタ U+E0100〜U+E01EF (VS17～VS256) (240個)
+			((0xE0100 <= codepoint) && (codepoint <= 0xE01EF))
+		);
+	}
+
+	/**
+	 * コードポイントから結合文字の判定
+	 * @param {Number} codepoint - コードポイント
+	 * @returns {boolean} 確認結果
+	 */
+	static isCombiningMarkFromCodePoint(codepoint) {
+		return (
+			// Combining Diacritical Marks
+			((0x0300 <= codepoint) && (codepoint <= 0x036F)) ||
+			// Combining Diacritical Marks Extended
+			((0x1AB0 <= codepoint) && (codepoint <= 0x1AFF)) ||
+			// Combining Diacritical Marks Supplement
+			((0x1DC0 <= codepoint) && (codepoint <= 0x1DFF)) ||
+			// Combining Diacritical Marks for Symbols
+			((0x20D0 <= codepoint) && (codepoint <= 0x20FF)) ||
+			// Hiragana 含まれる4種類の文字
+			((0x3099 <= codepoint) && (codepoint <= 0x309C)) ||
+			// Combining Half Marks
+			((0xFE20 <= codepoint) && (codepoint <= 0xFE2F))
+		);
+	}
+
+
 
 }

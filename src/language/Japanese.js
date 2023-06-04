@@ -933,9 +933,30 @@ export default class Japanese {
 	}
 
 	/**
+	 * 指定したコードポイントの横幅を取得します
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
+	 * @param {Number} cp 調査するコードポイント
+	 * @returns {Number} 文字の横幅
+	 */
+	static getWidthFromCodePoint(cp) {
+		if(Unicode.isCombiningMarkFromCodePoint(cp) || Unicode.isVariationSelectorFromCodePoint(cp)) {
+			return 0;
+		}
+		else if((cp < 0x80) || ((0xFF61 <= cp) && (cp < 0xFFA0))) {
+			return 1;
+		}
+		else {
+			return 2;
+		}
+	}
+
+	/**
 	 * 指定したテキストの横幅を半角／全角でカウント
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -943,21 +964,58 @@ export default class Japanese {
 		const utf32_array = Unicode.toUTF32Array(text);
 		let count = 0;
 		for(let i = 0; i < utf32_array.length; i++) {
-			const ch = utf32_array[i];
-			if((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) {
-				count++;
-			}
-			else {
-				count += 2;
-			}
+			count += Japanese.getWidthFromCodePoint(utf32_array[i]);
 		}
 		return count;
 	}
 
 	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {String} text - 変換したいテキスト
+	 * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toMojiArrayFromString(text) {
+		const utf32 = Unicode.toUTF32Array(text);
+		/**
+		 * @type {Array<Array<number>>}
+		 */
+		const mojiarray = [];
+		let moji = [];
+		for(let i = 0; i < utf32.length; i++) {
+			const cp = utf32[i];
+			if((i > 0) && !Unicode.isVariationSelectorFromCodePoint(cp) && !Unicode.isCombiningMarkFromCodePoint(cp)) {
+				mojiarray.push(moji);
+				moji = [];
+			}
+			moji.push(cp);
+		}
+		mojiarray.push(moji);
+		return mojiarray;
+	}
+
+	/**
+	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
+	 * @returns {string} UTF32(コードポイント)の配列が入った配列
+	 */
+	static toStringFromMojiArray(mojiarray) {
+		/**
+		 * @type {Array<number>}
+		 */
+		const utf32 = [];
+		for(let i = 0; i < mojiarray.length; i++) {
+			for(let j = 0; j < mojiarray[i].length; j++) {
+				utf32.push(mojiarray[i][j]);
+			}
+		}
+		return Unicode.fromUTF32Array(utf32);
+	}
+
+	/**
 	 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
-	 * - 半角を1、全角を2としてカウント
-	 * - 半角は、ASCII文字、半角カタカナ。全角はそれ以外とします。
+	 * - 結合文字と異体字セレクタは、0としてカウントします。
+	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
+	 * - 全角は2としてカウントします。上記以外を全角として処理します。
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
@@ -965,8 +1023,11 @@ export default class Japanese {
 	 * @ignore
 	 */
 	static cutTextForWidth(text, offset, size) {
-		const utf32_array = Unicode.toUTF32Array(text);
-		const SPACE = 0x20 ; // ' '
+		const moji_array = Japanese.toMojiArrayFromString(text);
+		const SPACE = [ 0x20 ] ; // ' '
+		/**
+		 * @type {Array<Array<number>>}
+		 */
 		const output = [];
 		let is_target = false;
 		let position = 0;
@@ -978,13 +1039,13 @@ export default class Japanese {
 		if(cut_size <= 0) {
 			return "";
 		}
-		for(let i = 0; i < utf32_array.length; i++) {
-			const ch = utf32_array[i];
+		for(let i = 0; i < moji_array.length; i++) {
+			const ch = moji_array[i][0];
 			const ch_size = ((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) ? 1 : 2;
 			if(position >= offset) {
 				is_target = true;
 				if(cut_size >= ch_size) {
-					output.push(ch);
+					output.push(moji_array[i]);
 				}
 				else {
 					output.push(SPACE);
@@ -1001,7 +1062,7 @@ export default class Japanese {
 				output.push(SPACE);
 			}
 		}
-		return Unicode.fromUTF32Array(output);
+		return Japanese.toStringFromMojiArray(output);
 	}
 
 }
