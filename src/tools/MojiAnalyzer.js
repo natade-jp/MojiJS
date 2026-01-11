@@ -525,11 +525,11 @@ class MojiAnalizerTools {
 		}
 		// SVSで利用される異体字セレクタ U+FE00〜U+FE0F (VS1～VS16) (16個)
 		if((0xFE00 <= codepoint) && (codepoint <= 0xFE0F)) {
-			return "VS" + (codepoint - 0xFE00) + 1;
+			return "VS" + ((codepoint - 0xFE00) + 1);
 		}
 		// IVSで利用される異体字セレクタ U+E0100〜U+E01EF (VS17～VS256) (240個)
 		else if((0xE0100 <= codepoint) && (codepoint <= 0xE01EF)) {
-			return "VS" + (codepoint - 0xE0100) + 17;
+			return "VS" + ((codepoint - 0xE0100) + 17);
 		}
 		return null;
 	}
