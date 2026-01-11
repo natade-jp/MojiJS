@@ -516,16 +516,21 @@ class MojiAnalizerTools {
 	/**
 	 * コードポイントから異体字セレクタの判定
 	 * @param {Number} codepoint - コードポイント
+	 * @param {boolean} [annotate = false] - 注釈をつけるか否か
 	 * @returns {string|null} 確認結果(異体字セレクタではない場合はNULLを返す)
 	 */
-	static getVariationSelectorsNumberFromCodePoint(codepoint) {
+	static getVariationSelectorsNumberFromCodePoint(codepoint, annotate) {
 		// モンゴル自由字形選択子 U+180B〜U+180D (3個)
 		if((0x180B <= codepoint) && (codepoint <= 0x180D)) {
 			return "FVS" + ((codepoint - 0x180B) + 1);
 		}
 		// SVSで利用される異体字セレクタ U+FE00〜U+FE0F (VS1～VS16) (16個)
 		if((0xFE00 <= codepoint) && (codepoint <= 0xFE0F)) {
-			return "VS" + ((codepoint - 0xFE00) + 1);
+			const n = (codepoint - 0xFE00) + 1;
+			if (!annotate) return "VS" + n;
+			if (codepoint === 0xFE0E) return "VS15 (text)";
+			if (codepoint === 0xFE0F) return "VS16 (emoji)";
+			return "VS" + n;
 		}
 		// IVSで利用される異体字セレクタ U+E0100〜U+E01EF (VS17～VS256) (240個)
 		else if((0xE0100 <= codepoint) && (codepoint <= 0xE01EF)) {
@@ -681,6 +686,7 @@ class MojiAnalizerTools {
  * @property {boolean} is_halfwidth_katakana 半角カタカナ
  * @property {boolean} is_emoji 絵文字
  * @property {boolean} is_emoticons 顔文字
+ * @property {boolean} is_symbol_base 記号(VS16 が付くと絵文字化)
  * @property {boolean} is_gaiji 外字
  * @property {boolean} is_combining_mark 結合文字
  * @property {boolean} is_variation_selector 異体字セレクタ
@@ -751,6 +757,7 @@ export default class MojiAnalyzer {
 			is_halfwidth_katakana : false,
 			is_emoji : false,
 			is_emoticons : false,
+			is_symbol_base : false,
 			is_gaiji : false,
 			is_combining_mark : false,
 			is_variation_selector : false
@@ -875,9 +882,11 @@ export default class MojiAnalyzer {
 		type.is_fullwidth_ascii = /[\u3000\uFF01-\uFF5E]/.test(data.character);
 		type.is_halfwidth_katakana = /[\uFF61-\uFF9F]/.test(data.character);
 		// 絵文字
-		type.is_emoji = /Pictographs/.test(type.blockname);
+		type.is_emoji = /Pictographs|Transport and Map Symbols/.test(type.blockname);
 		// 顔文字
 		type.is_emoticons = /Emoticons/.test(type.blockname);
+		// 記号(VS16 が付くと絵文字化)
+		type.is_symbol_base = /Dingbats|Miscellaneous Symbols/.test(type.blockname);
 		// 外字
 		type.is_gaiji = /Private Use Area/.test(type.blockname);
 		// 結合文字

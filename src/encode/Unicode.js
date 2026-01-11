@@ -591,20 +591,28 @@ export default class Unicode {
 	 * @returns {boolean} 確認結果
 	 */
 	static isCombiningMarkFromCodePoint(codepoint) {
-		return (
-			// Combining Diacritical Marks
-			((0x0300 <= codepoint) && (codepoint <= 0x036F)) ||
-			// Combining Diacritical Marks Extended
-			((0x1AB0 <= codepoint) && (codepoint <= 0x1AFF)) ||
-			// Combining Diacritical Marks Supplement
-			((0x1DC0 <= codepoint) && (codepoint <= 0x1DFF)) ||
-			// Combining Diacritical Marks for Symbols
-			((0x20D0 <= codepoint) && (codepoint <= 0x20FF)) ||
-			// Hiragana 含まれる4種類の文字
-			((0x3099 <= codepoint) && (codepoint <= 0x309C)) ||
-			// Combining Half Marks
-			((0xFE20 <= codepoint) && (codepoint <= 0xFE2F))
-		);
+		try {
+			new RegExp("\\p{Mark}", "u");
+			return /\p{Mark}/u.test(String.fromCodePoint(codepoint));
+		} catch (e) {
+			// フォールバック処理
+			return (
+				// Combining Diacritical Marks
+				((0x0300 <= codepoint) && (codepoint <= 0x036F)) ||
+				// Combining Diacritical Marks Extended
+				((0x1AB0 <= codepoint) && (codepoint <= 0x1AFF)) ||
+				// Combining Diacritical Marks Supplement
+				((0x1DC0 <= codepoint) && (codepoint <= 0x1DFF)) ||
+				// Combining Diacritical Marks for Symbols
+				((0x20D0 <= codepoint) && (codepoint <= 0x20FF)) ||
+				// 日本語に含まれる2種類の文字
+				// COMBINING VOICED SOUND MARK
+				// COMBINING SEMI-VOICED SOUND MARK
+				((0x3099 <= codepoint) && (codepoint <= 0x309A)) ||
+				// Combining Half Marks
+				((0xFE20 <= codepoint) && (codepoint <= 0xFE2F))
+			);
+		}
 	}
 
 
