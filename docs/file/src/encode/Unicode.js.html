@@ -632,20 +632,28 @@ export default class Unicode {
 	 * @returns {boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
 	 */
 	static isCombiningMarkFromCodePoint(codepoint) {
-		return (
-			// Combining Diacritical Marks
-			((0x0300 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x036F)) ||
-			// Combining Diacritical Marks Extended
-			((0x1AB0 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x1AFF)) ||
-			// Combining Diacritical Marks Supplement
-			((0x1DC0 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x1DFF)) ||
-			// Combining Diacritical Marks for Symbols
-			((0x20D0 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x20FF)) ||
-			// Hiragana &#x542B;&#x307E;&#x308C;&#x308B;4&#x7A2E;&#x985E;&#x306E;&#x6587;&#x5B57;
-			((0x3099 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x309C)) ||
-			// Combining Half Marks
-			((0xFE20 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xFE2F))
-		);
+		try {
+			new RegExp(&quot;\\p{Mark}&quot;, &quot;u&quot;);
+			return /\p{Mark}/u.test(String.fromCodePoint(codepoint));
+		} catch (e) {
+			// &#x30D5;&#x30A9;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x51E6;&#x7406;
+			return (
+				// Combining Diacritical Marks
+				((0x0300 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x036F)) ||
+				// Combining Diacritical Marks Extended
+				((0x1AB0 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x1AFF)) ||
+				// Combining Diacritical Marks Supplement
+				((0x1DC0 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x1DFF)) ||
+				// Combining Diacritical Marks for Symbols
+				((0x20D0 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x20FF)) ||
+				// &#x65E5;&#x672C;&#x8A9E;&#x306B;&#x542B;&#x307E;&#x308C;&#x308B;2&#x7A2E;&#x985E;&#x306E;&#x6587;&#x5B57;
+				// COMBINING VOICED SOUND MARK
+				// COMBINING SEMI-VOICED SOUND MARK
+				((0x3099 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x309A)) ||
+				// Combining Half Marks
+				((0xFE20 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xFE2F))
+			);
+		}
 	}
 
 

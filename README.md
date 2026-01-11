@@ -1,28 +1,32 @@
-# MojiJS #
-[![Build Status](https://travis-ci.org/natade-jp/MojiJS.svg?branch=master)](https://travis-ci.org/natade-jp/MojiJS)
+# MojiJS
+
 [![ESDoc coverage badge](https://natade-jp.github.io/MojiJS/docs/badge.svg)](https://natade-jp.github.io/MojiJS/docs/)
 ![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)
 
-## What ##
-- 日本語の文字データを解析及び、変換するライブラリです。
-- [詳細なAPIを公開しています。](https://natade-jp.github.io/MojiJS/docs/)
-- [動作例](https://natade-jp.github.io/MojiJS/html/examples/demos/Text/) (コンソール及び[ソースコード](https://natade-jp.github.io/MojiJS/html/examples/demos/Text/main.mjs)を確認してみてください。)
-- [npm](https://www.npmjs.com/package/mojijs)
+## What
+
+-   日本語の文字データを解析及び、変換するライブラリです。
+-   [詳細な API を公開しています。](https://natade-jp.github.io/MojiJS/docs/)
+-   [動作例](https://natade-jp.github.io/MojiJS/html/examples/demos/Text/) (コンソール及び[ソースコード](https://natade-jp.github.io/MojiJS/html/examples/demos/Text/main.mjs)を確認してみてください。)
+-   [npm](https://www.npmjs.com/package/mojijs)
 
 以下のことが行えます
-- エンコード（UTF-8 / UTF-16 / UTF-32 / Shift_JIS / Shift_JIS-2004 / EUC-JP / EUC-JIS-2004 ）
-- 日本語の変換 (ひらがな, カタカナ, 半角, 全角, ローマ字 など))
-- 漢字の判定 (常用漢字, 人名用漢字, 面区点, 漢字水準 など)
-- 自然順ソート
 
-## Install ##
+-   エンコード（UTF-8 / UTF-16 / UTF-32 / Shift_JIS / Shift_JIS-2004 / EUC-JP / EUC-JIS-2004 ）
+-   日本語の変換 (ひらがな, カタカナ, 半角, 全角, ローマ字 など))
+-   漢字の判定 (常用漢字, 人名用漢字, 面区点, 漢字水準 など)
+-   自然順ソート
+
+## Install
+
 ```
 npm install --save-dev mojijs
 ```
 
-## Sample ##
+## Sample
 
 ### エンコード
+
 ```javascript
 const MojiJS = require("mojijs");
 
@@ -34,6 +38,7 @@ console.log(MojiJS.decode([0x61, 0xE3, 0x81, 0x82], "utf-8"));
 ```
 
 ### 日本語の変換
+
 ```javascript
 const MojiJS = require("mojijs");
 
@@ -42,6 +47,7 @@ console.log(MojiJS.toHiragana("カキクケコ"));
 ```
 
 ### 面区点
+
 ```javascript
 const MojiJS = require("mojijs");
 
@@ -61,6 +67,7 @@ console.log("面区点：" + data3.encode.menkuten.text + ", 漢字水準：" + 
 ```
 
 ### 自然順ソート
+
 ```javascript
 const MojiJS = require("mojijs");
 
@@ -68,5 +75,6 @@ console.log(["３", "02", "あ", "イ", "う", "1"].sort(MojiJS.compareToForNatu
 -> [ '1', '02', '３', 'あ', 'イ', 'う' ]
 ```
 
-## Author ##
-- [natade-jp](https://github.com/natade-jp/)
+## Author
+
+-   [natade-jp](https://github.com/natade-jp/)

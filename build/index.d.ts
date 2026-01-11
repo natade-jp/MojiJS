@@ -346,6 +346,7 @@ declare type _MojiEncodeData_ = {
  * @property {boolean} is_halfwidth_katakana 半角カタカナ
  * @property {boolean} is_emoji 絵文字
  * @property {boolean} is_emoticons 顔文字
+ * @property {boolean} is_symbol_base 記号(VS16 が付くと絵文字化)
  * @property {boolean} is_gaiji 外字
  * @property {boolean} is_combining_mark 結合文字
  * @property {boolean} is_variation_selector 異体字セレクタ
@@ -371,6 +372,7 @@ declare type _MojiTypeData_ = {
     is_halfwidth_katakana: boolean;
     is_emoji: boolean;
     is_emoticons: boolean;
+    is_symbol_base: boolean;
     is_gaiji: boolean;
     is_combining_mark: boolean;
     is_variation_selector: boolean;

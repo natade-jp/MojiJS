@@ -1,5 +1,25 @@
 # History
 
+## v5.0.0
+
+### 機能改善
+
+- 異体字セレクタの判定に、注釈機能を追加
+- 絵文字の判定を強化
+- 記号の判定を追加
+- Unicodeの制御文字を追加
+  - CJK Unified Ideographs Extension I (2EBF0–2EE5F)
+  - CJK Unified Ideographs Extension J (323B0–3347F)
+
+### 変更
+
+- travisが動作しないので除去
+
+### 不具合修正
+
+- 結合していない文字も結合文字と判定する場合があるのを修正
+- getVariationSelectorsNumberFromCodePoint での戻り値で意図しない文字列を返す問題を修正
+
 ## v4.0.0
 
 ### 機能改善

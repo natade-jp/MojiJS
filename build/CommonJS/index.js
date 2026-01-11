@@ -591,20 +591,28 @@ class Unicode {
 	 * @returns {boolean} 確認結果
 	 */
 	static isCombiningMarkFromCodePoint(codepoint) {
-		return (
-			// Combining Diacritical Marks
-			((0x0300 <= codepoint) && (codepoint <= 0x036F)) ||
-			// Combining Diacritical Marks Extended
-			((0x1AB0 <= codepoint) && (codepoint <= 0x1AFF)) ||
-			// Combining Diacritical Marks Supplement
-			((0x1DC0 <= codepoint) && (codepoint <= 0x1DFF)) ||
-			// Combining Diacritical Marks for Symbols
-			((0x20D0 <= codepoint) && (codepoint <= 0x20FF)) ||
-			// Hiragana 含まれる4種類の文字
-			((0x3099 <= codepoint) && (codepoint <= 0x309C)) ||
-			// Combining Half Marks
-			((0xFE20 <= codepoint) && (codepoint <= 0xFE2F))
-		);
+		try {
+			new RegExp("\\p{Mark}", "u");
+			return /\p{Mark}/u.test(String.fromCodePoint(codepoint));
+		} catch (e) {
+			// フォールバック処理
+			return (
+				// Combining Diacritical Marks
+				((0x0300 <= codepoint) && (codepoint <= 0x036F)) ||
+				// Combining Diacritical Marks Extended
+				((0x1AB0 <= codepoint) && (codepoint <= 0x1AFF)) ||
+				// Combining Diacritical Marks Supplement
+				((0x1DC0 <= codepoint) && (codepoint <= 0x1DFF)) ||
+				// Combining Diacritical Marks for Symbols
+				((0x20D0 <= codepoint) && (codepoint <= 0x20FF)) ||
+				// 日本語に含まれる2種類の文字
+				// COMBINING VOICED SOUND MARK
+				// COMBINING SEMI-VOICED SOUND MARK
+				((0x3099 <= codepoint) && (codepoint <= 0x309A)) ||
+				// Combining Half Marks
+				((0xFE20 <= codepoint) && (codepoint <= 0xFE2F))
+			);
+		}
 	}
 
 
@@ -3997,15 +4005,111 @@ class MOJI_CHAR_MAP {
 		// 制御文字、VSは多いため含めていない
 
 		control_charcter_map = {
-			0: "NUL", 1: "SOH", 2: "STX", 3: "ETX", 4: "EOT", 5: "ENQ", 6: "ACK", 7: "BEL",
-			8: "BS", 9: "HT", 10: "LF", 11: "VT", 12: "FF", 13: "CR", 14: "SO", 15: "SI",
-			16: "DLE", 17: "DC1", 18: "DC2", 19: "DC3", 20: "DC4", 21: "NAK", 22: "SYN", 23: "ETB",
-			24: "CAN", 25: "EM", 26: "SUB", 27: "ESC", 28: "FS", 29: "GS", 30: "RS", 31: "US",
-			127: "DEL", 128: "PAD", 129: "HOP", 130: "BPH", 131: "NBH", 132: "IND", 133: "NEL", 134: "SSA",
-			135: "ESA", 136: "HTS", 137: "HTJ", 138: "VTS", 139: "PLD", 140: "PLU", 141: "RI", 142: "SS2",
-			143: "SS3", 144: "DCS", 145: "PU1", 146: "PU2", 147: "STS", 148: "CCH", 149: "MW", 150: "SPA",
-			151: "EPA", 152: "SOS", 153: "SGCI", 154: "SCI", 155: "CSI", 156: "ST", 157: "OSC", 158: "PM",
-			159: "APC", 160: "NBSP", 173: "SHY", 65529: "IAA", 65530: "IAS", 65531: "IAT"
+			// --- C0 control characters (ASCII 0x00–0x1F) ---
+			0:  "NUL", // Null
+			1:  "SOH", // Start of Heading
+			2:  "STX", // Start of Text
+			3:  "ETX", // End of Text
+			4:  "EOT", // End of Transmission
+			5:  "ENQ", // Enquiry
+			6:  "ACK", // Acknowledge
+			7:  "BEL", // Bell (beep)
+
+			8:  "BS",  // Backspace
+			9:  "HT",  // Horizontal Tab
+			10: "LF",  // Line Feed
+			11: "VT",  // Vertical Tab
+			12: "FF",  // Form Feed
+			13: "CR",  // Carriage Return
+			14: "SO",  // Shift Out
+			15: "SI",  // Shift In
+
+			16: "DLE", // Data Link Escape
+			17: "DC1", // Device Control 1 (XON)
+			18: "DC2", // Device Control 2
+			19: "DC3", // Device Control 3 (XOFF)
+			20: "DC4", // Device Control 4
+			21: "NAK", // Negative Acknowledge
+			22: "SYN", // Synchronous Idle
+			23: "ETB", // End of Transmission Block
+
+			24: "CAN", // Cancel
+			25: "EM",  // End of Medium
+			26: "SUB", // Substitute
+			27: "ESC", // Escape
+			28: "FS",  // File Separator
+			29: "GS",  // Group Separator
+			30: "RS",  // Record Separator
+			31: "US",  // Unit Separator
+
+			// --- DEL ---
+			127: "DEL", // Delete
+
+			// --- C1 control characters (ISO/IEC 6429, 0x80–0x9F) ---
+			128: "PAD", // Padding Character
+			129: "HOP", // High Octet Preset
+			130: "BPH", // Break Permitted Here
+			131: "NBH", // No Break Here
+			132: "IND", // Index
+			133: "NEL", // Next Line
+			134: "SSA", // Start of Selected Area
+			135: "ESA", // End of Selected Area
+			136: "HTS", // Horizontal Tab Set
+			137: "HTJ", // Horizontal Tab with Justification
+			138: "VTS", // Vertical Tab Set
+			139: "PLD", // Partial Line Down
+			140: "PLU", // Partial Line Up
+			141: "RI",  // Reverse Index
+			142: "SS2", // Single Shift 2
+			143: "SS3", // Single Shift 3
+			144: "DCS", // Device Control String
+			145: "PU1", // Private Use 1
+			146: "PU2", // Private Use 2
+			147: "STS", // Set Transmit State
+			148: "CCH", // Cancel Character
+			149: "MW",  // Message Waiting
+			150: "SPA", // Start of Protected Area
+			151: "EPA", // End of Protected Area
+			152: "SOS", // Start of String
+			153: "SGCI",// Single Graphic Character Introducer
+			154: "SCI", // Single Character Introducer
+			155: "CSI", // Control Sequence Introducer
+			156: "ST",  // String Terminator
+			157: "OSC", // Operating System Command
+			158: "PM",  // Privacy Message
+			159: "APC", // Application Program Command
+
+			// --- Unicode but制御的に扱われる文字 ---
+			160: "NBSP", // No-Break Space（表示は空白だが改行不可）
+			173: "SHY",  // Soft Hyphen（通常は表示されない）
+
+			// --- Unicode Interlinear Annotation ---
+			65529: "IAA", // Interlinear Annotation Anchor
+			65530: "IAS", // Interlinear Annotation Separator
+			65531: "IAT", // Interlinear Annotation Terminator
+
+			// Zero Width / Joiner 系（Cf）
+			0x200B: "ZWSP",   // ZERO WIDTH SPACE
+			0x200C: "ZWNJ",   // ZERO WIDTH NON-JOINER
+			0x200D: "ZWJ",    // ZERO WIDTH JOINER
+			0x2060: "WJ",     // WORD JOINER
+			0xFEFF: "BOM",    // BYTE ORDER MARK / ZERO WIDTH NO-BREAK SPACE
+
+			// 双方向（BiDi）制御文字
+			0x202A: "LRE",    // LEFT-TO-RIGHT EMBEDDING
+			0x202B: "RLE",    // RIGHT-TO-LEFT EMBEDDING
+			0x202C: "PDF",    // POP DIRECTIONAL FORMATTING
+			0x202D: "LRO",    // LEFT-TO-RIGHT OVERRIDE
+			0x202E: "RLO",    // RIGHT-TO-LEFT OVERRIDE
+
+			0x2066: "LRI",    // LEFT-TO-RIGHT ISOLATE
+			0x2067: "RLI",    // RIGHT-TO-LEFT ISOLATE
+			0x2068: "FSI",    // FIRST STRONG ISOLATE
+			0x2069: "PDI" ,   // POP DIRECTIONAL ISOLATE
+
+			// Unicode Noncharacter（検証・防御用途）
+			0xFFFE: "NONCHAR_FFFE",
+			0xFFFF: "NONCHAR_FFFF"
 		};
 
 		const unicode_blockname_array = [
@@ -4048,8 +4152,8 @@ class MOJI_CHAR_MAP {
 			"Cyrillic Extended-D", "Nyiakeng Puachue Hmong", "Toto", "Wancho", "Nag Mundari", "Ethiopic Extended-B", "Mende Kikakui", "Adlam", 
 			"Indic Siyaq Numbers", "Ottoman Siyaq Numbers", "Arabic Mathematical Alphabetic Symbols", "Mahjong Tiles", "Domino Tiles", "Playing Cards", "Enclosed Alphanumeric Supplement", "Enclosed Ideographic Supplement", 
 			"Miscellaneous Symbols and Pictographs", "Emoticons", "Ornamental Dingbats", "Transport and Map Symbols", "Alchemical Symbols", "Geometric Shapes Extended", "Supplemental Arrows-C", "Supplemental Symbols and Pictographs", 
-			"Chess Symbols", "Symbols and Pictographs Extended-A", "Symbols for Legacy Computing", "CJK Unified Ideographs Extension B", "CJK Unified Ideographs Extension C", "CJK Unified Ideographs Extension D", "CJK Unified Ideographs Extension E", "CJK Unified Ideographs Extension F", 
-			"CJK Compatibility Ideographs Supplement", "CJK Unified Ideographs Extension G", "CJK Unified Ideographs Extension H", "Tags", "Variation Selectors Supplement", "Supplementary Private Use Area-A", "Supplementary Private Use Area-B"
+			"Chess Symbols", "Symbols and Pictographs Extended-A", "Symbols for Legacy Computing", "CJK Unified Ideographs Extension B", "CJK Unified Ideographs Extension C", "CJK Unified Ideographs Extension D", "CJK Unified Ideographs Extension E", "CJK Unified Ideographs Extension F", "CJK Unified Ideographs Extension I", 
+			"CJK Compatibility Ideographs Supplement", "CJK Unified Ideographs Extension G", "CJK Unified Ideographs Extension H", "CJK Unified Ideographs Extension J", "Tags", "Variation Selectors Supplement", "Supplementary Private Use Area-A", "Supplementary Private Use Area-B"
 		];
 
 		const unicode_blockaddress_array = [
@@ -4072,8 +4176,8 @@ class MOJI_CHAR_MAP {
 			0x1467F, 0x16A3F, 0x16A6F, 0x16ACF, 0x16AFF, 0x16B8F, 0x16E9F, 0x16F9F, 0x16FFF, 0x187FF, 0x18AFF, 0x18CFF, 0x18D7F, 0x1AFFF, 0x1B0FF, 0x1B12F,
 			0x1B16F, 0x1B2FF, 0x1BC9F, 0x1BCAF, 0x1CFCF, 0x1D0FF, 0x1D1FF, 0x1D24F, 0x1D2DF, 0x1D2FF, 0x1D35F, 0x1D37F, 0x1D7FF, 0x1DAAF, 0x1DFFF, 0x1E02F,
 			0x1E08F, 0x1E14F, 0x1E2BF, 0x1E2FF, 0x1E4FF, 0x1E7FF, 0x1E8DF, 0x1E95F, 0x1ECBF, 0x1ED4F, 0x1EEFF, 0x1F02F, 0x1F09F, 0x1F0FF, 0x1F1FF, 0x1F2FF,
-			0x1F5FF, 0x1F64F, 0x1F67F, 0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x1FAFF, 0x1FBFF, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF,
-			0x2FA1F, 0x3134F, 0x323AF, 0xE007F, 0xE01EF, 0xFFFFF, 0x10FFFF
+			0x1F5FF, 0x1F64F, 0x1F67F, 0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x1FAFF, 0x1FBFF, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF, 0x2EE5F,
+			0x2FA1F, 0x3134F, 0x323AF, 0x3347F, 0xE007F, 0xE01EF, 0xFFFFF, 0x10FFFF
 		];
 
 		to_block_name_from_unicode = function(unicode_codepoint) {
@@ -4177,20 +4281,25 @@ class MojiAnalizerTools {
 	/**
 	 * コードポイントから異体字セレクタの判定
 	 * @param {Number} codepoint - コードポイント
+	 * @param {boolean} [annotate = false] - 注釈をつけるか否か
 	 * @returns {string|null} 確認結果(異体字セレクタではない場合はNULLを返す)
 	 */
-	static getVariationSelectorsNumberFromCodePoint(codepoint) {
+	static getVariationSelectorsNumberFromCodePoint(codepoint, annotate) {
 		// モンゴル自由字形選択子 U+180B〜U+180D (3個)
 		if((0x180B <= codepoint) && (codepoint <= 0x180D)) {
 			return "FVS" + ((codepoint - 0x180B) + 1);
 		}
 		// SVSで利用される異体字セレクタ U+FE00〜U+FE0F (VS1～VS16) (16個)
 		if((0xFE00 <= codepoint) && (codepoint <= 0xFE0F)) {
-			return "VS" + (codepoint - 0xFE00) + 1;
+			const n = (codepoint - 0xFE00) + 1;
+			if (!annotate) return "VS" + n;
+			if (codepoint === 0xFE0E) return "VS15 (text)";
+			if (codepoint === 0xFE0F) return "VS16 (emoji)";
+			return "VS" + n;
 		}
 		// IVSで利用される異体字セレクタ U+E0100〜U+E01EF (VS17～VS256) (240個)
 		else if((0xE0100 <= codepoint) && (codepoint <= 0xE01EF)) {
-			return "VS" + (codepoint - 0xE0100) + 17;
+			return "VS" + ((codepoint - 0xE0100) + 17);
 		}
 		return null;
 	}
@@ -4342,6 +4451,7 @@ class MojiAnalizerTools {
  * @property {boolean} is_halfwidth_katakana 半角カタカナ
  * @property {boolean} is_emoji 絵文字
  * @property {boolean} is_emoticons 顔文字
+ * @property {boolean} is_symbol_base 記号(VS16 が付くと絵文字化)
  * @property {boolean} is_gaiji 外字
  * @property {boolean} is_combining_mark 結合文字
  * @property {boolean} is_variation_selector 異体字セレクタ
@@ -4412,6 +4522,7 @@ class MojiAnalyzer {
 			is_halfwidth_katakana : false,
 			is_emoji : false,
 			is_emoticons : false,
+			is_symbol_base : false,
 			is_gaiji : false,
 			is_combining_mark : false,
 			is_variation_selector : false
@@ -4536,9 +4647,11 @@ class MojiAnalyzer {
 		type.is_fullwidth_ascii = /[\u3000\uFF01-\uFF5E]/.test(data.character);
 		type.is_halfwidth_katakana = /[\uFF61-\uFF9F]/.test(data.character);
 		// 絵文字
-		type.is_emoji = /Pictographs/.test(type.blockname);
+		type.is_emoji = /Pictographs|Transport and Map Symbols/.test(type.blockname);
 		// 顔文字
 		type.is_emoticons = /Emoticons/.test(type.blockname);
+		// 記号(VS16 が付くと絵文字化)
+		type.is_symbol_base = /Dingbats|Miscellaneous Symbols/.test(type.blockname);
 		// 外字
 		type.is_gaiji = /Private Use Area/.test(type.blockname);
 		// 結合文字
@@ -5270,4 +5383,4 @@ class MojiJS {
 
 }
 
-module.exports = MojiJS;
+export default MojiJS;

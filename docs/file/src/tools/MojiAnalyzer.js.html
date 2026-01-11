@@ -281,15 +281,111 @@ class MOJI_CHAR_MAP {
 		// &#x5236;&#x5FA1;&#x6587;&#x5B57;&#x3001;VS&#x306F;&#x591A;&#x3044;&#x305F;&#x3081;&#x542B;&#x3081;&#x3066;&#x3044;&#x306A;&#x3044;
 
 		control_charcter_map = {
-			0: &quot;NUL&quot;, 1: &quot;SOH&quot;, 2: &quot;STX&quot;, 3: &quot;ETX&quot;, 4: &quot;EOT&quot;, 5: &quot;ENQ&quot;, 6: &quot;ACK&quot;, 7: &quot;BEL&quot;,
-			8: &quot;BS&quot;, 9: &quot;HT&quot;, 10: &quot;LF&quot;, 11: &quot;VT&quot;, 12: &quot;FF&quot;, 13: &quot;CR&quot;, 14: &quot;SO&quot;, 15: &quot;SI&quot;,
-			16: &quot;DLE&quot;, 17: &quot;DC1&quot;, 18: &quot;DC2&quot;, 19: &quot;DC3&quot;, 20: &quot;DC4&quot;, 21: &quot;NAK&quot;, 22: &quot;SYN&quot;, 23: &quot;ETB&quot;,
-			24: &quot;CAN&quot;, 25: &quot;EM&quot;, 26: &quot;SUB&quot;, 27: &quot;ESC&quot;, 28: &quot;FS&quot;, 29: &quot;GS&quot;, 30: &quot;RS&quot;, 31: &quot;US&quot;,
-			127: &quot;DEL&quot;, 128: &quot;PAD&quot;, 129: &quot;HOP&quot;, 130: &quot;BPH&quot;, 131: &quot;NBH&quot;, 132: &quot;IND&quot;, 133: &quot;NEL&quot;, 134: &quot;SSA&quot;,
-			135: &quot;ESA&quot;, 136: &quot;HTS&quot;, 137: &quot;HTJ&quot;, 138: &quot;VTS&quot;, 139: &quot;PLD&quot;, 140: &quot;PLU&quot;, 141: &quot;RI&quot;, 142: &quot;SS2&quot;,
-			143: &quot;SS3&quot;, 144: &quot;DCS&quot;, 145: &quot;PU1&quot;, 146: &quot;PU2&quot;, 147: &quot;STS&quot;, 148: &quot;CCH&quot;, 149: &quot;MW&quot;, 150: &quot;SPA&quot;,
-			151: &quot;EPA&quot;, 152: &quot;SOS&quot;, 153: &quot;SGCI&quot;, 154: &quot;SCI&quot;, 155: &quot;CSI&quot;, 156: &quot;ST&quot;, 157: &quot;OSC&quot;, 158: &quot;PM&quot;,
-			159: &quot;APC&quot;, 160: &quot;NBSP&quot;, 173: &quot;SHY&quot;, 65529: &quot;IAA&quot;, 65530: &quot;IAS&quot;, 65531: &quot;IAT&quot;
+			// --- C0 control characters (ASCII 0x00&#x2013;0x1F) ---
+			0:  &quot;NUL&quot;, // Null
+			1:  &quot;SOH&quot;, // Start of Heading
+			2:  &quot;STX&quot;, // Start of Text
+			3:  &quot;ETX&quot;, // End of Text
+			4:  &quot;EOT&quot;, // End of Transmission
+			5:  &quot;ENQ&quot;, // Enquiry
+			6:  &quot;ACK&quot;, // Acknowledge
+			7:  &quot;BEL&quot;, // Bell (beep)
+
+			8:  &quot;BS&quot;,  // Backspace
+			9:  &quot;HT&quot;,  // Horizontal Tab
+			10: &quot;LF&quot;,  // Line Feed
+			11: &quot;VT&quot;,  // Vertical Tab
+			12: &quot;FF&quot;,  // Form Feed
+			13: &quot;CR&quot;,  // Carriage Return
+			14: &quot;SO&quot;,  // Shift Out
+			15: &quot;SI&quot;,  // Shift In
+
+			16: &quot;DLE&quot;, // Data Link Escape
+			17: &quot;DC1&quot;, // Device Control 1 (XON)
+			18: &quot;DC2&quot;, // Device Control 2
+			19: &quot;DC3&quot;, // Device Control 3 (XOFF)
+			20: &quot;DC4&quot;, // Device Control 4
+			21: &quot;NAK&quot;, // Negative Acknowledge
+			22: &quot;SYN&quot;, // Synchronous Idle
+			23: &quot;ETB&quot;, // End of Transmission Block
+
+			24: &quot;CAN&quot;, // Cancel
+			25: &quot;EM&quot;,  // End of Medium
+			26: &quot;SUB&quot;, // Substitute
+			27: &quot;ESC&quot;, // Escape
+			28: &quot;FS&quot;,  // File Separator
+			29: &quot;GS&quot;,  // Group Separator
+			30: &quot;RS&quot;,  // Record Separator
+			31: &quot;US&quot;,  // Unit Separator
+
+			// --- DEL ---
+			127: &quot;DEL&quot;, // Delete
+
+			// --- C1 control characters (ISO/IEC 6429, 0x80&#x2013;0x9F) ---
+			128: &quot;PAD&quot;, // Padding Character
+			129: &quot;HOP&quot;, // High Octet Preset
+			130: &quot;BPH&quot;, // Break Permitted Here
+			131: &quot;NBH&quot;, // No Break Here
+			132: &quot;IND&quot;, // Index
+			133: &quot;NEL&quot;, // Next Line
+			134: &quot;SSA&quot;, // Start of Selected Area
+			135: &quot;ESA&quot;, // End of Selected Area
+			136: &quot;HTS&quot;, // Horizontal Tab Set
+			137: &quot;HTJ&quot;, // Horizontal Tab with Justification
+			138: &quot;VTS&quot;, // Vertical Tab Set
+			139: &quot;PLD&quot;, // Partial Line Down
+			140: &quot;PLU&quot;, // Partial Line Up
+			141: &quot;RI&quot;,  // Reverse Index
+			142: &quot;SS2&quot;, // Single Shift 2
+			143: &quot;SS3&quot;, // Single Shift 3
+			144: &quot;DCS&quot;, // Device Control String
+			145: &quot;PU1&quot;, // Private Use 1
+			146: &quot;PU2&quot;, // Private Use 2
+			147: &quot;STS&quot;, // Set Transmit State
+			148: &quot;CCH&quot;, // Cancel Character
+			149: &quot;MW&quot;,  // Message Waiting
+			150: &quot;SPA&quot;, // Start of Protected Area
+			151: &quot;EPA&quot;, // End of Protected Area
+			152: &quot;SOS&quot;, // Start of String
+			153: &quot;SGCI&quot;,// Single Graphic Character Introducer
+			154: &quot;SCI&quot;, // Single Character Introducer
+			155: &quot;CSI&quot;, // Control Sequence Introducer
+			156: &quot;ST&quot;,  // String Terminator
+			157: &quot;OSC&quot;, // Operating System Command
+			158: &quot;PM&quot;,  // Privacy Message
+			159: &quot;APC&quot;, // Application Program Command
+
+			// --- Unicode but&#x5236;&#x5FA1;&#x7684;&#x306B;&#x6271;&#x308F;&#x308C;&#x308B;&#x6587;&#x5B57; ---
+			160: &quot;NBSP&quot;, // No-Break Space&#xFF08;&#x8868;&#x793A;&#x306F;&#x7A7A;&#x767D;&#x3060;&#x304C;&#x6539;&#x884C;&#x4E0D;&#x53EF;&#xFF09;
+			173: &quot;SHY&quot;,  // Soft Hyphen&#xFF08;&#x901A;&#x5E38;&#x306F;&#x8868;&#x793A;&#x3055;&#x308C;&#x306A;&#x3044;&#xFF09;
+
+			// --- Unicode Interlinear Annotation ---
+			65529: &quot;IAA&quot;, // Interlinear Annotation Anchor
+			65530: &quot;IAS&quot;, // Interlinear Annotation Separator
+			65531: &quot;IAT&quot;, // Interlinear Annotation Terminator
+
+			// Zero Width / Joiner &#x7CFB;&#xFF08;Cf&#xFF09;
+			0x200B: &quot;ZWSP&quot;,   // ZERO WIDTH SPACE
+			0x200C: &quot;ZWNJ&quot;,   // ZERO WIDTH NON-JOINER
+			0x200D: &quot;ZWJ&quot;,    // ZERO WIDTH JOINER
+			0x2060: &quot;WJ&quot;,     // WORD JOINER
+			0xFEFF: &quot;BOM&quot;,    // BYTE ORDER MARK / ZERO WIDTH NO-BREAK SPACE
+
+			// &#x53CC;&#x65B9;&#x5411;&#xFF08;BiDi&#xFF09;&#x5236;&#x5FA1;&#x6587;&#x5B57;
+			0x202A: &quot;LRE&quot;,    // LEFT-TO-RIGHT EMBEDDING
+			0x202B: &quot;RLE&quot;,    // RIGHT-TO-LEFT EMBEDDING
+			0x202C: &quot;PDF&quot;,    // POP DIRECTIONAL FORMATTING
+			0x202D: &quot;LRO&quot;,    // LEFT-TO-RIGHT OVERRIDE
+			0x202E: &quot;RLO&quot;,    // RIGHT-TO-LEFT OVERRIDE
+
+			0x2066: &quot;LRI&quot;,    // LEFT-TO-RIGHT ISOLATE
+			0x2067: &quot;RLI&quot;,    // RIGHT-TO-LEFT ISOLATE
+			0x2068: &quot;FSI&quot;,    // FIRST STRONG ISOLATE
+			0x2069: &quot;PDI&quot; ,   // POP DIRECTIONAL ISOLATE
+
+			// Unicode Noncharacter&#xFF08;&#x691C;&#x8A3C;&#x30FB;&#x9632;&#x5FA1;&#x7528;&#x9014;&#xFF09;
+			0xFFFE: &quot;NONCHAR_FFFE&quot;,
+			0xFFFF: &quot;NONCHAR_FFFF&quot;
 		};
 
 		const unicode_blockname_array = [
@@ -332,8 +428,8 @@ class MOJI_CHAR_MAP {
 			&quot;Cyrillic Extended-D&quot;, &quot;Nyiakeng Puachue Hmong&quot;, &quot;Toto&quot;, &quot;Wancho&quot;, &quot;Nag Mundari&quot;, &quot;Ethiopic Extended-B&quot;, &quot;Mende Kikakui&quot;, &quot;Adlam&quot;, 
 			&quot;Indic Siyaq Numbers&quot;, &quot;Ottoman Siyaq Numbers&quot;, &quot;Arabic Mathematical Alphabetic Symbols&quot;, &quot;Mahjong Tiles&quot;, &quot;Domino Tiles&quot;, &quot;Playing Cards&quot;, &quot;Enclosed Alphanumeric Supplement&quot;, &quot;Enclosed Ideographic Supplement&quot;, 
 			&quot;Miscellaneous Symbols and Pictographs&quot;, &quot;Emoticons&quot;, &quot;Ornamental Dingbats&quot;, &quot;Transport and Map Symbols&quot;, &quot;Alchemical Symbols&quot;, &quot;Geometric Shapes Extended&quot;, &quot;Supplemental Arrows-C&quot;, &quot;Supplemental Symbols and Pictographs&quot;, 
-			&quot;Chess Symbols&quot;, &quot;Symbols and Pictographs Extended-A&quot;, &quot;Symbols for Legacy Computing&quot;, &quot;CJK Unified Ideographs Extension B&quot;, &quot;CJK Unified Ideographs Extension C&quot;, &quot;CJK Unified Ideographs Extension D&quot;, &quot;CJK Unified Ideographs Extension E&quot;, &quot;CJK Unified Ideographs Extension F&quot;, 
-			&quot;CJK Compatibility Ideographs Supplement&quot;, &quot;CJK Unified Ideographs Extension G&quot;, &quot;CJK Unified Ideographs Extension H&quot;, &quot;Tags&quot;, &quot;Variation Selectors Supplement&quot;, &quot;Supplementary Private Use Area-A&quot;, &quot;Supplementary Private Use Area-B&quot;
+			&quot;Chess Symbols&quot;, &quot;Symbols and Pictographs Extended-A&quot;, &quot;Symbols for Legacy Computing&quot;, &quot;CJK Unified Ideographs Extension B&quot;, &quot;CJK Unified Ideographs Extension C&quot;, &quot;CJK Unified Ideographs Extension D&quot;, &quot;CJK Unified Ideographs Extension E&quot;, &quot;CJK Unified Ideographs Extension F&quot;, &quot;CJK Unified Ideographs Extension I&quot;, 
+			&quot;CJK Compatibility Ideographs Supplement&quot;, &quot;CJK Unified Ideographs Extension G&quot;, &quot;CJK Unified Ideographs Extension H&quot;, &quot;CJK Unified Ideographs Extension J&quot;, &quot;Tags&quot;, &quot;Variation Selectors Supplement&quot;, &quot;Supplementary Private Use Area-A&quot;, &quot;Supplementary Private Use Area-B&quot;
 		];
 
 		const unicode_blockaddress_array = [
@@ -356,8 +452,8 @@ class MOJI_CHAR_MAP {
 			0x1467F, 0x16A3F, 0x16A6F, 0x16ACF, 0x16AFF, 0x16B8F, 0x16E9F, 0x16F9F, 0x16FFF, 0x187FF, 0x18AFF, 0x18CFF, 0x18D7F, 0x1AFFF, 0x1B0FF, 0x1B12F,
 			0x1B16F, 0x1B2FF, 0x1BC9F, 0x1BCAF, 0x1CFCF, 0x1D0FF, 0x1D1FF, 0x1D24F, 0x1D2DF, 0x1D2FF, 0x1D35F, 0x1D37F, 0x1D7FF, 0x1DAAF, 0x1DFFF, 0x1E02F,
 			0x1E08F, 0x1E14F, 0x1E2BF, 0x1E2FF, 0x1E4FF, 0x1E7FF, 0x1E8DF, 0x1E95F, 0x1ECBF, 0x1ED4F, 0x1EEFF, 0x1F02F, 0x1F09F, 0x1F0FF, 0x1F1FF, 0x1F2FF,
-			0x1F5FF, 0x1F64F, 0x1F67F, 0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x1FAFF, 0x1FBFF, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF,
-			0x2FA1F, 0x3134F, 0x323AF, 0xE007F, 0xE01EF, 0xFFFFF, 0x10FFFF
+			0x1F5FF, 0x1F64F, 0x1F67F, 0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x1FAFF, 0x1FBFF, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF, 0x2EE5F,
+			0x2FA1F, 0x3134F, 0x323AF, 0x3347F, 0xE007F, 0xE01EF, 0xFFFFF, 0x10FFFF
 		];
 
 		to_block_name_from_unicode = function(unicode_codepoint) {
@@ -461,20 +557,25 @@ class MojiAnalizerTools {
 	/**
 	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306E;&#x5224;&#x5B9A;
 	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @param {boolean} [annotate = false] - &#x6CE8;&#x91C8;&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x5426;&#x304B;
 	 * @returns {string|null} &#x78BA;&#x8A8D;&#x7D50;&#x679C;(&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x3067;&#x306F;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;NULL&#x3092;&#x8FD4;&#x3059;)
 	 */
-	static getVariationSelectorsNumberFromCodePoint(codepoint) {
+	static getVariationSelectorsNumberFromCodePoint(codepoint, annotate) {
 		// &#x30E2;&#x30F3;&#x30B4;&#x30EB;&#x81EA;&#x7531;&#x5B57;&#x5F62;&#x9078;&#x629E;&#x5B50; U+180B&#x301C;U+180D (3&#x500B;)
 		if((0x180B &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x180D)) {
 			return &quot;FVS&quot; + ((codepoint - 0x180B) + 1);
 		}
 		// SVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+FE00&#x301C;U+FE0F (VS1&#xFF5E;VS16) (16&#x500B;)
 		if((0xFE00 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xFE0F)) {
-			return &quot;VS&quot; + (codepoint - 0xFE00) + 1;
+			const n = (codepoint - 0xFE00) + 1;
+			if (!annotate) return &quot;VS&quot; + n;
+			if (codepoint === 0xFE0E) return &quot;VS15 (text)&quot;;
+			if (codepoint === 0xFE0F) return &quot;VS16 (emoji)&quot;;
+			return &quot;VS&quot; + n;
 		}
 		// IVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+E0100&#x301C;U+E01EF (VS17&#xFF5E;VS256) (240&#x500B;)
 		else if((0xE0100 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xE01EF)) {
-			return &quot;VS&quot; + (codepoint - 0xE0100) + 17;
+			return &quot;VS&quot; + ((codepoint - 0xE0100) + 17);
 		}
 		return null;
 	}
@@ -626,6 +727,7 @@ class MojiAnalizerTools {
  * @property {boolean} is_halfwidth_katakana &#x534A;&#x89D2;&#x30AB;&#x30BF;&#x30AB;&#x30CA;
  * @property {boolean} is_emoji &#x7D75;&#x6587;&#x5B57;
  * @property {boolean} is_emoticons &#x9854;&#x6587;&#x5B57;
+ * @property {boolean} is_symbol_base &#x8A18;&#x53F7;(VS16 &#x304C;&#x4ED8;&#x304F;&#x3068;&#x7D75;&#x6587;&#x5B57;&#x5316;)
  * @property {boolean} is_gaiji &#x5916;&#x5B57;
  * @property {boolean} is_combining_mark &#x7D50;&#x5408;&#x6587;&#x5B57;
  * @property {boolean} is_variation_selector &#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;
@@ -696,6 +798,7 @@ export default class MojiAnalyzer {
 			is_halfwidth_katakana : false,
 			is_emoji : false,
 			is_emoticons : false,
+			is_symbol_base : false,
 			is_gaiji : false,
 			is_combining_mark : false,
 			is_variation_selector : false
@@ -820,9 +923,11 @@ export default class MojiAnalyzer {
 		type.is_fullwidth_ascii = /[\u3000\uFF01-\uFF5E]/.test(data.character);
 		type.is_halfwidth_katakana = /[\uFF61-\uFF9F]/.test(data.character);
 		// &#x7D75;&#x6587;&#x5B57;
-		type.is_emoji = /Pictographs/.test(type.blockname);
+		type.is_emoji = /Pictographs|Transport and Map Symbols/.test(type.blockname);
 		// &#x9854;&#x6587;&#x5B57;
 		type.is_emoticons = /Emoticons/.test(type.blockname);
+		// &#x8A18;&#x53F7;(VS16 &#x304C;&#x4ED8;&#x304F;&#x3068;&#x7D75;&#x6587;&#x5B57;&#x5316;)
+		type.is_symbol_base = /Dingbats|Miscellaneous Symbols/.test(type.blockname);
 		// &#x5916;&#x5B57;
 		type.is_gaiji = /Private Use Area/.test(type.blockname);
 		// &#x7D50;&#x5408;&#x6587;&#x5B57;
