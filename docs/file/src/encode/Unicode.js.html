@@ -632,6 +632,10 @@ export default class Unicode {
 	 * @returns {boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
 	 */
 	static isCombiningMarkFromCodePoint(codepoint) {
+		// &#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306F;&#x9664;&#x5916;
+		if (Unicode.isVariationSelectorFromCodePoint(codepoint)) {
+			return false;
+		}
 		try {
 			new RegExp(&quot;\\p{Mark}&quot;, &quot;u&quot;);
 			return /\p{Mark}/u.test(String.fromCodePoint(codepoint));
