@@ -591,6 +591,10 @@ class Unicode {
 	 * @returns {boolean} 確認結果
 	 */
 	static isCombiningMarkFromCodePoint(codepoint) {
+		// 異体字セレクタは除外
+		if (Unicode.isVariationSelectorFromCodePoint(codepoint)) {
+			return false;
+		}
 		try {
 			new RegExp("\\p{Mark}", "u");
 			return /\p{Mark}/u.test(String.fromCodePoint(codepoint));
