@@ -51,11 +51,17 @@ testOperator1("toRomajiFromKatakana", "ミョウゴニチ", "myougonichi");
 
 {
 	test("getWidth", () => { expect(Japanese.getWidth("ABCあいう高髙①")).toBe(15); });
+	// 結合文字
+	test("getWidth", () => { expect(Japanese.getWidth("Åström")).toBe(6); });
+	test("getWidth", () => { expect(Japanese.getWidth("あ゙")).toBe(2); });
+	// 異体字セレクタ
 	test("getWidth", () => { expect(Japanese.getWidth("禰豆子")).toBe(6); });
 	test("getWidth", () => { expect(Japanese.getWidth("襧豆子")).toBe(6); });
 	test("getWidth", () => { expect(Japanese.getWidth("禰󠄀豆子")).toBe(6); });
-	test("getWidth", () => { expect(Japanese.getWidth("Åström")).toBe(6); });
-	test("getWidth", () => { expect(Japanese.getWidth("あ゙")).toBe(2); });
+	// スキントーン修飾子
+	test("getWidth", () => { expect(Japanese.getWidth("👍🏻👍🏼👍🏽👍🏾👍🏿")).toBe(10); });
+	// タグ文字
+	test("getWidth", () => { expect(Japanese.getWidth("🏴󠁫󠁨󠀱󠀰󠁿🏴󠁫󠁨󠀱󠀱󠁿🏴󠁫󠁨󠀱󠀳󠁿")).toBe(6); });
 }
 
 {

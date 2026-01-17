@@ -4,13 +4,21 @@ import MojiAnalyzer from "./MojiAnalyzer.js";
 let test_count = 0;
 
 /**
- * @param {string} text
+ * @param {string|number} text
  * @param {string} operator
  * @param {boolean} result
  */
 const testType  = function(text, operator, result) {
 	test_count++;
-	const data = MojiAnalyzer.getMojiData(Unicode.codePointAt(text));
+
+	let text_cp = 0;
+	if (typeof text === "string") {
+		text_cp = Unicode.codePointAt(text);
+	}
+	else {
+		text_cp = text;
+	}
+	const data = MojiAnalyzer.getMojiData(text_cp);
 	// @ts-ignore
 	const y = data.type[operator];
 	const testname = operator + " " + test_count;
@@ -65,6 +73,7 @@ const testMenKuTen  = function(text, menkuten, suijun) {
 
 test_count = 0;
 {
+
 	testType("高", "is_joyo_kanji", true);
 	testType("髙", "is_joyo_kanji", false);
 	testType("渾", "is_jinmeiyo_kanji", true);
@@ -72,6 +81,43 @@ test_count = 0;
 	testType("髙", "is_IBM_extended_character", true);
 	testType("①", "is_NEC_selection_IBM_extended_character", false);
 	testType("①", "is_NEC_special_character", true);
+	
+	testType("​", "is_control_charcter", true);
+	testType("a", "is_control_charcter", false);
+	testType("高", "is_kanji", true);
+	testType("あ", "is_kanji", false);
+	testType("あ", "is_hiragana", true);
+	testType("ア", "is_hiragana", false);
+	testType("ア", "is_katakana", true);
+	testType("あ", "is_katakana", false);
+	testType("Ａ", "is_fullwidth_ascii", true);
+	testType("A", "is_fullwidth_ascii", false);
+	testType("ｱ", "is_halfwidth_katakana", true);
+	testType("ア", "is_halfwidth_katakana", false);
+	testType("🍞", "is_emoji", true);
+	testType("😀", "is_emoji", false);
+	testType("😀", "is_emoticons", true);
+	testType("🍞", "is_emoticons", false);
+	testType("☺︎", "is_symbol_base", true);
+	testType("😀", "is_symbol_base", false);
+	testType("​", "is_non_counting_character", true);
+	testType("\t", "is_non_counting_character", false);
+	testType(Unicode.toUTF32Array("あ゙")[1], "is_combining_mark", true);
+	testType(Unicode.toUTF32Array("禰󠄀")[1], "is_combining_mark", false);
+	testType(Unicode.toUTF32Array("👍🏻")[1], "is_combining_mark", false);
+	testType(Unicode.toUTF32Array("🏴󠁫󠁨󠀱󠀰󠁿")[1], "is_combining_mark", false);
+	testType(Unicode.toUTF32Array("あ゙")[1], "is_variation_selector", false);
+	testType(Unicode.toUTF32Array("禰󠄀")[1], "is_variation_selector", true);
+	testType(Unicode.toUTF32Array("👍🏻")[1], "is_variation_selector", false);
+	testType(Unicode.toUTF32Array("🏴󠁫󠁨󠀱󠀰󠁿")[1], "is_variation_selector", false);
+	testType(Unicode.toUTF32Array("あ゙")[1], "is_skin_tone_modifier", false);
+	testType(Unicode.toUTF32Array("禰󠄀")[1], "is_skin_tone_modifier", false);
+	testType(Unicode.toUTF32Array("👍🏻")[1], "is_skin_tone_modifier", true);
+	testType(Unicode.toUTF32Array("🏴󠁫󠁨󠀱󠀰󠁿")[1], "is_skin_tone_modifier", false);
+	testType(Unicode.toUTF32Array("あ゙")[1], "is_tag_character", false);
+	testType(Unicode.toUTF32Array("禰󠄀")[1], "is_tag_character", false);
+	testType(Unicode.toUTF32Array("👍🏻")[1], "is_tag_character", false);
+	testType(Unicode.toUTF32Array("🏴󠁫󠁨󠀱󠀰󠁿")[1], "is_tag_character", true);
 }
 
 test_count = 0;
@@ -127,3 +173,4 @@ test_count = 0;
 	testMenKuTen("蜅", "2-87-48", 4);
 	testMenKuTen("𪚲", "2-94-86", 4);
 }
+

@@ -934,14 +934,14 @@ export default class Japanese {
 
 	/**
 	 * 指定したコードポイントの横幅を取得します
-	 * - 結合文字と異体字セレクタは、0としてカウントします。
-	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
-	 * - 全角は2としてカウントします。上記以外を全角として処理します。
+	 * - 0幅 ... 結合文字, 異体字セレクタ, スキントーン修飾子, タグ文字, ゼロ幅スペース, ゼロ幅非接合子, ゼロ幅接合子, 単語結合子
+	 * - 1幅 ... ASCII文字, 半角カタカナ
+	 * - 2幅 ... 上記以外
 	 * @param {Number} cp 調査するコードポイント
 	 * @returns {Number} 文字の横幅
 	 */
 	static getWidthFromCodePoint(cp) {
-		if(Unicode.isCombiningMarkFromCodePoint(cp) || Unicode.isVariationSelectorFromCodePoint(cp)) {
+		if(Unicode.isNonCountingCharacterFromCodePoint(cp)) {
 			return 0;
 		}
 		else if((cp < 0x80) || ((0xFF61 <= cp) && (cp < 0xFFA0))) {
@@ -954,9 +954,9 @@ export default class Japanese {
 
 	/**
 	 * 指定したテキストの横幅を半角／全角でカウント
-	 * - 結合文字と異体字セレクタは、0としてカウントします。
-	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
-	 * - 全角は2としてカウントします。上記以外を全角として処理します。
+	 * - 0幅 ... 結合文字, 異体字セレクタ, スキントーン修飾子, タグ文字, ゼロ幅スペース, ゼロ幅非接合子, ゼロ幅接合子, 単語結合子
+	 * - 1幅 ... ASCII文字, 半角カタカナ
+	 * - 2幅 ... 上記以外
 	 * @param {String} text - カウントしたいテキスト
 	 * @returns {Number} 文字の横幅
 	 */
@@ -1013,9 +1013,9 @@ export default class Japanese {
 
 	/**
 	 * 指定したテキストの横幅を半角／全角で換算した場合の切り出し
-	 * - 結合文字と異体字セレクタは、0としてカウントします。
-	 * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
-	 * - 全角は2としてカウントします。上記以外を全角として処理します。
+	 * - 0幅 ... 結合文字, 異体字セレクタ, スキントーン修飾子, タグ文字, ゼロ幅スペース, ゼロ幅非接合子, ゼロ幅接合子, 単語結合子
+	 * - 1幅 ... ASCII文字, 半角カタカナ
+	 * - 2幅 ... 上記以外
 	 * @param {String} text - 切り出したいテキスト
 	 * @param {Number} offset - 切り出し位置
 	 * @param {Number} size - 切り出す長さ
