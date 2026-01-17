@@ -18,7 +18,7 @@ import SJIS2004 from "./SJIS2004.js";
 export default class EUCJIS2004 {
 
 	/**
-	 * 文字列を EUC-JIS-2004 のバイナリ配列に変換
+	 * 文字列を EUC-JIS-2004 のバイナリ配列に変換。変換できない文字は "?" に変換される。
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} EUC-JIS-2004 のデータが入ったバイナリ配列
 	 */

@@ -105,7 +105,7 @@ EUCJPMSMAP.eucjpms_to_cp932_map = null;
 export default class EUCJPMS {
 
 	/**
-	 * 文字列を eucJP-ms のバイナリ配列に変換
+	 * 文字列を eucJP-ms のバイナリ配列に変換。変換できない文字は "?" に変換される。
 	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} eucJP-ms のデータが入ったバイナリ配列

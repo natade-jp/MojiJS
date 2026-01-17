@@ -836,10 +836,29 @@ export default class MojiAnalyzer {
 		// SJIS系の配列
 		encode.cp932_array = cp932code ? ((cp932code >= 0x100) ? [cp932code >> 8, cp932code & 0xff] : [cp932code]) : [];
 		encode.sjis2004_array = sjis2004code ? ((sjis2004code >= 0x100) ? [sjis2004code >> 8, sjis2004code & 0xff] : [sjis2004code]) : [];
-
+		
 		// EUC-JP系の配列
 		encode.eucjpms_array = EUCJPMS.toEUCJPMSBinary(character);
 		encode.eucjis2004_array = EUCJIS2004.toEUCJIS2004Binary(character);
+		
+		/**
+		 * EUC-JP変換エラー確認
+		 * @param {string} character 調査する文字（1文字） 
+		 * @param {number[]} array 変換を終えたEUC-JPの配列
+		 * @return {number[]} 修正後の配列
+		 */
+		const checkEUCJPError = function(character, array) {
+			// 文字が "?" でないにも関わらず、エンコード後が "?"(0x3F) の場合は変換エラーとみなす
+			const ng = "?".charCodeAt(0);
+			if (character !== "?" && array.length === 1 && array[0] === ng) {
+				return [];
+			}
+			else {
+				return array;
+			}
+		};
+		encode.eucjpms_array = checkEUCJPError(character, encode.eucjpms_array);
+		encode.eucjis2004_array = checkEUCJPError(character, encode.eucjis2004_array);
 
 		// ISO-2022-JP , EUC-JP
 		if(cp932code < 0xE0 || is_regular_sjis) {

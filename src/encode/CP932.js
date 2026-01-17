@@ -324,7 +324,7 @@ export default class CP932 {
 	}
 	
 	/**
-	 * 文字列を CP932 の配列に変換
+	 * 文字列を CP932 の配列に変換。変換できない文字は "?" に変換される。
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} CP932 のデータが入った配列
 	 */
@@ -333,7 +333,7 @@ export default class CP932 {
 	}
 
 	/**
-	 * 文字列を CP932 のバイナリ配列に変換
+	 * 文字列を CP932 のバイナリ配列に変換。変換できない文字は "?" に変換される。
 	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<number>} CP932 のデータが入ったバイナリ配列

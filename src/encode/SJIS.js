@@ -26,7 +26,7 @@ import Unicode from "./Unicode.js";
 export default class SJIS {
 
 	/**
-	 * 文字列を Shift_JIS の配列に変換
+	 * 文字列を Shift_JIS の配列に変換。変換できない文字は "?" に変換される。
 	 * @param {String} text - 変換したいテキスト
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
 	 * @returns {Array<number>} Shift_JIS のデータが入った配列
@@ -50,7 +50,7 @@ export default class SJIS {
 	}
 
 	/**
-	 * 文字列を Shift_JIS のバイナリ配列に変換
+	 * 文字列を Shift_JIS のバイナリ配列に変換。変換できない文字は "?" に変換される。
 	 * - 日本語文字は2バイトとして、配列も2つ分、使用します。
 	 * @param {String} text - 変換したいテキスト
 	 * @param {Object<number, number>} unicode_to_sjis - Unicode から Shift_JIS への変換マップ
