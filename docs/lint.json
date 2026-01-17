@@ -4,27 +4,27 @@
     "filePath": "src/encode/Unicode.js",
     "lines": [
       {
-        "lineNumber": 145,
+        "lineNumber": 423,
         "line": "\t/**"
       },
       {
-        "lineNumber": 146,
+        "lineNumber": 424,
         "line": "\t * コードポイントの数値データをUTF16の配列に変換"
       },
       {
-        "lineNumber": 147,
+        "lineNumber": 425,
         "line": "\t * @param {...(number|Array<number>)} codepoint - 変換したいUTF-32の配列、又はコードポイントを並べた可変引数"
       },
       {
-        "lineNumber": 148,
+        "lineNumber": 426,
         "line": "\t * @returns {Array<number>} 変換後のテキスト"
       },
       {
-        "lineNumber": 149,
+        "lineNumber": 427,
         "line": "\t */"
       },
       {
-        "lineNumber": 150,
+        "lineNumber": 428,
         "line": "\tstatic toUTF16ArrayFromCodePoint() {"
       }
     ],

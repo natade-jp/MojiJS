@@ -50,10 +50,288 @@
  */
 
 /**
+ * &#x5236;&#x5FA1;&#x6587;&#x5B57;&#x30DE;&#x30C3;&#x30D7;
+ * @type {Object&lt;number, string&gt;}
+ * @ignore
+ */
+let control_charcter_map = null;
+
+/**
+ * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;Unicode&#x306E;&#x30D6;&#x30ED;&#x30C3;&#x30AF;&#x540D;&#x306B;&#x5909;&#x63DB;&#x3059;&#x308B;
+ * @type {(codepoint: number) =&gt; (string)}
+ * @ignore
+ */
+let toBlockNameFromUnicode = null;
+
+/**
+ * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306E;&#x5224;&#x5B9A;&#x3092;&#x3059;&#x308B;
+ * @type {(codepoint: number, annotate?: boolean) =&gt; (string|null)}
+ * @ignore
+ */
+let getVariationSelectorsNumberFromCodePoint = null;
+
+/**
+ * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x30BF;&#x30B0;&#x6587;&#x5B57;&#x306E;&#x5224;&#x5B9A;&#x3092;&#x3059;&#x308B;
+ * @type {(codepoint: number) =&gt; (string|null)}
+ * @ignore
+ */
+let getTagCharacterFromCodePoint = null;
+
+/**
  * Unicode &#x3092;&#x6271;&#x3046;&#x30AF;&#x30E9;&#x30B9;
  * @ignore
  */
 export default class Unicode {
+
+	/**
+	 * &#x521D;&#x671F;&#x5316;
+	 */
+	static init() {
+		if(Unicode.is_initmap) {
+			return;
+		}
+		Unicode.is_initmap = true;
+
+		/**
+		 * &#x5236;&#x5FA1;&#x6587;&#x5B57;&#x3001;VS&#x3001;&#x30BF;&#x30B0;&#x6587;&#x5B57;&#x306F;&#x591A;&#x3044;&#x305F;&#x3081;&#x542B;&#x3081;&#x3066;&#x3044;&#x306A;&#x3044;
+		 */
+		control_charcter_map = {
+			// --- C0 control characters (ASCII 0x00&#x2013;0x1F) ---
+			0:  &quot;NUL&quot;, // Null
+			1:  &quot;SOH&quot;, // Start of Heading
+			2:  &quot;STX&quot;, // Start of Text
+			3:  &quot;ETX&quot;, // End of Text
+			4:  &quot;EOT&quot;, // End of Transmission
+			5:  &quot;ENQ&quot;, // Enquiry
+			6:  &quot;ACK&quot;, // Acknowledge
+			7:  &quot;BEL&quot;, // Bell (beep)
+
+			8:  &quot;BS&quot;,  // Backspace
+			9:  &quot;HT&quot;,  // Horizontal Tab
+			10: &quot;LF&quot;,  // Line Feed
+			11: &quot;VT&quot;,  // Vertical Tab
+			12: &quot;FF&quot;,  // Form Feed
+			13: &quot;CR&quot;,  // Carriage Return
+			14: &quot;SO&quot;,  // Shift Out
+			15: &quot;SI&quot;,  // Shift In
+
+			16: &quot;DLE&quot;, // Data Link Escape
+			17: &quot;DC1&quot;, // Device Control 1 (XON)
+			18: &quot;DC2&quot;, // Device Control 2
+			19: &quot;DC3&quot;, // Device Control 3 (XOFF)
+			20: &quot;DC4&quot;, // Device Control 4
+			21: &quot;NAK&quot;, // Negative Acknowledge
+			22: &quot;SYN&quot;, // Synchronous Idle
+			23: &quot;ETB&quot;, // End of Transmission Block
+
+			24: &quot;CAN&quot;, // Cancel
+			25: &quot;EM&quot;,  // End of Medium
+			26: &quot;SUB&quot;, // Substitute
+			27: &quot;ESC&quot;, // Escape
+			28: &quot;FS&quot;,  // File Separator
+			29: &quot;GS&quot;,  // Group Separator
+			30: &quot;RS&quot;,  // Record Separator
+			31: &quot;US&quot;,  // Unit Separator
+
+			// --- DEL ---
+			127: &quot;DEL&quot;, // Delete
+
+			// --- C1 control characters (ISO/IEC 6429, 0x80&#x2013;0x9F) ---
+			128: &quot;PAD&quot;, // Padding Character
+			129: &quot;HOP&quot;, // High Octet Preset
+			130: &quot;BPH&quot;, // Break Permitted Here
+			131: &quot;NBH&quot;, // No Break Here
+			132: &quot;IND&quot;, // Index
+			133: &quot;NEL&quot;, // Next Line
+			134: &quot;SSA&quot;, // Start of Selected Area
+			135: &quot;ESA&quot;, // End of Selected Area
+			136: &quot;HTS&quot;, // Horizontal Tab Set
+			137: &quot;HTJ&quot;, // Horizontal Tab with Justification
+			138: &quot;VTS&quot;, // Vertical Tab Set
+			139: &quot;PLD&quot;, // Partial Line Down
+			140: &quot;PLU&quot;, // Partial Line Up
+			141: &quot;RI&quot;,  // Reverse Index
+			142: &quot;SS2&quot;, // Single Shift 2
+			143: &quot;SS3&quot;, // Single Shift 3
+			144: &quot;DCS&quot;, // Device Control String
+			145: &quot;PU1&quot;, // Private Use 1
+			146: &quot;PU2&quot;, // Private Use 2
+			147: &quot;STS&quot;, // Set Transmit State
+			148: &quot;CCH&quot;, // Cancel Character
+			149: &quot;MW&quot;,  // Message Waiting
+			150: &quot;SPA&quot;, // Start of Protected Area
+			151: &quot;EPA&quot;, // End of Protected Area
+			152: &quot;SOS&quot;, // Start of String
+			153: &quot;SGCI&quot;,// Single Graphic Character Introducer
+			154: &quot;SCI&quot;, // Single Character Introducer
+			155: &quot;CSI&quot;, // Control Sequence Introducer
+			156: &quot;ST&quot;,  // String Terminator
+			157: &quot;OSC&quot;, // Operating System Command
+			158: &quot;PM&quot;,  // Privacy Message
+			159: &quot;APC&quot;, // Application Program Command
+
+			// --- Unicode but&#x5236;&#x5FA1;&#x7684;&#x306B;&#x6271;&#x308F;&#x308C;&#x308B;&#x6587;&#x5B57; ---
+			160: &quot;NBSP&quot;, // No-Break Space&#xFF08;&#x8868;&#x793A;&#x306F;&#x7A7A;&#x767D;&#x3060;&#x304C;&#x6539;&#x884C;&#x4E0D;&#x53EF;&#xFF09;
+			173: &quot;SHY&quot;,  // Soft Hyphen&#xFF08;&#x901A;&#x5E38;&#x306F;&#x8868;&#x793A;&#x3055;&#x308C;&#x306A;&#x3044;&#xFF09;
+
+			// --- Unicode Interlinear Annotation ---
+			65529: &quot;IAA&quot;, // Interlinear Annotation Anchor
+			65530: &quot;IAS&quot;, // Interlinear Annotation Separator
+			65531: &quot;IAT&quot;, // Interlinear Annotation Terminator
+
+			// Zero Width / Joiner &#x7CFB;&#xFF08;Cf&#xFF09;
+			0x200B: &quot;ZWSP&quot;,   // ZERO WIDTH SPACE &#x30BC;&#x30ED;&#x5E45;&#x30B9;&#x30DA;&#x30FC;&#x30B9;
+			0x200C: &quot;ZWNJ&quot;,   // ZERO WIDTH NON-JOINER &#x30BC;&#x30ED;&#x5E45;&#x975E;&#x63A5;&#x5408;&#x5B50;
+			0x200D: &quot;ZWJ&quot;,    // ZERO WIDTH JOINER &#x30BC;&#x30ED;&#x5E45;&#x63A5;&#x5408;&#x5B50;
+			0x2060: &quot;WJ&quot;,     // WORD JOINER &#x5358;&#x8A9E;&#x7D50;&#x5408;&#x5B50;
+			0xFEFF: &quot;BOM&quot;,    // BYTE ORDER MARK / ZERO WIDTH NO-BREAK SPACE
+
+			// &#x53CC;&#x65B9;&#x5411;&#xFF08;BiDi&#xFF09;&#x5236;&#x5FA1;&#x6587;&#x5B57;
+			0x202A: &quot;LRE&quot;,    // LEFT-TO-RIGHT EMBEDDING
+			0x202B: &quot;RLE&quot;,    // RIGHT-TO-LEFT EMBEDDING
+			0x202C: &quot;PDF&quot;,    // POP DIRECTIONAL FORMATTING
+			0x202D: &quot;LRO&quot;,    // LEFT-TO-RIGHT OVERRIDE
+			0x202E: &quot;RLO&quot;,    // RIGHT-TO-LEFT OVERRIDE
+
+			0x2066: &quot;LRI&quot;,    // LEFT-TO-RIGHT ISOLATE
+			0x2067: &quot;RLI&quot;,    // RIGHT-TO-LEFT ISOLATE
+			0x2068: &quot;FSI&quot;,    // FIRST STRONG ISOLATE
+			0x2069: &quot;PDI&quot; ,   // POP DIRECTIONAL ISOLATE
+
+			// Unicode Noncharacter&#xFF08;&#x691C;&#x8A3C;&#x30FB;&#x9632;&#x5FA1;&#x7528;&#x9014;&#xFF09;
+			0xFFFE: &quot;NONCHAR_FFFE&quot;,
+			0xFFFF: &quot;NONCHAR_FFFF&quot;
+		};
+
+		const unicode_blockname_array = [
+			&quot;Basic Latin&quot;, &quot;Latin-1 Supplement&quot;, &quot;Latin Extended-A&quot;, &quot;Latin Extended-B&quot;, &quot;IPA Extensions&quot;, &quot;Spacing Modifier Letters&quot;, &quot;Combining Diacritical Marks&quot;, &quot;Greek and Coptic&quot;, 
+			&quot;Cyrillic&quot;, &quot;Cyrillic Supplement&quot;, &quot;Armenian&quot;, &quot;Hebrew&quot;, &quot;Arabic&quot;, &quot;Syriac&quot;, &quot;Arabic Supplement&quot;, &quot;Thaana&quot;, 
+			&quot;NKo&quot;, &quot;Samaritan&quot;, &quot;Mandaic&quot;, &quot;Syriac Supplement&quot;, &quot;Arabic Extended-B&quot;, &quot;Arabic Extended-A&quot;, &quot;Devanagari&quot;, &quot;Bengali&quot;, 
+			&quot;Gurmukhi&quot;, &quot;Gujarati&quot;, &quot;Oriya&quot;, &quot;Tamil&quot;, &quot;Telugu&quot;, &quot;Kannada&quot;, &quot;Malayalam&quot;, &quot;Sinhala&quot;, 
+			&quot;Thai&quot;, &quot;Lao&quot;, &quot;Tibetan&quot;, &quot;Myanmar&quot;, &quot;Georgian&quot;, &quot;Hangul Jamo&quot;, &quot;Ethiopic&quot;, &quot;Ethiopic Supplement&quot;, 
+			&quot;Cherokee&quot;, &quot;Unified Canadian Aboriginal Syllabics&quot;, &quot;Ogham&quot;, &quot;Runic&quot;, &quot;Tagalog&quot;, &quot;Hanunoo&quot;, &quot;Buhid&quot;, &quot;Tagbanwa&quot;, 
+			&quot;Khmer&quot;, &quot;Mongolian&quot;, &quot;Unified Canadian Aboriginal Syllabics Extended&quot;, &quot;Limbu&quot;, &quot;Tai Le&quot;, &quot;New Tai Lue&quot;, &quot;Khmer Symbols&quot;, &quot;Buginese&quot;, 
+			&quot;Tai Tham&quot;, &quot;Combining Diacritical Marks Extended&quot;, &quot;Balinese&quot;, &quot;Sundanese&quot;, &quot;Batak&quot;, &quot;Lepcha&quot;, &quot;Ol Chiki&quot;, &quot;Cyrillic Extended-C&quot;, 
+			&quot;Georgian Extended&quot;, &quot;Sundanese Supplement&quot;, &quot;Vedic Extensions&quot;, &quot;Phonetic Extensions&quot;, &quot;Phonetic Extensions Supplement&quot;, &quot;Combining Diacritical Marks Supplement&quot;, &quot;Latin Extended Additional&quot;, &quot;Greek Extended&quot;, 
+			&quot;General Punctuation&quot;, &quot;Superscripts and Subscripts&quot;, &quot;Currency Symbols&quot;, &quot;Combining Diacritical Marks for Symbols&quot;, &quot;Letterlike Symbols&quot;, &quot;Number Forms&quot;, &quot;Arrows&quot;, &quot;Mathematical Operators&quot;, 
+			&quot;Miscellaneous Technical&quot;, &quot;Control Pictures&quot;, &quot;Optical Character Recognition&quot;, &quot;Enclosed Alphanumerics&quot;, &quot;Box Drawing&quot;, &quot;Block Elements&quot;, &quot;Geometric Shapes&quot;, &quot;Miscellaneous Symbols&quot;, 
+			&quot;Dingbats&quot;, &quot;Miscellaneous Mathematical Symbols-A&quot;, &quot;Supplemental Arrows-A&quot;, &quot;Braille Patterns&quot;, &quot;Supplemental Arrows-B&quot;, &quot;Miscellaneous Mathematical Symbols-B&quot;, &quot;Supplemental Mathematical Operators&quot;, &quot;Miscellaneous Symbols and Arrows&quot;, 
+			&quot;Glagolitic&quot;, &quot;Latin Extended-C&quot;, &quot;Coptic&quot;, &quot;Georgian Supplement&quot;, &quot;Tifinagh&quot;, &quot;Ethiopic Extended&quot;, &quot;Cyrillic Extended-A&quot;, &quot;Supplemental Punctuation&quot;, 
+			&quot;CJK Radicals Supplement&quot;, &quot;Kangxi Radicals&quot;, &quot;Ideographic Description Characters&quot;, &quot;CJK Symbols and Punctuation&quot;, &quot;Hiragana&quot;, &quot;Katakana&quot;, &quot;Bopomofo&quot;, &quot;Hangul Compatibility Jamo&quot;, 
+			&quot;Kanbun&quot;, &quot;Bopomofo Extended&quot;, &quot;CJK Strokes&quot;, &quot;Katakana Phonetic Extensions&quot;, &quot;Enclosed CJK Letters and Months&quot;, &quot;CJK Compatibility&quot;, &quot;CJK Unified Ideographs Extension A&quot;, &quot;Yijing Hexagram Symbols&quot;, 
+			&quot;CJK Unified Ideographs&quot;, &quot;Yi Syllables&quot;, &quot;Yi Radicals&quot;, &quot;Lisu&quot;, &quot;Vai&quot;, &quot;Cyrillic Extended-B&quot;, &quot;Bamum&quot;, &quot;Modifier Tone Letters&quot;, 
+			&quot;Latin Extended-D&quot;, &quot;Syloti Nagri&quot;, &quot;Common Indic Number Forms&quot;, &quot;Phags-pa&quot;, &quot;Saurashtra&quot;, &quot;Devanagari Extended&quot;, &quot;Kayah Li&quot;, &quot;Rejang&quot;, 
+			&quot;Hangul Jamo Extended-A&quot;, &quot;Javanese&quot;, &quot;Myanmar Extended-B&quot;, &quot;Cham&quot;, &quot;Myanmar Extended-A&quot;, &quot;Tai Viet&quot;, &quot;Meetei Mayek Extensions&quot;, &quot;Ethiopic Extended-A&quot;, 
+			&quot;Latin Extended-E&quot;, &quot;Cherokee Supplement&quot;, &quot;Meetei Mayek&quot;, &quot;Hangul Syllables&quot;, &quot;Hangul Jamo Extended-B&quot;, &quot;High Surrogates&quot;, &quot;High Private Use Surrogates&quot;, &quot;Low Surrogates&quot;, 
+			&quot;Private Use Area&quot;, &quot;CJK Compatibility Ideographs&quot;, &quot;Alphabetic Presentation Forms&quot;, &quot;Arabic Presentation Forms-A&quot;, &quot;Variation Selectors&quot;, &quot;Vertical Forms&quot;, &quot;Combining Half Marks&quot;, &quot;CJK Compatibility Forms&quot;, 
+			&quot;Small Form Variants&quot;, &quot;Arabic Presentation Forms-B&quot;, &quot;Halfwidth and Fullwidth Forms&quot;, &quot;Specials&quot;, &quot;Linear B Syllabary&quot;, &quot;Linear B Ideograms&quot;, &quot;Aegean Numbers&quot;, &quot;Ancient Greek Numbers&quot;, 
+			&quot;Ancient Symbols&quot;, &quot;Phaistos Disc&quot;, &quot;Lycian&quot;, &quot;Carian&quot;, &quot;Coptic Epact Numbers&quot;, &quot;Old Italic&quot;, &quot;Gothic&quot;, &quot;Old Permic&quot;, 
+			&quot;Ugaritic&quot;, &quot;Old Persian&quot;, &quot;Deseret&quot;, &quot;Shavian&quot;, &quot;Osmanya&quot;, &quot;Osage&quot;, &quot;Elbasan&quot;, &quot;Caucasian Albanian&quot;, 
+			&quot;Vithkuqi&quot;, &quot;Linear A&quot;, &quot;Latin Extended-F&quot;, &quot;Cypriot Syllabary&quot;, &quot;Imperial Aramaic&quot;, &quot;Palmyrene&quot;, &quot;Nabataean&quot;, &quot;Hatran&quot;, 
+			&quot;Phoenician&quot;, &quot;Lydian&quot;, &quot;Meroitic Hieroglyphs&quot;, &quot;Meroitic Cursive&quot;, &quot;Kharoshthi&quot;, &quot;Old South Arabian&quot;, &quot;Old North Arabian&quot;, &quot;Manichaean&quot;, 
+			&quot;Avestan&quot;, &quot;Inscriptional Parthian&quot;, &quot;Inscriptional Pahlavi&quot;, &quot;Psalter Pahlavi&quot;, &quot;Old Turkic&quot;, &quot;Old Hungarian&quot;, &quot;Hanifi Rohingya&quot;, &quot;Rumi Numeral Symbols&quot;, 
+			&quot;Yezidi&quot;, &quot;Arabic Extended-C&quot;, &quot;Old Sogdian&quot;, &quot;Sogdian&quot;, &quot;Old Uyghur&quot;, &quot;Chorasmian&quot;, &quot;Elymaic&quot;, &quot;Brahmi&quot;, 
+			&quot;Kaithi&quot;, &quot;Sora Sompeng&quot;, &quot;Chakma&quot;, &quot;Mahajani&quot;, &quot;Sharada&quot;, &quot;Sinhala Archaic Numbers&quot;, &quot;Khojki&quot;, &quot;Multani&quot;, 
+			&quot;Khudawadi&quot;, &quot;Grantha&quot;, &quot;Newa&quot;, &quot;Tirhuta&quot;, &quot;Siddham&quot;, &quot;Modi&quot;, &quot;Mongolian Supplement&quot;, &quot;Takri&quot;, 
+			&quot;Ahom&quot;, &quot;Dogra&quot;, &quot;Warang Citi&quot;, &quot;Dives Akuru&quot;, &quot;Nandinagari&quot;, &quot;Zanabazar Square&quot;, &quot;Soyombo&quot;, &quot;Unified Canadian Aboriginal Syllabics Extended-A&quot;, 
+			&quot;Pau Cin Hau&quot;, &quot;Devanagari Extended-A&quot;, &quot;Bhaiksuki&quot;, &quot;Marchen&quot;, &quot;Masaram Gondi&quot;, &quot;Gunjala Gondi&quot;, &quot;Makasar&quot;, &quot;Kawi&quot;, 
+			&quot;Lisu Supplement&quot;, &quot;Tamil Supplement&quot;, &quot;Cuneiform&quot;, &quot;Cuneiform Numbers and Punctuation&quot;, &quot;Early Dynastic Cuneiform&quot;, &quot;Cypro-Minoan&quot;, &quot;Egyptian Hieroglyphs&quot;, &quot;Egyptian Hieroglyph Format Controls&quot;, 
+			&quot;Anatolian Hieroglyphs&quot;, &quot;Bamum Supplement&quot;, &quot;Mro&quot;, &quot;Tangsa&quot;, &quot;Bassa Vah&quot;, &quot;Pahawh Hmong&quot;, &quot;Medefaidrin&quot;, &quot;Miao&quot;, 
+			&quot;Ideographic Symbols and Punctuation&quot;, &quot;Tangut&quot;, &quot;Tangut Components&quot;, &quot;Khitan Small Script&quot;, &quot;Tangut Supplement&quot;, &quot;Kana Extended-B&quot;, &quot;Kana Supplement&quot;, &quot;Kana Extended-A&quot;, 
+			&quot;Small Kana Extension&quot;, &quot;Nushu&quot;, &quot;Duployan&quot;, &quot;Shorthand Format Controls&quot;, &quot;Znamenny Musical Notation&quot;, &quot;Byzantine Musical Symbols&quot;, &quot;Musical Symbols&quot;, &quot;Ancient Greek Musical Notation&quot;, 
+			&quot;Kaktovik Numerals&quot;, &quot;Mayan Numerals&quot;, &quot;Tai Xuan Jing Symbols&quot;, &quot;Counting Rod Numerals&quot;, &quot;Mathematical Alphanumeric Symbols&quot;, &quot;Sutton SignWriting&quot;, &quot;Latin Extended-G&quot;, &quot;Glagolitic Supplement&quot;, 
+			&quot;Cyrillic Extended-D&quot;, &quot;Nyiakeng Puachue Hmong&quot;, &quot;Toto&quot;, &quot;Wancho&quot;, &quot;Nag Mundari&quot;, &quot;Ethiopic Extended-B&quot;, &quot;Mende Kikakui&quot;, &quot;Adlam&quot;, 
+			&quot;Indic Siyaq Numbers&quot;, &quot;Ottoman Siyaq Numbers&quot;, &quot;Arabic Mathematical Alphabetic Symbols&quot;, &quot;Mahjong Tiles&quot;, &quot;Domino Tiles&quot;, &quot;Playing Cards&quot;, &quot;Enclosed Alphanumeric Supplement&quot;, &quot;Enclosed Ideographic Supplement&quot;, 
+			&quot;Miscellaneous Symbols and Pictographs&quot;, &quot;Emoticons&quot;, &quot;Ornamental Dingbats&quot;, &quot;Transport and Map Symbols&quot;, &quot;Alchemical Symbols&quot;, &quot;Geometric Shapes Extended&quot;, &quot;Supplemental Arrows-C&quot;, &quot;Supplemental Symbols and Pictographs&quot;, 
+			&quot;Chess Symbols&quot;, &quot;Symbols and Pictographs Extended-A&quot;, &quot;Symbols for Legacy Computing&quot;, &quot;CJK Unified Ideographs Extension B&quot;, &quot;CJK Unified Ideographs Extension C&quot;, &quot;CJK Unified Ideographs Extension D&quot;, &quot;CJK Unified Ideographs Extension E&quot;, &quot;CJK Unified Ideographs Extension F&quot;, &quot;CJK Unified Ideographs Extension I&quot;, 
+			&quot;CJK Compatibility Ideographs Supplement&quot;, &quot;CJK Unified Ideographs Extension G&quot;, &quot;CJK Unified Ideographs Extension H&quot;, &quot;CJK Unified Ideographs Extension J&quot;, &quot;Tags&quot;, &quot;Variation Selectors Supplement&quot;, &quot;Supplementary Private Use Area-A&quot;, &quot;Supplementary Private Use Area-B&quot;
+		];
+
+		const unicode_blockaddress_array = [
+			0x007F, 0x00FF, 0x017F, 0x024F, 0x02AF, 0x02FF, 0x036F, 0x03FF, 0x04FF, 0x052F, 0x058F, 0x05FF, 0x06FF, 0x074F, 0x077F, 0x07BF,
+			0x07FF, 0x083F, 0x085F, 0x086F, 0x089F, 0x08FF, 0x097F, 0x09FF, 0x0A7F, 0x0AFF, 0x0B7F, 0x0BFF, 0x0C7F, 0x0CFF, 0x0D7F, 0x0DFF,
+			0x0E7F, 0x0EFF, 0x0FFF, 0x109F, 0x10FF, 0x11FF, 0x137F, 0x139F, 0x13FF, 0x167F, 0x169F, 0x16FF, 0x171F, 0x173F, 0x175F, 0x177F,
+			0x17FF, 0x18AF, 0x18FF, 0x194F, 0x197F, 0x19DF, 0x19FF, 0x1A1F, 0x1AAF, 0x1AFF, 0x1B7F, 0x1BBF, 0x1BFF, 0x1C4F, 0x1C7F, 0x1C8F,
+			0x1CBF, 0x1CCF, 0x1CFF, 0x1D7F, 0x1DBF, 0x1DFF, 0x1EFF, 0x1FFF, 0x206F, 0x209F, 0x20CF, 0x20FF, 0x214F, 0x218F, 0x21FF, 0x22FF,
+			0x23FF, 0x243F, 0x245F, 0x24FF, 0x257F, 0x259F, 0x25FF, 0x26FF, 0x27BF, 0x27EF, 0x27FF, 0x28FF, 0x297F, 0x29FF, 0x2AFF, 0x2BFF,
+			0x2C5F, 0x2C7F, 0x2CFF, 0x2D2F, 0x2D7F, 0x2DDF, 0x2DFF, 0x2E7F, 0x2EFF, 0x2FDF, 0x2FFF, 0x303F, 0x309F, 0x30FF, 0x312F, 0x318F,
+			0x319F, 0x31BF, 0x31EF, 0x31FF, 0x32FF, 0x33FF, 0x4DBF, 0x4DFF, 0x9FFF, 0xA48F, 0xA4CF, 0xA4FF, 0xA63F, 0xA69F, 0xA6FF, 0xA71F,
+			0xA7FF, 0xA82F, 0xA83F, 0xA87F, 0xA8DF, 0xA8FF, 0xA92F, 0xA95F, 0xA97F, 0xA9DF, 0xA9FF, 0xAA5F, 0xAA7F, 0xAADF, 0xAAFF, 0xAB2F,
+			0xAB6F, 0xABBF, 0xABFF, 0xD7AF, 0xD7FF, 0xDB7F, 0xDBFF, 0xDFFF, 0xF8FF, 0xFAFF, 0xFB4F, 0xFDFF, 0xFE0F, 0xFE1F, 0xFE2F, 0xFE4F,
+			0xFE6F, 0xFEFF, 0xFFEF, 0xFFFF, 0x1007F, 0x100FF, 0x1013F, 0x1018F, 0x101CF, 0x101FF, 0x1029F, 0x102DF, 0x102FF, 0x1032F, 0x1034F, 0x1037F,
+			0x1039F, 0x103DF, 0x1044F, 0x1047F, 0x104AF, 0x104FF, 0x1052F, 0x1056F, 0x105BF, 0x1077F, 0x107BF, 0x1083F, 0x1085F, 0x1087F, 0x108AF, 0x108FF,
+			0x1091F, 0x1093F, 0x1099F, 0x109FF, 0x10A5F, 0x10A7F, 0x10A9F, 0x10AFF, 0x10B3F, 0x10B5F, 0x10B7F, 0x10BAF, 0x10C4F, 0x10CFF, 0x10D3F, 0x10E7F,
+			0x10EBF, 0x10EFF, 0x10F2F, 0x10F6F, 0x10FAF, 0x10FDF, 0x10FFF, 0x1107F, 0x110CF, 0x110FF, 0x1114F, 0x1117F, 0x111DF, 0x111FF, 0x1124F, 0x112AF,
+			0x112FF, 0x1137F, 0x1147F, 0x114DF, 0x115FF, 0x1165F, 0x1167F, 0x116CF, 0x1174F, 0x1184F, 0x118FF, 0x1195F, 0x119FF, 0x11A4F, 0x11AAF, 0x11ABF,
+			0x11AFF, 0x11B5F, 0x11C6F, 0x11CBF, 0x11D5F, 0x11DAF, 0x11EFF, 0x11F5F, 0x11FBF, 0x11FFF, 0x123FF, 0x1247F, 0x1254F, 0x12FFF, 0x1342F, 0x1345F,
+			0x1467F, 0x16A3F, 0x16A6F, 0x16ACF, 0x16AFF, 0x16B8F, 0x16E9F, 0x16F9F, 0x16FFF, 0x187FF, 0x18AFF, 0x18CFF, 0x18D7F, 0x1AFFF, 0x1B0FF, 0x1B12F,
+			0x1B16F, 0x1B2FF, 0x1BC9F, 0x1BCAF, 0x1CFCF, 0x1D0FF, 0x1D1FF, 0x1D24F, 0x1D2DF, 0x1D2FF, 0x1D35F, 0x1D37F, 0x1D7FF, 0x1DAAF, 0x1DFFF, 0x1E02F,
+			0x1E08F, 0x1E14F, 0x1E2BF, 0x1E2FF, 0x1E4FF, 0x1E7FF, 0x1E8DF, 0x1E95F, 0x1ECBF, 0x1ED4F, 0x1EEFF, 0x1F02F, 0x1F09F, 0x1F0FF, 0x1F1FF, 0x1F2FF,
+			0x1F5FF, 0x1F64F, 0x1F67F, 0x1F6FF, 0x1F77F, 0x1F7FF, 0x1F8FF, 0x1F9FF, 0x1FA6F, 0x1FAFF, 0x1FBFF, 0x2A6DF, 0x2B73F, 0x2B81F, 0x2CEAF, 0x2EBEF, 0x2EE5F,
+			0x2FA1F, 0x3134F, 0x323AF, 0x3347F, 0xE007F, 0xE01EF, 0xFFFFF, 0x10FFFF
+		];
+
+		/**
+		 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;Unicode&#x306E;&#x30D6;&#x30ED;&#x30C3;&#x30AF;&#x540D;&#x306B;&#x5909;&#x63DB;&#x3059;&#x308B;
+		 * &#x5909;&#x63DB;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; &quot;-&quot; &#x3092;&#x8FD4;&#x3059;
+		 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+		 * @returns {string}
+		 */
+		toBlockNameFromUnicode = function(codepoint) {
+			for(let i = 0; i &lt; unicode_blockname_array.length; i++) {
+				if(codepoint &lt;= unicode_blockaddress_array[i]) {
+					return unicode_blockname_array[i];
+				}
+			}
+			return &quot;-&quot;;
+		};
+
+		/**
+		 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306E;&#x5224;&#x5B9A;
+		 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+		 * @param {boolean} [annotate = false] - &#x6CE8;&#x91C8;&#x3092;&#x3064;&#x3051;&#x308B;&#x304B;&#x5426;&#x304B;
+		 * @returns {string|null} &#x78BA;&#x8A8D;&#x7D50;&#x679C;(&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x3067;&#x306F;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;NULL&#x3092;&#x8FD4;&#x3059;)
+		 */
+		getVariationSelectorsNumberFromCodePoint = function(codepoint, annotate) {
+			// &#x30E2;&#x30F3;&#x30B4;&#x30EB;&#x81EA;&#x7531;&#x5B57;&#x5F62;&#x9078;&#x629E;&#x5B50; U+180B&#x301C;U+180D (3&#x500B;)
+			if((0x180B &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x180D)) {
+				return &quot;FVS&quot; + ((codepoint - 0x180B) + 1);
+			}
+			// SVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+FE00&#x301C;U+FE0F (VS1&#xFF5E;VS16) (16&#x500B;)
+			if((0xFE00 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xFE0F)) {
+				const n = (codepoint - 0xFE00) + 1;
+				if (!annotate) return &quot;VS&quot; + n;
+				if (codepoint === 0xFE0E) return &quot;VS15 (text)&quot;;
+				if (codepoint === 0xFE0F) return &quot;VS16 (emoji)&quot;;
+				return &quot;VS&quot; + n;
+			}
+			// IVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+E0100&#x301C;U+E01EF (VS17&#xFF5E;VS256) (240&#x500B;)
+			else if((0xE0100 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xE01EF)) {
+				return &quot;VS&quot; + ((codepoint - 0xE0100) + 17);
+			}
+			return null;
+		};
+		
+		/**
+		 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x30BF;&#x30B0;&#x6587;&#x5B57;&#x306E;&#x5224;&#x5B9A;
+		 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+		 * @returns {string|null} &#x78BA;&#x8A8D;&#x7D50;&#x679C;(&#x30BF;&#x30B0;&#x6587;&#x5B57;&#x3067;&#x306F;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F;NULL&#x3092;&#x8FD4;&#x3059;)
+		 */
+		getTagCharacterFromCodePoint = function(codepoint) {
+			// TAG characters U+E0020..U+E007F
+			if((0xE0020 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xE007F)) {
+				// CANCEL TAG
+				if (codepoint === 0xE007F) {
+					return &quot;CANCEL_TAG&quot;;
+				}
+				// TAG_20..TAG_7E &#x306E;&#x3088;&#x3046;&#x306B;&#x8FD4;&#x3059;
+				const ascii = codepoint - 0xE0000; // 0x20..0x7E
+				return &quot;TAG_&quot; + ascii.toString(16).toUpperCase().padStart(2, &quot;0&quot;);
+			}
+			return null;
+		};
+
+	}
 
 	/**
 	 * &#x4E0A;&#x4F4D;&#x306E;&#x30B5;&#x30ED;&#x30B2;&#x30FC;&#x30C8;&#x30DA;&#x30A2;&#x306E;&#x5224;&#x5B9A;
@@ -611,21 +889,80 @@ export default class Unicode {
 	}
 
 	/**
-	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306E;&#x5224;&#x5B9A;
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;Unicode&#x306E;&#x30D6;&#x30ED;&#x30C3;&#x30AF;&#x540D;&#x306B;&#x5909;&#x63DB;&#x3059;&#x308B;
+	 * &#x5909;&#x63DB;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; &quot;-&quot; &#x3092;&#x8FD4;&#x3059;
+	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @returns {string}
+	 */
+	static toBlockNameFromUnicode(codepoint) {
+		Unicode.init();
+		return toBlockNameFromUnicode(codepoint);
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x5236;&#x5FA1;&#x6587;&#x5B57;&#x540D;&#x306B;&#x5909;&#x63DB;&#x3059;&#x308B;
+	 * &#x5909;&#x63DB;&#x3067;&#x304D;&#x306A;&#x3044;&#x5834;&#x5408;&#x306F; null &#x3092;&#x8FD4;&#x3059;
+	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @returns {string}
+	 */
+	static toControlCharcterName(codepoint) {
+		Unicode.init();
+
+		// &#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306E;&#x78BA;&#x8A8D;&#x3092;&#x884C;&#x3044;&#x3001;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x7528;&#x306E;&#x5236;&#x5FA1;&#x6587;&#x5B57;(FVS, VSx)&#x3092;&#x8FD4;&#x3059;
+		const info_variation_selectors_number = getVariationSelectorsNumberFromCodePoint(codepoint);
+		if(info_variation_selectors_number !== null) {
+			return info_variation_selectors_number;
+		}
+		// &#x30BF;&#x30B0;&#x6587;&#x5B57;&#x306E;&#x78BA;&#x8A8D;&#x3092;&#x884C;&#x3044;&#x3001;&#x30BF;&#x30B0;&#x6587;&#x5B57;&#x7528;&#x306E;&#x5236;&#x5FA1;&#x6587;&#x5B57;(TAG_xx)&#x3092;&#x8FD4;&#x3059;
+		const info_tag_character = getTagCharacterFromCodePoint(codepoint);
+		if(info_tag_character !== null) {
+			return info_tag_character;
+		}
+		// &#x305D;&#x306E;&#x4ED6;&#x306E;&#x5236;&#x5FA1;&#x6587;&#x5B57;&#x306E;&#x78BA;&#x8A8D;&#x3092;&#x884C;&#x3046;
+		const name = control_charcter_map[codepoint];
+		return name ? name : null;
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x30B0;&#x30E9;&#x30D5;&#x30A7;&#x30E0;&#xFF08;&#x898B;&#x305F;&#x76EE;&#x306E;1&#x6587;&#x5B57;&#xFF09;&#x3092;&#x69CB;&#x6210;&#x3059;&#x308B;&#x6587;&#x5B57;&#x306E;&#x5224;&#x5B9A;
+	 * 
+	 * &#x542B;&#x307E;&#x308C;&#x308B;&#x3082;&#x306E;:
+	 * - &#x7D50;&#x5408;&#x6587;&#x5B57; (Mn / Mc / Me &#x203B;VS&#x9664;&#x5916;)
+	 * - &#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; (VS / IVS / FVS)
+	 * - &#x30B9;&#x30AD;&#x30F3;&#x30C8;&#x30FC;&#x30F3;&#x4FEE;&#x98FE;&#x5B50;&#xFF08;EMOJI MODIFIER FITZPATRICK&#xFF09;
+	 * - &#x30BF;&#x30B0;&#x6587;&#x5B57;&#xFF08;TAG CHARACTER&#xFF09;
+	 * - &#x30BC;&#x30ED;&#x5E45;&#x63A5;&#x5408;&#x5B50;
+	 * 
 	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
 	 * @returns {boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
 	 */
-	static isVariationSelectorFromCodePoint(codepoint) {
+	static isGraphemeComponentFromCodePoint(codepoint) {
 		return (
-			// &#x30E2;&#x30F3;&#x30B4;&#x30EB;&#x81EA;&#x7531;&#x5B57;&#x5F62;&#x9078;&#x629E;&#x5B50; U+180B&#x301C;U+180D (3&#x500B;)
-			((0x180B &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x180D)) ||
-			// SVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+FE00&#x301C;U+FE0F (VS1&#xFF5E;VS16) (16&#x500B;)
-			((0xFE00 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xFE0F)) ||
-			// IVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+E0100&#x301C;U+E01EF (VS17&#xFF5E;VS256) (240&#x500B;)
-			((0xE0100 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xE01EF))
+			Unicode.isCombiningMarkFromCodePoint(codepoint) || 	// &#x7D50;&#x5408;&#x6587;&#x5B57;
+			Unicode.isVariationSelectorFromCodePoint(codepoint) ||	// &#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;
+			Unicode.isEmojiModifierFromCodePoint(codepoint) ||	// &#x30B9;&#x30AD;&#x30F3;&#x30C8;&#x30FC;&#x30F3;&#x4FEE;&#x98FE;&#x5B50;
+			Unicode.isTagCharacterFromCodePoint(codepoint) ||	// &#x30BF;&#x30B0;&#x6587;&#x5B57;
+			(codepoint === 0x200D) // ZWJ (ZERO WIDTH JOINER) &#x30BC;&#x30ED;&#x5E45;&#x63A5;&#x5408;&#x5B50;
 		);
 	}
 
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x300C;&#x8868;&#x793A;&#x4E0A;&#x306E;&#x6A2A;&#x5E45;&#x304C; 0 &#x306E;&#x6587;&#x5B57;&#x300D;&#x306E;&#x6587;&#x5B57;&#x306E;&#x5224;&#x5B9A;
+	 * 
+	 * &#x542B;&#x307E;&#x308C;&#x308B;&#x3082;&#x306E;:
+	 * - &#x30BC;&#x30ED;&#x5E45;&#x30B9;&#x30DA;&#x30FC;&#x30B9;, &#x30BC;&#x30ED;&#x5E45;&#x975E;&#x63A5;&#x5408;&#x5B50;, &#x30BC;&#x30ED;&#x5E45;&#x63A5;&#x5408;&#x5B50;, &#x5358;&#x8A9E;&#x7D50;&#x5408;&#x5B50;
+	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @returns {boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
+	 */
+	static isZeroWidthCharacterFromCodePoint(codepoint) {
+		return (
+			(codepoint === 0x200B) || // ZWSP (ZERO WIDTH SPACE) &#x30BC;&#x30ED;&#x5E45;&#x30B9;&#x30DA;&#x30FC;&#x30B9;
+			(codepoint === 0x200C) || // ZWNJ (ZERO WIDTH NON-JOINER) &#x30BC;&#x30ED;&#x5E45;&#x975E;&#x63A5;&#x5408;&#x5B50;
+			(codepoint === 0x200D) || // ZWJ (ZERO WIDTH JOINER) &#x30BC;&#x30ED;&#x5E45;&#x63A5;&#x5408;&#x5B50;
+			(codepoint === 0x2060) // WJ (WORD JOINER) &#x5358;&#x8A9E;&#x7D50;&#x5408;&#x5B50;
+		);
+	}
+	
 	/**
 	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x7D50;&#x5408;&#x6587;&#x5B57;&#x306E;&#x5224;&#x5B9A;
 	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
@@ -637,8 +974,7 @@ export default class Unicode {
 			return false;
 		}
 		try {
-			new RegExp(&quot;\\p{Mark}&quot;, &quot;u&quot;);
-			return /\p{Mark}/u.test(String.fromCodePoint(codepoint));
+			return new RegExp(&quot;\\p{Mark}&quot;, &quot;u&quot;).test(String.fromCodePoint(codepoint));
 		} catch (e) {
 			// &#x30D5;&#x30A9;&#x30FC;&#x30EB;&#x30D0;&#x30C3;&#x30AF;&#x51E6;&#x7406;
 			return (
@@ -660,9 +996,53 @@ export default class Unicode {
 		}
 	}
 
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF;&#x306E;&#x5224;&#x5B9A;
+	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @returns {boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
+	 */
+	static isVariationSelectorFromCodePoint(codepoint) {
+		return (
+			// &#x30E2;&#x30F3;&#x30B4;&#x30EB;&#x81EA;&#x7531;&#x5B57;&#x5F62;&#x9078;&#x629E;&#x5B50; U+180B&#x301C;U+180D (3&#x500B;)
+			((0x180B &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x180D)) ||
+			// SVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+FE00&#x301C;U+FE0F (VS1&#xFF5E;VS16) (16&#x500B;)
+			((0xFE00 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xFE0F)) ||
+			// IVS&#x3067;&#x5229;&#x7528;&#x3055;&#x308C;&#x308B;&#x7570;&#x4F53;&#x5B57;&#x30BB;&#x30EC;&#x30AF;&#x30BF; U+E0100&#x301C;U+E01EF (VS17&#xFF5E;VS256) (240&#x500B;)
+			((0xE0100 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xE01EF))
+		);
+	}
 
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x30B9;&#x30AD;&#x30F3;&#x30C8;&#x30FC;&#x30F3;&#x4FEE;&#x98FE;&#x5B50;&#x306E;&#x5224;&#x5B9A;
+	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @returns {boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
+	 */
+	static isEmojiModifierFromCodePoint(codepoint) {
+		return (
+			// EMOJI MODIFIER FITZPATRICK
+			((0x1F3FB &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0x1F3FF))
+		);
+	}
+
+	/**
+	 * &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;&#x304B;&#x3089;&#x30BF;&#x30B0;&#x6587;&#x5B57;&#x306E;&#x5224;&#x5B9A;
+	 * @param {Number} codepoint - &#x30B3;&#x30FC;&#x30C9;&#x30DD;&#x30A4;&#x30F3;&#x30C8;
+	 * @returns {boolean} &#x78BA;&#x8A8D;&#x7D50;&#x679C;
+	 */
+	static isTagCharacterFromCodePoint(codepoint) {
+		return (
+			// TAG CHARACTER
+			((0xE0000 &lt;= codepoint) &amp;&amp; (codepoint &lt;= 0xE007F))
+		);
+	}
 
 }
+
+/**
+ * &#x30DE;&#x30C3;&#x30D7;&#x3092;&#x521D;&#x671F;&#x5316;&#x3057;&#x305F;&#x5426;&#x304B;
+ */
+Unicode.is_initmap = false;
+
 </code></pre>
 
 </div>

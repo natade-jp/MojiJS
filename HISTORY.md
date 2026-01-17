@@ -1,10 +1,29 @@
 # History
 
+## v6.0.0
+
+### 機能改善
+
+- `Unicode.js` 以下の判定を機能を追加
+  - グラフェムの判定
+  - 文字の表示幅が0の文字
+  - スキントーン修飾子
+  - タグ文字
+- テキストのカットや横幅計算時にてスキントーン修飾子、タグ文字、ゼロ幅制御文字の考慮を追加
+
+### 変更
+
+- 文字解析のコード内にあったUnicode専用のプログラムを `Unicode.js` へ引越し
+
+### 不具合修正
+
+- `getMojiData` でEUC-JPに変換できない文字を?で出力していた不具合を修正
+
 ## v5.0.1
 
 ### 不具合修正
 
-- v5.0.0 にて異体字セレクタを結合文字として判定してしまう問題を修正
+- `v5.0.0` にて異体字セレクタを結合文字として判定してしまう問題を修正
 
 ## v5.0.0
 
@@ -14,8 +33,8 @@
 - 絵文字の判定を強化
 - 記号の判定を追加
 - Unicodeの制御文字を追加
-  - CJK Unified Ideographs Extension I (2EBF0–2EE5F)
-  - CJK Unified Ideographs Extension J (323B0–3347F)
+  - `CJK Unified Ideographs Extension I` (`2EBF0–2EE5F`)
+  - `CJK Unified Ideographs Extension J` (`323B0–3347F`)
 
 ### 変更
 

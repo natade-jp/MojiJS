@@ -90,13 +90,13 @@ declare class MojiJS {
      */
     static fromUTF8Array(utf8: number[]): string;
     /**
-     * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+     * 結合した文字を考慮して文字列を文字の配列に変換する
      * @param {String} text - 変換したいテキスト
      * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
      */
     static toMojiArrayFromString(text: string): number[][];
     /**
-     * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+     * 結合した文字を考慮して文字の配列を文字列に変換する
      * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
      * @returns {string} UTF32(コードポイント)の配列が入った配列
      */
@@ -104,7 +104,7 @@ declare class MojiJS {
     /**
      * 指定したテキストを切り出す
      * - 単位はコードポイントの文字数
-     * - 結合文字と異体字セレクタを区別しません
+     * - 結合文字, 異体字セレクタ, スキントーン修飾子, タグ文字を考慮しません
      * @param {String} text - 切り出したいテキスト
      * @param {Number} offset - 切り出し位置
      * @param {Number} size - 切り出す長さ
@@ -113,18 +113,18 @@ declare class MojiJS {
     static cutTextForCodePoint(text: string, offset: number, size: number): string;
     /**
      * 指定したテキストの横幅を半角／全角でカウント
-     * - 結合文字と異体字セレクタは、0としてカウントします。
-     * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
-     * - 全角は2としてカウントします。上記以外を全角として処理します。
+     * - 0幅 ... 結合文字, 異体字セレクタ, スキントーン修飾子, タグ文字, ゼロ幅スペース, ゼロ幅非接合子, ゼロ幅接合子, 単語結合子
+     * - 1幅 ... ASCII文字, 半角カタカナ
+     * - 2幅 ... 上記以外
      * @param {String} text - カウントしたいテキスト
      * @returns {Number} 文字の横幅
      */
     static getWidth(text: string): number;
     /**
      * 指定したテキストを切り出す
-     * - 結合文字と異体字セレクタは、0としてカウントします。
-     * - 半角は1としてカウントします。これらは、ASCII文字、半角カタカナとします。
-     * - 全角は2としてカウントします。上記以外を全角として処理します。
+     * - 0幅 ... 結合文字, 異体字セレクタ, スキントーン修飾子, タグ文字, ゼロ幅スペース, ゼロ幅非接合子, ゼロ幅接合子, 単語結合子
+     * - 1幅 ... ASCII文字, 半角カタカナ
+     * - 2幅 ... 上記以外
      * @param {String} text - 切り出したいテキスト
      * @param {Number} offset - 切り出し位置
      * @param {Number} size - 切り出す長さ
@@ -266,7 +266,7 @@ declare class MojiJS {
      */
     static toRomajiFromKatakana(text: string): string;
     /**
-     * 指定した1つの文字に関して、解析を行い情報を返します
+     * 指定した1つのUTF-32 コードポイントに関して、解析を行い情報を返します
      * @param {Number} unicode_codepoint - UTF-32 のコードポイント
      * @returns {_MojiData_} 文字の情報がつまったオブジェクト
      */
@@ -348,8 +348,12 @@ declare type _MojiEncodeData_ = {
  * @property {boolean} is_emoticons 顔文字
  * @property {boolean} is_symbol_base 記号(VS16 が付くと絵文字化)
  * @property {boolean} is_gaiji 外字
+ * @property {boolean} is_grapheme_component グラフェムを構成するための文字
+ * @property {boolean} is_zero_width_character ゼロ幅文字
  * @property {boolean} is_combining_mark 結合文字
  * @property {boolean} is_variation_selector 異体字セレクタ
+ * @property {boolean} is_skin_tone_modifier スキントーン修飾子
+ * @property {boolean} is_tag_character タグ文字
  */
 declare type _MojiTypeData_ = {
     is_regular_sjis: boolean;
@@ -374,8 +378,12 @@ declare type _MojiTypeData_ = {
     is_emoticons: boolean;
     is_symbol_base: boolean;
     is_gaiji: boolean;
+    is_grapheme_component: boolean;
+    is_zero_width_character: boolean;
     is_combining_mark: boolean;
     is_variation_selector: boolean;
+    is_skin_tone_modifier: boolean;
+    is_tag_character: boolean;
 };
 
 /**
