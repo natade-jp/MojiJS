@@ -883,31 +883,45 @@ export default class Unicode {
 	}
 
 	/**
-	 * コードポイントから文字数としてカウントしない文字の判定
+	 * コードポイントからグラフェム（見た目の1文字）を構成する文字の判定
 	 * 
 	 * 含まれるもの:
 	 * - 結合文字 (Mn / Mc / Me ※VS除外)
 	 * - 異体字セレクタ (VS / IVS / FVS)
 	 * - スキントーン修飾子（EMOJI MODIFIER FITZPATRICK）
 	 * - タグ文字（TAG CHARACTER）
-	 * - ゼロ幅スペース, ゼロ幅非接合子, ゼロ幅接合子, 単語結合子
+	 * - ゼロ幅接合子
+	 * 
 	 * @param {Number} codepoint - コードポイント
 	 * @returns {boolean} 確認結果
 	 */
-	static isNonCountingCharacterFromCodePoint(codepoint) {
+	static isGraphemeComponentFromCodePoint(codepoint) {
 		return (
 			Unicode.isCombiningMarkFromCodePoint(codepoint) || 	// 結合文字
 			Unicode.isVariationSelectorFromCodePoint(codepoint) ||	// 異体字セレクタ
 			Unicode.isEmojiModifierFromCodePoint(codepoint) ||	// スキントーン修飾子
 			Unicode.isTagCharacterFromCodePoint(codepoint) ||	// タグ文字
-			// Zero Width / Joiner 系（Cf）
+			(codepoint === 0x200D) // ZWJ (ZERO WIDTH JOINER) ゼロ幅接合子
+		);
+	}
+
+	/**
+	 * コードポイントから「表示上の横幅が 0 の文字」の文字の判定
+	 * 
+	 * 含まれるもの:
+	 * - ゼロ幅スペース, ゼロ幅非接合子, ゼロ幅接合子, 単語結合子
+	 * @param {Number} codepoint - コードポイント
+	 * @returns {boolean} 確認結果
+	 */
+	static isZeroWidthCharacterFromCodePoint(codepoint) {
+		return (
 			(codepoint === 0x200B) || // ZWSP (ZERO WIDTH SPACE) ゼロ幅スペース
 			(codepoint === 0x200C) || // ZWNJ (ZERO WIDTH NON-JOINER) ゼロ幅非接合子
 			(codepoint === 0x200D) || // ZWJ (ZERO WIDTH JOINER) ゼロ幅接合子
 			(codepoint === 0x2060) // WJ (WORD JOINER) 単語結合子
 		);
 	}
-
+	
 	/**
 	 * コードポイントから結合文字の判定
 	 * @param {Number} codepoint - コードポイント

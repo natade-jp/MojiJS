@@ -427,7 +427,8 @@ class MojiAnalizerTools {
  * @property {boolean} is_emoticons 顔文字
  * @property {boolean} is_symbol_base 記号(VS16 が付くと絵文字化)
  * @property {boolean} is_gaiji 外字
- * @property {boolean} is_non_counting_character 文字数としてカウントしない文字
+ * @property {boolean} is_grapheme_component グラフェムを構成するための文字
+ * @property {boolean} is_zero_width_character ゼロ幅文字
  * @property {boolean} is_combining_mark 結合文字
  * @property {boolean} is_variation_selector 異体字セレクタ
  * @property {boolean} is_skin_tone_modifier スキントーン修飾子
@@ -501,7 +502,8 @@ export default class MojiAnalyzer {
 			is_emoticons : false,
 			is_symbol_base : false,
 			is_gaiji : false,
-			is_non_counting_character : false,
+			is_grapheme_component : false,
+			is_zero_width_character : false,
 			is_combining_mark : false,
 			is_variation_selector : false,
 			is_skin_tone_modifier : false,
@@ -653,8 +655,10 @@ export default class MojiAnalyzer {
 		type.is_symbol_base = /Dingbats|Miscellaneous Symbols/.test(type.blockname);
 		// 外字
 		type.is_gaiji = /Private Use Area/.test(type.blockname);
-		// 文字数としてカウントしない文字
-		type.is_non_counting_character = Unicode.isNonCountingCharacterFromCodePoint(unicode_codepoint);
+		// グラフェムを構成するための文字
+		type.is_grapheme_component = Unicode.isGraphemeComponentFromCodePoint(unicode_codepoint);
+		// 横幅が 0 の文字
+		type.is_zero_width_character = Unicode.isZeroWidthCharacterFromCodePoint(unicode_codepoint);
 		// 結合文字
 		type.is_combining_mark = Unicode.isCombiningMarkFromCodePoint(unicode_codepoint);
 		// 異体字セレクタ

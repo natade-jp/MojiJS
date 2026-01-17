@@ -148,7 +148,7 @@ export default class MojiJS {
 	// ---------------------------------
 
 	/**
-	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * 結合した文字を考慮して文字列を文字の配列に変換する
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
 	 */
@@ -157,7 +157,7 @@ export default class MojiJS {
 	}
 
 	/**
-	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * 結合した文字を考慮して文字の配列を文字列に変換する
 	 * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
 	 * @returns {string} UTF32(コードポイント)の配列が入った配列
 	 */

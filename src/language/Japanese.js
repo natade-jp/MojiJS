@@ -941,7 +941,7 @@ export default class Japanese {
 	 * @returns {Number} 文字の横幅
 	 */
 	static getWidthFromCodePoint(cp) {
-		if(Unicode.isNonCountingCharacterFromCodePoint(cp)) {
+		if(Unicode.isGraphemeComponentFromCodePoint(cp) || Unicode.isZeroWidthCharacterFromCodePoint(cp)) {
 			return 0;
 		}
 		else if((cp < 0x80) || ((0xFF61 <= cp) && (cp < 0xFFA0))) {
@@ -970,7 +970,7 @@ export default class Japanese {
 	}
 
 	/**
-	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * 文字幅を考慮して文字列を文字の配列に変換する
 	 * @param {String} text - 変換したいテキスト
 	 * @returns {Array<Array<number>>} UTF32(コードポイント)の配列が入った配列
 	 */
@@ -983,7 +983,7 @@ export default class Japanese {
 		let moji = [];
 		for(let i = 0; i < utf32.length; i++) {
 			const cp = utf32[i];
-			if((i > 0) && !Unicode.isVariationSelectorFromCodePoint(cp) && !Unicode.isCombiningMarkFromCodePoint(cp)) {
+			if((i > 0) && !Unicode.isGraphemeComponentFromCodePoint(cp)) {
 				mojiarray.push(moji);
 				moji = [];
 			}
@@ -994,7 +994,7 @@ export default class Japanese {
 	}
 
 	/**
-	 * 異体字セレクタと結合文字を考慮して文字列を文字の配列に変換する
+	 * 結合した文字を考慮して文字の配列を文字列に変換する
 	 * @param {Array<Array<number>>} mojiarray - UTF32(コードポイント)の配列が入った配列
 	 * @returns {string} UTF32(コードポイント)の配列が入った配列
 	 */
@@ -1040,6 +1040,7 @@ export default class Japanese {
 			return "";
 		}
 		for(let i = 0; i < moji_array.length; i++) {
+			// 1文字目の横幅を取得
 			const ch = moji_array[i][0];
 			const ch_size = ((ch < 0x80) || ((0xFF61 <= ch) && (ch < 0xFFA0))) ? 1 : 2;
 			if(position >= offset) {
