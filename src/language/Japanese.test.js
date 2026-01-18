@@ -62,6 +62,20 @@ testOperator1("toRomajiFromKatakana", "ミョウゴニチ", "myougonichi");
 	test("getWidth", () => { expect(Japanese.getWidth("👍🏻👍🏼👍🏽👍🏾👍🏿")).toBe(10); });
 	// タグ文字
 	test("getWidth", () => { expect(Japanese.getWidth("🏴󠁫󠁨󠀱󠀰󠁿🏴󠁫󠁨󠀱󠀱󠁿🏴󠁫󠁨󠀱󠀳󠁿")).toBe(6); });
+	// ゼロ幅接合子
+	test("getWidth", () => { expect(Japanese.getWidth("🧑🏻‍❤️‍💋‍🧑🏼🧑🏻‍❤️‍💋‍🧑🏼🧑🏻‍❤️‍💋‍🧑🏼")).toBe(6); });
+}
+
+{
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("ABCあいう高髙①").length).toBe(9); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("Åström").length).toBe(6); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("あ゙").length).toBe(1); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("禰豆子").length).toBe(3); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("襧豆子").length).toBe(3); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("禰󠄀豆子").length).toBe(3); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("👍🏻👍🏼👍🏽👍🏾👍🏿").length).toBe(5); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("🏴󠁫󠁨󠀱󠀰󠁿🏴󠁫󠁨󠀱󠀱󠁿🏴󠁫󠁨󠀱󠀳󠁿").length).toBe(3); });
+	test("toMojiArrayFromString", () => { expect(Japanese.toMojiArrayFromString("🧑🏻‍❤️‍💋‍🧑🏼🧑🏻‍❤️‍💋‍🧑🏼🧑🏻‍❤️‍💋‍🧑🏼").length).toBe(3); });
 }
 
 {

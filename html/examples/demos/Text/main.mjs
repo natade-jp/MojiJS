@@ -3,6 +3,9 @@
 import Log from "../../libs/Log.module.js";
 import MojiJS from "../../libs/MojiJS.js";
 
+// eslint-disable-next-line no-undef
+globalThis.MojiJS = MojiJS;
+
 const testJapanese = function() {
 
 	let x;
