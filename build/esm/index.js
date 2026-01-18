@@ -4049,8 +4049,15 @@ class Japanese {
 	static getWidth(text) {
 		const utf32_array = Unicode.toUTF32Array(text);
 		let count = 0;
+		let isZWJ = false;
 		for(let i = 0; i < utf32_array.length; i++) {
-			count += Japanese.getWidthFromCodePoint(utf32_array[i]);
+			if (!isZWJ) {
+				count += Japanese.getWidthFromCodePoint(utf32_array[i]);
+			}
+			isZWJ = false;
+			if (utf32_array[i] === 0x200D) {
+				isZWJ = true;
+			}
 		}
 		return count;
 	}
@@ -4067,13 +4074,18 @@ class Japanese {
 		 */
 		const mojiarray = [];
 		let moji = [];
+		let isZWJ = false;
 		for(let i = 0; i < utf32.length; i++) {
 			const cp = utf32[i];
-			if((i > 0) && !Unicode.isGraphemeComponentFromCodePoint(cp)) {
+			if(!isZWJ && (i > 0) && !Unicode.isGraphemeComponentFromCodePoint(cp)) {
 				mojiarray.push(moji);
 				moji = [];
 			}
 			moji.push(cp);
+			isZWJ = false;
+			if (cp === 0x200D) {
+				isZWJ = true;
+			}
 		}
 		mojiarray.push(moji);
 		return mojiarray;
