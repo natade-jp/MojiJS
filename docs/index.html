@@ -38,59 +38,27 @@
 </div>
 </nav>
 
-<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h1 id="mojijs">MojiJS</h1><p><a href="https://natade-jp.github.io/MojiJS/docs/"><img src="https://natade-jp.github.io/MojiJS/docs/badge.svg" alt="ESDoc coverage badge"></a>
-<img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat" alt="MIT License"></p>
-<h2 id="what">What</h2><ul>
-<li>&#x65E5;&#x672C;&#x8A9E;&#x306E;&#x6587;&#x5B57;&#x30C7;&#x30FC;&#x30BF;&#x3092;&#x89E3;&#x6790;&#x53CA;&#x3073;&#x3001;&#x5909;&#x63DB;&#x3059;&#x308B;&#x30E9;&#x30A4;&#x30D6;&#x30E9;&#x30EA;&#x3067;&#x3059;&#x3002;</li>
-<li><a href="https://natade-jp.github.io/MojiJS/docs/">&#x8A73;&#x7D30;&#x306A; API &#x3092;&#x516C;&#x958B;&#x3057;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</a></li>
-<li><a href="https://natade-jp.github.io/MojiJS/html/examples/demos/Text/">&#x52D5;&#x4F5C;&#x4F8B;</a> (&#x30B3;&#x30F3;&#x30BD;&#x30FC;&#x30EB;&#x53CA;&#x3073;<a href="https://natade-jp.github.io/MojiJS/html/examples/demos/Text/main.mjs">&#x30BD;&#x30FC;&#x30B9;&#x30B3;&#x30FC;&#x30C9;</a>&#x3092;&#x78BA;&#x8A8D;&#x3057;&#x3066;&#x307F;&#x3066;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;)</li>
-<li><a href="https://www.npmjs.com/package/mojijs">npm</a></li>
-</ul>
-<p>&#x4EE5;&#x4E0B;&#x306E;&#x3053;&#x3068;&#x304C;&#x884C;&#x3048;&#x307E;&#x3059;</p>
+<div class="content" data-ice="content"><div data-ice="index" class="github-markdown"><h2 id="&#x26A0;&#xFE0F;-&#x3053;&#x306E;&#x30EA;&#x30DD;&#x30B8;&#x30C8;&#x30EA;&#x306F;&#x30A2;&#x30FC;&#x30AB;&#x30A4;&#x30D6;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;">&#x26A0;&#xFE0F; &#x3053;&#x306E;&#x30EA;&#x30DD;&#x30B8;&#x30C8;&#x30EA;&#x306F;&#x30A2;&#x30FC;&#x30AB;&#x30A4;&#x30D6;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;</h2><p>MojiJS &#x306F;&#x540D;&#x79F0;&#x5909;&#x66F4;&#x306B;&#x3088;&#x308A;&#x3001;&#x5F8C;&#x7D99;&#x30E9;&#x30A4;&#x30D6;&#x30E9;&#x30EA; <strong>mojix</strong> &#x3068;&#x3057;&#x3066;&#x7D99;&#x7D9A;&#x958B;&#x767A;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;&#x3002;</p>
 <ul>
-<li>&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;&#xFF08;UTF-8 / UTF-16 / UTF-32 / Shift_JIS / Shift_JIS-2004 / EUC-JP / EUC-JIS-2004 &#xFF09;</li>
-<li>&#x65E5;&#x672C;&#x8A9E;&#x306E;&#x5909;&#x63DB; (&#x3072;&#x3089;&#x304C;&#x306A;, &#x30AB;&#x30BF;&#x30AB;&#x30CA;, &#x534A;&#x89D2;, &#x5168;&#x89D2;, &#x30ED;&#x30FC;&#x30DE;&#x5B57; &#x306A;&#x3069;))</li>
-<li>&#x6F22;&#x5B57;&#x306E;&#x5224;&#x5B9A; (&#x5E38;&#x7528;&#x6F22;&#x5B57;, &#x4EBA;&#x540D;&#x7528;&#x6F22;&#x5B57;, &#x9762;&#x533A;&#x70B9;, &#x6F22;&#x5B57;&#x6C34;&#x6E96; &#x306A;&#x3069;)</li>
-<li>&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;</li>
+<li>&#x65B0;&#x30EA;&#x30DD;&#x30B8;&#x30C8;&#x30EA;: <a href="https://github.com/natade-jp/mojix">https://github.com/natade-jp/mojix</a></li>
+<li>npm: <a href="https://www.npmjs.com/package/mojix">https://www.npmjs.com/package/mojix</a></li>
 </ul>
-<h2 id="install">Install</h2><pre><code><code class="source-code prettyprint">npm install --save-dev mojijs</code>
-</code></pre><h2 id="sample">Sample</h2><h3 id="&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;">&#x30A8;&#x30F3;&#x30B3;&#x30FC;&#x30C9;</h3><pre><code class="lang-javascript"><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
-
-console.log(MojiJS.encode(&quot;&#x5721;&#x2460;&#x9741;&#xFA63;&#x2A602;&#x9EB5;&quot;, &quot;shift_jis-2004&quot;));
--&gt; [ 136, 98, 135, 64, 251, 154, 238, 174, 252, 238, 239, 238 ]
-
-console.log(MojiJS.decode([0x61, 0xE3, 0x81, 0x82], &quot;utf-8&quot;));
--&gt; a&#x3042;</code>
-</code></pre>
-<h3 id="&#x65E5;&#x672C;&#x8A9E;&#x306E;&#x5909;&#x63DB;">&#x65E5;&#x672C;&#x8A9E;&#x306E;&#x5909;&#x63DB;</h3><pre><code class="lang-javascript"><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
-
-console.log(MojiJS.toHiragana(&quot;&#x30AB;&#x30AD;&#x30AF;&#x30B1;&#x30B3;&quot;));
--&gt; &#x304B;&#x304D;&#x304F;&#x3051;&#x3053;</code>
-</code></pre>
-<h3 id="&#x9762;&#x533A;&#x70B9;">&#x9762;&#x533A;&#x70B9;</h3><pre><code class="lang-javascript"><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
-
-const data1 = MojiJS.getMojiData(MojiJS.codePointAt(&quot;&#x9AD9;&quot;));
-console.log(&quot;&#x533A;&#x70B9;&#xFF1A;&quot; + data1.encode.kuten.text + &quot;, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;&quot; + data1.type.kanji_suijun);
--&gt; &#x533A;&#x70B9;&#xFF1A;118-94, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;0
-// &#x203B;&#x9AD9;&#x306F; JIS X 0208 &#x306B;&#x767B;&#x9332;&#x3055;&#x308C;&#x3066;&#x3044;&#x306A;&#x3044;&#x306E;&#x3067;&#x3001;&#x6F22;&#x5B57;&#x6C34;&#x6E96;&#x306F;&#x8868;&#x793A;&#x4E0D;&#x53EF;
-
-const data2 = MojiJS.getMojiData(MojiJS.codePointAt(&quot;&#x5721;&quot;));
-console.log(&quot;&#x9762;&#x533A;&#x70B9;&#xFF1A;&quot; + data2.encode.menkuten.text + &quot;, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;&quot; + data2.type.kanji_suijun);
--&gt; &#x9762;&#x533A;&#x70B9;&#xFF1A;1-15-35, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;3
-
-const data3 = MojiJS.getMojiData(MojiJS.codePointAt(&quot;&#x5501;&quot;));
-console.log(&quot;&#x9762;&#x533A;&#x70B9;&#xFF1A;&quot; + data3.encode.menkuten.text + &quot;, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;&quot; + data3.type.kanji_suijun);
--&gt; &#x9762;&#x533A;&#x70B9;&#xFF1A;2-3-93, &#x6F22;&#x5B57;&#x6C34;&#x6E96;&#xFF1A;4
-</code>
-</code></pre>
-<h3 id="&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;">&#x81EA;&#x7136;&#x9806;&#x30BD;&#x30FC;&#x30C8;</h3><pre><code class="lang-javascript"><code class="source-code prettyprint">const MojiJS = require(&quot;mojijs&quot;);
-
-console.log([&quot;&#xFF13;&quot;, &quot;02&quot;, &quot;&#x3042;&quot;, &quot;&#x30A4;&quot;, &quot;&#x3046;&quot;, &quot;1&quot;].sort(MojiJS.compareToForNatural));
--&gt; [ &apos;1&apos;, &apos;02&apos;, &apos;&#xFF13;&apos;, &apos;&#x3042;&apos;, &apos;&#x30A4;&apos;, &apos;&#x3046;&apos; ]</code>
-</code></pre>
-<h2 id="author">Author</h2><ul>
-<li><a href="https://github.com/natade-jp/">natade-jp</a></li>
+<p>&#x901A;&#x5E38;&#x306E; JavaScript &#x74B0;&#x5883;&#x3067;&#x306F; <strong>mojix &#x306E;&#x5229;&#x7528;&#x3092;&#x63A8;&#x5968;&#x3057;&#x307E;&#x3059;</strong>&#x3002;</p>
+<hr>
+<h3 id="ecmascript-3---jscript-&#x306B;&#x3064;&#x3044;&#x3066;">ECMAScript 3 / JScript &#x306B;&#x3064;&#x3044;&#x3066;</h3><p>MojiJS &#x306F; <strong>ECMAScript 3 &#x306B;&#x5BFE;&#x5FDC;</strong>&#x3057;&#x3066;&#x304A;&#x308A;&#x3001;<br>JScript&#xFF08;WSH&#x3001;&#x65E7; IE &#x306A;&#x3069;&#xFF09;&#x74B0;&#x5883;&#x3067;&#x5229;&#x7528;&#x3067;&#x304D;&#x307E;&#x3059;&#x3002;</p>
+<p>&#x5F8C;&#x7D99;&#x306E; mojix &#x306F; ECMAScript 3 &#x3092;&#x30B5;&#x30DD;&#x30FC;&#x30C8;&#x3057;&#x3066;&#x3044;&#x307E;&#x305B;&#x3093;&#x3002;<br>JScript &#x4E92;&#x63DB;&#x304C;&#x5FC5;&#x8981;&#x306A;&#x5834;&#x5408;&#x306E;&#x307F;&#x3001;&#x672C;&#x30EA;&#x30DD;&#x30B8;&#x30C8;&#x30EA;&#x3092;&#x5F15;&#x304D;&#x7D9A;&#x304D;&#x3054;&#x5229;&#x7528;&#x304F;&#x3060;&#x3055;&#x3044;&#x3002;</p>
+<p>&#x203B; &#x672C;&#x30EA;&#x30DD;&#x30B8;&#x30C8;&#x30EA;&#x306B;&#x65B0;&#x6A5F;&#x80FD;&#x306E;&#x8FFD;&#x52A0;&#x4E88;&#x5B9A;&#x306F;&#x3042;&#x308A;&#x307E;&#x305B;&#x3093;&#x3002;</p>
+<hr>
+<h2 id="&#x26A0;&#xFE0F;-this-repository-has-been-archived">&#x26A0;&#xFE0F; This repository has been archived</h2><p><strong>MojiJS</strong> has been renamed and continued as <strong>mojix</strong>.</p>
+<ul>
+<li>New repository: <a href="https://github.com/natade-jp/mojix">https://github.com/natade-jp/mojix</a></li>
+<li>npm package: <a href="https://www.npmjs.com/package/mojix">https://www.npmjs.com/package/mojix</a></li>
 </ul>
+<p>Please use <strong>mojix</strong> for all new development.</p>
+<hr>
+<h3 id="about-ecmascript-3---jscript-support">About ECMAScript 3 / JScript support</h3><p>MojiJS supports <strong>ECMAScript 3</strong> and can be used in <strong>JScript environments</strong><br>(e.g. Windows Script Host, legacy Internet Explorer).</p>
+<p><strong>mojix does NOT support ECMAScript 3</strong>.<br>If you specifically need JScript / ES3 compatibility, you may continue using MojiJS.</p>
+<p>No new features will be added to this repository.</p>
 </div>
 </div>
 
